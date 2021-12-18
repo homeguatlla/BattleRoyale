@@ -6,13 +6,15 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/InputSettings.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
+#include "Engine/SkeletalMeshSocket.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
+DEFINE_LOG_CATEGORY_STATIC(LogCharacter, Warning, All);
 
 //////////////////////////////////////////////////////////////////////////
 // ABattleRoyaleCharacter
@@ -27,32 +29,32 @@ ABattleRoyaleCharacter::ABattleRoyaleCharacter()
 	BaseLookUpRate = 45.f;
 
 	// Create a CameraComponent	
-	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
-	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
-	FirstPersonCameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
-	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+	m_FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
+	m_FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
+	m_FirstPersonCameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
+	m_FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
-	Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
-	Mesh1P->SetOnlyOwnerSee(true);
-	Mesh1P->SetupAttachment(FirstPersonCameraComponent);
-	Mesh1P->bCastDynamicShadow = false;
-	Mesh1P->CastShadow = false;
-	Mesh1P->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
-	Mesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
-
+	m_CharacterMesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
+	m_CharacterMesh1P->SetOnlyOwnerSee(true);
+	m_CharacterMesh1P->SetupAttachment(m_FirstPersonCameraComponent);
+	m_CharacterMesh1P->bCastDynamicShadow = false;
+	m_CharacterMesh1P->CastShadow = false;
+	m_CharacterMesh1P->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
+	m_CharacterMesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
+	
+	m_CharacterMesh3P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh3P"));
+	m_CharacterMesh3P->SetOwnerNoSee(true);
+	m_CharacterMesh3P->SetupAttachment(m_FirstPersonCameraComponent);
+	m_CharacterMesh3P->bCastDynamicShadow = false;
+	m_CharacterMesh3P->CastShadow = false;
+	
 	// Create a gun mesh component
-	FP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FP_Gun"));
-	FP_Gun->SetOnlyOwnerSee(false);			// otherwise won't be visible in the multiplayer
-	FP_Gun->bCastDynamicShadow = false;
-	FP_Gun->CastShadow = false;
-	// FP_Gun->SetupAttachment(Mesh1P, TEXT("GripPoint"));
-	FP_Gun->SetupAttachment(RootComponent);
-
-	FP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
-	FP_MuzzleLocation->SetupAttachment(FP_Gun);
-	FP_MuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
-
+	m_WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FP_Gun"));
+	m_WeaponMesh->SetOnlyOwnerSee(false);			// otherwise won't be visible in the multiplayer
+	m_WeaponMesh->bCastDynamicShadow = false;
+	m_WeaponMesh->CastShadow = false;
+	
 	// Default offset from the character location for projectiles to spawn
 	GunOffset = FVector(100.0f, 0.0f, 10.0f);
 
@@ -65,44 +67,15 @@ ABattleRoyaleCharacter::ABattleRoyaleCharacter()
 	R_MotionController->SetupAttachment(RootComponent);
 	L_MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("L_MotionController"));
 	L_MotionController->SetupAttachment(RootComponent);
-
-	// Create a gun and attach it to the right-hand VR controller.
-	// Create a gun mesh component
-	VR_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("VR_Gun"));
-	VR_Gun->SetOnlyOwnerSee(false);			// otherwise won't be visible in the multiplayer
-	VR_Gun->bCastDynamicShadow = false;
-	VR_Gun->CastShadow = false;
-	VR_Gun->SetupAttachment(R_MotionController);
-	VR_Gun->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
-
-	VR_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("VR_MuzzleLocation"));
-	VR_MuzzleLocation->SetupAttachment(VR_Gun);
-	VR_MuzzleLocation->SetRelativeLocation(FVector(0.000004, 53.999992, 10.000000));
-	VR_MuzzleLocation->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));		// Counteract the rotation of the VR gun model.
-
-	// Uncomment the following line to turn motion controllers on by default:
-	//bUsingMotionControllers = true;
 }
 
 void ABattleRoyaleCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
-
-	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
-	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
-
-	// Show or hide the two versions of the gun based on whether or not we're using motion controllers.
-	if (bUsingMotionControllers)
-	{
-		VR_Gun->SetHiddenInGame(false, true);
-		Mesh1P->SetHiddenInGame(true, true);
-	}
-	else
-	{
-		VR_Gun->SetHiddenInGame(true, true);
-		Mesh1P->SetHiddenInGame(false, true);
-	}
+	
+	EquipWeapon(IsLocallyControlled() ? m_CharacterMesh1P: m_CharacterMesh3P, m_WeaponMesh);
+	m_CharacterMesh1P->SetHiddenInGame(!IsLocallyControlled(), true);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -117,6 +90,10 @@ void ABattleRoyaleCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
+	// Bind run event
+	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ABattleRoyaleCharacter::StartRunning);
+	PlayerInputComponent->BindAction("Run", IE_Released, this, &ABattleRoyaleCharacter::StopRunning);
+	
 	// Bind fire event
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ABattleRoyaleCharacter::OnFire);
 
@@ -138,10 +115,26 @@ void ABattleRoyaleCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ABattleRoyaleCharacter::LookUpAtRate);
 }
 
+void ABattleRoyaleCharacter::StartRunning()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+}
+
+void ABattleRoyaleCharacter::StopRunning()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 100.f;
+}
+
 void ABattleRoyaleCharacter::OnFire()
 {
-	// try and fire a projectile
-	ServerSpawnProjectile();
+	// try and fire a projectile:
+	//the server has the weapon in FP1, but for the clients it has the weapons as 3P
+	//so, we need when shooting send to the server our weapon location and rotation
+	//because server will get wrong location and rotation for clients
+	FVector muzzleLocation;
+	FRotator muzzleRotation;
+	FillWithWeaponMuzzleLocationAndRotation(m_WeaponMesh, muzzleLocation, muzzleRotation);			
+	ServerSpawnProjectile(muzzleLocation, muzzleRotation);
 
 	// try and play the sound if specified
 	if (FireSound != nullptr)
@@ -153,7 +146,7 @@ void ABattleRoyaleCharacter::OnFire()
 	if (FireAnimation != nullptr)
 	{
 		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+		UAnimInstance* AnimInstance = m_CharacterMesh1P->GetAnimInstance();
 		if (AnimInstance != nullptr)
 		{
 			AnimInstance->Montage_Play(FireAnimation, 1.f);
@@ -274,43 +267,55 @@ bool ABattleRoyaleCharacter::EnableTouchscreenMovement(class UInputComponent* Pl
 	return false;
 }
 
-void ABattleRoyaleCharacter::SpawnProjectile()
+void ABattleRoyaleCharacter::SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const
 {
 	if (ProjectileClass != nullptr)
 	{
 		UWorld* const World = GetWorld();
 		if (World != nullptr)
 		{
-			if (bUsingMotionControllers)
-			{
-				const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
-				const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
-				World->SpawnActor<ABattleRoyaleProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
-			}
-			else
-			{
-				const FRotator SpawnRotation = GetControlRotation();
-				// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-				const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
+			//Set Spawn Collision Handling Override
+			FActorSpawnParameters ActorSpawnParams;
+			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-				//Set Spawn Collision Handling Override
-				FActorSpawnParameters ActorSpawnParams;
-				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-
-				// spawn the projectile at the muzzle
-				World->SpawnActor<ABattleRoyaleProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-			}
+			// spawn the projectile at the muzzle
+			World->SpawnActor<ABattleRoyaleProjectile>(ProjectileClass, muzzleLocation, muzzleRotation, ActorSpawnParams);
 		}
 	}
 }
 
-void ABattleRoyaleCharacter::ServerSpawnProjectile_Implementation()
+void ABattleRoyaleCharacter::ServerSpawnProjectile_Implementation(const FVector& muzzleLocation, const FRotator& muzzleRotation)
 {
-	SpawnProjectile();
+	SpawnProjectile(muzzleLocation, muzzleRotation);
 }
 
-bool ABattleRoyaleCharacter::ServerSpawnProjectile_Validate()
+bool ABattleRoyaleCharacter::ServerSpawnProjectile_Validate(const FVector& muzzleLocation, const FRotator& muzzleRotation)
 {
 	//TODO validate there are bullets
 	return true;
+}
+
+void ABattleRoyaleCharacter::FillWithWeaponMuzzleLocationAndRotation(const USkeletalMeshComponent* weapon, FVector& location, FRotator& rotation) const
+{
+	const auto weaponMuzzleSocket = weapon->GetSocketByName(TEXT("MuzzleSocket"));
+	if(weaponMuzzleSocket)
+	{
+		location = weaponMuzzleSocket->GetSocketLocation(weapon);
+		rotation = weaponMuzzleSocket->GetSocketTransform(weapon).GetRotation().Rotator();
+	}
+	else
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[%s][ABattleRoyaleCharacter::FillWithWeaponMuzzleLocationAndRotation] muzzle not found"),*GetName());
+	}
+}
+
+void ABattleRoyaleCharacter::EquipWeapon(USkeletalMeshComponent* mesh, USkeletalMeshComponent* weapon)
+{
+	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
+	const auto isAttached = weapon->AttachToComponent(mesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RightHandSocket"));
+
+	if(!isAttached)
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[%s][ABattleRoyaleCharacter::EquipWeapon] weapon not attached to the character"), *GetName());	
+	}
 }

@@ -21,27 +21,19 @@ class ABattleRoyaleCharacter : public ACharacter
 
 	/** Pawn mesh: 1st person view (arms; seen only by self) */
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
-	USkeletalMeshComponent* Mesh1P;
+	USkeletalMeshComponent* m_CharacterMesh1P;
 
+	/** Character mesh: 3rd person view (seen only by others) */
+	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
+	USkeletalMeshComponent* m_CharacterMesh3P;
+	
 	/** Gun mesh: 1st person view (seen only by self) */
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	USkeletalMeshComponent* FP_Gun;
-
-	/** Location on gun mesh where projectiles should spawn. */
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	USceneComponent* FP_MuzzleLocation;
-
-	/** Gun mesh: VR view (attached to the VR controller directly, no arm, just the actual gun) */
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	USkeletalMeshComponent* VR_Gun;
-
-	/** Location on VR gun mesh where projectiles should spawn. */
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	USceneComponent* VR_MuzzleLocation;
-
+	USkeletalMeshComponent* m_WeaponMesh;
+	
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FirstPersonCameraComponent;
+	UCameraComponent* m_FirstPersonCameraComponent;
 
 	/** Motion controller (right hand) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -50,7 +42,7 @@ class ABattleRoyaleCharacter : public ACharacter
 	/** Motion controller (left hand) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UMotionControllerComponent* L_MotionController;
-
+	
 public:
 	ABattleRoyaleCharacter();
 
@@ -81,10 +73,6 @@ public:
 	/** AnimMontage to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	UAnimMontage* FireAnimation;
-
-	/** Whether to use motion controller location for aiming. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	uint8 bUsingMotionControllers : 1;
 
 protected:
 	
@@ -140,17 +128,20 @@ protected:
 	bool EnableTouchscreenMovement(UInputComponent* InputComponent);
 
 private:
-	void SpawnProjectile();
-	void SpawnProjectileServer();
+	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
+	void StartRunning();
+	void StopRunning();
+	void FillWithWeaponMuzzleLocationAndRotation(const USkeletalMeshComponent* weapon, FVector& location, FRotator& rotation) const;
+	void EquipWeapon(USkeletalMeshComponent* mesh, USkeletalMeshComponent* weapon);
 	
 	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerSpawnProjectile();
+	void ServerSpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation);
 	
 public:
 	/** Returns Mesh1P subobject **/
-	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
+	USkeletalMeshComponent* GetMesh1P() const { return m_CharacterMesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
-	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+	UCameraComponent* GetFirstPersonCameraComponent() const { return m_FirstPersonCameraComponent; }
 
 };
 
