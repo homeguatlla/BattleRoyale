@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "BattleRoyaleCharacter.h"
-#include "BattleRoyaleProjectile.h"
+#include "BattleRoyale/core/Weapons/BattleRoyaleProjectile.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -182,22 +182,6 @@ void ABattleRoyaleCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-/*
-bool ABattleRoyaleCharacter::EnableTouchscreenMovement(class UInputComponent* PlayerInputComponent)
-{
-	if (FPlatformMisc::SupportsTouchInput() || GetDefault<UInputSettings>()->bUseMouseForTouch)
-	{
-		PlayerInputComponent->BindTouch(EInputEvent::IE_Pressed, this, &ABattleRoyaleCharacter::BeginTouch);
-		PlayerInputComponent->BindTouch(EInputEvent::IE_Released, this, &ABattleRoyaleCharacter::EndTouch);
-
-		//Commenting this out to be more consistent with FPS BP template.
-		//PlayerInputComponent->BindTouch(EInputEvent::IE_Repeat, this, &ABattleRoyaleCharacter::TouchUpdate);
-		return true;
-	}
-	
-	return false;
-}
-*/
 void ABattleRoyaleCharacter::SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const
 {
 	if (ProjectileClass != nullptr)

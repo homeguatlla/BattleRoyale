@@ -1,8 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "BattleRoyaleGameMode.h"
-#include "BattleRoyaleHUD.h"
-#include "BattleRoyaleCharacter.h"
+#include "BattleRoyale/core/HUD/BattleRoyaleHUD.h"
 #include "UObject/ConstructorHelpers.h"
 
 ABattleRoyaleGameMode::ABattleRoyaleGameMode()

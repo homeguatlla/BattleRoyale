@@ -105,7 +105,6 @@ protected:
 	
 	// End of APawn interface
 
-	//bool EnableTouchscreenMovement(UInputComponent* InputComponent);
 
 private:
 	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
