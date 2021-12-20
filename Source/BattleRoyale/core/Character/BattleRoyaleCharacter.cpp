@@ -135,7 +135,7 @@ void ABattleRoyaleCharacter::OnFire()
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 	}
 
-	// try and play a firing animation if specified
+	// try and play a firing animation if specified on First Person
 	if (FireAnimation != nullptr)
 	{
 		// Get the animation object for the arms mesh

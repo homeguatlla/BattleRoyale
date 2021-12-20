@@ -28,7 +28,7 @@ public:
 	virtual FVector GetCurrentVelocity() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual FRotator GetRotation() const = 0;
+	virtual FRotator GetCurrentRotation() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool IsFalling() const  = 0;

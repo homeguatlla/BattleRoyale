@@ -58,11 +58,11 @@ public:
 	virtual FVector GetCurrentVelocity() const override { return GetVelocity(); }
 	
 	UFUNCTION(BlueprintCallable)
-	virtual FRotator GetRotation() const override { return GetActorRotation(); }
+	virtual FRotator GetCurrentRotation() const override { return GetActorRotation(); }
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsFalling() const override { return GetCharacterMovement()->IsFalling(); }
-	
+
 protected:
 	virtual void BeginPlay();
 
