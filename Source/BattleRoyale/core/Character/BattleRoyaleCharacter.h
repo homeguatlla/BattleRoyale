@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ICharacter.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "BattleRoyaleCharacter.generated.h"
 
 class UInputComponent;
@@ -15,7 +17,7 @@ class UAnimMontage;
 class USoundBase;
 
 UCLASS(config=Game)
-class ABattleRoyaleCharacter : public ACharacter
+class ABattleRoyaleCharacter : public ACharacter, public IICharacter
 {
 	GENERATED_BODY()
 
@@ -47,8 +49,20 @@ public:
 	ABattleRoyaleCharacter();
 
 	UFUNCTION(BlueprintCallable)
-	USkeletalMeshComponent* GetWeaponMesh() const { return m_WeaponMesh; }
+	virtual USkeletalMeshComponent* GetWeaponMesh() const override { return m_WeaponMesh; }
 
+	UFUNCTION(BlueprintCallable)
+	virtual bool IsCharacterValid() const override { return IsValid(this); }
+
+	UFUNCTION(BlueprintCallable)
+	virtual FVector GetCurrentVelocity() const override { return GetVelocity(); }
+	
+	UFUNCTION(BlueprintCallable)
+	virtual FRotator GetRotation() const override { return GetActorRotation(); }
+	
+	UFUNCTION(BlueprintCallable)
+	virtual bool IsFalling() const override { return GetCharacterMovement()->IsFalling(); }
+	
 protected:
 	virtual void BeginPlay();
 
