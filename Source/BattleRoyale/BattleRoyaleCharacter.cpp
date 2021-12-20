@@ -55,9 +55,6 @@ ABattleRoyaleCharacter::ABattleRoyaleCharacter()
 	m_WeaponMesh->bCastDynamicShadow = false;
 	m_WeaponMesh->CastShadow = false;
 	
-	// Default offset from the character location for projectiles to spawn
-	GunOffset = FVector(100.0f, 0.0f, 10.0f);
-
 	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P, FP_Gun, and VR_Gun 
 	// are set in the derived blueprint asset named MyCharacter to avoid direct content references in C++.
 

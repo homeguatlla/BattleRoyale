@@ -27,7 +27,7 @@ class ABattleRoyaleCharacter : public ACharacter
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
 	USkeletalMeshComponent* m_CharacterMesh3P;
 	
-	/** Gun mesh: 1st person view (seen only by self) */
+	/** Weapon mesh */
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	USkeletalMeshComponent* m_WeaponMesh;
 	
@@ -46,6 +46,9 @@ class ABattleRoyaleCharacter : public ACharacter
 public:
 	ABattleRoyaleCharacter();
 
+	UFUNCTION(BlueprintCallable)
+	USkeletalMeshComponent* GetWeaponMesh() const { return m_WeaponMesh; }
+
 protected:
 	virtual void BeginPlay();
 
@@ -57,11 +60,7 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
-
-	/** Gun muzzle's offset from the characters location */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
-	FVector GunOffset;
-
+	
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
 	TSubclassOf<class ABattleRoyaleProjectile> ProjectileClass;
