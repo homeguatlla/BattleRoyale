@@ -1,2 +1,2 @@
 # BattleRoyale
-Unreal shooter battle royale with GAS
+Unreal first person shooter battle royale with GAS
