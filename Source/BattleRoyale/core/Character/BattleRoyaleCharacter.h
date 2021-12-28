@@ -23,19 +23,19 @@ class ABattleRoyaleCharacter : public ACharacter, public IICharacter
 
 	/** Pawn mesh: 1st person view (arms; seen only by self) */
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
-	USkeletalMeshComponent* m_CharacterMesh1P;
+	USkeletalMeshComponent* mCharacterMesh1P;
 
 	/** Character mesh: 3rd person view (seen only by others) */
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
-	USkeletalMeshComponent* m_CharacterMesh3P;
+	USkeletalMeshComponent* mCharacterMesh3P;
 	
 	/** Weapon mesh */
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	USkeletalMeshComponent* m_WeaponMesh;
+	USkeletalMeshComponent* mWeaponMesh;
 	
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* m_FirstPersonCameraComponent;
+	UCameraComponent* mFirstPersonCameraComponent;
 
 	/** Motion controller (right hand) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -49,7 +49,7 @@ public:
 	ABattleRoyaleCharacter();
 
 	UFUNCTION(BlueprintCallable)
-	virtual USkeletalMeshComponent* GetWeaponMesh() const override { return m_WeaponMesh; }
+	virtual USkeletalMeshComponent* GetWeaponMesh() const override { return mWeaponMesh; }
 
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsCharacterValid() const override { return IsValid(this); }
@@ -59,7 +59,10 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	virtual FRotator GetCurrentRotation() const override { return GetActorRotation(); }
-	
+
+	UFUNCTION(BlueprintCallable)
+	virtual FRotator GetCurrentControlRotation() const override { return mControlRotation; }
+			
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsFalling() const override { return GetCharacterMovement()->IsFalling(); }
 
@@ -83,12 +86,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	USoundBase* FireSound;
 
-	/** AnimMontage to play each time we fire */
+	/** AnimMontage to play each time we fire first person */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	UAnimMontage* FireAnimation;
+	UAnimMontage* FireAnimation1P;
 
-protected:
+	/** AnimMontage to play each time we fire third person */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	UAnimMontage* FireAnimation3P;
+
+	/** Replicated control rotation in order to update remotes pitch */
+	UPROPERTY(Transient, Replicated)
+	struct FRotator mControlRotation;
 	
+protected:
+		
 	/** Fires a projectile. */
 	void OnFire();
 
@@ -113,28 +124,36 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
-protected:
+	virtual void AddControllerPitchInput(float Val) override;
+
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	
 	// End of APawn interface
-
-
+	
 private:
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
 	void StartRunning();
 	void StopRunning();
 	void FillWithWeaponMuzzleLocationAndRotation(const USkeletalMeshComponent* weapon, FVector& location, FRotator& rotation) const;
 	void EquipWeapon(USkeletalMeshComponent* mesh, USkeletalMeshComponent* weapon);
-	
+	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
+
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerSpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastOnFire();
+
+	UFUNCTION(Unreliable, Server, WithValidation)
+	void ServerSetCharacterControlRotation(const FRotator& rotation);
 	
 public:
 	/** Returns Mesh1P subobject **/
-	USkeletalMeshComponent* GetMesh1P() const { return m_CharacterMesh1P; }
+	USkeletalMeshComponent* GetMesh1P() const { return mCharacterMesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
-	UCameraComponent* GetFirstPersonCameraComponent() const { return m_FirstPersonCameraComponent; }
+	UCameraComponent* GetFirstPersonCameraComponent() const { return mFirstPersonCameraComponent; }
 
 };
 

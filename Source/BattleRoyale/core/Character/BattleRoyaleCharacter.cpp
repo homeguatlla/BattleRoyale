@@ -13,6 +13,8 @@
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
 #include "Engine/SkeletalMeshSocket.h"
+//#include "UObject/CoreNetTypes.h"
+#include "Net/UnrealNetwork.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogCharacter, Warning, All);
 
@@ -29,31 +31,31 @@ ABattleRoyaleCharacter::ABattleRoyaleCharacter()
 	BaseLookUpRate = 45.f;
 
 	// Create a CameraComponent	
-	m_FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
-	m_FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
-	m_FirstPersonCameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
-	m_FirstPersonCameraComponent->bUsePawnControlRotation = true;
+	mFirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
+	mFirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
+	mFirstPersonCameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
+	mFirstPersonCameraComponent->bUsePawnControlRotation = true;
 
 	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
-	m_CharacterMesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
-	m_CharacterMesh1P->SetOnlyOwnerSee(true);
-	m_CharacterMesh1P->SetupAttachment(m_FirstPersonCameraComponent);
-	m_CharacterMesh1P->bCastDynamicShadow = false;
-	m_CharacterMesh1P->CastShadow = false;
-	m_CharacterMesh1P->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
-	m_CharacterMesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
+	mCharacterMesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
+	mCharacterMesh1P->SetOnlyOwnerSee(true);
+	mCharacterMesh1P->SetupAttachment(mFirstPersonCameraComponent);
+	mCharacterMesh1P->bCastDynamicShadow = false;
+	mCharacterMesh1P->CastShadow = false;
+	mCharacterMesh1P->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
+	mCharacterMesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
 	
-	m_CharacterMesh3P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh3P"));
-	m_CharacterMesh3P->SetOwnerNoSee(true);
-	m_CharacterMesh3P->SetupAttachment(m_FirstPersonCameraComponent);
-	m_CharacterMesh3P->bCastDynamicShadow = false;
-	m_CharacterMesh3P->CastShadow = false;
+	mCharacterMesh3P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh3P"));
+	mCharacterMesh3P->SetOwnerNoSee(true);
+	mCharacterMesh3P->SetupAttachment(mFirstPersonCameraComponent);
+	mCharacterMesh3P->bCastDynamicShadow = false;
+	mCharacterMesh3P->CastShadow = false;
 	
 	// Create a gun mesh component
-	m_WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FP_Gun"));
-	m_WeaponMesh->SetOnlyOwnerSee(false);			// otherwise won't be visible in the multiplayer
-	m_WeaponMesh->bCastDynamicShadow = false;
-	m_WeaponMesh->CastShadow = false;
+	mWeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FP_Gun"));
+	mWeaponMesh->SetOnlyOwnerSee(false);			// otherwise won't be visible in the multiplayer
+	mWeaponMesh->bCastDynamicShadow = false;
+	mWeaponMesh->CastShadow = false;
 	
 	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P, FP_Gun, and VR_Gun 
 	// are set in the derived blueprint asset named MyCharacter to avoid direct content references in C++.
@@ -71,8 +73,8 @@ void ABattleRoyaleCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 	
-	EquipWeapon(IsLocallyControlled() ? m_CharacterMesh1P: m_CharacterMesh3P, m_WeaponMesh);
-	m_CharacterMesh1P->SetHiddenInGame(!IsLocallyControlled(), true);
+	EquipWeapon(IsLocallyControlled() ? mCharacterMesh1P: mCharacterMesh3P, mWeaponMesh);
+	mCharacterMesh1P->SetHiddenInGame(!IsLocallyControlled(), true);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -104,8 +106,15 @@ void ABattleRoyaleCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("TurnRate", this, &ABattleRoyaleCharacter::TurnAtRate);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookUp", this, &ABattleRoyaleCharacter::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ABattleRoyaleCharacter::LookUpAtRate);
+}
+
+void ABattleRoyaleCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(ABattleRoyaleCharacter, mControlRotation, COND_SimulatedOnly);
 }
 
 void ABattleRoyaleCharacter::StartRunning()
@@ -126,7 +135,7 @@ void ABattleRoyaleCharacter::OnFire()
 	//because server will get wrong location and rotation for clients
 	FVector muzzleLocation;
 	FRotator muzzleRotation;
-	FillWithWeaponMuzzleLocationAndRotation(m_WeaponMesh, muzzleLocation, muzzleRotation);			
+	FillWithWeaponMuzzleLocationAndRotation(mWeaponMesh, muzzleLocation, muzzleRotation);			
 	ServerSpawnProjectile(muzzleLocation, muzzleRotation);
 
 	// try and play the sound if specified
@@ -135,16 +144,7 @@ void ABattleRoyaleCharacter::OnFire()
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 	}
 
-	// try and play a firing animation if specified on First Person
-	if (FireAnimation != nullptr)
-	{
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = m_CharacterMesh1P->GetAnimInstance();
-		if (AnimInstance != nullptr)
-		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
-		}
-	}
+	PlayMontage(FireAnimation1P, mCharacterMesh1P);
 }
 
 void ABattleRoyaleCharacter::OnResetVR()
@@ -168,6 +168,17 @@ void ABattleRoyaleCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(GetActorRightVector(), Value);
 	}
+}
+
+void ABattleRoyaleCharacter::AddControllerPitchInput(float Rate)
+{
+	Super::AddControllerPitchInput(Rate);
+	
+	if(IsLocallyControlled())
+	{
+		//const auto rotation = mWeaponMesh->GetComponentRotation();
+		ServerSetCharacterControlRotation(GetControlRotation());
+	}	
 }
 
 void ABattleRoyaleCharacter::TurnAtRate(float Rate)
@@ -202,6 +213,9 @@ void ABattleRoyaleCharacter::SpawnProjectile(const FVector& muzzleLocation, cons
 void ABattleRoyaleCharacter::ServerSpawnProjectile_Implementation(const FVector& muzzleLocation, const FRotator& muzzleRotation)
 {
 	SpawnProjectile(muzzleLocation, muzzleRotation);
+
+	//Notify remotes about a fire in order they can play the proper animation.
+	MulticastOnFire();
 }
 
 bool ABattleRoyaleCharacter::ServerSpawnProjectile_Validate(const FVector& muzzleLocation, const FRotator& muzzleRotation)
@@ -233,4 +247,36 @@ void ABattleRoyaleCharacter::EquipWeapon(USkeletalMeshComponent* mesh, USkeletal
 	{
 		UE_LOG(LogCharacter, Error, TEXT("[%s][ABattleRoyaleCharacter::EquipWeapon] weapon not attached to the character"), *GetName());	
 	}
+}
+
+void ABattleRoyaleCharacter::PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const
+{
+	if (montage != nullptr)
+	{
+		UAnimInstance* AnimInstance = mesh->GetAnimInstance();
+		if (AnimInstance != nullptr)
+		{
+			AnimInstance->Montage_Play(montage, 1.f);
+		}
+	}
+}
+
+void ABattleRoyaleCharacter::ServerSetCharacterControlRotation_Implementation(const FRotator& rotation)
+{
+	mControlRotation = rotation;
+}
+
+bool ABattleRoyaleCharacter::ServerSetCharacterControlRotation_Validate(const FRotator& rotation)
+{
+	return true;
+}
+
+void ABattleRoyaleCharacter::MulticastOnFire_Implementation()
+{
+	if(IsLocallyControlled())
+	{
+		return;
+	}
+
+	PlayMontage(FireAnimation3P, mCharacterMesh3P);
 }

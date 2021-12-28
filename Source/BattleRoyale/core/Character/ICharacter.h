@@ -31,5 +31,8 @@ public:
 	virtual FRotator GetCurrentRotation() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual FRotator GetCurrentControlRotation() const = 0;
+	
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool IsFalling() const  = 0;
 };
