@@ -3,16 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "MultiplayerGameMode.h"
 #include "BattleRoyaleGameMode.generated.h"
 
 UCLASS(minimalapi)
-class ABattleRoyaleGameMode : public AGameModeBase
+class ABattleRoyaleGameMode : public AMultiplayerGameMode
 {
 	GENERATED_BODY()
 
 public:
 	ABattleRoyaleGameMode();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes)
+	TSubclassOf<APawn> mCharacter;
 };
 
 
