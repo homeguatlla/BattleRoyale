@@ -64,6 +64,8 @@ void AMultiplayerGameSession::StartGame()
 		GetValidMapName(GetGameMode()->GameMapName).ToString() +
 		//"?game=/Game/ThirdPersonCPP/Blueprints/BP_MSGameMode.BP_MSGameMode_C" +
 		"?listen";
+		
+	UE_LOG(LogTemp, Log, TEXT("AMultiplayerGameSession::StartGame URL: %s"), *url);
 	GetWorld()->ServerTravel(url, true);
 }
 
