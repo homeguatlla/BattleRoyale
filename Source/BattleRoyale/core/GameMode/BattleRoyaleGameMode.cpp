@@ -11,3 +11,8 @@ ABattleRoyaleGameMode::ABattleRoyaleGameMode()
 	// use our custom HUD class
 	HUDClass = ABattleRoyaleHUD::StaticClass();
 }
+
+void ABattleRoyaleGameMode::GenericPlayerInitialization(AController* controller)
+{
+	Super::GenericPlayerInitialization(controller);
+}

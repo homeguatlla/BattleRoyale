@@ -13,9 +13,12 @@ class ABattleRoyaleGameMode : public AMultiplayerGameMode
 
 public:
 	ABattleRoyaleGameMode();
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes)
 	TSubclassOf<APawn> mCharacter;
+
+protected:
+	virtual void GenericPlayerInitialization(AController* controller) override;
 };
 
 
