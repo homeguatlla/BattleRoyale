@@ -53,7 +53,7 @@ void ABattleRoyaleGameMode::TryToStartCountdown() const
 	{
 		if(!gameState->DidCountdownStart())
 		{
-			gameState->StartCountdown(mCountdownTimeToStartGame);
+			gameState->StartCountdownServer(mCountdownTimeToStartGame);
 		}
 	}
 	else
@@ -66,10 +66,17 @@ void ABattleRoyaleGameMode::GenericPlayerInitialization(AController* controller)
 {
 	Super::GenericPlayerInitialization(controller);
 
-	mPlayerControllers.Add(controller);
-	UE_LOG(LogTemp, Warning, TEXT("ABattleRoyaleGameMode::GenericPlayerInitialization num players = %d"), mPlayerControllers.Num());
+	const auto gameState = GetGameState();
+	if(gameState != nullptr &&  gameState->DidCountdownStart() && gameState->DidCountdownFinish())
+	{
+		//in case a player joins to the game and countdown finished
+		return;
+	}
 
 	TryToStartCountdown();
+	
+	mPlayerControllers.Add(controller);
+	UE_LOG(LogTemp, Warning, TEXT("ABattleRoyaleGameMode::GenericPlayerInitialization num players = %d"), mPlayerControllers.Num());
 }
 
 IIGameState* ABattleRoyaleGameMode::GetGameState() const

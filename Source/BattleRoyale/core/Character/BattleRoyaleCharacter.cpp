@@ -75,6 +75,8 @@ void ABattleRoyaleCharacter::BeginPlay()
 	
 	EquipWeapon(IsLocallyControlled() ? mCharacterMesh1P: mCharacterMesh3P, mWeaponMesh);
 	mCharacterMesh1P->SetHiddenInGame(!IsLocallyControlled(), true);
+	
+	UE_LOG(LogTemp, Warning, TEXT("ABattleRoyaleCharacter::BeginPlay"));
 }
 
 //////////////////////////////////////////////////////////////////////////
