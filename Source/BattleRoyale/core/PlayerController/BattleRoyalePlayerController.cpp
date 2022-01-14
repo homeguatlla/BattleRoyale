@@ -9,6 +9,11 @@ void ABattleRoyalePlayerController::ClientEnableInput_Implementation(bool enable
 	SetIgnoreMoveInput(!enable);
 }
 
+void ABattleRoyalePlayerController::EnableInput(bool enable)
+{
+	ClientEnableInput(enable);
+}
+
 void ABattleRoyalePlayerController::BeginPlay()
 {
 	Super::BeginPlay();

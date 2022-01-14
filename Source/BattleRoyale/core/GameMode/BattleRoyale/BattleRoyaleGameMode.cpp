@@ -78,13 +78,28 @@ void ABattleRoyaleGameMode::GenericPlayerInitialization(AController* controller)
 	
 	mPlayerControllers.Add(controller);
 	
-	const auto playerController = Cast<ABattleRoyalePlayerController>(controller);
-	if(playerController)
-	{
-		playerController->ClientEnableInput(false);
-	}
+	DisableControllerInput(controller);
 	
 	UE_LOG(LogTemp, Warning, TEXT("ABattleRoyaleGameMode::GenericPlayerInitialization num players = %d"), mPlayerControllers.Num());
+}
+
+void ABattleRoyaleGameMode::DisableControllerInput(AController* controller) const
+{
+	const auto playerController = GetPlayerController(controller);
+	if(playerController)
+	{
+		playerController->EnableInput(false);
+	}
+}
+
+IIPlayerController* ABattleRoyaleGameMode::GetPlayerController(AController* controller) const
+{
+	if(controller != nullptr && controller->Implements<UIPlayerController>())
+	{
+		return Cast<IIPlayerController>(controller);
+	}
+
+	return nullptr;
 }
 
 IIGameState* ABattleRoyaleGameMode::GetGameState() const

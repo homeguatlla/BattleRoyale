@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/GameMode/MultiplayerGameMode.h"
+#include "BattleRoyale/core/PlayerController/IPlayerController.h"
 #include "BattleRoyaleGameMode.generated.h"
 
 UCLASS(minimalapi)
@@ -36,6 +37,8 @@ private:
 	//TODO esto seguramente podría estar definido en una interface
 	bool HasGameStarted() const { return mHasGameStarted; }
 	void TryToStartCountdown() const;
+	void DisableControllerInput(AController* controller) const;
+	IIPlayerController* GetPlayerController(AController* controller) const;
 	IIGameState* GetGameState() const;
 	
 	TArray<AController*> mPlayerControllers;
