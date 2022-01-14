@@ -14,6 +14,10 @@ class BATTLEROYALE_API ABattleRoyalePlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
+public:
+	UFUNCTION(Client, Reliable)
+	void ClientEnableInput(bool enable);
+	
 protected:
 	virtual void BeginPlay() override;
 };

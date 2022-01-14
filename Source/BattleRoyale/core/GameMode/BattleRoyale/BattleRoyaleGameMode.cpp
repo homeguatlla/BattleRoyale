@@ -5,6 +5,7 @@
 #include "BattleRoyaleGameState.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/HUD/BattleRoyaleHUD.h"
+#include "BattleRoyale/core/PlayerController/BattleRoyalePlayerController.h"
 #include "GameFramework/GameState.h"
 
 ABattleRoyaleGameMode::ABattleRoyaleGameMode()
@@ -76,6 +77,13 @@ void ABattleRoyaleGameMode::GenericPlayerInitialization(AController* controller)
 	TryToStartCountdown();
 	
 	mPlayerControllers.Add(controller);
+	
+	const auto playerController = Cast<ABattleRoyalePlayerController>(controller);
+	if(playerController)
+	{
+		playerController->ClientEnableInput(false);
+	}
+	
 	UE_LOG(LogTemp, Warning, TEXT("ABattleRoyaleGameMode::GenericPlayerInitialization num players = %d"), mPlayerControllers.Num());
 }
 
