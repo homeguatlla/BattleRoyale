@@ -17,7 +17,11 @@ public class BattleRoyale : ModuleRules
 			"HeadMountedDisplay",
 			//online subsystem
 			"OnlineSubsystem", 
-			"OnlineSubsystemUtils"
+			"OnlineSubsystemUtils",
+			//GAS
+			"GameplayAbilities",
+			"GameplayTags",
+			"GameplayTasks"
 		});
 		
 		DynamicallyLoadedModuleNames.AddRange(new string[]

@@ -14,6 +14,9 @@
 #include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
 #include "Engine/SkeletalMeshSocket.h"
 //#include "UObject/CoreNetTypes.h"
+#include "AbilitySystemComponent.h"
+#include "BattleRoyale/core/GameMode/IPlayerState.h"
+#include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogCharacter, Warning, All);
@@ -74,6 +77,15 @@ void ABattleRoyaleCharacter::PossessedBy(AController* NewController)
 	UE_LOG(LogCharacter, Log, TEXT("ABattleRoyaleCharacter::PossessedBy"));
 	//Only Server
 	Initialize(IsLocallyControlled());
+	InitializeGAS();
+}
+
+void ABattleRoyaleCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	//only for clients
+	InitializeGAS();
 }
 
 void ABattleRoyaleCharacter::BeginPlay()
@@ -88,6 +100,25 @@ void ABattleRoyaleCharacter::Initialize(bool isLocallyControlled)
 {
 	EquipWeapon(isLocallyControlled ? mCharacterMesh1P: mCharacterMesh3P, mWeaponMesh);
 	mCharacterMesh1P->SetHiddenInGame(!isLocallyControlled, true);
+}
+
+void ABattleRoyaleCharacter::InitializeGAS()
+{
+	IIPlayerState* playerState = GetPlayerStateInterface();
+	if (playerState)
+	{
+		playerState->GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
+	}
+}
+
+IIPlayerState* ABattleRoyaleCharacter::GetPlayerStateInterface() const
+{
+	const auto playerState = GetPlayerState();
+	if(playerState != nullptr && playerState->Implements<UIPlayerState>())
+	{
+		return Cast<IIPlayerState>(playerState);
+	}
+	return nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////

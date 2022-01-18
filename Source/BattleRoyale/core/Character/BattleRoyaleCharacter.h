@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BattleRoyaleCharacter.generated.h"
 
+class IIPlayerState;
 class UInputComponent;
 class USkeletalMeshComponent;
 class USceneComponent;
@@ -47,10 +48,10 @@ class ABattleRoyaleCharacter : public ACharacter, public IICharacter
 	
 public:
 	ABattleRoyaleCharacter();
-	void Initialize(bool isLocallyControlled);
-
+	
 	virtual void PossessedBy(AController* NewController) override;
-
+	virtual void OnRep_PlayerState() override;
+	
 	UFUNCTION(BlueprintCallable)
 	virtual USkeletalMeshComponent* GetWeaponMesh() const override { return mWeaponMesh; }
 
@@ -136,6 +137,12 @@ protected:
 	
 private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	void Initialize(bool isLocallyControlled);
+	void InitializeGAS();
+
+	IIPlayerState* GetPlayerStateInterface() const;
+	
 	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
 	void StartRunning();
 	void StopRunning();
