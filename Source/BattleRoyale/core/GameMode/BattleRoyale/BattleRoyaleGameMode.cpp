@@ -5,6 +5,7 @@
 #include "BattleRoyaleGameState.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/HUD/BattleRoyaleHUD.h"
+#include "BattleRoyale/core/PlayerController/BattleRoyalePlayerController.h"
 #include "GameFramework/GameState.h"
 
 ABattleRoyaleGameMode::ABattleRoyaleGameMode()
@@ -53,7 +54,7 @@ void ABattleRoyaleGameMode::TryToStartCountdown() const
 	{
 		if(!gameState->DidCountdownStart())
 		{
-			gameState->StartCountdown(mCountdownTimeToStartGame);
+			gameState->StartCountdownServer(mCountdownTimeToStartGame);
 		}
 	}
 	else
@@ -66,10 +67,39 @@ void ABattleRoyaleGameMode::GenericPlayerInitialization(AController* controller)
 {
 	Super::GenericPlayerInitialization(controller);
 
-	mPlayerControllers.Add(controller);
-	UE_LOG(LogTemp, Warning, TEXT("ABattleRoyaleGameMode::GenericPlayerInitialization num players = %d"), mPlayerControllers.Num());
+	const auto gameState = GetGameState();
+	if(gameState != nullptr &&  gameState->DidCountdownStart() && gameState->DidCountdownFinish())
+	{
+		//in case a player joins to the game and countdown finished
+		return;
+	}
 
 	TryToStartCountdown();
+	
+	mPlayerControllers.Add(controller);
+	
+	DisableControllerInput(controller);
+	
+	UE_LOG(LogTemp, Warning, TEXT("ABattleRoyaleGameMode::GenericPlayerInitialization num players = %d"), mPlayerControllers.Num());
+}
+
+void ABattleRoyaleGameMode::DisableControllerInput(AController* controller) const
+{
+	const auto playerController = GetPlayerController(controller);
+	if(playerController)
+	{
+		playerController->EnableInput(false);
+	}
+}
+
+IIPlayerController* ABattleRoyaleGameMode::GetPlayerController(AController* controller) const
+{
+	if(controller != nullptr && controller->Implements<UIPlayerController>())
+	{
+		return Cast<IIPlayerController>(controller);
+	}
+
+	return nullptr;
 }
 
 IIGameState* ABattleRoyaleGameMode::GetGameState() const

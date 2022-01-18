@@ -68,13 +68,26 @@ ABattleRoyaleCharacter::ABattleRoyaleCharacter()
 	L_MotionController->SetupAttachment(RootComponent);
 }
 
+void ABattleRoyaleCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	UE_LOG(LogCharacter, Log, TEXT("ABattleRoyaleCharacter::PossessedBy"));
+	//Only Server
+	Initialize(IsLocallyControlled());
+}
+
 void ABattleRoyaleCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
-	
-	EquipWeapon(IsLocallyControlled() ? mCharacterMesh1P: mCharacterMesh3P, mWeaponMesh);
-	mCharacterMesh1P->SetHiddenInGame(!IsLocallyControlled(), true);
+	UE_LOG(LogCharacter, Log, TEXT("ABattleRoyaleCharacter::BeginPlay"));	
+	Initialize(IsLocallyControlled());
+}
+
+void ABattleRoyaleCharacter::Initialize(bool isLocallyControlled)
+{
+	EquipWeapon(isLocallyControlled ? mCharacterMesh1P: mCharacterMesh3P, mWeaponMesh);
+	mCharacterMesh1P->SetHiddenInGame(!isLocallyControlled, true);
 }
 
 //////////////////////////////////////////////////////////////////////////

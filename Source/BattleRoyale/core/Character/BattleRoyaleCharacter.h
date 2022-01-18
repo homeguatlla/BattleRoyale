@@ -47,6 +47,9 @@ class ABattleRoyaleCharacter : public ACharacter, public IICharacter
 	
 public:
 	ABattleRoyaleCharacter();
+	void Initialize(bool isLocallyControlled);
+
+	virtual void PossessedBy(AController* NewController) override;
 
 	UFUNCTION(BlueprintCallable)
 	virtual USkeletalMeshComponent* GetWeaponMesh() const override { return mWeaponMesh; }
