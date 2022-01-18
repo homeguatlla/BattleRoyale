@@ -1,0 +1,1 @@
+"D:\david\projects\Unreal Projects\BattleRoyale\WindowsNoEditor\BattleRoyale.exe" -ResX=500 -ResY=500 -WinX=800 -WinY=100 -windowed -log
