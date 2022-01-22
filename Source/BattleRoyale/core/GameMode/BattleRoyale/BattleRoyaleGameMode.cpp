@@ -5,7 +5,7 @@
 #include "BattleRoyaleGameState.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/HUD/BattleRoyaleHUD.h"
-#include "BattleRoyale/core/PlayerController/BattleRoyalePlayerController.h"
+#include "BattleRoyale/core/PlayerController/PlayerControllerBase.h"
 #include "GameFramework/GameState.h"
 
 ABattleRoyaleGameMode::ABattleRoyaleGameMode()

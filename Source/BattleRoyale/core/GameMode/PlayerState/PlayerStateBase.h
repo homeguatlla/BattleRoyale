@@ -6,19 +6,19 @@
 #include "AbilitySystemInterface.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "GameFramework/PlayerState.h"
-#include "BattleRoyalePlayerState.generated.h"
+#include "PlayerStateBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BATTLEROYALE_API ABattleRoyalePlayerState : public APlayerState, public IIPlayerState
+class BATTLEROYALE_API APlayerStateBase : public APlayerState, public IIPlayerState
 {
 	GENERATED_BODY()
 
 public:
 	
-	ABattleRoyalePlayerState();
+	APlayerStateBase();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return mAbilitySystemComponent; }
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AbilitySystemComponent, meta = (AllowPrivateAccess = "true"))

@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "BattleRoyaleCharacter.h"
-#include "BattleRoyale/core/Weapons/BattleRoyaleProjectile.h"
+#include "CharacterBase.h"
+#include "BattleRoyale/core/Weapons/ProjectileBase.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -15,6 +15,8 @@
 #include "Engine/SkeletalMeshSocket.h"
 //#include "UObject/CoreNetTypes.h"
 #include "AbilitySystemComponent.h"
+#include "BattleRoyale/core/Abilities/AbilitiesInput.h"
+#include "BattleRoyale/core/Abilities/GameplayAbilityBase.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
@@ -24,7 +26,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogCharacter, Warning, All);
 //////////////////////////////////////////////////////////////////////////
 // ABattleRoyaleCharacter
 
-ABattleRoyaleCharacter::ABattleRoyaleCharacter()
+ACharacterBase::ACharacterBase()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
@@ -71,24 +73,39 @@ ABattleRoyaleCharacter::ABattleRoyaleCharacter()
 	L_MotionController->SetupAttachment(RootComponent);
 }
 
-void ABattleRoyaleCharacter::PossessedBy(AController* NewController)
+void ACharacterBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	UE_LOG(LogCharacter, Log, TEXT("ABattleRoyaleCharacter::PossessedBy"));
 	//Only Server
 	Initialize(IsLocallyControlled());
 	InitializeGAS();
+	GiveAbilitiesServer();
 }
 
-void ABattleRoyaleCharacter::OnRep_PlayerState()
+void ACharacterBase::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
 	//only for clients
 	InitializeGAS();
+	BindAbilityActivationToInputComponent();
 }
 
-void ABattleRoyaleCharacter::BeginPlay()
+bool ACharacterBase::CanSprint() const
+{
+	return true;
+}
+
+void ACharacterBase::StartSprinting()
+{
+}
+
+void ACharacterBase::StopSprinting()
+{
+}
+
+void ACharacterBase::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
@@ -96,13 +113,13 @@ void ABattleRoyaleCharacter::BeginPlay()
 	Initialize(IsLocallyControlled());
 }
 
-void ABattleRoyaleCharacter::Initialize(bool isLocallyControlled)
+void ACharacterBase::Initialize(bool isLocallyControlled)
 {
 	EquipWeapon(isLocallyControlled ? mCharacterMesh1P: mCharacterMesh3P, mWeaponMesh);
 	mCharacterMesh1P->SetHiddenInGame(!isLocallyControlled, true);
 }
 
-void ABattleRoyaleCharacter::InitializeGAS()
+void ACharacterBase::InitializeGAS()
 {
 	IIPlayerState* playerState = GetPlayerStateInterface();
 	if (playerState)
@@ -111,7 +128,7 @@ void ABattleRoyaleCharacter::InitializeGAS()
 	}
 }
 
-IIPlayerState* ABattleRoyaleCharacter::GetPlayerStateInterface() const
+IIPlayerState* ACharacterBase::GetPlayerStateInterface() const
 {
 	const auto playerState = GetPlayerState();
 	if(playerState != nullptr && playerState->Implements<UIPlayerState>())
@@ -124,7 +141,7 @@ IIPlayerState* ABattleRoyaleCharacter::GetPlayerStateInterface() const
 //////////////////////////////////////////////////////////////////////////
 // Input
 
-void ABattleRoyaleCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+void ACharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// set up gameplay key bindings
 	check(PlayerInputComponent);
@@ -134,44 +151,88 @@ void ABattleRoyaleCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	// Bind run event
-	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ABattleRoyaleCharacter::StartRunning);
-	PlayerInputComponent->BindAction("Run", IE_Released, this, &ABattleRoyaleCharacter::StopRunning);
+	//PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ABattleRoyaleCharacter::StartRunning);
+	//PlayerInputComponent->BindAction("Run", IE_Released, this, &ABattleRoyaleCharacter::StopRunning);
 	
 	// Bind fire event
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ABattleRoyaleCharacter::OnFire);
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ABattleRoyaleCharacter::OnResetVR);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ACharacterBase::OnFire);
+	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ACharacterBase::OnResetVR);
 
 	// Bind movement events
-	PlayerInputComponent->BindAxis("MoveForward", this, &ABattleRoyaleCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ABattleRoyaleCharacter::MoveRight);
+	PlayerInputComponent->BindAxis("MoveForward", this, &ACharacterBase::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &ACharacterBase::MoveRight);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("TurnRate", this, &ABattleRoyaleCharacter::TurnAtRate);
-	PlayerInputComponent->BindAxis("LookUp", this, &ABattleRoyaleCharacter::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("LookUpRate", this, &ABattleRoyaleCharacter::LookUpAtRate);
+	PlayerInputComponent->BindAxis("TurnRate", this, &ACharacterBase::TurnAtRate);
+	PlayerInputComponent->BindAxis("LookUp", this, &ACharacterBase::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookUpRate", this, &ACharacterBase::LookUpAtRate);
+
+	BindAbilityActivationToInputComponent();
 }
 
-void ABattleRoyaleCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(ABattleRoyaleCharacter, mControlRotation, COND_SimulatedOnly);
+	DOREPLIFETIME_CONDITION(ACharacterBase, mControlRotation, COND_SimulatedOnly);
 }
 
-void ABattleRoyaleCharacter::StartRunning()
+void ACharacterBase::BindAbilityActivationToInputComponent() const
+{
+	const auto playerState = GetPlayerStateInterface();
+	if(playerState != nullptr && playerState->GetAbilitySystemComponent() && InputComponent)
+	{
+		const FGameplayAbilityInputBinds Binds(
+			"Confirm",
+			"Cancel",
+			"EAbilityInputID",
+			static_cast<int32>(EAbilityInputID::Confirm),
+			static_cast<int32>(EAbilityInputID::Cancel)
+		);
+		playerState->GetAbilitySystemComponent()->BindAbilityActivationToInputComponent(InputComponent, Binds);
+	}
+}
+
+//Only server can give abilities.
+void ACharacterBase::GiveAbilitiesServer()
+{
+	if(!HasAuthority())
+	{
+		return;
+	}
+	
+	const auto playerState = GetPlayerStateInterface();
+	if(playerState)
+	{
+		const auto abilitySystemComponent = playerState->GetAbilitySystemComponent();
+		if(abilitySystemComponent)
+		{
+			//Asign abilities to the ability system component. As Ability system component is replicated, we are
+			//asigning also to the clients.
+			for(TSubclassOf<UGameplayAbilityBase>& startupAbility : mDefaultAbilities)
+			{
+				abilitySystemComponent->GiveAbility(
+					FGameplayAbilitySpec(startupAbility, 1, static_cast<int32>(startupAbility.GetDefaultObject()->AbilityInputID), this)
+				);
+			}
+		}
+	}	
+}
+
+void ACharacterBase::StartRunning()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 }
 
-void ABattleRoyaleCharacter::StopRunning()
+void ACharacterBase::StopRunning()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 100.f;
 }
 
-void ABattleRoyaleCharacter::OnFire()
+void ACharacterBase::OnFire()
 {
 	// try and fire a projectile:
 	//the server has the weapon in FP1, but for the clients it has the weapons as 3P
@@ -191,12 +252,12 @@ void ABattleRoyaleCharacter::OnFire()
 	PlayMontage(FireAnimation1P, mCharacterMesh1P);
 }
 
-void ABattleRoyaleCharacter::OnResetVR()
+void ACharacterBase::OnResetVR()
 {
 	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
 }
 
-void ABattleRoyaleCharacter::MoveForward(float Value)
+void ACharacterBase::MoveForward(float Value)
 {
 	if (Value != 0.0f)
 	{
@@ -205,7 +266,7 @@ void ABattleRoyaleCharacter::MoveForward(float Value)
 	}
 }
 
-void ABattleRoyaleCharacter::MoveRight(float Value)
+void ACharacterBase::MoveRight(float Value)
 {
 	if (Value != 0.0f)
 	{
@@ -214,7 +275,7 @@ void ABattleRoyaleCharacter::MoveRight(float Value)
 	}
 }
 
-void ABattleRoyaleCharacter::AddControllerPitchInput(float Rate)
+void ACharacterBase::AddControllerPitchInput(float Rate)
 {
 	Super::AddControllerPitchInput(Rate);
 	
@@ -225,19 +286,19 @@ void ABattleRoyaleCharacter::AddControllerPitchInput(float Rate)
 	}	
 }
 
-void ABattleRoyaleCharacter::TurnAtRate(float Rate)
+void ACharacterBase::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
-void ABattleRoyaleCharacter::LookUpAtRate(float Rate)
+void ACharacterBase::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-void ABattleRoyaleCharacter::SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const
+void ACharacterBase::SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const
 {
 	if (ProjectileClass != nullptr)
 	{
@@ -249,12 +310,12 @@ void ABattleRoyaleCharacter::SpawnProjectile(const FVector& muzzleLocation, cons
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
 			// spawn the projectile at the muzzle
-			World->SpawnActor<ABattleRoyaleProjectile>(ProjectileClass, muzzleLocation, muzzleRotation, ActorSpawnParams);
+			World->SpawnActor<AProjectileBase>(ProjectileClass, muzzleLocation, muzzleRotation, ActorSpawnParams);
 		}
 	}
 }
 
-void ABattleRoyaleCharacter::ServerSpawnProjectile_Implementation(const FVector& muzzleLocation, const FRotator& muzzleRotation)
+void ACharacterBase::ServerSpawnProjectile_Implementation(const FVector& muzzleLocation, const FRotator& muzzleRotation)
 {
 	SpawnProjectile(muzzleLocation, muzzleRotation);
 
@@ -262,13 +323,13 @@ void ABattleRoyaleCharacter::ServerSpawnProjectile_Implementation(const FVector&
 	MulticastOnFire();
 }
 
-bool ABattleRoyaleCharacter::ServerSpawnProjectile_Validate(const FVector& muzzleLocation, const FRotator& muzzleRotation)
+bool ACharacterBase::ServerSpawnProjectile_Validate(const FVector& muzzleLocation, const FRotator& muzzleRotation)
 {
 	//TODO validate there are bullets
 	return true;
 }
 
-void ABattleRoyaleCharacter::FillWithWeaponMuzzleLocationAndRotation(const USkeletalMeshComponent* weapon, FVector& location, FRotator& rotation) const
+void ACharacterBase::FillWithWeaponMuzzleLocationAndRotation(const USkeletalMeshComponent* weapon, FVector& location, FRotator& rotation) const
 {
 	const auto weaponMuzzleSocket = weapon->GetSocketByName(TEXT("MuzzleSocket"));
 	if(weaponMuzzleSocket)
@@ -282,7 +343,7 @@ void ABattleRoyaleCharacter::FillWithWeaponMuzzleLocationAndRotation(const USkel
 	}
 }
 
-void ABattleRoyaleCharacter::EquipWeapon(USkeletalMeshComponent* mesh, USkeletalMeshComponent* weapon)
+void ACharacterBase::EquipWeapon(USkeletalMeshComponent* mesh, USkeletalMeshComponent* weapon)
 {
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	const auto isAttached = weapon->AttachToComponent(mesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RightHandSocket"));
@@ -293,7 +354,7 @@ void ABattleRoyaleCharacter::EquipWeapon(USkeletalMeshComponent* mesh, USkeletal
 	}
 }
 
-void ABattleRoyaleCharacter::PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const
+void ACharacterBase::PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const
 {
 	if (montage != nullptr)
 	{
@@ -305,17 +366,17 @@ void ABattleRoyaleCharacter::PlayMontage(UAnimMontage* montage, USkeletalMeshCom
 	}
 }
 
-void ABattleRoyaleCharacter::ServerSetCharacterControlRotation_Implementation(const FRotator& rotation)
+void ACharacterBase::ServerSetCharacterControlRotation_Implementation(const FRotator& rotation)
 {
 	mControlRotation = rotation;
 }
 
-bool ABattleRoyaleCharacter::ServerSetCharacterControlRotation_Validate(const FRotator& rotation)
+bool ACharacterBase::ServerSetCharacterControlRotation_Validate(const FRotator& rotation)
 {
 	return true;
 }
 
-void ABattleRoyaleCharacter::MulticastOnFire_Implementation()
+void ACharacterBase::MulticastOnFire_Implementation()
 {
 	if(IsLocallyControlled())
 	{

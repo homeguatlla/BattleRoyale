@@ -6,7 +6,7 @@
 #include "ICharacter.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "BattleRoyaleCharacter.generated.h"
+#include "CharacterBase.generated.h"
 
 class IIPlayerState;
 class UInputComponent;
@@ -18,7 +18,7 @@ class UAnimMontage;
 class USoundBase;
 
 UCLASS(config=Game)
-class ABattleRoyaleCharacter : public ACharacter, public IICharacter
+class ACharacterBase : public ACharacter, public IICharacter
 {
 	GENERATED_BODY()
 
@@ -47,7 +47,7 @@ class ABattleRoyaleCharacter : public ACharacter, public IICharacter
 	UMotionControllerComponent* L_MotionController;
 	
 public:
-	ABattleRoyaleCharacter();
+	ACharacterBase();
 	
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
@@ -70,6 +70,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsFalling() const override { return GetCharacterMovement()->IsFalling(); }
 
+	UFUNCTION(BlueprintCallable)
+	virtual bool CanSprint() const override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void StartSprinting() override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void StopSprinting() override;
+	
 protected:
 	virtual void BeginPlay();
 
@@ -84,7 +93,7 @@ public:
 	
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
-	TSubclassOf<class ABattleRoyaleProjectile> ProjectileClass;
+	TSubclassOf<class AProjectileBase> ProjectileClass;
 
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
@@ -101,6 +110,9 @@ public:
 	/** Replicated control rotation in order to update remotes pitch */
 	UPROPERTY(Transient, Replicated)
 	struct FRotator mControlRotation;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS Abilities")
+	TArray<TSubclassOf<class UGameplayAbilityBase>> mDefaultAbilities;
 	
 protected:
 		
@@ -137,9 +149,12 @@ protected:
 	
 private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
+	
 	void Initialize(bool isLocallyControlled);
 	void InitializeGAS();
+
+	void BindAbilityActivationToInputComponent() const;
+	void GiveAbilitiesServer();
 
 	IIPlayerState* GetPlayerStateInterface() const;
 	

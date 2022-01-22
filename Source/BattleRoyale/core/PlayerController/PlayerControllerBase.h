@@ -5,13 +5,13 @@
 #include "CoreMinimal.h"
 #include "IPlayerController.h"
 #include "GameFramework/PlayerController.h"
-#include "BattleRoyalePlayerController.generated.h"
+#include "PlayerControllerBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BATTLEROYALE_API ABattleRoyalePlayerController : public APlayerController, public IIPlayerController
+class BATTLEROYALE_API APlayerControllerBase : public APlayerController, public IIPlayerController
 {
 
 	GENERATED_BODY()

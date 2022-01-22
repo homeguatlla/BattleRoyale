@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BattleRoyalePlayerState.h"
+#include "PlayerStateBase.h"
 
 #include "AbilitySystemComponent.h"
 
-ABattleRoyalePlayerState::ABattleRoyalePlayerState()
+APlayerStateBase::APlayerStateBase()
 {
 	mAbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	mAbilitySystemComponent->SetIsReplicated(true);
