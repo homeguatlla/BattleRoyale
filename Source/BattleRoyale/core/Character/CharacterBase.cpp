@@ -92,19 +92,6 @@ void ACharacterBase::OnRep_PlayerState()
 	BindAbilityActivationToInputComponent();
 }
 
-bool ACharacterBase::CanSprint() const
-{
-	return true;
-}
-
-void ACharacterBase::StartSprinting()
-{
-}
-
-void ACharacterBase::StopSprinting()
-{
-}
-
 void ACharacterBase::BeginPlay()
 {
 	// Call the base class  
@@ -149,10 +136,6 @@ void ACharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	// Bind jump events
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-
-	// Bind run event
-	//PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ABattleRoyaleCharacter::StartRunning);
-	//PlayerInputComponent->BindAction("Run", IE_Released, this, &ABattleRoyaleCharacter::StopRunning);
 	
 	// Bind fire event
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ACharacterBase::OnFire);
@@ -222,12 +205,17 @@ void ACharacterBase::GiveAbilitiesServer()
 	}	
 }
 
-void ACharacterBase::StartRunning()
+bool ACharacterBase::CanSprint() const
+{
+	return GetCharacterMovement()->IsWalking();
+}
+
+void ACharacterBase::StartSprinting()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 }
 
-void ACharacterBase::StopRunning()
+void ACharacterBase::StopSprinting()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 100.f;
 }

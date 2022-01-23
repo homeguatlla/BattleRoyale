@@ -1,10 +1,7 @@
-// Copyright 2020 Dan Kestranek.
 
 #include "BattleRoyale/core/Abilities/AbilitySprint.h"
-
-#include "AbilitiesInput.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
-#include "GameFramework/Character.h"
+#include "AbilitiesInput.h"
 
 UAbilitySprint::UAbilitySprint()
 {
@@ -28,6 +25,8 @@ void UAbilitySprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		const auto character = GetCharacter(ActorInfo);
 		if (character != nullptr)
 		{
+			//TODO la lógica la pondremos en el playercontroller mejor
+			//revisar si podremos pillar el charactermovementcomponent que creo que sí.
 			character->StartSprinting();
 		}
 	}

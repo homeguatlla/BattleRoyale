@@ -1,4 +1,3 @@
-// Copyright 2020 Dan Kestranek.
 
 
 #include "BattleRoyale/core/Abilities/GameplayAbilityBase.h"

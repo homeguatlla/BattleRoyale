@@ -159,8 +159,6 @@ private:
 	IIPlayerState* GetPlayerStateInterface() const;
 	
 	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
-	void StartRunning();
-	void StopRunning();
 	void FillWithWeaponMuzzleLocationAndRotation(const USkeletalMeshComponent* weapon, FVector& location, FRotator& rotation) const;
 	void EquipWeapon(USkeletalMeshComponent* mesh, USkeletalMeshComponent* weapon);
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
