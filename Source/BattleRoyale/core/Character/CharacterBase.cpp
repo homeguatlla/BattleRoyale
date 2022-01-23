@@ -207,17 +207,21 @@ void ACharacterBase::GiveAbilitiesServer()
 
 bool ACharacterBase::CanSprint() const
 {
-	return GetCharacterMovement()->IsWalking();
+	const auto velocity = GetVelocity();
+	
+	return velocity.Size() > 0.0f && GetCharacterMovement()->IsWalking();
 }
 
 void ACharacterBase::StartSprinting()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	OnStartSprinting(600.0f);
 }
 
 void ACharacterBase::StopSprinting()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 100.f;
+	OnStopSprinting(100.0f);
 }
 
 void ACharacterBase::OnFire()

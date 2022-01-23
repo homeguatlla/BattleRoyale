@@ -76,8 +76,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void StartSprinting() override;
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
+	void OnStartSprinting(float maxSpeed);
+
 	UFUNCTION(BlueprintCallable)
 	virtual void StopSprinting() override;
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
+	void OnStopSprinting(float maxSpeed);
 	
 protected:
 	virtual void BeginPlay();

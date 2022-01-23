@@ -25,8 +25,6 @@ void UAbilitySprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		const auto character = GetCharacter(ActorInfo);
 		if (character != nullptr)
 		{
-			//TODO la lógica la pondremos en el playercontroller mejor
-			//revisar si podremos pillar el charactermovementcomponent que creo que sí.
 			character->StartSprinting();
 		}
 	}
