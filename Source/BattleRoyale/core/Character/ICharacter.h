@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "ICharacter.generated.h"
 
+class IIWeapon;
 // This class does not need to be modified.
 UINTERFACE(Blueprintable, meta = (CannotImplementInterfaceInBlueprint))
 class UICharacter : public UInterface
@@ -19,7 +20,7 @@ class BATTLEROYALE_API IICharacter
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual USkeletalMeshComponent* GetWeaponMesh() const = 0;
+	virtual TScriptInterface<IIWeapon> GetEquipedWeapon() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool IsCharacterValid() const = 0;

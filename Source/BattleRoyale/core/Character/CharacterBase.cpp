@@ -18,6 +18,7 @@
 #include "BattleRoyale/core/Abilities/AbilitiesInput.h"
 #include "BattleRoyale/core/Abilities/GameplayAbilityBase.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
+#include "BattleRoyale/core/Weapons/IWeapon.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 
@@ -56,15 +57,6 @@ ACharacterBase::ACharacterBase()
 	mCharacterMesh3P->bCastDynamicShadow = false;
 	mCharacterMesh3P->CastShadow = false;
 	
-	// Create a gun mesh component
-	mWeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FP_Gun"));
-	mWeaponMesh->SetOnlyOwnerSee(false);			// otherwise won't be visible in the multiplayer
-	mWeaponMesh->bCastDynamicShadow = false;
-	mWeaponMesh->CastShadow = false;
-	
-	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P, FP_Gun, and VR_Gun 
-	// are set in the derived blueprint asset named MyCharacter to avoid direct content references in C++.
-
 	// Create VR Controllers.
 	R_MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("R_MotionController"));
 	R_MotionController->MotionSource = FXRMotionControllerBase::RightHandSourceId;
@@ -76,8 +68,9 @@ ACharacterBase::ACharacterBase()
 void ACharacterBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	UE_LOG(LogCharacter, Log, TEXT("ABattleRoyaleCharacter::PossessedBy"));
+	UE_LOG(LogCharacter, Log, TEXT("ACharacterBase::PossessedBy"));
 	//Only Server
+	
 	Initialize(IsLocallyControlled());
 	InitializeGAS();
 	GiveAbilitiesServer();
@@ -96,13 +89,19 @@ void ACharacterBase::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
-	UE_LOG(LogCharacter, Log, TEXT("ABattleRoyaleCharacter::BeginPlay"));	
+	UE_LOG(LogCharacter, Log, TEXT("ACharacterBase::BeginPlay"));
+
+	//TODO el arma no está replicada
+	//y por tanto al crearla en el begin play funciona bien para todos los casos, remotos etc.
+	//Si la replicásemos, debería crearla el server y luego habría que hacer un multicast para los remotos.
+	//no sé si vale la pena hacer eso.
+	SpawnWeapon();
 	Initialize(IsLocallyControlled());
 }
 
 void ACharacterBase::Initialize(bool isLocallyControlled)
 {
-	EquipWeapon(isLocallyControlled ? mCharacterMesh1P: mCharacterMesh3P, mWeaponMesh);
+	EquipWeapon(isLocallyControlled ? mCharacterMesh1P: mCharacterMesh3P, mEquipedWeapon);
 	mCharacterMesh1P->SetHiddenInGame(!isLocallyControlled, true);
 }
 
@@ -123,6 +122,11 @@ IIPlayerState* ACharacterBase::GetPlayerStateInterface() const
 		return Cast<IIPlayerState>(playerState);
 	}
 	return nullptr;
+}
+
+TScriptInterface<IIWeapon> ACharacterBase::GetEquipedWeapon() const
+{
+	return mEquipedWeapon;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -232,7 +236,7 @@ void ACharacterBase::OnFire()
 	//because server will get wrong location and rotation for clients
 	FVector muzzleLocation;
 	FRotator muzzleRotation;
-	FillWithWeaponMuzzleLocationAndRotation(mWeaponMesh, muzzleLocation, muzzleRotation);			
+	FillWithWeaponMuzzleLocationAndRotation(GetEquipedWeapon(), muzzleLocation, muzzleRotation);			
 	ServerSpawnProjectile(muzzleLocation, muzzleRotation);
 
 	// try and play the sound if specified
@@ -307,6 +311,27 @@ void ACharacterBase::SpawnProjectile(const FVector& muzzleLocation, const FRotat
 	}
 }
 
+void ACharacterBase::SpawnWeapon()
+{
+	if(mEquipedWeapon != nullptr)
+	{
+		return;
+	}
+	if(WeaponClass == nullptr)
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::SpawnWeapon] weapon class undefined"));
+	}
+	const auto weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
+	if(weapon != nullptr && weapon->GetClass()->ImplementsInterface(UIWeapon::StaticClass()))
+	{
+		mEquipedWeapon = TScriptInterface<IIWeapon>(weapon);
+	}
+	else
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::SpawnWeapon] weapon not implementing IIWeapon"));
+	}
+}
+
 void ACharacterBase::ServerSpawnProjectile_Implementation(const FVector& muzzleLocation, const FRotator& muzzleRotation)
 {
 	SpawnProjectile(muzzleLocation, muzzleRotation);
@@ -321,28 +346,38 @@ bool ACharacterBase::ServerSpawnProjectile_Validate(const FVector& muzzleLocatio
 	return true;
 }
 
-void ACharacterBase::FillWithWeaponMuzzleLocationAndRotation(const USkeletalMeshComponent* weapon, FVector& location, FRotator& rotation) const
+void ACharacterBase::FillWithWeaponMuzzleLocationAndRotation(TScriptInterface<IIWeapon> weapon, FVector& location, FRotator& rotation) const
 {
-	const auto weaponMuzzleSocket = weapon->GetSocketByName(TEXT("MuzzleSocket"));
+	const auto weaponMesh = weapon->GetMesh();
+	const auto weaponMuzzleSocket = weaponMesh->GetSocketByName(TEXT("MuzzleSocket"));
 	if(weaponMuzzleSocket)
 	{
-		location = weaponMuzzleSocket->GetSocketLocation(weapon);
-		rotation = weaponMuzzleSocket->GetSocketTransform(weapon).GetRotation().Rotator();
+		location = weaponMuzzleSocket->GetSocketLocation(weaponMesh);
+		rotation = weaponMuzzleSocket->GetSocketTransform(weaponMesh).GetRotation().Rotator();
 	}
 	else
 	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][ABattleRoyaleCharacter::FillWithWeaponMuzzleLocationAndRotation] muzzle not found"),*GetName());
+		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::FillWithWeaponMuzzleLocationAndRotation] muzzle not found"),*GetName());
 	}
 }
 
-void ACharacterBase::EquipWeapon(USkeletalMeshComponent* mesh, USkeletalMeshComponent* weapon)
+void ACharacterBase::EquipWeapon(USkeletalMeshComponent* mesh, TScriptInterface<IIWeapon> weapon) const
 {
+	if(weapon == nullptr)
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::EquipWeapon] weapon is null"), *GetName());
+	}
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
-	const auto isAttached = weapon->AttachToComponent(mesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RightHandSocket"));
+	if(weapon->GetMesh() == nullptr)
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::EquipWeapon] weapon has no mesh"), *GetName());
+	}
+	
+	const auto isAttached = weapon->GetMesh()->AttachToComponent(mesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RightHandSocket"));
 
 	if(!isAttached)
 	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][ABattleRoyaleCharacter::EquipWeapon] weapon not attached to the character"), *GetName());	
+		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::EquipWeapon] weapon not attached to the character"), *GetName());	
 	}
 }
 

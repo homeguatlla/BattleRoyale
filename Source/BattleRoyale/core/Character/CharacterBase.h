@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "ICharacter.h"
+#include "BattleRoyale/core/Weapons/WeaponBase.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CharacterBase.generated.h"
 
+class IIWeapon;
 class IIPlayerState;
 class UInputComponent;
 class USkeletalMeshComponent;
@@ -30,10 +32,6 @@ class ACharacterBase : public ACharacter, public IICharacter
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
 	USkeletalMeshComponent* mCharacterMesh3P;
 	
-	/** Weapon mesh */
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	USkeletalMeshComponent* mWeaponMesh;
-	
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* mFirstPersonCameraComponent;
@@ -46,14 +44,17 @@ class ACharacterBase : public ACharacter, public IICharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UMotionControllerComponent* L_MotionController;
 	
+	TScriptInterface<IIWeapon> mEquipedWeapon;
+	
 public:
+	void SpawnWeapon();
 	ACharacterBase();
 	
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 	
 	UFUNCTION(BlueprintCallable)
-	virtual USkeletalMeshComponent* GetWeaponMesh() const override { return mWeaponMesh; }
+	virtual TScriptInterface<IIWeapon> GetEquipedWeapon() const override;
 
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsCharacterValid() const override { return IsValid(this); }
@@ -96,6 +97,9 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
+
+	UPROPERTY(EditDefaultsOnly, Category = EquipedWeapon)
+	TSubclassOf<class AWeaponBase> WeaponClass;
 	
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
@@ -165,8 +169,8 @@ private:
 	IIPlayerState* GetPlayerStateInterface() const;
 	
 	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
-	void FillWithWeaponMuzzleLocationAndRotation(const USkeletalMeshComponent* weapon, FVector& location, FRotator& rotation) const;
-	void EquipWeapon(USkeletalMeshComponent* mesh, USkeletalMeshComponent* weapon);
+	void FillWithWeaponMuzzleLocationAndRotation(TScriptInterface<IIWeapon> weapon, FVector& location, FRotator& rotation) const;
+	void EquipWeapon(USkeletalMeshComponent* mesh, TScriptInterface<IIWeapon> weapon) const;
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
 
 	UFUNCTION(Reliable, Server, WithValidation)
