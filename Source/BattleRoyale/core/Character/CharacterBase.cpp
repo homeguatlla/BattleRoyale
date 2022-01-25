@@ -65,13 +65,19 @@ ACharacterBase::ACharacterBase()
 	L_MotionController->SetupAttachment(RootComponent);
 }
 
+void ACharacterBase::BeginPlay()
+{
+	// Call the base class  
+	Super::BeginPlay();
+	UE_LOG(LogCharacter, Log, TEXT("ACharacterBase::BeginPlay"));
+}
+
 void ACharacterBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	UE_LOG(LogCharacter, Log, TEXT("ACharacterBase::PossessedBy"));
 	//Only Server
-	
-	Initialize(IsLocallyControlled());
+	MulticastSpawnWeapon();
 	InitializeGAS();
 	GiveAbilitiesServer();
 }
@@ -83,20 +89,6 @@ void ACharacterBase::OnRep_PlayerState()
 	//only for clients
 	InitializeGAS();
 	BindAbilityActivationToInputComponent();
-}
-
-void ACharacterBase::BeginPlay()
-{
-	// Call the base class  
-	Super::BeginPlay();
-	UE_LOG(LogCharacter, Log, TEXT("ACharacterBase::BeginPlay"));
-
-	//TODO el arma no está replicada
-	//y por tanto al crearla en el begin play funciona bien para todos los casos, remotos etc.
-	//Si la replicásemos, debería crearla el server y luego habría que hacer un multicast para los remotos.
-	//no sé si vale la pena hacer eso.
-	SpawnWeapon();
-	Initialize(IsLocallyControlled());
 }
 
 void ACharacterBase::Initialize(bool isLocallyControlled)
@@ -311,27 +303,6 @@ void ACharacterBase::SpawnProjectile(const FVector& muzzleLocation, const FRotat
 	}
 }
 
-void ACharacterBase::SpawnWeapon()
-{
-	if(mEquipedWeapon != nullptr)
-	{
-		return;
-	}
-	if(WeaponClass == nullptr)
-	{
-		UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::SpawnWeapon] weapon class undefined"));
-	}
-	const auto weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
-	if(weapon != nullptr && weapon->GetClass()->ImplementsInterface(UIWeapon::StaticClass()))
-	{
-		mEquipedWeapon = TScriptInterface<IIWeapon>(weapon);
-	}
-	else
-	{
-		UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::SpawnWeapon] weapon not implementing IIWeapon"));
-	}
-}
-
 void ACharacterBase::ServerSpawnProjectile_Implementation(const FVector& muzzleLocation, const FRotator& muzzleRotation)
 {
 	SpawnProjectile(muzzleLocation, muzzleRotation);
@@ -348,6 +319,11 @@ bool ACharacterBase::ServerSpawnProjectile_Validate(const FVector& muzzleLocatio
 
 void ACharacterBase::FillWithWeaponMuzzleLocationAndRotation(TScriptInterface<IIWeapon> weapon, FVector& location, FRotator& rotation) const
 {
+	if(weapon.GetObject() == nullptr)
+	{
+		return;
+	}
+	
 	const auto weaponMesh = weapon->GetMesh();
 	const auto weaponMuzzleSocket = weaponMesh->GetSocketByName(TEXT("MuzzleSocket"));
 	if(weaponMuzzleSocket)
@@ -363,14 +339,16 @@ void ACharacterBase::FillWithWeaponMuzzleLocationAndRotation(TScriptInterface<II
 
 void ACharacterBase::EquipWeapon(USkeletalMeshComponent* mesh, TScriptInterface<IIWeapon> weapon) const
 {
-	if(weapon == nullptr)
+	if(weapon.GetObject() == nullptr)
 	{
 		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::EquipWeapon] weapon is null"), *GetName());
+		return;
 	}
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	if(weapon->GetMesh() == nullptr)
 	{
 		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::EquipWeapon] weapon has no mesh"), *GetName());
+		return;
 	}
 	
 	const auto isAttached = weapon->GetMesh()->AttachToComponent(mesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RightHandSocket"));
@@ -411,4 +389,32 @@ void ACharacterBase::MulticastOnFire_Implementation()
 	}
 
 	PlayMontage(FireAnimation3P, mCharacterMesh3P);
+}
+
+void ACharacterBase::MulticastSpawnWeapon_Implementation()
+{
+	SpawnWeapon();
+	Initialize(IsLocallyControlled());
+}
+
+void ACharacterBase::SpawnWeapon()
+{
+	if(mEquipedWeapon != nullptr)
+	{
+		return;
+	}
+	if(WeaponClass == nullptr)
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::SpawnWeapon] weapon class undefined"));
+		return;
+	}
+	const auto weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
+	if(weapon != nullptr && weapon->GetClass()->ImplementsInterface(UIWeapon::StaticClass()))
+	{
+		mEquipedWeapon = TScriptInterface<IIWeapon>(weapon);		
+	}
+	else
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::SpawnWeapon] weapon not implementing IIWeapon"));
+	}
 }

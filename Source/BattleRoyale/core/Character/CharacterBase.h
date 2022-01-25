@@ -47,7 +47,6 @@ class ACharacterBase : public ACharacter, public IICharacter
 	TScriptInterface<IIWeapon> mEquipedWeapon;
 	
 public:
-	void SpawnWeapon();
 	ACharacterBase();
 	
 	virtual void PossessedBy(AController* NewController) override;
@@ -169,16 +168,21 @@ private:
 	IIPlayerState* GetPlayerStateInterface() const;
 	
 	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
+	void SpawnWeapon();
+	
 	void FillWithWeaponMuzzleLocationAndRotation(TScriptInterface<IIWeapon> weapon, FVector& location, FRotator& rotation) const;
 	void EquipWeapon(USkeletalMeshComponent* mesh, TScriptInterface<IIWeapon> weapon) const;
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
-
+	
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerSpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation);
-
+	
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastOnFire();
 
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastSpawnWeapon();
+	
 	UFUNCTION(Unreliable, Server, WithValidation)
 	void ServerSetCharacterControlRotation(const FRotator& rotation);
 	
