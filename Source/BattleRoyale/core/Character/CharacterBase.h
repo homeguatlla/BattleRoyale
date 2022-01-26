@@ -173,7 +173,6 @@ private:
 	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
 	void SpawnWeapon();
 	
-	void FillWithWeaponMuzzleLocationAndRotation(TScriptInterface<IIWeapon> weapon, FVector& location, FRotator& rotation) const;
 	void EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptInterface<IIWeapon> weapon) const;
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
 	

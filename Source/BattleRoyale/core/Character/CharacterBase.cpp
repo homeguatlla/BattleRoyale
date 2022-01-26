@@ -226,9 +226,16 @@ void ACharacterBase::OnFire()
 	//the server has the weapon in FP1, but for the clients it has the weapons as 3P
 	//so, we need when shooting send to the server our weapon location and rotation
 	//because server will get wrong location and rotation for clients
-	FVector muzzleLocation;
-	FRotator muzzleRotation;
-	FillWithWeaponMuzzleLocationAndRotation(GetEquipedWeapon(), muzzleLocation, muzzleRotation);			
+	const auto weapon = GetEquipedWeapon();
+	if(weapon.GetObject() == nullptr)
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::FillWithWeaponMuzzleLocationAndRotation] weapon is null"), *GetName());
+		return;
+	}
+	
+	const auto muzzleLocation = weapon->GetMuzzleLocation();
+	const auto muzzleRotation = weapon->GetMuzzleRotation();
+	
 	ServerSpawnProjectile(muzzleLocation, muzzleRotation);
 
 	// try and play the sound if specified
@@ -317,17 +324,6 @@ bool ACharacterBase::ServerSpawnProjectile_Validate(const FVector& muzzleLocatio
 	return true;
 }
 
-void ACharacterBase::FillWithWeaponMuzzleLocationAndRotation(TScriptInterface<IIWeapon> weapon, FVector& location, FRotator& rotation) const
-{
-	if(weapon.GetObject() == nullptr)
-	{
-		return;
-	}
-	
-	location = weapon->GetMuzzleLocation();
-	rotation = weapon->GetMuzzleRotation();
-}
-
 void ACharacterBase::EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptInterface<IIWeapon> weapon) const
 {
 	if(weapon.GetObject() == nullptr)
@@ -380,6 +376,16 @@ void ACharacterBase::MulticastOnFire_Implementation()
 	PlayMontage(FireAnimation3P, mCharacterMesh3P);
 }
 
+//TODO en este punto vemos que las armas se están haciendo spawn en
+//cliente. Esto hace que no estén sincronizadas entre clientes pues
+//no existen en el servidor. Por ahora es aceptable.
+//No hay nada que le pueda pasar a un arma en local que se tenga
+//que ver en los remotos. Pero, en el momento que este arma la
+//pueda recojer otro jugador entonces sí va a tener que existir
+//una sola instancia en servidor pues solo la podrá tener un jugador.
+//Entonces, habrá que hacer el spawn en Server, hacer que el weapon
+//esté replicada y notificar a los clientes autonomos para que
+//vuelvan a inicializar.
 void ACharacterBase::MulticastSpawnWeapon_Implementation()
 {
 	SpawnWeapon();
