@@ -43,6 +43,9 @@ class ACharacterBase : public ACharacter, public IICharacter
 	/** Motion controller (left hand) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UMotionControllerComponent* L_MotionController;
+
+	UPROPERTY(EditDefaultsOnly, Category = Character)
+	FName RightHandSocketName;
 	
 	TScriptInterface<IIWeapon> mEquipedWeapon;
 	
@@ -171,7 +174,7 @@ private:
 	void SpawnWeapon();
 	
 	void FillWithWeaponMuzzleLocationAndRotation(TScriptInterface<IIWeapon> weapon, FVector& location, FRotator& rotation) const;
-	void EquipWeapon(USkeletalMeshComponent* mesh, TScriptInterface<IIWeapon> weapon) const;
+	void EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptInterface<IIWeapon> weapon) const;
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
 	
 	UFUNCTION(Reliable, Server, WithValidation)

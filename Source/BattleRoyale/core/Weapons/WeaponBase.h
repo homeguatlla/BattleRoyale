@@ -14,12 +14,21 @@ class BATTLEROYALE_API AWeaponBase : public AActor, public IIWeapon
 
 	/** Weapon mesh */
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	USkeletalMeshComponent* mMesh;
+	USkeletalMeshComponent* Mesh;
+	
+	UPROPERTY(EditDefaultsOnly, Category = Muzzle)
+	FName MuzzleSocketName;
 	
 public:	
 	AWeaponBase();
 
-	virtual USkeletalMeshComponent* GetMesh() const override { return mMesh; }
+	//virtual USkeletalMeshComponent* GetMesh() const override { return Mesh; }
+
+	virtual FVector GetMuzzleLocation() const override;
+	virtual FRotator GetMuzzleRotation() const override;
+	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules,
+			const FName& socketName) override;
+	
 	
 protected:
 	// Called when the game starts or when spawned

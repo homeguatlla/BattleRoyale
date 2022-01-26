@@ -18,6 +18,14 @@ class BATTLEROYALE_API IIWeapon
 	GENERATED_BODY()
 
 public:
+	//UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	//virtual USkeletalMeshComponent* GetMesh() const = 0;
+
+	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) = 0;
+	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
-	virtual USkeletalMeshComponent* GetMesh() const = 0;
+	virtual FVector GetMuzzleLocation() const = 0;
+	
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual FRotator GetMuzzleRotation() const = 0;
 };

@@ -19,10 +19,10 @@
 #include "BattleRoyale/core/Abilities/GameplayAbilityBase.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "BattleRoyale/core/Weapons/IWeapon.h"
+#include "BattleRoyale/BattleRoyale.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogCharacter, Warning, All);
 
 //////////////////////////////////////////////////////////////////////////
 // ABattleRoyaleCharacter
@@ -307,7 +307,7 @@ void ACharacterBase::ServerSpawnProjectile_Implementation(const FVector& muzzleL
 {
 	SpawnProjectile(muzzleLocation, muzzleRotation);
 
-	//Notify remotes about a fire in order they can play the proper animation.
+	//Notify all about a fire in order they can play the proper animation.
 	MulticastOnFire();
 }
 
@@ -324,20 +324,11 @@ void ACharacterBase::FillWithWeaponMuzzleLocationAndRotation(TScriptInterface<II
 		return;
 	}
 	
-	const auto weaponMesh = weapon->GetMesh();
-	const auto weaponMuzzleSocket = weaponMesh->GetSocketByName(TEXT("MuzzleSocket"));
-	if(weaponMuzzleSocket)
-	{
-		location = weaponMuzzleSocket->GetSocketLocation(weaponMesh);
-		rotation = weaponMuzzleSocket->GetSocketTransform(weaponMesh).GetRotation().Rotator();
-	}
-	else
-	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::FillWithWeaponMuzzleLocationAndRotation] muzzle not found"),*GetName());
-	}
+	location = weapon->GetMuzzleLocation();
+	rotation = weapon->GetMuzzleRotation();
 }
 
-void ACharacterBase::EquipWeapon(USkeletalMeshComponent* mesh, TScriptInterface<IIWeapon> weapon) const
+void ACharacterBase::EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptInterface<IIWeapon> weapon) const
 {
 	if(weapon.GetObject() == nullptr)
 	{
@@ -345,13 +336,10 @@ void ACharacterBase::EquipWeapon(USkeletalMeshComponent* mesh, TScriptInterface<
 		return;
 	}
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
-	if(weapon->GetMesh() == nullptr)
-	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::EquipWeapon] weapon has no mesh"), *GetName());
-		return;
-	}
-	
-	const auto isAttached = weapon->GetMesh()->AttachToComponent(mesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RightHandSocket"));
+	const auto isAttached = weapon->AttachToComponent(
+		characterMesh,
+		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+		RightHandSocketName);
 
 	if(!isAttached)
 	{
@@ -388,6 +376,7 @@ void ACharacterBase::MulticastOnFire_Implementation()
 		return;
 	}
 
+	//only remotes need to play animation
 	PlayMontage(FireAnimation3P, mCharacterMesh3P);
 }
 
