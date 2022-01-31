@@ -162,7 +162,7 @@ protected:
 private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	void Initialize(bool isLocallyControlled);
+	void Initialize(bool isLocallyControlled) const;
 	void InitializeGAS();
 
 	void BindAbilityActivationToInputComponent() const;

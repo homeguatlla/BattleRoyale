@@ -7,23 +7,27 @@ public class BattleRoyale : ModuleRules
 	public BattleRoyale(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-		
+
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
-			"Core", 
-			"CoreUObject", 
-			"Engine", 
-			"InputCore", 
+			"Core",
+			"CoreUObject",
+			"Engine",
+			"InputCore",
 			"HeadMountedDisplay",
 			//online subsystem
-			"OnlineSubsystem", 
+			"OnlineSubsystem",
 			"OnlineSubsystemUtils",
 			//GAS
 			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks"
 		});
-		
+		PrivateDependencyModuleNames.AddRange(new string[]
+		{
+			//Automation tests (in order to include AutomationEditorCommon.h)
+			"UnrealEd"
+		});
 		DynamicallyLoadedModuleNames.AddRange(new string[]
 		{
 			"OnlineSubsystemNull"

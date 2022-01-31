@@ -11,12 +11,15 @@ AWeaponBase::AWeaponBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-	
+
 	// Create a gun mesh component
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Gun"));
 	Mesh->SetOnlyOwnerSee(false);			// otherwise won't be visible in the multiplayer
 	Mesh->bCastDynamicShadow = false;
 	Mesh->CastShadow = false;
+
+	//Set to avoid a warning
+	SetRootComponent(Mesh);
 }
 
 FVector AWeaponBase::GetMuzzleLocation() const

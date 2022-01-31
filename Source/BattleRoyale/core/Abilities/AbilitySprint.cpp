@@ -7,7 +7,14 @@ UAbilitySprint::UAbilitySprint()
 {
 	AbilityInputID = EAbilityInputID::Sprint;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
+
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Sprint")));
+	
+	//To enable sprint ability from a trigger
+	/*FAbilityTriggerData triggerData;
+	triggerData.TriggerTag = FGameplayTag::RequestGameplayTag(FName("Trigger.Sprint"));
+	triggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
+	AbilityTriggers.Add(triggerData);*/
 }
 
 void UAbilitySprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle,

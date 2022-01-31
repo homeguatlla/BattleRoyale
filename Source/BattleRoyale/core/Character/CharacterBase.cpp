@@ -91,7 +91,7 @@ void ACharacterBase::OnRep_PlayerState()
 	BindAbilityActivationToInputComponent();
 }
 
-void ACharacterBase::Initialize(bool isLocallyControlled)
+void ACharacterBase::Initialize(bool isLocallyControlled) const
 {
 	EquipWeapon(isLocallyControlled ? mCharacterMesh1P: mCharacterMesh3P, mEquipedWeapon);
 	mCharacterMesh1P->SetHiddenInGame(!isLocallyControlled, true);
