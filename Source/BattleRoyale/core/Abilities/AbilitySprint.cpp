@@ -2,6 +2,8 @@
 #include "BattleRoyale/core/Abilities/AbilitySprint.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "AbilitiesInput.h"
+#include "AbilitySystemGlobals.h"
+#include "GameplayCueManager.h"
 
 UAbilitySprint::UAbilitySprint()
 {
@@ -32,6 +34,17 @@ void UAbilitySprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		const auto character = GetCharacter(ActorInfo);
 		if (character != nullptr)
 		{
+			UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
+				ActorInfo->AvatarActor.Get(),
+				FGameplayTag::RequestGameplayTag(FName("GameplayCue.Sprint")),
+				EGameplayCueEvent::Type::OnActive,
+				FGameplayCueParameters());
+			UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
+				ActorInfo->AvatarActor.Get(),
+				FGameplayTag::RequestGameplayTag(FName("GameplayCue.Sprint")),
+				EGameplayCueEvent::Type::WhileActive,
+				FGameplayCueParameters());
+			
 			character->StartSprinting();
 		}
 	}
@@ -83,6 +96,11 @@ void UAbilitySprint::CancelAbility(const FGameplayAbilitySpecHandle Handle, cons
 	const auto character = GetCharacter(ActorInfo);
 	if (character != nullptr)
 	{
+		UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
+				ActorInfo->AvatarActor.Get(),
+				FGameplayTag::RequestGameplayTag(FName("GameplayCue.Sprint")),
+				EGameplayCueEvent::Type::Removed,
+				FGameplayCueParameters());
 		character->StopSprinting();
 	}
 }

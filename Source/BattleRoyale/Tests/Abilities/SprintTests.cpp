@@ -1,33 +1,21 @@
 ﻿#include "CoreMinimal.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+
 #include "BattleRoyale/core/Abilities/AbilitiesInput.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
+
+#include "BattleRoyale/Tests/TestUtils.h"
+
+#include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
 #include "Tests/AutomationEditorCommon.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
-
-UWorld* GetAnyGameWorld()
-{
-	UWorld* testWorld = nullptr;
-	const TIndirectArray<FWorldContext>& worldContexts = GEngine->GetWorldContexts();
-	for (const FWorldContext& context : worldContexts)
-	{
-		if (((context.WorldType == EWorldType::PIE) || (context.WorldType == EWorldType::Game)) && (context.World()
-			!= nullptr))
-		{
-			testWorld = context.World();
-			break;
-		}
-	}
-	return testWorld;
-}
-
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSprintTest_WhenSpawningANewCharacter_CanNotSprint,
                                  "Project.Abilities.SprintAbility.When_SpawningNewCharacter_Then_CanNotSprint",
@@ -40,7 +28,7 @@ bool FSprintTest_WhenSpawningANewCharacter_CanNotSprint::RunTest(const FString& 
 	{
 		return false;
 	}
-
+	
 	const auto character = world->SpawnActor<ACharacterBase>();
 	
 	//For more tests check AutomationTest.h (lines 1347 - 1639)
@@ -65,17 +53,18 @@ bool FSprintTest_WhenCharacterWalkingAndSpeedGreaterThanZero_CanSprint::RunTest(
 		return false;
 	}
 	
-	const auto character = world->SpawnActor<ACharacterBase>();
+	const auto characterBase = world->SpawnActor<ACharacterBase>();
 	
 	//For more tests check AutomationTest.h (lines 1347 - 1639)
-	TestNotNull<ACharacterBase>(TEXT("Testing if there is a player actor in level"), character);
+	TestNotNull<ACharacterBase>(TEXT("Testing if there is a player actor in level"), characterBase);
 
-	character->GetCharacterMovement()->Velocity = FVector(100, 0, 0);
-	character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	
+	characterBase->GetCharacterMovement()->Velocity = FVector(100, 0, 0);
+	characterBase->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
+	const auto character = Cast<IICharacter>(characterBase);
 	TestTrue(TEXT("When Character is Walking and Speed > 0 Can Sprint"), character->CanSprint());
 
-	character->Destroy();
+	characterBase->Destroy();
 
 	return true;
 }
@@ -127,8 +116,8 @@ bool FSprintTest_WhenAbilitySprintIsTriggered_And_CanSprint_CharacterIsSprinting
 
 	gas->AbilityLocalInputPressed(static_cast<uint8>(EAbilityInputID::Sprint));
 	TestTrue(TEXT("When Character is sprinting SPRINT max walk speed increased"),characterMovementComponent->MaxWalkSpeed > maxWalkSpeedBeforeSprint);
-	
-	characterBase->Destroy();
+
+	world->DestroyWorld(true);
 	
 	return true;
 }

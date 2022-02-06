@@ -24,14 +24,10 @@ class ACharacterBase : public ACharacter, public IICharacter
 {
 	GENERATED_BODY()
 
-	/** Pawn mesh: 1st person view (arms; seen only by self) */
-	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
-	USkeletalMeshComponent* mCharacterMesh1P;
-
 	/** Character mesh: 3rd person view (seen only by others) */
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
 	USkeletalMeshComponent* mCharacterMesh3P;
-	
+
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* mFirstPersonCameraComponent;
@@ -48,7 +44,10 @@ class ACharacterBase : public ACharacter, public IICharacter
 	FName RightHandSocketName;
 	
 	TScriptInterface<IIWeapon> mEquipedWeapon;
-	
+
+	UPROPERTY()
+	UMaterialInstanceDynamic* mCharacterMesh1PMaterial = nullptr;
+
 public:
 	ACharacterBase();
 	
@@ -88,10 +87,26 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
 	void OnStopSprinting(float maxSpeed);
 	
+	//UFUNCTION(BlueprintCallable)
+	virtual bool CanJump() const override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void StartJumping() override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void StopJumping_() override;
+
+	UFUNCTION(BlueprintCallable, Category = "Character")
+	void ChangeCharacterMesh1PColor(const FColor& color);	
+	
 protected:
 	virtual void BeginPlay();
 
 public:
+	/** Pawn mesh: 1st person view (arms; seen only by self) */
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category=Mesh)
+	USkeletalMeshComponent* mCharacterMesh1P;
+
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;

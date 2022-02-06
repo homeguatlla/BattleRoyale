@@ -20,7 +20,9 @@
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "BattleRoyale/core/Weapons/IWeapon.h"
 #include "BattleRoyale/BattleRoyale.h"
+#include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
 #include "GameFramework/PlayerState.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -63,6 +65,16 @@ ACharacterBase::ACharacterBase()
 	R_MotionController->SetupAttachment(RootComponent);
 	L_MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("L_MotionController"));
 	L_MotionController->SetupAttachment(RootComponent);
+}
+
+void ACharacterBase::ChangeCharacterMesh1PColor(const FColor& color)
+{
+	if(mCharacterMesh1PMaterial == nullptr)
+	{
+		mCharacterMesh1PMaterial = UGameplayBlueprintFunctionLibrary::CreateAndAssignMaterialInstanceDynamicToMesh(mCharacterMesh1P);
+	}
+
+	mCharacterMesh1PMaterial->SetVectorParameterValue("BodyColor", color);
 }
 
 void ACharacterBase::BeginPlay()
@@ -130,8 +142,8 @@ void ACharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	check(PlayerInputComponent);
 
 	// Bind jump events
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	//PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	
 	// Bind fire event
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ACharacterBase::OnFire);
@@ -218,6 +230,49 @@ void ACharacterBase::StopSprinting()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 100.f;
 	OnStopSprinting(100.0f);
+}
+
+bool ACharacterBase::CanJump() const
+{
+	//The reasonable will be to call Super::CanJump()
+	//but seems that is returning false for testing, while putting the exact same
+	//code instead is working fine.
+	//return CanJump();
+
+	
+	// Ensure the character isn't currently crouched.
+	bool bCanJump = !bIsCrouched;
+
+	// Ensure that the CharacterMovement state is valid
+	bCanJump &= GetCharacterMovement()->CanAttemptJump();
+
+	if (bCanJump)
+	{
+		// Ensure JumpHoldTime and JumpCount are valid.
+		if (!bWasJumping || GetJumpMaxHoldTime() <= 0.0f)
+		{
+			if (JumpCurrentCount == 0 && GetCharacterMovement()->IsFalling())
+			{
+				bCanJump = JumpCurrentCount + 1 < JumpMaxCount;
+			}
+			else
+			{
+				bCanJump = JumpCurrentCount < JumpMaxCount;
+			}
+		}
+	}
+
+	return bCanJump;
+}
+
+void ACharacterBase::StartJumping()
+{
+	Jump();
+}
+
+void ACharacterBase::StopJumping_()
+{
+	Super::StopJumping();
 }
 
 void ACharacterBase::OnFire()

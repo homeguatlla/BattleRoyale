@@ -44,6 +44,17 @@ public:
 	virtual void StartSprinting() = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual void StopSprinting() = 0;	
+	virtual void StopSprinting() = 0;
+
+	/* CanJump is already defined in the Character.h so, we added _*/
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual bool CanJump() const  = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual void StartJumping() = 0;
+
+	/* StopJumping is already defined in the Character.h so, we added _*/
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual void StopJumping_() = 0;	
 };
  
