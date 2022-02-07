@@ -18,7 +18,11 @@ class BATTLEROYALE_API AWeaponBase : public AActor, public IIWeapon
 	
 	UPROPERTY(EditDefaultsOnly, Category = Muzzle)
 	FName MuzzleSocketName;
-	
+
+	/** Projectile class to spawn */
+	UPROPERTY(EditDefaultsOnly, Category=Projectile)
+	TSubclassOf<class AProjectileBase> ProjectileClass;
+
 public:	
 	AWeaponBase();
 
@@ -28,9 +32,13 @@ public:
 	virtual FRotator GetMuzzleRotation() const override;
 	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules,
 			const FName& socketName) override;
-	
-	
+	virtual bool CanBeFired() const override;
+	virtual void Fire() const override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+private:
+	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
 };

@@ -10,5 +10,6 @@ enum class EAbilityInputID : uint8
 	Confirm,
 	Cancel,
 	Sprint,
-	Jump
+	Jump,
+	Fire
 };

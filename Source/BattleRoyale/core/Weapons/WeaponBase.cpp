@@ -3,6 +3,7 @@
 
 #include "WeaponBase.h"
 
+#include "ProjectileBase.h"
 #include "BattleRoyale/BattleRoyale.h"
 #include "Engine/SkeletalMeshSocket.h"
 
@@ -20,6 +21,13 @@ AWeaponBase::AWeaponBase()
 
 	//Set to avoid a warning
 	SetRootComponent(Mesh);
+}
+
+// Called when the game starts or when spawned
+void AWeaponBase::BeginPlay()
+{
+	Super::BeginPlay();
+	
 }
 
 FVector AWeaponBase::GetMuzzleLocation() const
@@ -50,6 +58,23 @@ FRotator AWeaponBase::GetMuzzleRotation() const
 	return FRotator::ZeroRotator;
 }
 
+void AWeaponBase::SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const
+{
+	if (ProjectileClass != nullptr)
+	{
+		UWorld* const World = GetWorld();
+		if (World != nullptr)
+		{
+			//Set Spawn Collision Handling Override
+			FActorSpawnParameters ActorSpawnParams;
+			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+			// spawn the projectile at the muzzle
+			World->SpawnActor<AProjectileBase>(ProjectileClass, muzzleLocation, muzzleRotation, ActorSpawnParams);
+		}
+	}
+}
+
 bool AWeaponBase::AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName)
 {
 	if(Mesh == nullptr)
@@ -61,9 +86,13 @@ bool AWeaponBase::AttachToComponent(USkeletalMeshComponent* meshComponent, const
 	return Mesh->AttachToComponent(meshComponent, attachmentRules, socketName);
 }
 
-// Called when the game starts or when spawned
-void AWeaponBase::BeginPlay()
+bool AWeaponBase::CanBeFired() const
 {
-	Super::BeginPlay();
-	
+	//TODO has bullets?
+	return true;
+}
+
+void AWeaponBase::Fire() const
+{
+	SpawnProjectile(GetMuzzleLocation(), GetMuzzleRotation());
 }

@@ -20,7 +20,7 @@ class BATTLEROYALE_API IICharacter
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual TScriptInterface<IIWeapon> GetEquipedWeapon() const = 0;
+	virtual TScriptInterface<IIWeapon> GetEquippedWeapon() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool IsCharacterValid() const = 0;
@@ -55,6 +55,12 @@ public:
 
 	/* StopJumping is already defined in the Character.h so, we added _*/
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual void StopJumping_() = 0;	
+	virtual void StopJumping_() = 0;
+	
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual bool CanFire() const = 0;
+	
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual void Fire() = 0;
 };
  

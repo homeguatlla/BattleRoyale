@@ -55,7 +55,7 @@ public:
 	virtual void OnRep_PlayerState() override;
 	
 	UFUNCTION(BlueprintCallable)
-	virtual TScriptInterface<IIWeapon> GetEquipedWeapon() const override;
+	virtual TScriptInterface<IIWeapon> GetEquippedWeapon() const override;
 
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsCharacterValid() const override { return IsValid(this); }
@@ -96,6 +96,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void StopJumping_() override;
 
+	UFUNCTION(BlueprintCallable)
+	virtual bool CanFire() const override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void Fire() override;
+	
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	void ChangeCharacterMesh1PColor(const FColor& color);	
 	
@@ -118,10 +124,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = EquipedWeapon)
 	TSubclassOf<class AWeaponBase> WeaponClass;
 	
-	/** Projectile class to spawn */
-	UPROPERTY(EditDefaultsOnly, Category=Projectile)
-	TSubclassOf<class AProjectileBase> ProjectileClass;
-
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
 	USoundBase* FireSound;
@@ -142,10 +144,7 @@ public:
 	TArray<TSubclassOf<class UGameplayAbilityBase>> mDefaultAbilities;
 	
 protected:
-		
-	/** Fires a projectile. */
-	void OnFire();
-
+	
 	/** Resets HMD orientation and position in VR. */
 	void OnResetVR();
 
