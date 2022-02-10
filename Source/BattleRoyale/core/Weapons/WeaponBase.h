@@ -16,12 +16,16 @@ class BATTLEROYALE_API AWeaponBase : public AActor, public IIWeapon
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	USkeletalMeshComponent* Mesh;
 	
-	UPROPERTY(EditDefaultsOnly, Category = Muzzle)
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	FName MuzzleSocketName;
 
 	/** Projectile class to spawn */
-	UPROPERTY(EditDefaultsOnly, Category=Projectile)
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	TSubclassOf<class AProjectileBase> ProjectileClass;
+
+	/** Sound to play each time we fire */
+	UPROPERTY(EditDefaultsOnly, Category= Projectile)
+	USoundBase* FireSound;
 
 public:	
 	AWeaponBase();

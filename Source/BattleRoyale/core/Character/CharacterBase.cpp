@@ -271,14 +271,14 @@ void ACharacterBase::StopJumping_()
 	Super::StopJumping();
 }
 
-bool ACharacterBase::CanFire() const
+bool ACharacterBase::CanShoot() const
 {
 	const auto equippedWeapon = GetEquippedWeapon();
 
 	return equippedWeapon && equippedWeapon->CanBeFired();
 }
 
-void ACharacterBase::Fire()
+void ACharacterBase::Shoot()
 {
 	// try and fire a projectile:
 	//the server has the weapon in FP1, but for the clients it has the weapons as 3P
@@ -290,11 +290,12 @@ void ACharacterBase::Fire()
 		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::FillWithWeaponMuzzleLocationAndRotation] weapon is null"), *GetName());
 		return;
 	}
-
-	if(HasAuthority())
+	
+	
+	/*if(HasAuthority())
 	{
 		weapon->Fire();
-	}
+	}*/
 /*
 	//TODO igual el arma se podría disparar y listos. Es decir, hacer un shoot del arma en lugar de todo el proceso aquí.
 	//pensarlo bien a nivel de replicación rpc etc y por un momento si un arma no es disparable pues igual necesita
@@ -304,13 +305,19 @@ void ACharacterBase::Fire()
 	
 	ServerSpawnProjectile(muzzleLocation, muzzleRotation);
 
-	// try and play the sound if specified
-	if (FireSound != nullptr)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-	}
-
 	PlayMontage(FireAnimation1P, mCharacterMesh1P);*/
+}
+
+UAnimMontage* ACharacterBase::GetShootingMontage() const
+{
+	if(IsLocallyControlled())
+	{
+		return FireAnimation1P;
+	}
+	else
+	{
+		return FireAnimation3P;
+	}
 }
 
 void ACharacterBase::OnResetVR()

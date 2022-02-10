@@ -58,9 +58,10 @@ public:
 	virtual void StopJumping_() = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual bool CanFire() const = 0;
+	virtual bool CanShoot() const = 0;
 	
-	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual void Fire() = 0;
+	virtual void Shoot() = 0;
+	
+	virtual UAnimMontage* GetShootingMontage() const = 0;
 };
  

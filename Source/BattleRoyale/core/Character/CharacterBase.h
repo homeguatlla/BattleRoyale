@@ -97,10 +97,11 @@ public:
 	virtual void StopJumping_() override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual bool CanFire() const override;
+	virtual bool CanShoot() const override;
 
-	UFUNCTION(BlueprintCallable)
-	virtual void Fire() override;
+	virtual void Shoot() override;
+
+	UAnimMontage* GetShootingMontage() const override;
 	
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	void ChangeCharacterMesh1PColor(const FColor& color);	
@@ -124,10 +125,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = EquipedWeapon)
 	TSubclassOf<class AWeaponBase> WeaponClass;
 	
-	/** Sound to play each time we fire */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
-	USoundBase* FireSound;
-
 	/** AnimMontage to play each time we fire first person */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	UAnimMontage* FireAnimation1P;

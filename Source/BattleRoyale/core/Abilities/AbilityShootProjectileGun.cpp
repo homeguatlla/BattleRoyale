@@ -4,12 +4,13 @@
 #include "AbilitiesInput.h"
 #include "AbilitySystemGlobals.h"
 #include "GameplayCueManager.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "BattleRoyale/core/Weapons/IWeapon.h"
 
 UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 {
 	AbilityInputID = EAbilityInputID::Fire;
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Shoot.Projectile")));
 }
@@ -29,7 +30,24 @@ void UAbilityShootProjectileGun::ActivateAbility(const FGameplayAbilitySpecHandl
 		const auto character = GetCharacter(ActorInfo);
 		if (character != nullptr)
 		{
-			character->Fire();
+			//character->Fire();
+			//Mirar en el GASDocumentation que les llega e igual buscar el shooting en el GASShooter
+			//TODO asignar el animation instance del character actoravatar al de actor info.
+			//ActorInfo->AnimInstance = character->
+			check(ActorInfo->GetAnimInstance());
+			const auto task = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+				this,
+				NAME_None,
+				character->GetShootingMontage(),
+				1.0,
+				NAME_None,
+				false);
+
+			task->OnCancelled.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCancelled);
+			task->OnInterrupted.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCancelled);
+			task->OnCompleted.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCompleted);
+			task->OnBlendOut.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCompleted);
+			task->ReadyForActivation();
 		}
 	}
 }
@@ -46,7 +64,7 @@ bool UAbilityShootProjectileGun::CanActivateAbility(const FGameplayAbilitySpecHa
 	}
 	const auto character = GetCharacter(ActorInfo);
 
-	return character != nullptr && character->CanFire();
+	return character != nullptr && character->CanShoot();
 }
 
 void UAbilityShootProjectileGun::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -82,4 +100,14 @@ void UAbilityShootProjectileGun::CancelAbility(const FGameplayAbilitySpecHandle 
 	{
 		
 	}
+}
+
+void UAbilityShootProjectileGun::OnMontageCompleted()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}
+
+void UAbilityShootProjectileGun::OnMontageCancelled()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 }
