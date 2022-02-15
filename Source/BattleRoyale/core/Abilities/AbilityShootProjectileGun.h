@@ -16,7 +16,7 @@ class UAbilityShootProjectileGun : public UGameplayAbilityBase
 
 public:
 	UAbilityShootProjectileGun();
-
+	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
@@ -31,5 +31,12 @@ private:
 
 	UFUNCTION()
 	void OnMontageCancelled();
+
+	void OnEventMontageShootReceived(FGameplayTag EventTag, const FGameplayEventData* Payload) const;
+	void SubscribeToEventMontageShoot(const IICharacter* character);
+	void CreateTaskPlayMontageShooting(const IICharacter* character, const FGameplayAbilityActorInfo* ActorInfo);
+
+	IICharacter* mCharacter;
+	FDelegateHandle mEventMontageShootHandle;
 };
 

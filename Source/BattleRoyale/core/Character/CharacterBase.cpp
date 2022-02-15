@@ -52,12 +52,9 @@ ACharacterBase::ACharacterBase()
 	mCharacterMesh1P->CastShadow = false;
 	mCharacterMesh1P->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
 	mCharacterMesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
-	
-	mCharacterMesh3P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh3P"));
-	mCharacterMesh3P->SetOwnerNoSee(true);
-	mCharacterMesh3P->SetupAttachment(mFirstPersonCameraComponent);
-	mCharacterMesh3P->bCastDynamicShadow = false;
-	mCharacterMesh3P->CastShadow = false;
+
+	//The Character has a Mesh by default so, this mesh will be the 3rd person mesh
+	GetMesh()->SetOwnerNoSee(true);	
 	
 	// Create VR Controllers.
 	R_MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("R_MotionController"));
@@ -105,7 +102,7 @@ void ACharacterBase::OnRep_PlayerState()
 
 void ACharacterBase::Initialize(bool isLocallyControlled) const
 {
-	EquipWeapon(isLocallyControlled ? mCharacterMesh1P: mCharacterMesh3P, mEquipedWeapon);
+	EquipWeapon(isLocallyControlled ? mCharacterMesh1P: GetMesh(), mEquipedWeapon);
 	mCharacterMesh1P->SetHiddenInGame(!isLocallyControlled, true);
 }
 
@@ -292,10 +289,10 @@ void ACharacterBase::Shoot()
 	}
 	
 	
-	/*if(HasAuthority())
+	if(HasAuthority())
 	{
 		weapon->Fire();
-	}*/
+	}
 /*
 	//TODO igual el arma se podría disparar y listos. Es decir, hacer un shoot del arma en lugar de todo el proceso aquí.
 	//pensarlo bien a nivel de replicación rpc etc y por un momento si un arma no es disparable pues igual necesita
@@ -318,6 +315,23 @@ UAnimMontage* ACharacterBase::GetShootingMontage() const
 	{
 		return FireAnimation3P;
 	}
+}
+
+UAnimInstance* ACharacterBase::GetAnimationInstance() const
+{
+	if(IsLocallyControlled())
+	{
+		return mCharacterMesh1P->GetAnimInstance();
+	}
+	else
+	{
+		return GetMesh()->GetAnimInstance();
+	}
+}
+
+IAbilitySystemInterface* ACharacterBase::GetAbilitySystemComponent() const
+{
+	return GetPlayerStateInterface();
 }
 
 void ACharacterBase::OnResetVR()
@@ -429,7 +443,7 @@ void ACharacterBase::MulticastOnFire_Implementation()
 	}
 
 	//only remotes need to play animation
-	PlayMontage(FireAnimation3P, mCharacterMesh3P);
+	PlayMontage(FireAnimation3P, GetMesh());
 }
 
 //TODO en este punto vemos que las armas se están haciendo spawn en

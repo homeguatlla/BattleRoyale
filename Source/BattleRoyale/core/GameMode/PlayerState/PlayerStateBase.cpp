@@ -4,6 +4,7 @@
 #include "PlayerStateBase.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 
 APlayerStateBase::APlayerStateBase()
 {

@@ -2,10 +2,9 @@
 #include "BattleRoyale/core/Abilities/AbilityShootProjectileGun.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "AbilitiesInput.h"
-#include "AbilitySystemGlobals.h"
-#include "GameplayCueManager.h"
+#include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
-#include "BattleRoyale/core/Weapons/IWeapon.h"
+#include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 
 UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 {
@@ -16,9 +15,9 @@ UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 }
 
 void UAbilityShootProjectileGun::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                     const FGameplayAbilityActorInfo* ActorInfo,
-                                     const FGameplayAbilityActivationInfo ActivationInfo,
-                                     const FGameplayEventData* TriggerEventData)
+                                                 const FGameplayAbilityActorInfo* ActorInfo,
+                                                 const FGameplayAbilityActivationInfo ActivationInfo,
+                                                 const FGameplayEventData* TriggerEventData)
 {
 	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
 	{
@@ -27,27 +26,11 @@ void UAbilityShootProjectileGun::ActivateAbility(const FGameplayAbilitySpecHandl
 			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		}
 
-		const auto character = GetCharacter(ActorInfo);
-		if (character != nullptr)
+		mCharacter = GetCharacter(ActorInfo);
+		if (mCharacter != nullptr)
 		{
-			//character->Fire();
-			//Mirar en el GASDocumentation que les llega e igual buscar el shooting en el GASShooter
-			//TODO asignar el animation instance del character actoravatar al de actor info.
-			//ActorInfo->AnimInstance = character->
-			check(ActorInfo->GetAnimInstance());
-			const auto task = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-				this,
-				NAME_None,
-				character->GetShootingMontage(),
-				1.0,
-				NAME_None,
-				false);
-
-			task->OnCancelled.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCancelled);
-			task->OnInterrupted.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCancelled);
-			task->OnCompleted.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCompleted);
-			task->OnBlendOut.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCompleted);
-			task->ReadyForActivation();
+			SubscribeToEventMontageShoot(mCharacter);
+			CreateTaskPlayMontageShooting(mCharacter, ActorInfo);
 		}
 	}
 }
@@ -110,4 +93,44 @@ void UAbilityShootProjectileGun::OnMontageCompleted()
 void UAbilityShootProjectileGun::OnMontageCancelled()
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+}
+
+void UAbilityShootProjectileGun::OnEventMontageShootReceived(FGameplayTag EventTag, const FGameplayEventData* Payload) const
+{
+	if(mCharacter != nullptr)
+	{
+		mCharacter->Shoot();
+	}
+}
+
+void UAbilityShootProjectileGun::SubscribeToEventMontageShoot(const IICharacter* character)
+{
+	if(!mEventMontageShootHandle.IsValid())
+	{
+		const auto abilitySystemInterface = character->GetAbilitySystemComponent();
+		mEventMontageShootHandle = abilitySystemInterface->GetAbilitySystemComponent()->AddGameplayEventTagContainerDelegate(
+			FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Event.Montage.Shoot"))),
+			FGameplayEventTagMulticastDelegate::FDelegate::CreateUObject(this, &UAbilityShootProjectileGun::OnEventMontageShootReceived));
+	}
+}
+
+void UAbilityShootProjectileGun::CreateTaskPlayMontageShooting(const IICharacter* character, const FGameplayAbilityActorInfo* ActorInfo)
+{
+	ActorInfo->SkeletalMeshComponent->AnimScriptInstance = character->GetAnimationInstance();
+	const auto animInstance = ActorInfo->GetAnimInstance();
+	check(animInstance);
+			
+	const auto taskPlayMontage = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+		this,
+		NAME_None,
+		character->GetShootingMontage(),
+		1.0,
+		NAME_None,
+		false);
+
+	taskPlayMontage->OnCancelled.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCancelled);
+	taskPlayMontage->OnInterrupted.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCancelled);
+	taskPlayMontage->OnCompleted.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCompleted);
+	taskPlayMontage->OnBlendOut.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCompleted);
+	taskPlayMontage->ReadyForActivation();
 }

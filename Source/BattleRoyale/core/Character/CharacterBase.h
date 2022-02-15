@@ -24,10 +24,10 @@ class ACharacterBase : public ACharacter, public IICharacter
 {
 	GENERATED_BODY()
 
-	/** Character mesh: 3rd person view (seen only by others) */
+	/** Pawn mesh: 1st person view (arms; seen only by self) */
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
-	USkeletalMeshComponent* mCharacterMesh3P;
-
+	USkeletalMeshComponent* mCharacterMesh1P;
+	
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* mFirstPersonCameraComponent;
@@ -101,7 +101,11 @@ public:
 
 	virtual void Shoot() override;
 
-	UAnimMontage* GetShootingMontage() const override;
+	virtual UAnimMontage* GetShootingMontage() const override;
+
+	virtual UAnimInstance* GetAnimationInstance() const override;
+
+	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const override;
 	
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	void ChangeCharacterMesh1PColor(const FColor& color);	
@@ -110,10 +114,7 @@ protected:
 	virtual void BeginPlay();
 
 public:
-	/** Pawn mesh: 1st person view (arms; seen only by self) */
-	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category=Mesh)
-	USkeletalMeshComponent* mCharacterMesh1P;
-
+	
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;

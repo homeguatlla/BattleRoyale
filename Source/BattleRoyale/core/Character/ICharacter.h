@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "ICharacter.generated.h"
 
+class IAbilitySystemInterface;
 class IIWeapon;
 // This class does not need to be modified.
 UINTERFACE(Blueprintable, meta = (CannotImplementInterfaceInBlueprint))
@@ -59,9 +60,16 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool CanShoot() const = 0;
-	
+
+	/**
+	 * Shoot is aim and try to hit something
+	 **/
 	virtual void Shoot() = 0;
 	
 	virtual UAnimMontage* GetShootingMontage() const = 0;
+
+	virtual UAnimInstance* GetAnimationInstance() const = 0;
+
+	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const = 0;
 };
  
