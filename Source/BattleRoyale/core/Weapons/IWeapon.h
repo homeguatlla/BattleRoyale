@@ -33,8 +33,11 @@ public:
 	virtual bool CanBeFired() const = 0;
 
 	/**
-	 * Fire is to activate the mechanism of the weapon. Pulling the trigger.
+	 * Client Fire is to activate the mechanism of the weapon. Pulling the trigger.
 	 **/
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual void Fire() const = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual void ServerFire() const = 0;
 };

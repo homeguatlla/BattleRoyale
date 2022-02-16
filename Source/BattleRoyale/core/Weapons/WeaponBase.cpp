@@ -3,15 +3,17 @@
 
 #include "WeaponBase.h"
 
+#include "DrawDebugHelpers.h"
 #include "ProjectileBase.h"
 #include "BattleRoyale/BattleRoyale.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AWeaponBase::AWeaponBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	// Create a gun mesh component
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Gun"));
@@ -23,11 +25,14 @@ AWeaponBase::AWeaponBase()
 	SetRootComponent(Mesh);
 }
 
-// Called when the game starts or when spawned
-void AWeaponBase::BeginPlay()
+void AWeaponBase::Tick( float DeltaSeconds )
 {
-	Super::BeginPlay();
-	
+	Super::Tick(DeltaSeconds);
+
+	if(IsDebugEnabled)
+	{
+		DebugDrawAiming();
+	}
 }
 
 FVector AWeaponBase::GetMuzzleLocation() const
@@ -67,10 +72,14 @@ void AWeaponBase::SpawnProjectile(const FVector& muzzleLocation, const FRotator&
 		{
 			//Set Spawn Collision Handling Override
 			FActorSpawnParameters ActorSpawnParams;
-			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;			
+
+			auto direction = GetMuzzleRotation().RotateVector(FVector::ForwardVector);
+			direction.Normalize();
+			const auto muzzleLocationWithOffset = GetMuzzleLocation() +  direction * DistanceFromMuzzleLocation;
 
 			// spawn the projectile at the muzzle
-			World->SpawnActor<AProjectileBase>(ProjectileClass, muzzleLocation, muzzleRotation, ActorSpawnParams);
+			World->SpawnActor<AProjectileBase>(ProjectileClass, muzzleLocationWithOffset, muzzleRotation, ActorSpawnParams);
 		}
 	}
 }
@@ -94,11 +103,26 @@ bool AWeaponBase::CanBeFired() const
 
 void AWeaponBase::Fire() const
 {
-	SpawnProjectile(GetMuzzleLocation(), GetMuzzleRotation());
-
 	// try and play the sound if specified
-	/*if (FireSound != nullptr)
+	if (FireSound != nullptr)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-	}*/
+	}
+}
+
+void AWeaponBase::ServerFire() const
+{
+	SpawnProjectile(GetMuzzleLocation(), GetMuzzleRotation());
+}
+
+void AWeaponBase::DebugDrawAiming() const
+{
+	auto direction = GetMuzzleRotation().RotateVector(FVector::ForwardVector);
+	direction.Normalize();
+	const auto muzzleLocation = GetMuzzleLocation() +  direction * DistanceFromMuzzleLocation;
+	
+	DrawDebugSphere(GetWorld(), GetMuzzleLocation(), 5, 12, FColor::White, false);
+	DrawDebugSphere(GetWorld(), muzzleLocation, 3, 12, FColor::Blue, false);
+	const auto muzzleLocationFar = GetMuzzleLocation() +  direction * 500;
+	DrawDebugLine(GetWorld(), muzzleLocation, muzzleLocationFar, FColor::Blue, false);
 }

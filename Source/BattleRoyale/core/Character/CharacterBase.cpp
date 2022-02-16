@@ -291,8 +291,10 @@ void ACharacterBase::Shoot()
 	
 	if(HasAuthority())
 	{
-		weapon->Fire();
+		weapon->ServerFire();
 	}
+
+	weapon->Fire();
 /*
 	//TODO igual el arma se podría disparar y listos. Es decir, hacer un shoot del arma en lugar de todo el proceso aquí.
 	//pensarlo bien a nivel de replicación rpc etc y por un momento si un arma no es disparable pues igual necesita
