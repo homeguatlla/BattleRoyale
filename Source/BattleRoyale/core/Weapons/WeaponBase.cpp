@@ -72,14 +72,10 @@ void AWeaponBase::SpawnProjectile(const FVector& muzzleLocation, const FRotator&
 		{
 			//Set Spawn Collision Handling Override
 			FActorSpawnParameters ActorSpawnParams;
-			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;			
-
-			auto direction = GetMuzzleRotation().RotateVector(FVector::ForwardVector);
-			direction.Normalize();
-			const auto muzzleLocationWithOffset = GetMuzzleLocation() +  direction * DistanceFromMuzzleLocation;
+			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
 			// spawn the projectile at the muzzle
-			World->SpawnActor<AProjectileBase>(ProjectileClass, muzzleLocationWithOffset, muzzleRotation, ActorSpawnParams);
+			World->SpawnActor<AProjectileBase>(ProjectileClass, GetProjectileSpawnLocation(DistanceFromMuzzleLocation), muzzleRotation, ActorSpawnParams);
 		}
 	}
 }
@@ -108,6 +104,11 @@ void AWeaponBase::Fire() const
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 	}
+
+	if(MuzzleEffect != nullptr)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleEffect, GetProjectileSpawnLocation(0), GetMuzzleRotation());
+	}
 }
 
 void AWeaponBase::ServerFire() const
@@ -115,14 +116,18 @@ void AWeaponBase::ServerFire() const
 	SpawnProjectile(GetMuzzleLocation(), GetMuzzleRotation());
 }
 
-void AWeaponBase::DebugDrawAiming() const
+FVector AWeaponBase::GetProjectileSpawnLocation(float distanceFromMuzzleLocation) const
 {
 	auto direction = GetMuzzleRotation().RotateVector(FVector::ForwardVector);
 	direction.Normalize();
-	const auto muzzleLocation = GetMuzzleLocation() +  direction * DistanceFromMuzzleLocation;
+	return GetMuzzleLocation() +  direction * distanceFromMuzzleLocation;
+}
+
+void AWeaponBase::DebugDrawAiming() const
+{
+	const auto muzzleLocation = GetProjectileSpawnLocation(DistanceFromMuzzleLocation);
 	
 	DrawDebugSphere(GetWorld(), GetMuzzleLocation(), 5, 12, FColor::White, false);
 	DrawDebugSphere(GetWorld(), muzzleLocation, 3, 12, FColor::Blue, false);
-	const auto muzzleLocationFar = GetMuzzleLocation() +  direction * 500;
-	DrawDebugLine(GetWorld(), muzzleLocation, muzzleLocationFar, FColor::Blue, false);
+	DrawDebugLine(GetWorld(), muzzleLocation, GetProjectileSpawnLocation(500), FColor::Blue, false);
 }

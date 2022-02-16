@@ -288,7 +288,8 @@ void ACharacterBase::Shoot()
 		return;
 	}
 	
-	
+	//TODO los efectos no se ven en los remotos. Entonces, quizá lo que hay que hacer es, dejar el disparo en server
+	//y hacer un multicast en el server para que se ejecute en los clientes y así añadir el tema efectos y sonido.
 	if(HasAuthority())
 	{
 		weapon->ServerFire();

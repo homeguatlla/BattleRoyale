@@ -27,6 +27,9 @@ class BATTLEROYALE_API AWeaponBase : public AActor, public IIWeapon
 	UPROPERTY(EditDefaultsOnly, Category= Projectile)
 	USoundBase* FireSound;
 
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	UParticleSystem* MuzzleEffect;
+	
 	UPROPERTY(EditDefaultsOnly, Category= Projectile)
 	float DistanceFromMuzzleLocation = { 20.0f};
 
@@ -43,12 +46,14 @@ public:
 	virtual FVector GetMuzzleLocation() const override;
 	virtual FRotator GetMuzzleRotation() const override;
 	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules,
-			const FName& socketName) override;
+	                               const FName& socketName) override;
 	virtual bool CanBeFired() const override;
 	virtual void Fire() const override;
 	virtual void ServerFire() const override;
 	
 private:
 	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
+	FVector GetProjectileSpawnLocation(float distanceFromMuzzleLocation) const;
+	
 	void DebugDrawAiming() const;
 };
