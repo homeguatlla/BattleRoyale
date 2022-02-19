@@ -275,12 +275,8 @@ bool ACharacterBase::CanShoot() const
 	return equippedWeapon && equippedWeapon->CanBeFired();
 }
 
-void ACharacterBase::Shoot()
+void ACharacterBase::ServerShoot()
 {
-	// try and fire a projectile:
-	//the server has the weapon in FP1, but for the clients it has the weapons as 3P
-	//so, we need when shooting send to the server our weapon location and rotation
-	//because server will get wrong location and rotation for clients
 	const auto weapon = GetEquippedWeapon();
 	if(weapon.GetObject() == nullptr)
 	{
@@ -292,20 +288,8 @@ void ACharacterBase::Shoot()
 	//y hacer un multicast en el server para que se ejecute en los clientes y así añadir el tema efectos y sonido.
 	if(HasAuthority())
 	{
-		weapon->ServerFire();
+		weapon->Fire();
 	}
-
-	weapon->Fire();
-/*
-	//TODO igual el arma se podría disparar y listos. Es decir, hacer un shoot del arma en lugar de todo el proceso aquí.
-	//pensarlo bien a nivel de replicación rpc etc y por un momento si un arma no es disparable pues igual necesita
-	//de otra interface en el IWeapon, o quizá da igual es Usar en lugar de Fire.
-	const auto muzzleLocation = weapon->GetMuzzleLocation();
-	const auto muzzleRotation = weapon->GetMuzzleRotation();
-	
-	ServerSpawnProjectile(muzzleLocation, muzzleRotation);
-
-	PlayMontage(FireAnimation1P, mCharacterMesh1P);*/
 }
 
 UAnimMontage* ACharacterBase::GetShootingMontage() const

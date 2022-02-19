@@ -49,7 +49,6 @@ public:
 	                               const FName& socketName) override;
 	virtual bool CanBeFired() const override;
 	virtual void Fire() const override;
-	virtual void ServerFire() const override;
 	
 private:
 	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;

@@ -64,7 +64,7 @@ public:
 	/**
 	 * Shoot is aim and try to hit something
 	 **/
-	virtual void Shoot() = 0;
+	virtual void ServerShoot() = 0;
 	
 	virtual UAnimMontage* GetShootingMontage() const = 0;
 

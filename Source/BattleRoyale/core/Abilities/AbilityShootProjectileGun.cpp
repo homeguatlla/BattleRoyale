@@ -99,7 +99,12 @@ void UAbilityShootProjectileGun::OnEventMontageShootReceived(FGameplayTag EventT
 {
 	if(mCharacter != nullptr)
 	{
-		mCharacter->Shoot();
+		/*UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
+				CurrentActorInfo->AvatarActor.Get(),
+				FGameplayTag::RequestGameplayTag(FName("GameplayCue.Shoot")),
+				EGameplayCueEvent::Type::Executed,
+				FGameplayCueParameters());*/
+		mCharacter->ServerShoot();
 	}
 }
 
@@ -127,7 +132,7 @@ void UAbilityShootProjectileGun::CreateTaskPlayMontageShooting(const IICharacter
 		1.0,
 		NAME_None,
 		false);
-
+	
 	taskPlayMontage->OnCancelled.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCancelled);
 	taskPlayMontage->OnInterrupted.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCancelled);
 	taskPlayMontage->OnCompleted.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCompleted);

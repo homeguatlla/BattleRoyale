@@ -99,7 +99,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool CanShoot() const override;
 
-	virtual void Shoot() override;
+	virtual void ServerShoot() override;
 
 	virtual UAnimMontage* GetShootingMontage() const override;
 

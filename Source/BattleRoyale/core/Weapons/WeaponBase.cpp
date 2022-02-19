@@ -97,6 +97,7 @@ bool AWeaponBase::CanBeFired() const
 	return true;
 }
 
+/*
 void AWeaponBase::Fire() const
 {
 	// try and play the sound if specified
@@ -109,10 +110,14 @@ void AWeaponBase::Fire() const
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleEffect, GetProjectileSpawnLocation(0), GetMuzzleRotation());
 	}
-}
+}*/
 
-void AWeaponBase::ServerFire() const
+void AWeaponBase::Fire() const
 {
+	// try and fire a projectile:
+	//the server has the weapon in FP1, but for the clients it has the weapons as 3P
+	//so, we need when shooting send to the server our weapon location and rotation
+	//because server will get wrong location and rotation for clients
 	SpawnProjectile(GetMuzzleLocation(), GetMuzzleRotation());
 }
 
