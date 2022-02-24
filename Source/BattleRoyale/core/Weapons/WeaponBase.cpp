@@ -97,11 +97,11 @@ bool AWeaponBase::CanBeFired() const
 	return true;
 }
 
-/*
-void AWeaponBase::Fire() const
+
+void AWeaponBase::FireClient()
 {
 	// try and play the sound if specified
-	if (FireSound != nullptr)
+	/*if (FireSound != nullptr)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 	}
@@ -109,8 +109,14 @@ void AWeaponBase::Fire() const
 	if(MuzzleEffect != nullptr)
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleEffect, GetProjectileSpawnLocation(0), GetMuzzleRotation());
-	}
-}*/
+	}*/
+
+	OnFire();
+}
+
+void AWeaponBase::OnFire_Implementation()
+{
+}
 
 void AWeaponBase::Fire() const
 {

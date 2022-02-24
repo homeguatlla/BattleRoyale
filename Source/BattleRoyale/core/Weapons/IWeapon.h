@@ -37,4 +37,7 @@ public:
 	 **/
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual void Fire() const = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual void FireClient() = 0;
 };

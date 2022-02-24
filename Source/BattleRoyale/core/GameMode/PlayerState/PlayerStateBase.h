@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystemInterface.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
+#include "BattleRoyale/core/GameplayAbilitySystem/AbilitySystemComponentBase.h"
 #include "GameFramework/PlayerState.h"
 #include "PlayerStateBase.generated.h"
+
 
 /**
  * 
@@ -20,7 +21,8 @@ public:
 	
 	APlayerStateBase();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return mAbilitySystemComponent; }
+	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentInterface() const override { return Cast<IIAbilitySystemInterfaceBase>(mAbilitySystemComponent); }
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AbilitySystemComponent, meta = (AllowPrivateAccess = "true"))
-	class UAbilitySystemComponent* mAbilitySystemComponent;
+	UAbilitySystemComponentBase* mAbilitySystemComponent;
 };

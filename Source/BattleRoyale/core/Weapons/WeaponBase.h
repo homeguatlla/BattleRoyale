@@ -7,7 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "WeaponBase.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable)
 class BATTLEROYALE_API AWeaponBase : public AActor, public IIWeapon
 {
 	GENERATED_BODY()
@@ -16,24 +16,24 @@ class BATTLEROYALE_API AWeaponBase : public AActor, public IIWeapon
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	USkeletalMeshComponent* Mesh;
 	
-	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName MuzzleSocketName;
 
 	/** Projectile class to spawn */
-	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<class AProjectileBase> ProjectileClass;
 
 	/** Sound to play each time we fire */
-	UPROPERTY(EditDefaultsOnly, Category= Projectile)
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	USoundBase* FireSound;
 
-	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	UParticleSystem* MuzzleEffect;
 	
-	UPROPERTY(EditDefaultsOnly, Category= Projectile)
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	float DistanceFromMuzzleLocation = { 20.0f};
 
-	UPROPERTY(EditDefaultsOnly, Category= Projectile)
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	bool IsDebugEnabled { false };
 	
 public:	
@@ -49,6 +49,10 @@ public:
 	                               const FName& socketName) override;
 	virtual bool CanBeFired() const override;
 	virtual void Fire() const override;
+	virtual void FireClient() override;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Weapon")
+	void OnFire();
 	
 private:
 	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;

@@ -8,6 +8,6 @@
 
 APlayerStateBase::APlayerStateBase()
 {
-	mAbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	mAbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponentBase>(TEXT("AbilitySystemComponent"));
 	mAbilitySystemComponent->SetIsReplicated(true);
 }

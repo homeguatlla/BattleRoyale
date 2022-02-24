@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystemInterface.h"
-#include "UObject/Interface.h"
+#include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "IPlayerState.generated.h"
 
 // This class does not need to be modified.
@@ -22,5 +21,5 @@ class BATTLEROYALE_API IIPlayerState: public IAbilitySystemInterface
 	GENERATED_BODY()
 
 public:
-	
+	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentInterface() const = 0;
 };

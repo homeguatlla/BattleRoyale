@@ -292,6 +292,18 @@ void ACharacterBase::ServerShoot()
 	}
 }
 
+void ACharacterBase::Shoot()
+{
+	const auto weapon = GetEquippedWeapon();
+	if(weapon.GetObject() == nullptr)
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::FillWithWeaponMuzzleLocationAndRotation] weapon is null"), *GetName());
+		return;
+	}
+	weapon->FireClient();
+	ServerSpawnProjectile(FVector::ZeroVector, FRotator::ZeroRotator);
+}
+
 UAnimMontage* ACharacterBase::GetShootingMontage() const
 {
 	if(IsLocallyControlled())
@@ -302,6 +314,11 @@ UAnimMontage* ACharacterBase::GetShootingMontage() const
 	{
 		return FireAnimation3P;
 	}
+}
+
+UAnimMontage* ACharacterBase::GetSimulatedShootingMontage() const
+{
+	return FireAnimation3P;
 }
 
 UAnimInstance* ACharacterBase::GetAnimationInstance() const
@@ -319,6 +336,11 @@ UAnimInstance* ACharacterBase::GetAnimationInstance() const
 IAbilitySystemInterface* ACharacterBase::GetAbilitySystemComponent() const
 {
 	return GetPlayerStateInterface();
+}
+
+IIAbilitySystemInterfaceBase* ACharacterBase::GetAbilitySystemComponentBase() const
+{
+	return GetPlayerStateInterface()->GetAbilitySystemComponentInterface();
 }
 
 void ACharacterBase::OnResetVR()
@@ -370,7 +392,8 @@ void ACharacterBase::LookUpAtRate(float Rate)
 void ACharacterBase::ServerSpawnProjectile_Implementation(const FVector& muzzleLocation, const FRotator& muzzleRotation)
 {
 	//SpawnProjectile(muzzleLocation, muzzleRotation);
-
+	const auto weapon = GetEquippedWeapon();
+	weapon->Fire();
 	//Notify all about a fire in order they can play the proper animation.
 	MulticastOnFire();
 }
@@ -431,6 +454,13 @@ void ACharacterBase::MulticastOnFire_Implementation()
 
 	//only remotes need to play animation
 	PlayMontage(FireAnimation3P, GetMesh());
+	const auto weapon = GetEquippedWeapon();
+	if(weapon.GetObject() == nullptr)
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::FillWithWeaponMuzzleLocationAndRotation] weapon is null"), *GetName());
+		return;
+	}
+	weapon->FireClient();
 }
 
 //TODO en este punto vemos que las armas se están haciendo spawn en

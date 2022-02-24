@@ -4,13 +4,15 @@
 #include "AbilitiesInput.h"
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
-#include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
+#include "BattleRoyale/BattleRoyale.h"
+#include "BattleRoyale/core/GameplayAbilitySystem/AbilitySystemComponentBase.h"
 
 UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 {
 	AbilityInputID = EAbilityInputID::Fire;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-
+	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalOnly;
+	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Shoot.Projectile")));
 }
 
@@ -19,7 +21,7 @@ void UAbilityShootProjectileGun::ActivateAbility(const FGameplayAbilitySpecHandl
                                                  const FGameplayAbilityActivationInfo ActivationInfo,
                                                  const FGameplayEventData* TriggerEventData)
 {
-	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
+	//if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
 	{
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 		{
@@ -99,12 +101,8 @@ void UAbilityShootProjectileGun::OnEventMontageShootReceived(FGameplayTag EventT
 {
 	if(mCharacter != nullptr)
 	{
-		/*UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
-				CurrentActorInfo->AvatarActor.Get(),
-				FGameplayTag::RequestGameplayTag(FName("GameplayCue.Shoot")),
-				EGameplayCueEvent::Type::Executed,
-				FGameplayCueParameters());*/
-		mCharacter->ServerShoot();
+		//mCharacter->ServerShoot();
+		mCharacter->Shoot();
 	}
 }
 
@@ -124,7 +122,10 @@ void UAbilityShootProjectileGun::CreateTaskPlayMontageShooting(const IICharacter
 	ActorInfo->SkeletalMeshComponent->AnimScriptInstance = character->GetAnimationInstance();
 	const auto animInstance = ActorInfo->GetAnimInstance();
 	check(animInstance);
-			
+
+	//const auto abilitySystemInterface = character->GetAbilitySystemComponentBase();
+	//abilitySystemInterface->SetSimulatedMontage(character->GetSimulatedShootingMontage());
+	
 	const auto taskPlayMontage = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this,
 		NAME_None,

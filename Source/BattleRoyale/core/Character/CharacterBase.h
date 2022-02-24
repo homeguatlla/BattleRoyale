@@ -101,11 +101,17 @@ public:
 
 	virtual void ServerShoot() override;
 
+	virtual void Shoot() override;
+
 	virtual UAnimMontage* GetShootingMontage() const override;
+
+	virtual UAnimMontage* GetSimulatedShootingMontage() const override;
 
 	virtual UAnimInstance* GetAnimationInstance() const override;
 
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const override;
+
+	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const override;
 	
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	void ChangeCharacterMesh1PColor(const FColor& color);	

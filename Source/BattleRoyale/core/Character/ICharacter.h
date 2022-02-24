@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "ICharacter.generated.h"
 
+class IIAbilitySystemInterfaceBase;
 class IAbilitySystemInterface;
 class IIWeapon;
 // This class does not need to be modified.
@@ -65,11 +66,17 @@ public:
 	 * Shoot is aim and try to hit something
 	 **/
 	virtual void ServerShoot() = 0;
+
+	virtual void Shoot() = 0;
 	
 	virtual UAnimMontage* GetShootingMontage() const = 0;
+
+	virtual UAnimMontage* GetSimulatedShootingMontage() const = 0;
 
 	virtual UAnimInstance* GetAnimationInstance() const = 0;
 
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const = 0;
+
+	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const = 0;
 };
  
