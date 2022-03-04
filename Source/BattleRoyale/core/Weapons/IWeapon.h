@@ -39,5 +39,11 @@ public:
 	virtual void Fire() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
-	virtual void FireClient() = 0;
+	virtual void FireClient(bool isFirstPerson) = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual USoundBase* GetFireSound() const = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual UParticleSystem* GetMuzzleEffect() const = 0;
 };

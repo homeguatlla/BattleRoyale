@@ -49,11 +49,14 @@ public:
 	                               const FName& socketName) override;
 	virtual bool CanBeFired() const override;
 	virtual void Fire() const override;
-	virtual void FireClient() override;
+	virtual void FireClient(bool isFirstPerson) override;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Weapon")
-	void OnFire();
+	virtual USoundBase* GetFireSound() const override { return FireSound; }
+	virtual UParticleSystem* GetMuzzleEffect() const override { return MuzzleEffect; }
 	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Weapon")
+	void OnFire(bool isFirstPerson);
+
 private:
 	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
 	FVector GetProjectileSpawnLocation(float distanceFromMuzzleLocation) const;

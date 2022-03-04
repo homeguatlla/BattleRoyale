@@ -300,7 +300,7 @@ void ACharacterBase::Shoot()
 		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::FillWithWeaponMuzzleLocationAndRotation] weapon is null"), *GetName());
 		return;
 	}
-	weapon->FireClient();
+	weapon->FireClient(true);
 	ServerSpawnProjectile(FVector::ZeroVector, FRotator::ZeroRotator);
 }
 
@@ -460,7 +460,7 @@ void ACharacterBase::MulticastOnFire_Implementation()
 		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::FillWithWeaponMuzzleLocationAndRotation] weapon is null"), *GetName());
 		return;
 	}
-	weapon->FireClient();
+	weapon->FireClient(false);
 }
 
 //TODO en este punto vemos que las armas se están haciendo spawn en
