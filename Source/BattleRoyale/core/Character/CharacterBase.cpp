@@ -300,6 +300,7 @@ void ACharacterBase::Shoot()
 		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::FillWithWeaponMuzzleLocationAndRotation] weapon is null"), *GetName());
 		return;
 	}
+	OnShoot();
 	weapon->FireClient(true);
 	ServerSpawnProjectile(FVector::ZeroVector, FRotator::ZeroRotator);
 }

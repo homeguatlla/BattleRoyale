@@ -125,8 +125,18 @@ void UAbilityShootProjectileGun::CreateTaskPlayMontageShooting(const IICharacter
 
 	//const auto abilitySystemInterface = character->GetAbilitySystemComponentBase();
 	//abilitySystemInterface->SetSimulatedMontage(character->GetSimulatedShootingMontage());
-	
-	const auto taskPlayMontage = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+
+	//Ejecutamos el play montage solo en cliente.
+	animInstance->Montage_Play(character->GetShootingMontage(), 1.0);
+
+	//Si hacemos un task, este se replica y entonces no funciona bien porque ejecuta un montage en primera persona
+	//y al replicar tiene que ser uno en tercera persona.
+	//Esto se puede solucionar sobreescribiendo los unos métodos del abilitycomponentsystem pero
+	//genera un poco de código -raro- pues habría que crear un método que dado un montage en 1p te devuelva el
+	//equivalente en 3p. Hay que ver si vale la pena. Por ahora no lo vamos a usar.
+	//Tener en cuenta que el ability sistem component está en el playerState y habría que aumentar
+	//el netfrecuencyUpdate
+	/*const auto taskPlayMontage = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this,
 		NAME_None,
 		character->GetShootingMontage(),
@@ -138,5 +148,5 @@ void UAbilityShootProjectileGun::CreateTaskPlayMontageShooting(const IICharacter
 	taskPlayMontage->OnInterrupted.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCancelled);
 	taskPlayMontage->OnCompleted.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCompleted);
 	taskPlayMontage->OnBlendOut.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCompleted);
-	taskPlayMontage->ReadyForActivation();
+	taskPlayMontage->ReadyForActivation();*/
 }

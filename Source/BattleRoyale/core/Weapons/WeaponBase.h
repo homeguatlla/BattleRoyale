@@ -29,6 +29,9 @@ class BATTLEROYALE_API AWeaponBase : public AActor, public IIWeapon
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	UParticleSystem* MuzzleEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	UTexture2D* CrossHair;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	float DistanceFromMuzzleLocation = { 20.0f};

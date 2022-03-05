@@ -86,6 +86,9 @@ public:
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
 	void OnStopSprinting(float maxSpeed);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
+	void OnShoot();
 	
 	//UFUNCTION(BlueprintCallable)
 	virtual bool CanJump() const override;
