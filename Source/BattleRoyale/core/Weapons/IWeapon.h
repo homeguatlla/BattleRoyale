@@ -45,5 +45,8 @@ public:
 	virtual USoundBase* GetFireSound() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual UTexture2D* GetCrossHairTexture() const = 0;
+	
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual UParticleSystem* GetMuzzleEffect() const = 0;
 };

@@ -21,7 +21,9 @@ public class BattleRoyale : ModuleRules
 			//GAS
 			"GameplayAbilities",
 			"GameplayTags",
-			"GameplayTasks"
+			"GameplayTasks",
+			//HUD
+			"UMG"
 		});
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{

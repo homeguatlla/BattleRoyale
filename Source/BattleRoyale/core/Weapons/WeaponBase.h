@@ -56,6 +56,8 @@ public:
 
 	virtual USoundBase* GetFireSound() const override { return FireSound; }
 	virtual UParticleSystem* GetMuzzleEffect() const override { return MuzzleEffect; }
+
+	virtual UTexture2D* GetCrossHairTexture() const override { return CrossHair; }
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Weapon")
 	void OnFire(bool isFirstPerson);
