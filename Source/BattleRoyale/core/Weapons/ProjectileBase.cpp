@@ -3,6 +3,8 @@
 #include "ProjectileBase.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/DamageType.h"
+#include "Kismet/GameplayStatics.h"
 
 AProjectileBase::AProjectileBase() 
 {
@@ -10,8 +12,12 @@ AProjectileBase::AProjectileBase()
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(5.0f);
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
-	CollisionComp->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);		// set up a notification for when this component hits something blocking
 
+	if(HasAuthority())
+	{
+		CollisionComp->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);		// set up a notification for when this component hits something blocking
+	}
+	
 	// Players can't walk on it
 	CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
 	CollisionComp->CanCharacterStepUpOn = ECB_No;
@@ -30,7 +36,18 @@ AProjectileBase::AProjectileBase()
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
 
+	//Setup damage
+	DamageType = UDamageType::StaticClass();
+	Damage = 10;
+	
 	bReplicates = true;
+}
+
+void AProjectileBase::Destroyed()
+{
+	Super::Destroyed();
+
+	OnExplode();
 }
 
 void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -39,7 +56,22 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
-
+		if(OtherActor->CanBeDamaged())
+		{
+			AController* controller = nullptr;
+			if(GetInstigator())
+			{
+				controller = GetInstigator()->Controller;
+			}
+			UGameplayStatics::ApplyPointDamage(
+				OtherActor,
+				Damage,
+				NormalImpulse,
+				Hit,
+				controller,
+				this,
+				DamageType);
+		}
 		Destroy();
 	}
 }

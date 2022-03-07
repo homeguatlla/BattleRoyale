@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "IProjectile.h"
 #include "GameFramework/Actor.h"
 #include "ProjectileBase.generated.h"
 
@@ -10,7 +11,7 @@ class USphereComponent;
 class UProjectileMovementComponent;
 
 UCLASS(config=Game)
-class AProjectileBase : public AActor
+class AProjectileBase : public AActor, public IIProjectile
 {
 	GENERATED_BODY()
 
@@ -21,9 +22,34 @@ class AProjectileBase : public AActor
 	/** Projectile movement component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	UProjectileMovementComponent* ProjectileMovement;
+	
+	// Particle used when the projectile impacts against another object and explodes.
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	UParticleSystem* ExplosionEffect;
+
+	// Particle used when the projectile impacts against another object and explodes.
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	USoundBase* ExplosionSound;
+	
+	//The damage type and damage that will be done by this projectile
+	UPROPERTY(EditAnywhere, Category = "Projectile")
+	TSubclassOf<class UDamageType> DamageType;
+
+	//The damage dealt by this projectile.
+	UPROPERTY(EditAnywhere, Category="Projectile")
+	float Damage;
+
 
 public:
 	AProjectileBase();
+
+	virtual void Destroyed() override;
+
+	virtual UParticleSystem* GetExplosionEffect() const override { return ExplosionEffect; }
+	virtual USoundBase* GetExplosionSound() const override { return ExplosionSound; }
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "Projectile")
+	void OnExplode();
 
 	/** called when projectile hits something */
 	UFUNCTION()
