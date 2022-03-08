@@ -48,6 +48,10 @@ class ACharacterBase : public ACharacter, public IICharacter
 	UPROPERTY()
 	UMaterialInstanceDynamic* mCharacterMesh1PMaterial = nullptr;
 
+	/** The player's current health. When reduced to 0, they are considered dead.*/
+	UPROPERTY(ReplicatedUsing=OnRep_CurrentHealth)
+	float mCurrentHealth;
+
 public:
 	ACharacterBase();
 	
@@ -68,7 +72,13 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual FRotator GetCurrentControlRotation() const override { return mControlRotation; }
-			
+
+	UFUNCTION(BlueprintCallable)
+	virtual float GetCurrentHealth() const override { return mCurrentHealth; }
+	
+	UFUNCTION(BlueprintCallable)
+	virtual float GetMaxHealth() const override { return MaxHealth; }
+	
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsFalling() const override { return GetCharacterMovement()->IsFalling(); }
 
@@ -116,6 +126,9 @@ public:
 
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const override;
 	
+	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	                         AActor* DamageCauser) override;
+	
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	void ChangeCharacterMesh1PColor(const FColor& color);	
 	
@@ -149,7 +162,11 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS Abilities")
 	TArray<TSubclassOf<class UGameplayAbilityBase>> mDefaultAbilities;
-	
+
+	/** The player's maximum health. This is the highest that their health can be, and the value that their health starts at when spawned.*/
+	UPROPERTY(EditDefaultsOnly, Category = "Health")
+	float MaxHealth{1.0};
+
 protected:
 	
 	/** Resets HMD orientation and position in VR. */
@@ -196,7 +213,9 @@ private:
 	
 	void EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptInterface<IIWeapon> weapon) const;
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
-	
+	void UpdateHealth();
+	void SetCurrentHealth(float health);
+
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerSpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation);
 	
@@ -209,6 +228,9 @@ private:
 	UFUNCTION(Unreliable, Server, WithValidation)
 	void ServerSetCharacterControlRotation(const FRotator& rotation);
 	
+	/** RepNotify for changes made to current health.*/
+	UFUNCTION()
+	void OnRep_CurrentHealth();
 public:
 	/** Returns Mesh1P subobject **/
 	USkeletalMeshComponent* GetMesh1P() const { return mCharacterMesh1P; }

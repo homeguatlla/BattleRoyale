@@ -60,6 +60,8 @@ ACharacterBase::ACharacterBase()
 	R_MotionController->SetupAttachment(RootComponent);
 	L_MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("L_MotionController"));
 	L_MotionController->SetupAttachment(RootComponent);
+
+	mCurrentHealth = MaxHealth;
 }
 
 void ACharacterBase::ChangeCharacterMesh1PColor(const FColor& color)
@@ -160,6 +162,7 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(ACharacterBase, mControlRotation, COND_SimulatedOnly);
+	DOREPLIFETIME(ACharacterBase, mCurrentHealth);
 }
 
 void ACharacterBase::BindAbilityActivationToInputComponent() const
@@ -342,6 +345,26 @@ IIAbilitySystemInterfaceBase* ACharacterBase::GetAbilitySystemComponentBase() co
 	return GetPlayerStateInterface()->GetAbilitySystemComponentInterface();
 }
 
+void ACharacterBase::SetCurrentHealth(float health)
+{
+	if(HasAuthority())
+	{
+		mCurrentHealth = FMath::Clamp(health, 0.0f, MaxHealth);	
+		UpdateHealth();
+	}
+}
+
+float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
+                                 AActor* DamageCauser)
+{
+	//return Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	const float damageApplied = mCurrentHealth - Damage;
+	SetCurrentHealth(damageApplied);
+	
+	return damageApplied;
+}
+
 void ACharacterBase::OnResetVR()
 {
 	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
@@ -436,6 +459,26 @@ void ACharacterBase::PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* 
 			AnimInstance->Montage_Play(montage, 1.f);
 		}
 	}
+}
+
+void ACharacterBase::UpdateHealth()
+{
+	//Client specific
+	if(IsLocallyControlled())
+	{
+		
+	}
+
+	//Server specific
+	if(HasAuthority())
+	{
+		
+	}
+}
+
+void ACharacterBase::OnRep_CurrentHealth()
+{
+	UpdateHealth();
 }
 
 void ACharacterBase::ServerSetCharacterControlRotation_Implementation(const FRotator& rotation)
