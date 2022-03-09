@@ -7,4 +7,4 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCharacter, Warning, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogWeapon, Warning, All);
-DECLARE_LOG_CATEGORY_EXTERN(LogGameMode, Warning, All);
+//DECLARE_LOG_CATEGORY_EXTERN(LogGameMode, Warning, All);

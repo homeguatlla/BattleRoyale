@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+﻿/*#include "CoreMinimal.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 
@@ -11,6 +11,8 @@
 
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
+
+#if WITH_EDITOR
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
 #include "Tests/AutomationEditorCommon.h"
@@ -23,6 +25,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSprintTest_WhenSpawningANewCharacter_CanNotSpr
 
 bool FSprintTest_WhenSpawningANewCharacter_CanNotSprint::RunTest(const FString& Parameters)
 {
+
 	UWorld* world = FAutomationEditorCommonUtils::CreateNewMap(); 
 	if (!world)
 	{
@@ -121,5 +124,5 @@ bool FSprintTest_WhenAbilitySprintIsTriggered_And_CanSprint_CharacterIsSprinting
 	
 	return true;
 }
-
 #endif
+#endif*/

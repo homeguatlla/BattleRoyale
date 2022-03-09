@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+﻿/*#include "CoreMinimal.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 
@@ -11,6 +11,8 @@
 
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
+
+#if WITH_EDITOR
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
 #include "Tests/AutomationEditorCommon.h"
@@ -50,6 +52,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FJumpTest_WhenCharacterIsFalling_CanNotJump,
 
 bool FJumpTest_WhenCharacterIsFalling_CanNotJump::RunTest(const FString& Parameters)
 {
+
 	UWorld* world = FAutomationEditorCommonUtils::CreateNewMap(); 
 	if (!world)
 	{
@@ -126,5 +129,6 @@ bool FJumpTest_WhenAbilityJumpIsTriggered_And_CanJump_CharacterIsJumping::RunTes
 	
 	return true;
 }
-PRAGMA_ENABLE_OPTIMIZATION_ACTUAL 
+PRAGMA_ENABLE_OPTIMIZATION_ACTUAL
 #endif
+#endif*/
