@@ -466,7 +466,8 @@ void ACharacterBase::UpdateHealth()
 	//Client specific
 	if(IsLocallyControlled())
 	{
-		
+		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+		gameInstance->GetEventDispatcher()->OnRefreshHealth.Broadcast(mCurrentHealth);
 	}
 
 	//Server specific

@@ -37,7 +37,7 @@ void ACharacterHUD::BindToDelegate()
 		const auto eventDispatcher = gameInstance->GetEventDispatcher();
 
 		eventDispatcher->OnEquippedWeapon.AddDynamic(this, &ACharacterHUD::OnEquippedWeapon);
-		//eventDispatcher->OnUpdateHealth.AddDynamic(this, &ACharacterHUD::OnUpdateHealthReceived);
+		eventDispatcher->OnRefreshHealth.AddDynamic(this, &ACharacterHUD::OnRefreshHealthReceived);
 	}
 }
 
@@ -49,7 +49,7 @@ void ACharacterHUD::OnEquippedWeapon(TScriptInterface<IIWeapon> weapon)
 	}
 }
 
-void ACharacterHUD::OnUpdateHealthReceived(float health)
+void ACharacterHUD::OnRefreshHealthReceived(float health)
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UHealthHUD::StaticClass()))
 	{

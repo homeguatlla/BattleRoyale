@@ -20,19 +20,14 @@ public:
 	ACharacterHUD();
 
 	void Initialize(int hudIndex, APlayerController* playerController, TArray<TSubclassOf<UUserWidget>> CharacterHUDWidgetClasses);
-	
-	UFUNCTION()
-	void OnUpdateHealthReceived(float health);
-	
-	//inherit from IHealthHUD
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Health")
-	void OnUpdateHealth(float health);
 
 private:
 	void BindToDelegate();
 	UFUNCTION()
 	void OnEquippedWeapon(TScriptInterface<IIWeapon> weapon);
-
+	UFUNCTION()
+	void OnRefreshHealthReceived(float health);
+	
 public:
 	UPROPERTY()
 	UUserWidget* mHUDWidget;

@@ -160,12 +160,12 @@ public:
 	UPROPERTY(Transient, Replicated)
 	struct FRotator mControlRotation;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS Abilities")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Character")
 	TArray<TSubclassOf<class UGameplayAbilityBase>> mDefaultAbilities;
 
 	/** The player's maximum health. This is the highest that their health can be, and the value that their health starts at when spawned.*/
-	UPROPERTY(EditDefaultsOnly, Category = "Health")
-	float MaxHealth{1.0};
+	UPROPERTY(EditDefaultsOnly, Category = "Character")
+	float MaxHealth{100.0};
 
 protected:
 	
