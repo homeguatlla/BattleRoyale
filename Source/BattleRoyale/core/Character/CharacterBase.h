@@ -57,6 +57,9 @@ public:
 	
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual FVector GetLocation() const override { return GetActorLocation(); }
 	
 	UFUNCTION(BlueprintCallable)
 	virtual TScriptInterface<IIWeapon> GetEquippedWeapon() const override;
@@ -99,6 +102,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
 	void OnShoot();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
+	void OnTakenDamage(float damage);
 	
 	//UFUNCTION(BlueprintCallable)
 	virtual bool CanJump() const override;
@@ -213,7 +219,7 @@ private:
 	
 	void EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptInterface<IIWeapon> weapon) const;
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
-	void UpdateHealth();
+	void UpdateHealth(float damage);
 	void SetCurrentHealth(float health);
 
 	UFUNCTION(Reliable, Server, WithValidation)
@@ -230,7 +236,7 @@ private:
 	
 	/** RepNotify for changes made to current health.*/
 	UFUNCTION()
-	void OnRep_CurrentHealth();
+	void OnRep_CurrentHealth(float oldHealth);
 public:
 	/** Returns Mesh1P subobject **/
 	USkeletalMeshComponent* GetMesh1P() const { return mCharacterMesh1P; }

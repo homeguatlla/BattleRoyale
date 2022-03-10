@@ -349,8 +349,8 @@ void ACharacterBase::SetCurrentHealth(float health)
 {
 	if(HasAuthority())
 	{
-		mCurrentHealth = FMath::Clamp(health, 0.0f, MaxHealth);	
-		UpdateHealth();
+		UpdateHealth(mCurrentHealth - health);
+		mCurrentHealth = FMath::Clamp(health, 0.0f, MaxHealth);
 	}
 }
 
@@ -461,13 +461,18 @@ void ACharacterBase::PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* 
 	}
 }
 
-void ACharacterBase::UpdateHealth()
+void ACharacterBase::UpdateHealth(float damage)
 {
 	//Client specific
 	if(IsLocallyControlled())
 	{
 		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 		gameInstance->GetEventDispatcher()->OnRefreshHealth.Broadcast(mCurrentHealth);
+	}
+	else
+	{
+		//Remote specific
+		OnTakenDamage(damage);
 	}
 
 	//Server specific
@@ -477,9 +482,9 @@ void ACharacterBase::UpdateHealth()
 	}
 }
 
-void ACharacterBase::OnRep_CurrentHealth()
+void ACharacterBase::OnRep_CurrentHealth(float oldHealth)
 {
-	UpdateHealth();
+	UpdateHealth(oldHealth - mCurrentHealth);
 }
 
 void ACharacterBase::ServerSetCharacterControlRotation_Implementation(const FRotator& rotation)
