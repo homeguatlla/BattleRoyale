@@ -481,7 +481,7 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 		//can see the hit points over the damaged.
 		if(damage.playerCauser->GetLocalRole() == ENetRole::ROLE_AutonomousProxy)
 		{
-			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation());
+			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation(), damage.health);
 		}
 	}
 	
@@ -490,7 +490,7 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 		//And also if we are in the server, then if the causer is locallycontrolled
 		if(damage.playerCauser->IsLocallyControlled())
 		{
-			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation());
+			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation(), damage.health);
 		}
 	}
 }

@@ -106,7 +106,7 @@ public:
 	void OnShoot();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
-	void OnTakenDamage(float damage, const FVector& damageCauserLocation);
+	void OnTakenDamage(float damage, const FVector& damageCauserLocation, float currentHealth);
 	
 	//UFUNCTION(BlueprintCallable)
 	virtual bool CanJump() const override;
