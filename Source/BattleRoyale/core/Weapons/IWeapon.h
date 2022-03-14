@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "IWeapon.generated.h"
 
+class ACharacterBase;
 // This class does not need to be modified.
 UINTERFACE(Blueprintable, meta = (CannotImplementInterfaceInBlueprint))
 class UIWeapon : public UInterface
@@ -49,4 +50,6 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual UParticleSystem* GetMuzzleEffect() const = 0;
+
+	virtual void SetCharacterOwner(ACharacterBase* character) = 0;
 };

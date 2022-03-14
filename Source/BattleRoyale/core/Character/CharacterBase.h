@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ICharacter.h"
+#include "BattleRoyale/core/Data/TakeDamageData.h"
 #include "BattleRoyale/core/Weapons/WeaponBase.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -45,12 +46,13 @@ class ACharacterBase : public ACharacter, public IICharacter
 	
 	TScriptInterface<IIWeapon> mEquipedWeapon;
 
+	float mCurrentHealth;
+	
 	UPROPERTY()
 	UMaterialInstanceDynamic* mCharacterMesh1PMaterial = nullptr;
-
-	/** The player's current health. When reduced to 0, they are considered dead.*/
-	UPROPERTY(ReplicatedUsing=OnRep_CurrentHealth)
-	float mCurrentHealth;
+	
+	UPROPERTY(ReplicatedUsing=OnRep_TakeDamageData)
+	FTakeDamageData mDamageCauser;
 
 public:
 	ACharacterBase();
@@ -104,7 +106,7 @@ public:
 	void OnShoot();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
-	void OnTakenDamage(float damage);
+	void OnTakenDamage(float damage, const FVector& damageCauserLocation);
 	
 	//UFUNCTION(BlueprintCallable)
 	virtual bool CanJump() const override;
@@ -206,7 +208,7 @@ protected:
 private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	void Initialize(bool isLocallyControlled) const;
+	void Initialize(bool isLocallyControlled);
 	void InitializeGAS();
 
 	void BindAbilityActivationToInputComponent() const;
@@ -217,10 +219,9 @@ private:
 	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
 	void SpawnWeapon();
 	
-	void EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptInterface<IIWeapon> weapon) const;
+	void EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptInterface<IIWeapon> weapon);
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
-	void UpdateHealth(float damage);
-	void SetCurrentHealth(float health);
+	void UpdateHealth(const FTakeDamageData& damage);
 
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerSpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation);
@@ -234,9 +235,8 @@ private:
 	UFUNCTION(Unreliable, Server, WithValidation)
 	void ServerSetCharacterControlRotation(const FRotator& rotation);
 	
-	/** RepNotify for changes made to current health.*/
 	UFUNCTION()
-	void OnRep_CurrentHealth(float oldHealth);
+	void OnRep_TakeDamageData();
 public:
 	/** Returns Mesh1P subobject **/
 	USkeletalMeshComponent* GetMesh1P() const { return mCharacterMesh1P; }

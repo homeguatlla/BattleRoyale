@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "WeaponBase.generated.h"
 
+class IICharacter;
 UCLASS(Blueprintable)
 class BATTLEROYALE_API AWeaponBase : public AActor, public IIWeapon
 {
@@ -57,6 +58,8 @@ public:
 	virtual USoundBase* GetFireSound() const override { return FireSound; }
 	virtual UParticleSystem* GetMuzzleEffect() const override { return MuzzleEffect; }
 
+	virtual void SetCharacterOwner(ACharacterBase* character) override;
+	
 	virtual UTexture2D* GetCrossHairTexture() const override { return CrossHair; }
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Weapon")

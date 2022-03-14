@@ -6,6 +6,8 @@
 #include "DrawDebugHelpers.h"
 #include "ProjectileBase.h"
 #include "BattleRoyale/BattleRoyale.h"
+#include "BattleRoyale/core/Character/CharacterBase.h"
+#include "BattleRoyale/core/Character/ICharacter.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -75,7 +77,15 @@ void AWeaponBase::SpawnProjectile(const FVector& muzzleLocation, const FRotator&
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
 			// spawn the projectile at the muzzle
-			World->SpawnActor<AProjectileBase>(ProjectileClass, GetProjectileSpawnLocation(DistanceFromMuzzleLocation), muzzleRotation, ActorSpawnParams);
+			const auto projectile = World->SpawnActor<AProjectileBase>(ProjectileClass, GetProjectileSpawnLocation(DistanceFromMuzzleLocation), muzzleRotation, ActorSpawnParams);
+			if(projectile)
+			{
+				projectile->SetInstigator(Cast<APawn>(GetOwner()));
+			}
+			else
+			{
+				UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::SpawnProjectile] Couldn't spawn the projectile"), *GetName());
+			}
 		}
 	}
 }
@@ -101,6 +111,11 @@ bool AWeaponBase::CanBeFired() const
 void AWeaponBase::FireClient(bool isFirstPerson)
 {
 	OnFire(isFirstPerson);
+}
+
+void AWeaponBase::SetCharacterOwner(ACharacterBase* character)
+{
+	SetOwner(character);
 }
 
 void AWeaponBase::OnFire_Implementation(bool isFirstPerson)

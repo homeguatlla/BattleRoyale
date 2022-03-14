@@ -19,6 +19,7 @@
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
+#include "GameFramework/GameSession.h"
 #include "GameFramework/PlayerState.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Net/UnrealNetwork.h"
@@ -100,7 +101,7 @@ void ACharacterBase::OnRep_PlayerState()
 	BindAbilityActivationToInputComponent();
 }
 
-void ACharacterBase::Initialize(bool isLocallyControlled) const
+void ACharacterBase::Initialize(bool isLocallyControlled)
 {
 	EquipWeapon(isLocallyControlled ? mCharacterMesh1P: GetMesh(), mEquipedWeapon);
 	mCharacterMesh1P->SetHiddenInGame(!isLocallyControlled, true);
@@ -162,7 +163,7 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(ACharacterBase, mControlRotation, COND_SimulatedOnly);
-	DOREPLIFETIME(ACharacterBase, mCurrentHealth);
+	DOREPLIFETIME(ACharacterBase, mDamageCauser);
 }
 
 void ACharacterBase::BindAbilityActivationToInputComponent() const
@@ -345,24 +346,23 @@ IIAbilitySystemInterfaceBase* ACharacterBase::GetAbilitySystemComponentBase() co
 	return GetPlayerStateInterface()->GetAbilitySystemComponentInterface();
 }
 
-void ACharacterBase::SetCurrentHealth(float health)
-{
-	if(HasAuthority())
-	{
-		UpdateHealth(mCurrentHealth - health);
-		mCurrentHealth = FMath::Clamp(health, 0.0f, MaxHealth);
-	}
-}
-
 float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
                                  AActor* DamageCauser)
 {
 	//return Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
-
-	const float damageApplied = mCurrentHealth - Damage;
-	SetCurrentHealth(damageApplied);
 	
-	return damageApplied;
+	if(HasAuthority())
+	{
+		const auto newHealth = mCurrentHealth - Damage;
+		mDamageCauser.health = FMath::Clamp(newHealth, 0.0f, MaxHealth);
+		mDamageCauser.damage = Damage;
+		mDamageCauser.playerCauser = EventInstigator->GetCharacter();
+		//the replication is not received by server so, we need to update it here
+		UpdateHealth(mDamageCauser);
+	}
+	
+	const float newHealth = mCurrentHealth - Damage;
+	return newHealth;
 }
 
 void ACharacterBase::OnResetVR()
@@ -426,7 +426,7 @@ bool ACharacterBase::ServerSpawnProjectile_Validate(const FVector& muzzleLocatio
 	return true;
 }
 
-void ACharacterBase::EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptInterface<IIWeapon> weapon) const
+void ACharacterBase::EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptInterface<IIWeapon> weapon)
 {
 	if(weapon.GetObject() == nullptr)
 	{
@@ -438,13 +438,15 @@ void ACharacterBase::EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptI
 		characterMesh,
 		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		RightHandSocketName);
-
+	
 	if(!isAttached)
 	{
 		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::EquipWeapon] weapon not attached to the character"), *GetName());
 		return;
 	}
-
+	
+	weapon->SetCharacterOwner(this);
+	
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 	gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(weapon);
 }
@@ -461,30 +463,41 @@ void ACharacterBase::PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* 
 	}
 }
 
-void ACharacterBase::UpdateHealth(float damage)
+void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 {
+	mCurrentHealth = damage.health;
+	
 	//Client specific
 	if(IsLocallyControlled())
 	{
 		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 		gameInstance->GetEventDispatcher()->OnRefreshHealth.Broadcast(mCurrentHealth);
 	}
-	else
+	
+	if(!IsLocallyControlled())
 	{
-		//Remote specific
-		OnTakenDamage(damage);
+		//Remote specific no server
+		//only the remote where the playerCauser is autonomous (is the player who shoot without taking into accout the server case)
+		//can see the hit points over the damaged.
+		if(damage.playerCauser->GetLocalRole() == ENetRole::ROLE_AutonomousProxy)
+		{
+			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation());
+		}
 	}
-
-	//Server specific
-	if(HasAuthority())
+	
+	if(HasAuthority()) //Server specific
 	{
-		
+		//And also if we are in the server, then if the causer is locallycontrolled
+		if(damage.playerCauser->IsLocallyControlled())
+		{
+			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation());
+		}
 	}
 }
 
-void ACharacterBase::OnRep_CurrentHealth(float oldHealth)
+void ACharacterBase::OnRep_TakeDamageData()
 {
-	UpdateHealth(oldHealth - mCurrentHealth);
+	UpdateHealth(mDamageCauser);
 }
 
 void ACharacterBase::ServerSetCharacterControlRotation_Implementation(const FRotator& rotation)
