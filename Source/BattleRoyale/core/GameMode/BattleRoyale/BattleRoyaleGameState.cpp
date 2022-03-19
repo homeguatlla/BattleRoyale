@@ -11,7 +11,7 @@ mRemainingCounts{0}
 {
 }
 
-void ABattleRoyaleGameState::StartCountdownServer(uint8 duration)
+void ABattleRoyaleGameState::StartCountdownServer(int duration)
 {
 	mDidCountdownStart = true;
 
@@ -35,11 +35,11 @@ void ABattleRoyaleGameState::OnCountdownFinishedServer()
 	{
 		GetWorld()->GetTimerManager().ClearTimer(mCountdownTimerHandle);
 		OnFinishCountDownDelegate.Broadcast();
-		UE_LOG(LogTemp, Warning, TEXT("ABattleRoyaleGameStateBase::OnCountdownFinished Countdown finished"));
+		UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameStateBase::OnCountdownFinished Countdown finished"));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ABattleRoyaleGameStateBase::OnCountdownFinished %d"), mRemainingCounts);
+		UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameStateBase::OnCountdownFinished %d"), mRemainingCounts);
 	}
 	OnRefreshCountDownDelegate.Broadcast(mRemainingCounts);
 }

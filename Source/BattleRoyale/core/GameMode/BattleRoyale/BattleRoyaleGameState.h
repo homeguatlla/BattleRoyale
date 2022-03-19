@@ -19,7 +19,7 @@ public:
 	ABattleRoyaleGameState();
 	
 	virtual bool DidCountdownStart() const override{ return mDidCountdownStart; }
-	virtual void StartCountdownServer(uint8 duration) override;
+	virtual void StartCountdownServer(int duration) override;
 	virtual bool DidCountdownFinish() const override { return mRemainingCounts <= 0; }
 	
 	UPROPERTY(BlueprintAssignable, Category=BattleRoyaleGameState)
@@ -39,5 +39,5 @@ private:
 	FTimerHandle mCountdownTimerHandle;
 
 	UPROPERTY(ReplicatedUsing=OnRep_RemainingCount)
-	uint8 mRemainingCounts;
+	int mRemainingCounts;
 };

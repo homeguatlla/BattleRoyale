@@ -27,5 +27,5 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IGameState")
 	virtual bool DidCountdownFinish() const = 0;
 
-	virtual void StartCountdownServer(uint8 duration) = 0;
+	virtual void StartCountdownServer(int duration) = 0;
 };

@@ -7,19 +7,25 @@
 #include "BattleRoyaleHUD.generated.h"
 
 UCLASS()
-class ABattleRoyaleHUD : public AHUD
+class BATTLEROYALE_API ABattleRoyaleHUD : public AHUD
 {
 	GENERATED_BODY()
 
 public:
-	ABattleRoyaleHUD();
+	
+	/** Blueprint class which displays the ability */
+	UPROPERTY(EditAnywhere, Category = "Character HUDs")
+	TArray<TSubclassOf<UUserWidget>> CharacterHUDWidgetClasses;
+	
+	UPROPERTY()
+	UUserWidget* mCharacterHUDWidget;
 
-	/** Primary draw call for the HUD */
-	virtual void DrawHUD() override;
+protected:
+	virtual void BeginPlay() override;
 
 private:
-	/** Crosshair asset pointer */
-	class UTexture2D* CrosshairTex;
-
+	void CreateCharacterHUD(TArray<TSubclassOf<UUserWidget>> widgetClasses);
+	
+	class ACharacterHUD* mCharacterHUD;
 };
 

@@ -5,7 +5,7 @@
 #include "BattleRoyaleGameState.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/HUD/BattleRoyaleHUD.h"
-#include "BattleRoyale/core/PlayerController/BattleRoyalePlayerController.h"
+#include "BattleRoyale/core/PlayerController/PlayerControllerBase.h"
 #include "GameFramework/GameState.h"
 
 ABattleRoyaleGameMode::ABattleRoyaleGameMode()
@@ -22,7 +22,7 @@ ABattleRoyaleGameMode::ABattleRoyaleGameMode()
 }
 void ABattleRoyaleGameMode::OnMatchStateChanged(FName matchState)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ABattleRoyaleGameMode::OnMatchStateSet %s"), *matchState.ToString());
+	UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameMode::OnMatchStateSet %s"), *matchState.ToString());
 }
 
 bool ABattleRoyaleGameMode::ReadyToStartMatch_Implementation()
@@ -43,7 +43,7 @@ bool ABattleRoyaleGameMode::ReadyToStartMatch_Implementation()
 void ABattleRoyaleGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-	UE_LOG(LogTemp, Warning, TEXT("ABattleRoyaleGameMode::PostLogin new player"));
+	UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameMode::PostLogin new player"));
 }
 
 void ABattleRoyaleGameMode::TryToStartCountdown() const
@@ -59,7 +59,7 @@ void ABattleRoyaleGameMode::TryToStartCountdown() const
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("ABattleRoyaleGameMode::TryToStartCountdown Is GameState implementing IIGameState?"));
+		UE_LOG(LogGameMode, Error, TEXT("ABattleRoyaleGameMode::TryToStartCountdown Is GameState implementing IIGameState?"));
 	}
 }
 
@@ -80,7 +80,7 @@ void ABattleRoyaleGameMode::GenericPlayerInitialization(AController* controller)
 	
 	DisableControllerInput(controller);
 	
-	UE_LOG(LogTemp, Warning, TEXT("ABattleRoyaleGameMode::GenericPlayerInitialization num players = %d"), mPlayerControllers.Num());
+	UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameMode::GenericPlayerInitialization num players = %d"), mPlayerControllers.Num());
 }
 
 void ABattleRoyaleGameMode::DisableControllerInput(AController* controller) const
