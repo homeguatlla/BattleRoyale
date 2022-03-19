@@ -71,8 +71,8 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 				Damage,
 				NormalImpulse,
 				Hit,
-				controller,
-				this,
+				controller, //the controller of the character who shoot
+				this, //projectile is causing damage
 				DamageType);
 		}
 		Destroy();

@@ -107,7 +107,10 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
 	void OnTakenDamage(float damage, const FVector& damageCauserLocation, float currentHealth);
-	
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
+	void OnDead();
+
 	//UFUNCTION(BlueprintCallable)
 	virtual bool CanJump() const override;
 
@@ -222,7 +225,8 @@ private:
 	void EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptInterface<IIWeapon> weapon);
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
 	void UpdateHealth(const FTakeDamageData& damage);
-
+	void ApplyDamageOrDeath(const FTakeDamageData& damage);
+	
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerSpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation);
 	

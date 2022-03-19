@@ -359,6 +359,10 @@ float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
 		mDamageCauser.playerCauser = EventInstigator->GetCharacter();
 		//the replication is not received by server so, we need to update it here
 		UpdateHealth(mDamageCauser);
+		if(mCurrentHealth <= 0)
+		{
+			SetCanBeDamaged(false);
+		}
 	}
 	
 	const float newHealth = mCurrentHealth - Damage;
@@ -481,7 +485,7 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 		//can see the hit points over the damaged.
 		if(damage.playerCauser->GetLocalRole() == ENetRole::ROLE_AutonomousProxy)
 		{
-			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation(), damage.health);
+			ApplyDamageOrDeath(damage);
 		}
 	}
 	
@@ -490,8 +494,20 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 		//And also if we are in the server, then if the causer is locallycontrolled
 		if(damage.playerCauser->IsLocallyControlled())
 		{
-			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation(), damage.health);
+			ApplyDamageOrDeath(damage);
 		}
+	}
+}
+
+void ACharacterBase::ApplyDamageOrDeath(const FTakeDamageData& damage)
+{
+	if(damage.health > 0)
+	{
+		OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation(), damage.health);
+	}
+	else
+	{
+		OnDead();
 	}
 }
 
