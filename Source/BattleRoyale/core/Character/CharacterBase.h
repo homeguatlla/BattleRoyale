@@ -83,6 +83,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	virtual float GetMaxHealth() const override { return MaxHealth; }
+
+	UFUNCTION(BlueprintCallable)
+	virtual bool IsAlive() const override { return mCurrentHealth > 0; }
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsFalling() const override { return GetCharacterMovement()->IsFalling(); }
@@ -212,6 +215,7 @@ private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	void Initialize(bool isLocallyControlled);
+	void HideFirstPersonMesh() const;
 	void InitializeGAS();
 
 	void BindAbilityActivationToInputComponent() const;
@@ -223,9 +227,10 @@ private:
 	void SpawnWeapon();
 	
 	void EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptInterface<IIWeapon> weapon);
+	void UnEquipWeapon() const;
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
 	void UpdateHealth(const FTakeDamageData& damage);
-	void ApplyDamageOrDeath(const FTakeDamageData& damage);
+	void ServerDie();
 	
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerSpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation);

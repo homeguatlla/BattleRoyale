@@ -4,6 +4,7 @@
 #include "EventDispatcher.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquippedWeapon, TScriptInterface<IIWeapon>, weapon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnEquippedWeapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshHealth, float, health);
 
 
@@ -20,4 +21,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="Character Weapon")
 	FOnEquippedWeapon OnEquippedWeapon;
+
+	UPROPERTY(BlueprintAssignable, Category="Character Weapon")
+	FOnUnEquippedWeapon OnUnEquippedWeapon;
 };

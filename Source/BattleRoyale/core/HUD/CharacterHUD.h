@@ -26,6 +26,8 @@ private:
 	UFUNCTION()
 	void OnEquippedWeapon(TScriptInterface<IIWeapon> weapon);
 	UFUNCTION()
+	void OnUnEquippedWeapon();
+	UFUNCTION()
 	void OnRefreshHealthReceived(float health);
 	
 public:

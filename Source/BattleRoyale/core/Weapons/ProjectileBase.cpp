@@ -66,6 +66,7 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 			{
 				controller = GetInstigator()->Controller;
 			}
+			//This method is executed on server only
 			UGameplayStatics::ApplyPointDamage(
 				OtherActor,
 				Damage,

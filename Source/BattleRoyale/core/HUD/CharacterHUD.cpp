@@ -37,6 +37,7 @@ void ACharacterHUD::BindToDelegate()
 		const auto eventDispatcher = gameInstance->GetEventDispatcher();
 
 		eventDispatcher->OnEquippedWeapon.AddDynamic(this, &ACharacterHUD::OnEquippedWeapon);
+		eventDispatcher->OnUnEquippedWeapon.AddDynamic(this, &ACharacterHUD::OnUnEquippedWeapon);
 		eventDispatcher->OnRefreshHealth.AddDynamic(this, &ACharacterHUD::OnRefreshHealthReceived);
 	}
 }
@@ -46,6 +47,14 @@ void ACharacterHUD::OnEquippedWeapon(TScriptInterface<IIWeapon> weapon)
 	if (mHUDWidget->GetClass()->ImplementsInterface(UWeaponHUD::StaticClass()))
 	{
 		IWeaponHUD::Execute_OnEquippedWeapon(mHUDWidget, weapon->GetCrossHairTexture());
+	}
+}
+
+void ACharacterHUD::OnUnEquippedWeapon()
+{
+	if (mHUDWidget->GetClass()->ImplementsInterface(UWeaponHUD::StaticClass()))
+	{
+		IWeaponHUD::Execute_OnUnEquippedWeapon(mHUDWidget);
 	}
 }
 

@@ -51,6 +51,8 @@ public:
 	virtual FRotator GetMuzzleRotation() const override;
 	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules,
 	                               const FName& socketName) override;
+	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) override;
+	virtual void Destroy() override;
 	virtual bool CanBeFired() const override;
 	virtual void Fire() const override;
 	virtual void FireClient(bool isFirstPerson) override;

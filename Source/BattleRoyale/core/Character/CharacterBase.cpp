@@ -65,16 +65,6 @@ ACharacterBase::ACharacterBase()
 	mCurrentHealth = MaxHealth;
 }
 
-void ACharacterBase::ChangeCharacterMesh1PColor(const FColor& color)
-{
-	if(mCharacterMesh1PMaterial == nullptr)
-	{
-		mCharacterMesh1PMaterial = UGameplayBlueprintFunctionLibrary::CreateAndAssignMaterialInstanceDynamicToMesh(mCharacterMesh1P);
-	}
-
-	mCharacterMesh1PMaterial->SetVectorParameterValue("BodyColor", color);
-}
-
 void ACharacterBase::BeginPlay()
 {
 	// Call the base class  
@@ -154,7 +144,7 @@ void ACharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAxis("TurnRate", this, &ACharacterBase::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &ACharacterBase::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ACharacterBase::LookUpAtRate);
-
+	
 	BindAbilityActivationToInputComponent();
 }
 
@@ -349,24 +339,29 @@ IIAbilitySystemInterfaceBase* ACharacterBase::GetAbilitySystemComponentBase() co
 float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
                                  AActor* DamageCauser)
 {
-	//return Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	auto actualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 	
+	//TODO el damage se podría tratar en un componente Health o Damage del actor
+	//o bien en una abilidad.
+	//TODO hay que preguntar al gamemode si el instigator puede dañar al character
+	//si puede que diga cuanto daño le hace etc.
 	if(HasAuthority())
 	{
-		const auto newHealth = mCurrentHealth - Damage;
+		UE_LOG(LogCharacter, Warning, TEXT("ACharacterBase::TakeDamage Server"));
+		const auto newHealth = mCurrentHealth - actualDamage;
 		mDamageCauser.health = FMath::Clamp(newHealth, 0.0f, MaxHealth);
-		mDamageCauser.damage = Damage;
+		mDamageCauser.damage = actualDamage;
 		mDamageCauser.playerCauser = EventInstigator->GetCharacter();
 		//the replication is not received by server so, we need to update it here
 		UpdateHealth(mDamageCauser);
+		
 		if(mCurrentHealth <= 0)
 		{
-			SetCanBeDamaged(false);
+			ServerDie();
 		}
 	}
 	
-	const float newHealth = mCurrentHealth - Damage;
-	return newHealth;
+	return actualDamage;
 }
 
 void ACharacterBase::OnResetVR()
@@ -450,9 +445,24 @@ void ACharacterBase::EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptI
 	}
 	
 	weapon->SetCharacterOwner(this);
-	
-	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-	gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(weapon);
+
+	if(IsLocallyControlled())
+	{
+		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+		gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(weapon);
+	}
+}
+
+void ACharacterBase::UnEquipWeapon() const
+{
+	mEquipedWeapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	mEquipedWeapon->Destroy();
+
+	if(IsLocallyControlled())
+	{
+		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+		gameInstance->GetEventDispatcher()->OnUnEquippedWeapon.Broadcast();
+	}
 }
 
 void ACharacterBase::PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const
@@ -474,6 +484,7 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 	//Client specific
 	if(IsLocallyControlled())
 	{
+		//Update health hud
 		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 		gameInstance->GetEventDispatcher()->OnRefreshHealth.Broadcast(mCurrentHealth);
 	}
@@ -485,7 +496,13 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 		//can see the hit points over the damaged.
 		if(damage.playerCauser->GetLocalRole() == ENetRole::ROLE_AutonomousProxy)
 		{
-			ApplyDamageOrDeath(damage);
+			//notify to the character recieved damage, to show hit points
+			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation(), mCurrentHealth);
+			if(mCurrentHealth <=0)
+			{
+				//notify the character has dead
+				OnDead();
+			}
 		}
 	}
 	
@@ -494,21 +511,44 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 		//And also if we are in the server, then if the causer is locallycontrolled
 		if(damage.playerCauser->IsLocallyControlled())
 		{
-			ApplyDamageOrDeath(damage);
+			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation(), mCurrentHealth);
+			if(mCurrentHealth <= 0)
+			{
+				OnDead();
+			}
+		}
+	}
+
+	if (mCurrentHealth <= 0)
+	{
+		UnEquipWeapon();
+		HideFirstPersonMesh();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+		
+		if(IsLocallyControlled())
+		{
+			DisableInput(Cast<APlayerController>(GetController()));
 		}
 	}
 }
 
-void ACharacterBase::ApplyDamageOrDeath(const FTakeDamageData& damage)
+void ACharacterBase::ServerDie()
 {
-	if(damage.health > 0)
+	SetCanBeDamaged(false); //replicated
+	GetCharacterMovement()->StopMovementImmediately();
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->SetComponentTickEnabled(false);
+}
+
+void ACharacterBase::HideFirstPersonMesh() const
+{
+	if(!IsLocallyControlled())
 	{
-		OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation(), damage.health);
+		return;
 	}
-	else
-	{
-		OnDead();
-	}
+
+	mCharacterMesh1P->SetHiddenInGame(true, true);
 }
 
 void ACharacterBase::OnRep_TakeDamageData()
@@ -580,4 +620,14 @@ void ACharacterBase::SpawnWeapon()
 	{
 		UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::SpawnWeapon] weapon not implementing IIWeapon"));
 	}
+}
+
+void ACharacterBase::ChangeCharacterMesh1PColor(const FColor& color)
+{
+	if(mCharacterMesh1PMaterial == nullptr)
+	{
+		mCharacterMesh1PMaterial = UGameplayBlueprintFunctionLibrary::CreateAndAssignMaterialInstanceDynamicToMesh(mCharacterMesh1P);
+	}
+
+	mCharacterMesh1PMaterial->SetVectorParameterValue("BodyColor", color);
 }

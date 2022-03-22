@@ -99,7 +99,7 @@ void UAbilityShootProjectileGun::OnMontageCancelled()
 
 void UAbilityShootProjectileGun::OnEventMontageShootReceived(FGameplayTag EventTag, const FGameplayEventData* Payload) const
 {
-	if(mCharacter != nullptr)
+	if(mCharacter != nullptr && mCharacter->IsAlive())
 	{
 		//mCharacter->ServerShoot();
 		mCharacter->Shoot();
