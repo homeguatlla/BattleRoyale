@@ -6,7 +6,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquippedWeapon, TScriptInterface<IIWeapon>, weapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnEquippedWeapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshHealth, float, health);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDead);
 
 UCLASS(Blueprintable)
 class BATTLEROYALE_API UEventDispatcher : public UObject
@@ -24,4 +24,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="Character Weapon")
 	FOnUnEquippedWeapon OnUnEquippedWeapon;
+
+	UPROPERTY(BlueprintAssignable, Category="Player Dead")
+	FOnPlayerDead OnPlayerDead;
 };

@@ -29,6 +29,8 @@ private:
 	void OnUnEquippedWeapon();
 	UFUNCTION()
 	void OnRefreshHealthReceived(float health);
+	UFUNCTION()
+	void OnPlayerDead();
 	
 public:
 	UPROPERTY()

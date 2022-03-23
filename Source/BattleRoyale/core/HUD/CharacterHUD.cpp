@@ -3,6 +3,7 @@
 #include "CharacterHUD.h"
 
 #include "IHealthHUD.h"
+#include "IPlayerHUD.h"
 #include "IWeaponHUD.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
@@ -39,6 +40,7 @@ void ACharacterHUD::BindToDelegate()
 		eventDispatcher->OnEquippedWeapon.AddDynamic(this, &ACharacterHUD::OnEquippedWeapon);
 		eventDispatcher->OnUnEquippedWeapon.AddDynamic(this, &ACharacterHUD::OnUnEquippedWeapon);
 		eventDispatcher->OnRefreshHealth.AddDynamic(this, &ACharacterHUD::OnRefreshHealthReceived);
+		eventDispatcher->OnPlayerDead.AddDynamic(this, &ACharacterHUD::OnPlayerDead);
 	}
 }
 
@@ -63,5 +65,13 @@ void ACharacterHUD::OnRefreshHealthReceived(float health)
 	if (mHUDWidget->GetClass()->ImplementsInterface(UHealthHUD::StaticClass()))
 	{
 		IHealthHUD::Execute_OnRefreshHealth(mHUDWidget, health);
+	}
+}
+
+void ACharacterHUD::OnPlayerDead()
+{
+	if(mHUDWidget->GetClass()->ImplementsInterface(UPlayerHUD::StaticClass()))
+	{
+		IPlayerHUD::Execute_OnPlayerDead(mHUDWidget);
 	}
 }

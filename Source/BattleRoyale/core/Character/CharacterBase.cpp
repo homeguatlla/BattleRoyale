@@ -515,6 +515,7 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 			if(mCurrentHealth <= 0)
 			{
 				OnDead();
+				
 			}
 		}
 	}
@@ -529,6 +530,9 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 		if(IsLocallyControlled())
 		{
 			DisableInput(Cast<APlayerController>(GetController()));
+			//Update health hud
+			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+			gameInstance->GetEventDispatcher()->OnPlayerDead.Broadcast();
 		}
 	}
 }
