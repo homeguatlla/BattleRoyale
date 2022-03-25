@@ -94,11 +94,27 @@ bool AWeaponBase::AttachToComponent(USkeletalMeshComponent* meshComponent, const
 {
 	if(Mesh == nullptr)
 	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::EquipWeapon] weapon has no mesh"), *GetName());
+		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::AttachToComponent] weapon has no mesh"), *GetName());
 		return false;
 	}
 	
 	return Mesh->AttachToComponent(meshComponent, attachmentRules, socketName);
+}
+
+void AWeaponBase::DetachFromComponent(const FDetachmentTransformRules& rules)
+{
+	if(Mesh == nullptr)
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::DeattachToComponent] weapon has no mesh"), *GetName());
+		return;
+	}
+	
+	Mesh->DetachFromComponent(rules);
+}
+
+void AWeaponBase::Destroy()
+{
+	AActor::Destroy();
 }
 
 bool AWeaponBase::CanBeFired() const
