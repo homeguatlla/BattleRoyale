@@ -3,6 +3,7 @@
 
 #include "BattleRoyaleGameState.h"
 
+#include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 
 ABattleRoyaleGameState::ABattleRoyaleGameState() :
@@ -19,6 +20,20 @@ void ABattleRoyaleGameState::StartCountdownServer(int duration)
 	if(HasAuthority())
 	{
 		GetWorld()->GetTimerManager().SetTimer(mCountdownTimerHandle, this, &ABattleRoyaleGameState::OnCountdownFinishedServer, 1, true);
+	}
+}
+
+void ABattleRoyaleGameState::PerformActionForEachPlayerState(
+	std::function<bool(const IIPlayerState* playerState)> action) const
+{
+	for(const auto playerState : PlayerArray)
+	{
+		if(playerState->Implements<UIPlayerState>())
+		{
+			const auto specificPlayerState = Cast<IIPlayerState>(playerState);
+			if(action(specificPlayerState))
+				break;
+		}
 	}
 }
 

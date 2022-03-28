@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "BattleRoyaleHUD.h"
+
+#include "AutomationBlueprintFunctionLibrary.h"
 #include "Engine/Canvas.h"
 #include "CharacterHUD.h"
 #include "Logging/LogMacros.h"
@@ -13,7 +15,11 @@ void ABattleRoyaleHUD::BeginPlay()
 
 	if(CharacterHUDWidgetClasses.Num() <= 0)
 	{
-		UE_LOG(LogTemp, Error, TEXT("ABattleRoyaleHUD::BeginPlay Character HUD has no widgets defined"));
+		//if(!UAutomationBlueprintFunctionLibrary::AreAutomatedTestsRunning()) doesn't work
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ABattleRoyaleHUD::BeginPlay Character HUD has no widgets defined"));
+		}
+		
 		return;
 	}
 	CreateCharacterHUD(CharacterHUDWidgetClasses);

@@ -22,7 +22,13 @@ public:
 	APlayerStateBase();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return mAbilitySystemComponent; }
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentInterface() const override { return Cast<IIAbilitySystemInterfaceBase>(mAbilitySystemComponent); }
+	virtual bool IsAlive() const override;
+	virtual void SetTeamId(int teamId) override { mTeamId = teamId; }
+	virtual int GetTeamId() const override { return mTeamId; }
+	
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AbilitySystemComponent, meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemComponentBase* mAbilitySystemComponent;
+
+	int mTeamId;
 };

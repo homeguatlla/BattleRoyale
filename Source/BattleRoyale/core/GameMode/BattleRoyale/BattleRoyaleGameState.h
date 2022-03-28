@@ -21,6 +21,8 @@ public:
 	virtual bool DidCountdownStart() const override{ return mDidCountdownStart; }
 	virtual void StartCountdownServer(int duration) override;
 	virtual bool DidCountdownFinish() const override { return mRemainingCounts <= 0; }
+	virtual int GetNumPlayers() const override { return PlayerArray.Num(); }
+	virtual void PerformActionForEachPlayerState(std::function<bool(const IIPlayerState* playerState)> action) const override;
 	
 	UPROPERTY(BlueprintAssignable, Category=BattleRoyaleGameState)
 	FOnRefreshCountdown OnRefreshCountDownDelegate;

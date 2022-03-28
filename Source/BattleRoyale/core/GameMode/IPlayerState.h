@@ -22,4 +22,7 @@ class BATTLEROYALE_API IIPlayerState: public IAbilitySystemInterface
 
 public:
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentInterface() const = 0;
+	virtual bool IsAlive() const = 0;
+	virtual void SetTeamId(int teamId) = 0;
+	virtual int GetTeamId() const = 0;
 };

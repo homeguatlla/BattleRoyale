@@ -144,11 +144,15 @@ public:
 	                         AActor* DamageCauser) override;
 	
 	UFUNCTION(BlueprintCallable, Category = "Character")
-	void ChangeCharacterMesh1PColor(const FColor& color);	
+	void ChangeCharacterMesh1PColor(const FColor& color);
+
 	
 protected:
 	virtual void BeginPlay();
 
+	//Test porposes
+	virtual void SetCurrentHealth(float health);
+	
 public:
 	
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */

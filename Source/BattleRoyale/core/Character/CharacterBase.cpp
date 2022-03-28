@@ -198,6 +198,11 @@ void ACharacterBase::GiveAbilitiesServer()
 	}	
 }
 
+void ACharacterBase::SetCurrentHealth(float health)
+{
+	mCurrentHealth = health;
+}
+
 bool ACharacterBase::CanSprint() const
 {
 	const auto velocity = GetVelocity();
