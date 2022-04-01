@@ -8,7 +8,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnEquippedWeapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshHealth, float, health);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDead);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAnnounceNewDeath);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAnnounceNewDeath, const FString&, killerName, const FString&, victimName);
 
 UCLASS(Blueprintable)
 class BATTLEROYALE_API UEventDispatcher : public UObject

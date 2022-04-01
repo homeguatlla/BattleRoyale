@@ -25,7 +25,7 @@ private:
 	void BindToDelegate();
 	
 	UFUNCTION()
-	void OnAnnounceNewDeath();
+	void OnAnnounceNewDeath(const FString& killerName, const FString& victimName);
 	
 public:
 	UPROPERTY()

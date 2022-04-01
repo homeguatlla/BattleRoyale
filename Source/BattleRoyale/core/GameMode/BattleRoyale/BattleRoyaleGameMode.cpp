@@ -63,8 +63,17 @@ void ABattleRoyaleGameMode::OnNewKill(const APlayerController* killerController,
 	const auto playerStateKiller = killerController->GetPlayerState<APlayerStateBase>();
 	if(playerStateKiller && playerStateKiller->Implements<UIPlayerState>())
 	{
+		const auto playerStateVictim = victimController->GetPlayerState<APlayerStateBase>();
+		if(playerStateVictim == nullptr || !playerStateVictim->Implements<UIPlayerState>())
+		{
+			return;
+		}
+		const auto playerStateVictimInterface = Cast<IIPlayerState>(playerStateVictim);		
 		const auto playerStateKillerInterface = Cast<IIPlayerState>(playerStateKiller);
-		playerStateKillerInterface->NotifyAnnouncementOfNewDeathToAll();	
+		
+		playerStateKillerInterface->NotifyAnnouncementOfNewDeathToAll(
+			playerStateKillerInterface->GetPlayerNickName(),
+			playerStateVictimInterface->GetPlayerNickName());	
 	}
 
 	//TODO count the kill

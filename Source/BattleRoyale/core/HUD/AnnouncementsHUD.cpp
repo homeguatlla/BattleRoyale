@@ -38,10 +38,10 @@ void AAnnouncementsHUD::BindToDelegate()
 	}
 }
 
-void AAnnouncementsHUD::OnAnnounceNewDeath()
+void AAnnouncementsHUD::OnAnnounceNewDeath(const FString& killerName, const FString& victimName)
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UAnnouncementHUD::StaticClass()))
 	{
-		IAnnouncementHUD::Execute_OnAnnounceNewDeath(mHUDWidget);
+		IAnnouncementHUD::Execute_OnAnnounceNewDeath(mHUDWidget, killerName, victimName);
 	}
 }

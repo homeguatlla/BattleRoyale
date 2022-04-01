@@ -1,4 +1,6 @@
-﻿#include <functional>
+﻿
+#pragma once
+#include <functional>
 
 #include "CoreMinimal.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"

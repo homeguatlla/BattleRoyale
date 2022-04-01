@@ -14,5 +14,5 @@ class IAnnouncementHUD
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Announcement HUD")
-	void OnAnnounceNewDeath();
+	void OnAnnounceNewDeath(const FString& killerName, const FString& victimName);
 };

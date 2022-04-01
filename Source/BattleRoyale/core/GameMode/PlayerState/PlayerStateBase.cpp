@@ -26,13 +26,13 @@ bool APlayerStateBase::IsAlive() const
 	return false;
 }
 
-void APlayerStateBase::NotifyAnnouncementOfNewDeathToAll() const
+void APlayerStateBase::NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const
 {
-	MulticastAnnouncementOfNewDeath();
+	MulticastAnnouncementOfNewDeath(killerName, victimName);
 }
 
-void APlayerStateBase::MulticastAnnouncementOfNewDeath_Implementation() const
+void APlayerStateBase::MulticastAnnouncementOfNewDeath_Implementation(const FString& killerName, const FString& victimName) const
 {
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-	gameInstance->GetEventDispatcher()->OnAnnounceNewDeath.Broadcast();
+	gameInstance->GetEventDispatcher()->OnAnnounceNewDeath.Broadcast(killerName, victimName);
 }
