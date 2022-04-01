@@ -76,8 +76,13 @@ void AWeaponBase::SpawnProjectile(const FVector& muzzleLocation, const FRotator&
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
+			const auto location = GetProjectileSpawnLocation(DistanceFromMuzzleLocation);
+
+			//const FString Message = FString::Printf(TEXT("Location: %s, Rotation: %s"),*location.ToString(), *muzzleRotation.ToString());
+			//GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Black, Message);
+			
 			// spawn the projectile at the muzzle
-			const auto projectile = World->SpawnActor<AProjectileBase>(ProjectileClass, GetProjectileSpawnLocation(DistanceFromMuzzleLocation), muzzleRotation, ActorSpawnParams);
+			const auto projectile = World->SpawnActor<AProjectileBase>(ProjectileClass, location, muzzleRotation, ActorSpawnParams);
 			if(projectile)
 			{
 				projectile->SetInstigator(Cast<APawn>(GetOwner()));

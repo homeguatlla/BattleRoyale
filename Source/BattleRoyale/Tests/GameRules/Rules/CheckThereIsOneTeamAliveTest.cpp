@@ -19,7 +19,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_NoPlayers_Then_EvaluatesFalse::RunTest(
 	const FString& Parameters)
 {
-	const auto gameState = NewObject<GameStateMock>();
+	auto gameState = NewObject<GameStateMock>();
 
 	TScriptInterface<IIGameState> gameStateInterface;
 	gameStateInterface.SetObject(gameState);

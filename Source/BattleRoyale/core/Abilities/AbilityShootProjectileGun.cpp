@@ -83,7 +83,7 @@ void UAbilityShootProjectileGun::CancelAbility(const FGameplayAbilitySpecHandle 
 	const auto character = GetCharacter(ActorInfo);
 	if (character != nullptr)
 	{
-		
+		mEventMontageShootHandle.Reset();
 	}
 }
 
@@ -99,7 +99,7 @@ void UAbilityShootProjectileGun::OnMontageCancelled()
 
 void UAbilityShootProjectileGun::OnEventMontageShootReceived(FGameplayTag EventTag, const FGameplayEventData* Payload) const
 {
-	if(mCharacter != nullptr && mCharacter->IsAlive())
+	if(mCharacter != nullptr)
 	{
 		//mCharacter->ServerShoot();
 		mCharacter->Shoot();
