@@ -227,7 +227,6 @@ private:
 
 	IIPlayerState* GetPlayerStateInterface() const;
 	
-	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
 	void SpawnWeapon();
 	
 	void EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptInterface<IIWeapon> weapon);

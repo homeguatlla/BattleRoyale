@@ -8,10 +8,6 @@
 
 #if WITH_EDITOR
 #include "Misc/AutomationTest.h"
-#include "Tests/AutomationCommon.h"
-#include "Tests/AutomationEditorCommon.h"
-
-
 
 #if WITH_DEV_AUTOMATION_TESTS
 
