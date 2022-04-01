@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 
 APlayerStateBase::APlayerStateBase() : mTeamId(0)
@@ -23,4 +24,15 @@ bool APlayerStateBase::IsAlive() const
 	}
 	
 	return false;
+}
+
+void APlayerStateBase::NotifyAnnouncementOfNewDeathToAll() const
+{
+	MulticastAnnouncementOfNewDeath();
+}
+
+void APlayerStateBase::MulticastAnnouncementOfNewDeath_Implementation() const
+{
+	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+	gameInstance->GetEventDispatcher()->OnAnnounceNewDeath.Broadcast();
 }

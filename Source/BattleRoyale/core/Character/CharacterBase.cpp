@@ -18,8 +18,9 @@
 #include "BattleRoyale/core/Weapons/IWeapon.h"
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
+#include "BattleRoyale/core/GameMode/IGameMode.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
 #include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
-#include "GameFramework/GameSession.h"
 #include "GameFramework/PlayerState.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Net/UnrealNetwork.h"
@@ -344,26 +345,44 @@ IIAbilitySystemInterfaceBase* ACharacterBase::GetAbilitySystemComponentBase() co
 float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
                                  AActor* DamageCauser)
 {
-	auto actualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	const auto actualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	if(!HasAuthority())
+	{
+		return actualDamage;
+	}
+	
+	if(!EventInstigator->IsA(APlayerController::StaticClass()))
+	{
+		return actualDamage;
+	}
+
+	const auto killer = Cast<APlayerController>(EventInstigator);
+	const auto victim = Cast<APlayerController>(GetController());
+
+	//TODO hay que preguntar al gamemode si el instigator puede dañar al character
+	//si puede que diga cuanto daño le hace etc.
+	//TODO esta manera de pillar el game mode me perturba. No se puede pillar de otra manera?
+	const auto gameMode = Cast<IIGameMode>(GetWorld()->GetAuthGameMode<ABattleRoyaleGameMode>());
+	if(!gameMode->CanPlayerCauseDamageTo(killer, victim))
+	{
+		return actualDamage;
+	}
 	
 	//TODO el damage se podría tratar en un componente Health o Damage del actor
 	//o bien en una abilidad.
-	//TODO hay que preguntar al gamemode si el instigator puede dañar al character
-	//si puede que diga cuanto daño le hace etc.
-	if(HasAuthority())
+	UE_LOG(LogCharacter, Warning, TEXT("ACharacterBase::TakeDamage Server"));
+	const auto newHealth = mCurrentHealth - actualDamage;
+	mDamageCauser.health = FMath::Clamp(newHealth, 0.0f, MaxHealth);
+	mDamageCauser.damage = actualDamage;
+	mDamageCauser.playerCauser = EventInstigator->GetCharacter();
+	//the replication is not received by server so, we need to update it here
+	UpdateHealth(mDamageCauser);
+	
+	if(mCurrentHealth <= 0)
 	{
-		UE_LOG(LogCharacter, Warning, TEXT("ACharacterBase::TakeDamage Server"));
-		const auto newHealth = mCurrentHealth - actualDamage;
-		mDamageCauser.health = FMath::Clamp(newHealth, 0.0f, MaxHealth);
-		mDamageCauser.damage = actualDamage;
-		mDamageCauser.playerCauser = EventInstigator->GetCharacter();
-		//the replication is not received by server so, we need to update it here
-		UpdateHealth(mDamageCauser);
-		
-		if(mCurrentHealth <= 0)
-		{
-			ServerDie();
-		}
+		DieServer();
+		gameMode->OnNewKill(killer,	victim);
 	}
 	
 	return actualDamage;
@@ -542,7 +561,7 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 	}
 }
 
-void ACharacterBase::ServerDie()
+void ACharacterBase::DieServer()
 {
 	SetCanBeDamaged(false); //replicated
 	GetCharacterMovement()->StopMovementImmediately();

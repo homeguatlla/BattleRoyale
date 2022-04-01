@@ -29,7 +29,7 @@ public class BattleRoyale : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
 			//Automation tests (in order to include AutomationEditorCommon.h)
-			"UnrealEd",
+			//"UnrealEd",
 			//"FunctionalTesting"
 		});
 

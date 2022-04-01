@@ -234,7 +234,7 @@ private:
 	void UnEquipWeapon() const;
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
 	void UpdateHealth(const FTakeDamageData& damage);
-	void ServerDie();
+	void DieServer();
 	
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerSpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation);

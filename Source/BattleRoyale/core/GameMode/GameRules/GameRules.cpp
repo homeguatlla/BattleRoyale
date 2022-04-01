@@ -14,16 +14,25 @@ void UGameRules::AddRule(TScriptInterface<IIGameRule> rule)
 
 void UGameRules::Execute()
 {
-	//TODO
-	//creo que lo ideal sería que al hacer Execute, se le pasara por parámetro la lista de reglas
-	//de esta manera podría actualizar la lista añadiendo o quitando reglas.
-	//añadir o quitar reglas complica el recorrerlas
-	//Pensar los casos con tests y ver por donde tirar.
-	for(auto rule : mRules)
+	bool hasRulesListBeenModified = false;
+
+	TArray<TScriptInterface<IIGameRule>> newRules(mRules);
+	
+	for(const auto rule : mRules)
 	{
 		if(rule->Evaluate())
 		{
-			rule->Execute();
+			hasRulesListBeenModified |= rule->Execute(newRules);
 		}
 	}
+
+	if(hasRulesListBeenModified)
+	{
+		mRules = newRules;
+	}
+
+	//TODO 1) faltaría volver a evaluar las reglas?
+	//TODO 2) si no han habido modificaciones no hace falta revertir la copia
+	//esto se podría optimizar para que pillara una de las dos listas cada vez al entrar
+	//en la función dependiendo de si han sido modificada o no, haciendo solo una copia en lugar de dos.
 }

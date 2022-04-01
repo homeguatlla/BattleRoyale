@@ -2,11 +2,11 @@
 
 #include "BattleRoyaleHUD.h"
 
-#include "AutomationBlueprintFunctionLibrary.h"
+//#include "AutomationBlueprintFunctionLibrary.h"
+#include "AnnouncementsHUD.h"
 #include "Engine/Canvas.h"
 #include "CharacterHUD.h"
 #include "Logging/LogMacros.h"
-#include "UObject/ConstructorHelpers.h"
 
 
 void ABattleRoyaleHUD::BeginPlay()
@@ -23,6 +23,7 @@ void ABattleRoyaleHUD::BeginPlay()
 		return;
 	}
 	CreateCharacterHUD(CharacterHUDWidgetClasses);
+	CreateAnnouncementsHUD(AnnouncementsHUDWidgetClasses);
 }
 
 void ABattleRoyaleHUD::CreateCharacterHUD(TArray<TSubclassOf<UUserWidget>> widgetClasses)
@@ -37,4 +38,18 @@ void ABattleRoyaleHUD::CreateCharacterHUD(TArray<TSubclassOf<UUserWidget>> widge
 		FRotator::ZeroRotator,
 		spawnInfo);
 	mCharacterHUD->Initialize(0, GetOwningPlayerController(), widgetClasses);
+}
+
+void ABattleRoyaleHUD::CreateAnnouncementsHUD(TArray<TSubclassOf<UUserWidget>> widgetClasses)
+{
+	FActorSpawnParameters spawnInfo;
+	spawnInfo.Owner = this;
+	//spawnInfo.Instigator = this;
+	spawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	mAnnouncementsHUD = GetWorld()->SpawnActor<AAnnouncementsHUD>(
+		AAnnouncementsHUD::StaticClass(),
+		FVector::ZeroVector,
+		FRotator::ZeroRotator,
+		spawnInfo);
+	mAnnouncementsHUD->Initialize(0, GetOwningPlayerController(), widgetClasses);
 }

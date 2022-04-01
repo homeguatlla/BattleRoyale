@@ -4,9 +4,11 @@
 
 #include "BattleRoyaleGameState.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
+#include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 #include "BattleRoyale/core/HUD/BattleRoyaleHUD.h"
 #include "BattleRoyale/core/PlayerController/PlayerControllerBase.h"
 #include "GameFramework/GameState.h"
+#include "GameRules/CheckThereIsOnlyOneTeamAliveRule.h"
 
 ABattleRoyaleGameMode::ABattleRoyaleGameMode()
 	: Super()
@@ -18,8 +20,14 @@ ABattleRoyaleGameMode::ABattleRoyaleGameMode()
 
 	//FDelegateHandle OnCreateSessionCompleteDelegateHandle;
 	FGameModeEvents::OnGameModeMatchStateSetEvent().AddUObject(this, &ABattleRoyaleGameMode::OnMatchStateChanged);
-	
 }
+
+void ABattleRoyaleGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	InitializeGameRules();
+}
+
 void ABattleRoyaleGameMode::OnMatchStateChanged(FName matchState)
 {
 	UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameMode::OnMatchStateSet %s"), *matchState.ToString());
@@ -44,6 +52,31 @@ void ABattleRoyaleGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameMode::PostLogin new player"));
+}
+
+void ABattleRoyaleGameMode::OnNewKill(const APlayerController* killerController, const APlayerController* victimController)
+{
+	//TODO
+	//cojer los dos jugadores que recibiremos por parámetro pillando los playerstate, Killer y Victim
+	//y notificar a uno que Victim ha muerto y a los demás que Killer ha matado a Victim
+
+	const auto playerStateKiller = killerController->GetPlayerState<APlayerStateBase>();
+	if(playerStateKiller && playerStateKiller->Implements<UIPlayerState>())
+	{
+		const auto playerStateKillerInterface = Cast<IIPlayerState>(playerStateKiller);
+		playerStateKillerInterface->NotifyAnnouncementOfNewDeathToAll();	
+	}
+
+	//TODO count the kill
+	//playerState->AddNewKill?
+	//mGameRules->Execute();
+}
+
+bool ABattleRoyaleGameMode::CanPlayerCauseDamageTo(const APlayerController* killerController,
+	const APlayerController* victimController)
+{
+	//TODO validar que no sean del mismo equipo por ejemplo
+	return true;
 }
 
 void ABattleRoyaleGameMode::TryToStartCountdown() const
@@ -109,4 +142,17 @@ IIGameState* ABattleRoyaleGameMode::GetGameState() const
 		return Cast<IIGameState>(GameState);
 	}
 	return nullptr;
+}
+
+void ABattleRoyaleGameMode::InitializeGameRules()
+{
+	const auto checkThereIsOnlyOneTeamAliveRule = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
+	
+	TScriptInterface<IIGameState> gameStateInterface;
+	gameStateInterface.SetObject(GameState);
+	gameStateInterface.SetInterface(GetGameState());
+
+	checkThereIsOnlyOneTeamAliveRule->Initialize(gameStateInterface);
+	mGameRules = NewObject<UGameRules>();
+	mGameRules->AddRule(checkThereIsOnlyOneTeamAliveRule);
 }

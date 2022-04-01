@@ -24,6 +24,7 @@ class BATTLEROYALE_API IIGameRule
 public:
 
 	virtual void Initialize(TScriptInterface<IIGameState> gameState) = 0;
-	virtual bool Evaluate() const = 0;
-	virtual void Execute() const = 0;
+	virtual bool Evaluate() = 0;
+	//return true if the list have been modified
+	virtual bool Execute(TArray<TScriptInterface<IIGameRule>>& rules) const = 0;
 };

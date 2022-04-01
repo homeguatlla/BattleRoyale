@@ -25,4 +25,6 @@ public:
 	virtual bool IsAlive() const = 0;
 	virtual void SetTeamId(int teamId) = 0;
 	virtual int GetTeamId() const = 0;
+
+	virtual void NotifyAnnouncementOfNewDeathToAll() const = 0;
 };

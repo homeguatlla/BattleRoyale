@@ -8,6 +8,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnEquippedWeapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshHealth, float, health);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDead);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAnnounceNewDeath);
+
 UCLASS(Blueprintable)
 class BATTLEROYALE_API UEventDispatcher : public UObject
 {
@@ -27,4 +29,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="Player Dead")
 	FOnPlayerDead OnPlayerDead;
+
+	UPROPERTY(BlueprintAssignable, Category="Announcement New Death")
+	FOnAnnounceNewDeath OnAnnounceNewDeath;
 };

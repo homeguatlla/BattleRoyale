@@ -19,7 +19,9 @@ public:
 
 	void AddRule(TScriptInterface<IIGameRule> rule);
 	void Execute();
-	
+
+	//Test purposes
+	int GetNumRules() const { return mRules.Num(); }
 private:
 	UPROPERTY()
 	TArray<TScriptInterface<IIGameRule>> mRules;

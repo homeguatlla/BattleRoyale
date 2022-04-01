@@ -25,8 +25,12 @@ public:
 	virtual bool IsAlive() const override;
 	virtual void SetTeamId(int teamId) override { mTeamId = teamId; }
 	virtual int GetTeamId() const override { return mTeamId; }
+	virtual void NotifyAnnouncementOfNewDeathToAll() const override;
 	
 private:
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastAnnouncementOfNewDeath() const;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AbilitySystemComponent, meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemComponentBase* mAbilitySystemComponent;
 
