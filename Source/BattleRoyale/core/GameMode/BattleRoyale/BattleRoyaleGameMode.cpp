@@ -2,13 +2,12 @@
 
 #include "BattleRoyaleGameMode.h"
 
-#include "BattleRoyaleGameState.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 #include "BattleRoyale/core/HUD/BattleRoyaleHUD.h"
 #include "BattleRoyale/core/PlayerController/PlayerControllerBase.h"
 #include "GameFramework/GameState.h"
-#include "GameRules/CheckThereIsOnlyOneTeamAliveRule.h"
+#include "GameRules/StartGameRule.h"
 
 ABattleRoyaleGameMode::ABattleRoyaleGameMode()
 	: Super()
@@ -28,11 +27,6 @@ void ABattleRoyaleGameMode::BeginPlay()
 	InitializeGameRules();
 }
 
-void ABattleRoyaleGameMode::OnMatchStateChanged(FName matchState)
-{
-	UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameMode::OnMatchStateSet %s"), *matchState.ToString());
-}
-
 bool ABattleRoyaleGameMode::ReadyToStartMatch_Implementation()
 {
 	bool isReadyToStartMatch = Super::ReadyToStartMatch_Implementation();
@@ -43,6 +37,12 @@ bool ABattleRoyaleGameMode::ReadyToStartMatch_Implementation()
 	{
 		isReadyToStartMatch = isReadyToStartMatch && gameState->DidCountdownFinish();
 	}
+
+	if(mGameRules)
+	{
+		mGameRules->Execute();
+	}
+	
 	return isReadyToStartMatch;
 }
 
@@ -52,6 +52,33 @@ void ABattleRoyaleGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameMode::PostLogin new player"));
+}
+
+void ABattleRoyaleGameMode::GenericPlayerInitialization(AController* controller)
+{
+	Super::GenericPlayerInitialization(controller);
+
+	const auto gameState = GetGameState();
+	if(gameState != nullptr &&  gameState->DidCountdownStart() && gameState->DidCountdownFinish())
+	{
+		//in case a player joins to the game and countdown finished
+		return;
+	}
+
+	TryToStartCountdown();
+
+	ApplyTeamSelectionStrategy(controller);
+	
+	mPlayerControllers.Add(controller);
+	
+	DisableControllerInput(controller);
+	
+	UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameMode::GenericPlayerInitialization num players = %d"), mPlayerControllers.Num());
+}
+
+void ABattleRoyaleGameMode::OnMatchStateChanged(FName matchState)
+{
+	UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameMode::OnMatchStateSet %s"), *matchState.ToString());
 }
 
 void ABattleRoyaleGameMode::OnNewKill(const APlayerController* killerController, const APlayerController* victimController)
@@ -91,24 +118,15 @@ void ABattleRoyaleGameMode::TryToStartCountdown() const
 	}
 }
 
-void ABattleRoyaleGameMode::GenericPlayerInitialization(AController* controller)
+void ABattleRoyaleGameMode::ApplyTeamSelectionStrategy(const AController* controller)
 {
-	Super::GenericPlayerInitialization(controller);
-
-	const auto gameState = GetGameState();
-	if(gameState != nullptr &&  gameState->DidCountdownStart() && gameState->DidCountdownFinish())
+	const auto playerState = controller->GetPlayerState<APlayerStateBase>();
+	if(playerState && playerState->Implements<UIPlayerState>())
 	{
-		//in case a player joins to the game and countdown finished
-		return;
+		const auto playerStateInterface = Cast<IIPlayerState>(playerState);
+		playerStateInterface->SetTeamId(mLastTeamId);
+		mLastTeamId++;
 	}
-
-	TryToStartCountdown();
-	
-	mPlayerControllers.Add(controller);
-	
-	DisableControllerInput(controller);
-	
-	UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameMode::GenericPlayerInitialization num players = %d"), mPlayerControllers.Num());
 }
 
 void ABattleRoyaleGameMode::DisableControllerInput(AController* controller) const
@@ -141,15 +159,15 @@ IIGameState* ABattleRoyaleGameMode::GetGameState() const
 
 void ABattleRoyaleGameMode::InitializeGameRules()
 {
-	const auto checkThereIsOnlyOneTeamAliveRule = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
+	const auto startGameRule = NewObject<UStartGameRule>();
 	
 	TScriptInterface<IIGameState> gameStateInterface;
 	gameStateInterface.SetObject(GameState);
 	gameStateInterface.SetInterface(GetGameState());
 
-	checkThereIsOnlyOneTeamAliveRule->Initialize(gameStateInterface);
+	startGameRule->Initialize(gameStateInterface);
 	mGameRules = NewObject<UGameRules>();
-	mGameRules->AddRule(checkThereIsOnlyOneTeamAliveRule);
+	mGameRules->AddRule(startGameRule);
 }
 
 void ABattleRoyaleGameMode::NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* const playerStateKiller) const

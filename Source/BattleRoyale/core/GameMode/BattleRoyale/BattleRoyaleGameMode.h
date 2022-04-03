@@ -49,6 +49,7 @@ private:
 	IIGameState* GetGameState() const;
 
 	void InitializeGameRules();
+	void ApplyTeamSelectionStrategy(const AController* controller);
 	void NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* playerStateKiller) const;
 
 	TArray<AController*> mPlayerControllers;
@@ -57,6 +58,9 @@ private:
 
 	UPROPERTY()
 	UGameRules* mGameRules;
+
+	//TO remove
+	int mLastTeamId = 0;
 };
 
 

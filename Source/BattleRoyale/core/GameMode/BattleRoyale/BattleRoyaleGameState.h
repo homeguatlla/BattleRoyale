@@ -22,6 +22,7 @@ public:
 	virtual void StartCountdownServer(int duration) override;
 	virtual bool DidCountdownFinish() const override { return mRemainingCounts <= 0; }
 	virtual int GetNumPlayers() const override { return PlayerArray.Num(); }
+	virtual int GetNumTeams() const override;
 	virtual void PerformActionForEachPlayerState(std::function<bool(const IIPlayerState* playerState)> action) const override;
 	virtual void SetWinnerTeam(int teamId) override { mWinnerTeamId = teamId; }
 	virtual int GetWinnerTeam() const override { return mWinnerTeamId; }
