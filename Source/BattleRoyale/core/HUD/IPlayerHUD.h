@@ -14,4 +14,7 @@ class IPlayerHUD
 public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Player HUD")
 	void OnPlayerDead();
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Player HUD")
+	void OnRefreshNumKills(int numKills);
 };

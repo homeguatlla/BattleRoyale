@@ -6,6 +6,8 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquippedWeapon, TScriptInterface<IIWeapon>, weapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnEquippedWeapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshHealth, float, health);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshNumKills, int, numKills);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDead);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAnnounceNewDeath, const FString&, killerName, const FString&, victimName);
@@ -27,9 +29,12 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="Character Weapon")
 	FOnUnEquippedWeapon OnUnEquippedWeapon;
 
+	UPROPERTY(BlueprintAssignable, Category="Character Num Kills")
+	FRefreshNumKills OnRefreshNumKills;
+	
 	UPROPERTY(BlueprintAssignable, Category="Player Dead")
 	FOnPlayerDead OnPlayerDead;
-
+	
 	UPROPERTY(BlueprintAssignable, Category="Announcement New Death")
 	FOnAnnounceNewDeath OnAnnounceNewDeath;
 };

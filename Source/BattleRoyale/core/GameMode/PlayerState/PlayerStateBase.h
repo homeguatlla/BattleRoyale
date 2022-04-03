@@ -26,14 +26,22 @@ public:
 	virtual void SetTeamId(int teamId) override { mTeamId = teamId; }
 	virtual int GetTeamId() const override { return mTeamId; }
 	virtual FString GetPlayerNickName() const override { return GetPlayerName(); }
+	virtual void AddKill() override { mNumKills++; }
+	virtual int GetNumKills() const override { return mNumKills; }
+
 	virtual void NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const override;
+	virtual void NotifyNumKillsToSelf() const override;
 	
 private:
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastAnnouncementOfNewDeath(const FString& killerName, const FString& victimName) const;
+
+	UFUNCTION(Client, Unreliable)
+	void ClientRefreshNumKills(int numKills) const;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AbilitySystemComponent, meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemComponentBase* mAbilitySystemComponent;
 
 	int mTeamId;
+	int mNumKills;
 };

@@ -31,6 +31,8 @@ private:
 	void OnRefreshHealthReceived(float health);
 	UFUNCTION()
 	void OnPlayerDead();
+	UFUNCTION()
+	void OnRefreshNumKills(int numKills);
 	
 public:
 	UPROPERTY()

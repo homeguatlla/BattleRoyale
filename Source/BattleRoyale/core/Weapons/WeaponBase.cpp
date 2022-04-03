@@ -74,7 +74,7 @@ void AWeaponBase::SpawnProjectile(const FVector& muzzleLocation, const FRotator&
 		{
 			//Set Spawn Collision Handling Override
 			FActorSpawnParameters ActorSpawnParams;
-			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 			const auto location = GetProjectileSpawnLocation(DistanceFromMuzzleLocation);
 

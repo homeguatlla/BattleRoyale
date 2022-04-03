@@ -56,29 +56,15 @@ void ABattleRoyaleGameMode::PostLogin(APlayerController* NewPlayer)
 
 void ABattleRoyaleGameMode::OnNewKill(const APlayerController* killerController, const APlayerController* victimController)
 {
-	//TODO
-	//cojer los dos jugadores que recibiremos por parámetro pillando los playerstate, Killer y Victim
-	//y notificar a uno que Victim ha muerto y a los demás que Killer ha matado a Victim
-
 	const auto playerStateKiller = killerController->GetPlayerState<APlayerStateBase>();
 	if(playerStateKiller && playerStateKiller->Implements<UIPlayerState>())
 	{
-		const auto playerStateVictim = victimController->GetPlayerState<APlayerStateBase>();
-		if(playerStateVictim == nullptr || !playerStateVictim->Implements<UIPlayerState>())
-		{
-			return;
-		}
-		const auto playerStateVictimInterface = Cast<IIPlayerState>(playerStateVictim);		
-		const auto playerStateKillerInterface = Cast<IIPlayerState>(playerStateKiller);
-		
-		playerStateKillerInterface->NotifyAnnouncementOfNewDeathToAll(
-			playerStateKillerInterface->GetPlayerNickName(),
-			playerStateVictimInterface->GetPlayerNickName());	
+		playerStateKiller->AddKill();
+		playerStateKiller->NotifyNumKillsToSelf();
+		NotifyNewKillToAll(victimController, playerStateKiller);		
 	}
 
-	//TODO count the kill
-	//playerState->AddNewKill?
-	//mGameRules->Execute();
+	mGameRules->Execute();
 }
 
 bool ABattleRoyaleGameMode::CanPlayerCauseDamageTo(const APlayerController* killerController,
@@ -164,4 +150,20 @@ void ABattleRoyaleGameMode::InitializeGameRules()
 	checkThereIsOnlyOneTeamAliveRule->Initialize(gameStateInterface);
 	mGameRules = NewObject<UGameRules>();
 	mGameRules->AddRule(checkThereIsOnlyOneTeamAliveRule);
+}
+
+void ABattleRoyaleGameMode::NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* const playerStateKiller) const
+{
+	const auto playerStateVictim = victimController->GetPlayerState<APlayerStateBase>();
+	if(playerStateVictim == nullptr || !playerStateVictim->Implements<UIPlayerState>())
+	{
+		return;
+	}
+	
+	const auto playerStateVictimInterface = Cast<IIPlayerState>(playerStateVictim);		
+	const auto playerStateKillerInterface = Cast<IIPlayerState>(playerStateKiller);
+		
+	playerStateKillerInterface->NotifyAnnouncementOfNewDeathToAll(
+		playerStateKillerInterface->GetPlayerNickName(),
+		playerStateVictimInterface->GetPlayerNickName());
 }

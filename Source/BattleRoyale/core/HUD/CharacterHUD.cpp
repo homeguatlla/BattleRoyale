@@ -41,6 +41,7 @@ void ACharacterHUD::BindToDelegate()
 		eventDispatcher->OnUnEquippedWeapon.AddDynamic(this, &ACharacterHUD::OnUnEquippedWeapon);
 		eventDispatcher->OnRefreshHealth.AddDynamic(this, &ACharacterHUD::OnRefreshHealthReceived);
 		eventDispatcher->OnPlayerDead.AddDynamic(this, &ACharacterHUD::OnPlayerDead);
+		eventDispatcher->OnRefreshNumKills.AddDynamic(this, &ACharacterHUD::OnRefreshNumKills);
 	}
 }
 
@@ -73,5 +74,13 @@ void ACharacterHUD::OnPlayerDead()
 	if(mHUDWidget->GetClass()->ImplementsInterface(UPlayerHUD::StaticClass()))
 	{
 		IPlayerHUD::Execute_OnPlayerDead(mHUDWidget);
+	}
+}
+
+void ACharacterHUD::OnRefreshNumKills(int numKills)
+{
+	if(mHUDWidget->GetClass()->ImplementsInterface(UPlayerHUD::StaticClass()))
+	{
+		IPlayerHUD::Execute_OnRefreshNumKills(mHUDWidget, numKills);
 	}
 }

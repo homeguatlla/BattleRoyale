@@ -7,6 +7,7 @@
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/GameMode/MultiplayerGameMode.h"
 #include "BattleRoyale/core/GameMode/GameRules/GameRules.h"
+#include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 #include "BattleRoyale/core/PlayerController/IPlayerController.h"
 #include "BattleRoyaleGameMode.generated.h"
 
@@ -22,7 +23,7 @@ public:
 	void OnMatchStateChanged(FName matchState);
 	virtual bool ReadyToStartMatch_Implementation() override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
-
+	
 	//Inherit from IIGameMode
 	virtual void OnNewKill(const APlayerController* killerController, const APlayerController* victimController) override;
 	virtual bool CanPlayerCauseDamageTo(const APlayerController* killerController, const APlayerController* victimController) override;
@@ -48,7 +49,8 @@ private:
 	IIGameState* GetGameState() const;
 
 	void InitializeGameRules();
-	
+	void NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* playerStateKiller) const;
+
 	TArray<AController*> mPlayerControllers;
 
 	bool mHasGameStarted = false;
