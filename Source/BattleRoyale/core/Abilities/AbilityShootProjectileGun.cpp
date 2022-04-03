@@ -4,8 +4,8 @@
 #include "AbilitiesInput.h"
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
-#include "BattleRoyale/BattleRoyale.h"
-#include "BattleRoyale/core/GameplayAbilitySystem/AbilitySystemComponentBase.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "BattleRoyale/core/Character/CharacterBase.h"
 
 UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 {
@@ -77,14 +77,18 @@ void UAbilityShootProjectileGun::CancelAbility(const FGameplayAbilitySpecHandle 
 		                                                      ActivationInfo, bReplicateCancelAbility));
 		return;
 	}
-
-	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
-
+	
+	/* METHOD Unregister the delegate if not using a task to listen the event
 	const auto character = GetCharacter(ActorInfo);
 	if (character != nullptr)
 	{
+		const auto abilitySystemInterface = character->GetAbilitySystemComponent();
+		abilitySystemInterface->GetAbilitySystemComponent()->RemoveGameplayEventTagContainerDelegate(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Event.Montage.Shoot"))), mEventMontageShootHandle);
+		
 		mEventMontageShootHandle.Reset();
-	}
+	}*/
+
+	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 }
 
 void UAbilityShootProjectileGun::OnMontageCompleted()
@@ -97,7 +101,7 @@ void UAbilityShootProjectileGun::OnMontageCancelled()
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 }
 
-void UAbilityShootProjectileGun::OnEventMontageShootReceived(FGameplayTag EventTag, const FGameplayEventData* Payload) const
+void UAbilityShootProjectileGun::OnEventMontageShootReceived(const FGameplayEventData Payload)
 {
 	if(mCharacter != nullptr)
 	{
@@ -108,13 +112,20 @@ void UAbilityShootProjectileGun::OnEventMontageShootReceived(FGameplayTag EventT
 
 void UAbilityShootProjectileGun::SubscribeToEventMontageShoot(const IICharacter* character)
 {
+	UAbilityTask_WaitGameplayEvent* newTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+			this, FGameplayTag::RequestGameplayTag(FName("Event.Montage.Shoot")), nullptr, true);
+	newTask->EventReceived.AddDynamic(this, &UAbilityShootProjectileGun::OnEventMontageShootReceived);
+	newTask->Activate();
+
+	
+	/* METHOD Another way to register to the event without using a task
 	if(!mEventMontageShootHandle.IsValid())
 	{
 		const auto abilitySystemInterface = character->GetAbilitySystemComponent();
 		mEventMontageShootHandle = abilitySystemInterface->GetAbilitySystemComponent()->AddGameplayEventTagContainerDelegate(
 			FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Event.Montage.Shoot"))),
 			FGameplayEventTagMulticastDelegate::FDelegate::CreateUObject(this, &UAbilityShootProjectileGun::OnEventMontageShootReceived));
-	}
+	}*/
 }
 
 void UAbilityShootProjectileGun::CreateTaskPlayMontageShooting(const IICharacter* character, const FGameplayAbilityActorInfo* ActorInfo)

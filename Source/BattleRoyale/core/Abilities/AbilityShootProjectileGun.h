@@ -32,11 +32,13 @@ private:
 	UFUNCTION()
 	void OnMontageCancelled();
 
-	void OnEventMontageShootReceived(FGameplayTag EventTag, const FGameplayEventData* Payload) const;
+	UFUNCTION()
+	void OnEventMontageShootReceived(const FGameplayEventData Payload);
+	
 	void SubscribeToEventMontageShoot(const IICharacter* character);
 	void CreateTaskPlayMontageShooting(const IICharacter* character, const FGameplayAbilityActorInfo* ActorInfo);
 
 	IICharacter* mCharacter;
-	FDelegateHandle mEventMontageShootHandle;
+	//METHOD FDelegateHandle mEventMontageShootHandle;
 };
 
