@@ -14,16 +14,15 @@ void UStartGameRule::Initialize(TScriptInterface<IIGameState> gameState)
 
 bool UStartGameRule::Evaluate()
 {
-	return mGameState->DidCountdownFinish() && mGameState->GetNumTeams() > 1;
+	return mGameState->DidCountdownStart() && mGameState->DidCountdownFinish() && mGameState->GetNumTeams() > 1;
 }
 
 bool UStartGameRule::Execute(TArray<TScriptInterface<IIGameRule>>& rules) const
 {
 	//TODO hay que ver como hacemos esto, pero lo lógico sería informar al game mode para que la partida empiece.
-	//SetGameIsReadyToStart o algo así.
-
-
-	//TODO hay que quitar la regla actual sino seguirá añadiendo reglas.
+	//SetGameStarted o algo así.
+	
+	rules.Empty();
 	
 	//Adding new rules
 	const auto checkThereIsOnlyOneTeamAliveRule = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();

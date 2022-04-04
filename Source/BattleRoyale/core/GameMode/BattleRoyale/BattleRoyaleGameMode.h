@@ -9,6 +9,7 @@
 #include "BattleRoyale/core/GameMode/GameRules/GameRules.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 #include "BattleRoyale/core/PlayerController/IPlayerController.h"
+#include "BattleRoyale/core/Utils/TeamSelectionStrategies/ITeamSelectionStrategy.h"
 #include "BattleRoyaleGameMode.generated.h"
 
 UCLASS(minimalapi)
@@ -23,6 +24,7 @@ public:
 	void OnMatchStateChanged(FName matchState);
 	virtual bool ReadyToStartMatch_Implementation() override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	
 	//Inherit from IIGameMode
 	virtual void OnNewKill(const APlayerController* killerController, const APlayerController* victimController) override;
@@ -49,7 +51,8 @@ private:
 	IIGameState* GetGameState() const;
 
 	void InitializeGameRules();
-	void ApplyTeamSelectionStrategy(const AController* controller);
+	void InitializeTeamSelectionStrategy();
+	void ApplyTeamSelectionStrategy(const AController* controller) const;
 	void NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* playerStateKiller) const;
 
 	TArray<AController*> mPlayerControllers;
@@ -59,8 +62,8 @@ private:
 	UPROPERTY()
 	UGameRules* mGameRules;
 
-	//TO remove
-	int mLastTeamId = 0;
+	UPROPERTY()
+	TScriptInterface<ITeamSelectionStrategy> mTeamSelectionStrategy;
 };
 
 

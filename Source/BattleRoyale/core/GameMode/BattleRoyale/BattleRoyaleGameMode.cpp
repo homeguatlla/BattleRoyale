@@ -6,6 +6,7 @@
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 #include "BattleRoyale/core/HUD/BattleRoyaleHUD.h"
 #include "BattleRoyale/core/PlayerController/PlayerControllerBase.h"
+#include "BattleRoyale/core/Utils/TeamSelectionStrategies/SimpleTeamSelectionStrategy.h"
 #include "GameFramework/GameState.h"
 #include "GameRules/StartGameRule.h"
 
@@ -21,9 +22,14 @@ ABattleRoyaleGameMode::ABattleRoyaleGameMode()
 	FGameModeEvents::OnGameModeMatchStateSetEvent().AddUObject(this, &ABattleRoyaleGameMode::OnMatchStateChanged);
 }
 
+//Cuando se ejecuta el BeginPlay, ya se ha ejecutado el GenericPlayerInitialization para el server
+//así que aquí no se puede inicializar nada que pueda necesitar el propio server en ese método.
+//Las cosas más genéricas inicializarlas en InitGame.
+//En este punto tenemos ya el GameState creado no antes.
 void ABattleRoyaleGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
 	InitializeGameRules();
 }
 
@@ -54,6 +60,13 @@ void ABattleRoyaleGameMode::PostLogin(APlayerController* NewPlayer)
 	UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameMode::PostLogin new player"));
 }
 
+void ABattleRoyaleGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+	
+	InitializeTeamSelectionStrategy();
+}
+
 void ABattleRoyaleGameMode::GenericPlayerInitialization(AController* controller)
 {
 	Super::GenericPlayerInitialization(controller);
@@ -65,6 +78,7 @@ void ABattleRoyaleGameMode::GenericPlayerInitialization(AController* controller)
 		return;
 	}
 
+	//TODO esto quizá podría ser otra regla??
 	TryToStartCountdown();
 
 	ApplyTeamSelectionStrategy(controller);
@@ -118,14 +132,18 @@ void ABattleRoyaleGameMode::TryToStartCountdown() const
 	}
 }
 
-void ABattleRoyaleGameMode::ApplyTeamSelectionStrategy(const AController* controller)
+void ABattleRoyaleGameMode::ApplyTeamSelectionStrategy(const AController* controller) const
 {
-	const auto playerState = controller->GetPlayerState<APlayerStateBase>();
-	if(playerState && playerState->Implements<UIPlayerState>())
+	if(mTeamSelectionStrategy != nullptr)
 	{
-		const auto playerStateInterface = Cast<IIPlayerState>(playerState);
-		playerStateInterface->SetTeamId(mLastTeamId);
-		mLastTeamId++;
+		const auto playerState = controller->GetPlayerState<APlayerStateBase>();
+		if(playerState && playerState->Implements<UIPlayerState>())
+		{
+			const auto playerStateInterface = Cast<IIPlayerState>(playerState);
+			auto teamId = mTeamSelectionStrategy->GetNextTeamId();
+			UE_LOG(LogGameMode, Display, TEXT("ABattleRoyaleGameMode::ApplyTeamSelectionStrategy Team id: %d"), teamId);
+			playerStateInterface->SetTeamId(teamId);
+		}
 	}
 }
 
@@ -168,6 +186,12 @@ void ABattleRoyaleGameMode::InitializeGameRules()
 	startGameRule->Initialize(gameStateInterface);
 	mGameRules = NewObject<UGameRules>();
 	mGameRules->AddRule(startGameRule);
+}
+
+void ABattleRoyaleGameMode::InitializeTeamSelectionStrategy()
+{
+	mTeamSelectionStrategy = NewObject<USimpleTeamSelectionStrategy>();
+	mTeamSelectionStrategy->Initialize(mNumPlayersPerTeam);
 }
 
 void ABattleRoyaleGameMode::NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* const playerStateKiller) const
