@@ -15,7 +15,7 @@ void UStartGameRule::Initialize(TScriptInterface<IIGameState> gameState)
 
 bool UStartGameRule::Evaluate()
 {
-	return mGameState->DidCountdownStart() && mGameState->DidCountdownFinish() && mGameState->GetNumTeams() > 1;
+	return mGameState->DidCountdownStart() && mGameState->DidCountdownFinish();
 }
 
 bool UStartGameRule::Execute(TArray<TScriptInterface<IIGameRule>>& rules) const

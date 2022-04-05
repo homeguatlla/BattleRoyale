@@ -44,7 +44,6 @@ protected:
 	
 private:
 	//TODO esto seguramente podría estar definido en una interface	
-	void TryToStartCountdown() const;
 	void DisableControllerInput(AController* controller) const;
 	IIPlayerController* GetPlayerController(AController* controller) const;
 	IIGameState* GetGameState() const;

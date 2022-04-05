@@ -8,7 +8,7 @@
 #include "BattleRoyale/core/PlayerController/PlayerControllerBase.h"
 #include "BattleRoyale/core/Utils/TeamSelectionStrategies/SimpleTeamSelectionStrategy.h"
 #include "GameFramework/GameState.h"
-#include "GameRules/StartGameRule.h"
+#include "GameRules/StartCountDownRule.h"
 
 ABattleRoyaleGameMode::ABattleRoyaleGameMode()
 	: Super()
@@ -47,7 +47,7 @@ bool ABattleRoyaleGameMode::ReadyToStartMatch_Implementation()
 	{
 		isReadyToStartMatch = isReadyToStartMatch && gameState->HasGameStarted();
 	}
-
+	
 	return isReadyToStartMatch;
 }
 
@@ -76,10 +76,7 @@ void ABattleRoyaleGameMode::GenericPlayerInitialization(AController* controller)
 		//in case a player joins to the game and countdown finished
 		return;
 	}
-
-	//TODO esto quizá podría ser otra regla??
-	TryToStartCountdown();
-
+	
 	ApplyTeamSelectionStrategy(controller);
 	
 	mPlayerControllers.Add(controller);
@@ -114,23 +111,6 @@ bool ABattleRoyaleGameMode::CanPlayerCauseDamageTo(const APlayerController* kill
 	const auto victimPlayerState = victimController->GetPlayerState<IIPlayerState>();
 	
 	return killerPlayerState->GetTeamId() != victimPlayerState->GetTeamId();
-}
-
-void ABattleRoyaleGameMode::TryToStartCountdown() const
-{
-	const auto gameState = GetGameState();
-	
-	if(gameState != nullptr)
-	{
-		if(!gameState->DidCountdownStart())
-		{
-			gameState->StartCountdownServer(mCountdownTimeToStartGame);
-		}
-	}
-	else
-	{
-		UE_LOG(LogGameMode, Error, TEXT("ABattleRoyaleGameMode::TryToStartCountdown Is GameState implementing IIGameState?"));
-	}
 }
 
 void ABattleRoyaleGameMode::ApplyTeamSelectionStrategy(const AController* controller) const
@@ -178,15 +158,17 @@ IIGameState* ABattleRoyaleGameMode::GetGameState() const
 
 void ABattleRoyaleGameMode::InitializeGameRules()
 {
-	const auto startGameRule = NewObject<UStartGameRule>();
+	const auto startCountdownRule = NewObject<UStartCountDownRule>();
 	
 	TScriptInterface<IIGameState> gameStateInterface;
 	gameStateInterface.SetObject(GameState);
 	gameStateInterface.SetInterface(GetGameState());
 
-	startGameRule->Initialize(gameStateInterface);
+	startCountdownRule->Initialize(gameStateInterface);
+	startCountdownRule->SetCountdownTimeToStartGame(mCountdownTimeToStartGame);
+	
 	mGameRules = NewObject<UGameRules>();
-	mGameRules->AddRule(startGameRule);
+	mGameRules->AddRule(startCountdownRule);
 }
 
 void ABattleRoyaleGameMode::InitializeTeamSelectionStrategy()
