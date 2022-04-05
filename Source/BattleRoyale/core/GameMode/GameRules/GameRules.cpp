@@ -9,8 +9,14 @@ UGameRules::UGameRules()
 
 void UGameRules::AddRule(TScriptInterface<IIGameRule> rule)
 {
-	//TODO verificar que si la regla ya existe no la inserte de nuevo!
-	mRules.Add(rule);
+	if(!mRules.ContainsByPredicate(
+		[&rule](const TScriptInterface<IIGameRule> object)
+		{
+			return object.GetObject()->IsA(rule.GetObject()->StaticClass());
+		}))
+	{
+		mRules.Add(rule);
+	}
 }
 
 void UGameRules::Execute()

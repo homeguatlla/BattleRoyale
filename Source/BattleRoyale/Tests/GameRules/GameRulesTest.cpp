@@ -10,6 +10,65 @@
 
 #if WITH_DEV_AUTOMATION_TESTS
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGameRulesTest_When_AddingARuleTwice_Then_IsNotAdded,
+								 "Project.GameRules.When_AddingARuleTwice_Then_IsNotAdded",
+								 EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+bool FGameRulesTest_When_AddingARuleTwice_Then_IsNotAdded::RunTest(const FString& Parameters)
+{
+	const auto gameState = NewObject<GameStateMock>();
+
+	gameState->Initialize(1, 1);
+
+	TScriptInterface<IIGameState> gameStateInterface;
+	gameStateInterface.SetObject(gameState);
+	gameStateInterface.SetInterface(Cast<IIGameState>(gameState));
+
+	UCheckThereIsOnlyOneTeamAliveRule* rule = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
+	
+	const auto rules = NewObject<UGameRules>();
+
+	rules->AddRule(rule);
+
+	TestTrue(TEXT("New rule is added"), rules->GetNumRules() == 1);
+
+	rules->AddRule(rule);
+	
+	TestTrue(TEXT("Adding the same rule twice is not added"), rules->GetNumRules() == 1);
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGameRulesTest_When_AddingTwoEqualsRules_Then_TheSecondOneIsNotAdded,
+								 "Project.GameRules.When_AddingTwoEqualsRules_Then_TheSecondOneIsNotAdded",
+								 EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+bool FGameRulesTest_When_AddingTwoEqualsRules_Then_TheSecondOneIsNotAdded::RunTest(const FString& Parameters)
+{
+	const auto gameState = NewObject<GameStateMock>();
+
+	gameState->Initialize(1, 1);
+
+	TScriptInterface<IIGameState> gameStateInterface;
+	gameStateInterface.SetObject(gameState);
+	gameStateInterface.SetInterface(Cast<IIGameState>(gameState));
+
+	UCheckThereIsOnlyOneTeamAliveRule* rule1 = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
+	UCheckThereIsOnlyOneTeamAliveRule* rule2 = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
+	
+	const auto rules = NewObject<UGameRules>();
+
+	rules->AddRule(rule1);
+
+	TestTrue(TEXT("New rule is added"), rules->GetNumRules() == 1);
+
+	rules->AddRule(rule2);
+	
+	TestTrue(TEXT("Adding the same rule twice is not added"), rules->GetNumRules() == 1);
+
+	return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGameRulesTest_When_SomeoneDieAndIsTheLastOne_Then_EndOfGameRuleIsAdded,
                                  "Project.GameRules.When_SomeoneDieAndIsTheLastOne_Then_EndOfGameRuleIsAdded",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
