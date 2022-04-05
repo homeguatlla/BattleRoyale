@@ -141,7 +141,7 @@ void ABattleRoyaleGameMode::ApplyTeamSelectionStrategy(const AController* contro
 		if(playerState && playerState->Implements<UIPlayerState>())
 		{
 			const auto playerStateInterface = Cast<IIPlayerState>(playerState);
-			auto teamId = mTeamSelectionStrategy->GetNextTeamId();
+			const auto teamId = mTeamSelectionStrategy->GetNextTeamId();
 			UE_LOG(LogGameMode, Display, TEXT("ABattleRoyaleGameMode::ApplyTeamSelectionStrategy Team id: %d"), teamId);
 			playerStateInterface->SetTeamId(teamId);
 		}

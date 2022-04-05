@@ -3,7 +3,7 @@
 
 #include "EndOfGameRule.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
-
+#include "GameFramework/GameModeBase.h"
 
 void UEndOfGameRule::Initialize(TScriptInterface<IIGameState> gameState)
 {
@@ -17,6 +17,8 @@ bool UEndOfGameRule::Evaluate()
 
 bool UEndOfGameRule::Execute(TArray<TScriptInterface<IIGameRule>>& rules) const
 {
+	UE_LOG(LogGameMode, Display, TEXT("GameRules: Executing Rule EndOfGameRule"));
+	
 	//TODO apply end of game rule
 	//Maybe notify the winner and the end of game to the other players alive
 	return false;
