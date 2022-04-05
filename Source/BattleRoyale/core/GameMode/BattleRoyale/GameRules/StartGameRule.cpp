@@ -19,8 +19,7 @@ bool UStartGameRule::Evaluate()
 
 bool UStartGameRule::Execute(TArray<TScriptInterface<IIGameRule>>& rules) const
 {
-	//TODO hay que ver como hacemos esto, pero lo lógico sería informar al game mode para que la partida empiece.
-	//SetGameStarted o algo así.
+	mGameState->StartGame();
 	
 	rules.Empty();
 	

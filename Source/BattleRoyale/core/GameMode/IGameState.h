@@ -31,6 +31,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IGameState")
 	virtual bool DidCountdownFinish() const = 0;
 
+	virtual void StartGame() = 0;
+	virtual bool HasGameStarted() const = 0;
+	
 	virtual void StartCountdownServer(int duration) = 0;
 	virtual int GetNumPlayers() const = 0;
 	virtual int GetNumTeams() const = 0 ;

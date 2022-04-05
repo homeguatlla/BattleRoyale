@@ -43,8 +43,7 @@ protected:
 	virtual void GenericPlayerInitialization(AController* controller) override;
 	
 private:
-	//TODO esto seguramente podría estar definido en una interface
-	bool HasGameStarted() const { return mHasGameStarted; }
+	//TODO esto seguramente podría estar definido en una interface	
 	void TryToStartCountdown() const;
 	void DisableControllerInput(AController* controller) const;
 	IIPlayerController* GetPlayerController(AController* controller) const;
@@ -56,9 +55,7 @@ private:
 	void NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* playerStateKiller) const;
 
 	TArray<AController*> mPlayerControllers;
-
-	bool mHasGameStarted = false;
-
+	
 	UPROPERTY()
 	UGameRules* mGameRules;
 

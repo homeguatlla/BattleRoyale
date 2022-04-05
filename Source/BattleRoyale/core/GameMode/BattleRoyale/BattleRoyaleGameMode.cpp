@@ -36,19 +36,18 @@ void ABattleRoyaleGameMode::BeginPlay()
 bool ABattleRoyaleGameMode::ReadyToStartMatch_Implementation()
 {
 	bool isReadyToStartMatch = Super::ReadyToStartMatch_Implementation();
-	
-	//If timer is 0 or teams are created then ready to start match.
-	const auto gameState = GetGameState();
-	if(gameState != nullptr)
-	{
-		isReadyToStartMatch = isReadyToStartMatch && gameState->DidCountdownFinish();
-	}
 
 	if(mGameRules)
 	{
 		mGameRules->Execute();
 	}
 	
+	const auto gameState = GetGameState();
+	if(gameState != nullptr)
+	{
+		isReadyToStartMatch = isReadyToStartMatch && gameState->HasGameStarted();
+	}
+
 	return isReadyToStartMatch;
 }
 
@@ -72,7 +71,7 @@ void ABattleRoyaleGameMode::GenericPlayerInitialization(AController* controller)
 	Super::GenericPlayerInitialization(controller);
 
 	const auto gameState = GetGameState();
-	if(gameState != nullptr &&  gameState->DidCountdownStart() && gameState->DidCountdownFinish())
+	if(gameState != nullptr &&  gameState->HasGameStarted())
 	{
 		//in case a player joins to the game and countdown finished
 		return;
@@ -111,8 +110,10 @@ void ABattleRoyaleGameMode::OnNewKill(const APlayerController* killerController,
 bool ABattleRoyaleGameMode::CanPlayerCauseDamageTo(const APlayerController* killerController,
 	const APlayerController* victimController)
 {
-	//TODO validar que no sean del mismo equipo por ejemplo
-	return true;
+	const auto killerPlayerState = killerController->GetPlayerState<IIPlayerState>();
+	const auto victimPlayerState = victimController->GetPlayerState<IIPlayerState>();
+	
+	return killerPlayerState->GetTeamId() != victimPlayerState->GetTeamId();
 }
 
 void ABattleRoyaleGameMode::TryToStartCountdown() const
