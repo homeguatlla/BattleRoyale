@@ -26,7 +26,7 @@ public:
 
 	virtual void SetTeamId(int teamId) = 0;
 	virtual int GetTeamId() const = 0;
-
+	
 	virtual FString GetPlayerNickName() const = 0;
 
 	virtual void AddKill() = 0;

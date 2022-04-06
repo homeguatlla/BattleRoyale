@@ -5,6 +5,7 @@
 
 #include <set>
 
+#include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 
@@ -25,18 +26,22 @@ void ABattleRoyaleGameState::StartCountdownServer(int duration)
 	}
 }
 
+void ABattleRoyaleGameState::StartGameServer()
+{
+	mHasGameStarted = true;
+	MulticastGameStarted();
+}
+
 int ABattleRoyaleGameState::GetNumTeams() const
 {
 	std::set<int> teams;
 
-	for(const auto playerState : PlayerArray)
-	{
-		if(playerState->Implements<UIPlayerState>())
+	PerformActionForEachPlayerState(
+		[&teams](const IIPlayerState* playerState) -> bool
 		{
-			const auto specificPlayerState = Cast<IIPlayerState>(playerState);
-			teams.insert(specificPlayerState->GetTeamId());
-		}
-	}
+			teams.insert(playerState->GetTeamId());
+			return false;
+		});
 	
 	return teams.size();
 }
@@ -63,7 +68,7 @@ void ABattleRoyaleGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 void ABattleRoyaleGameState::OnCountdownFinishedServer()
 {
-	mRemainingCounts--;
+	mRemainingCounts--; 
 	if(mRemainingCounts <= 0)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(mCountdownTimerHandle);
@@ -87,4 +92,10 @@ void ABattleRoyaleGameState::OnRep_RemainingCount() const
 	{
 		OnFinishCountDownDelegate.Broadcast();
 	}
+}
+
+void ABattleRoyaleGameState::MulticastGameStarted_Implementation()
+{
+	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+	gameInstance->GetEventDispatcher()->OnGameStarted.Broadcast();
 }

@@ -7,9 +7,7 @@
 #include "ProjectileBase.h"
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
-#include "BattleRoyale/core/Character/ICharacter.h"
 #include "Engine/SkeletalMeshSocket.h"
-#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AWeaponBase::AWeaponBase()

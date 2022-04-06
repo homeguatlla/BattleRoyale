@@ -22,7 +22,7 @@ public:
 	virtual void StartCountdownServer(int duration) override;
 	virtual bool DidCountdownFinish() const override { return mRemainingCounts <= 0; }
 
-	virtual void StartGame() override { mHasGameStarted = true; }
+	virtual void StartGameServer() override;
 	virtual bool HasGameStarted() const override { return mHasGameStarted; }
 	
 	virtual int GetNumPlayers() const override { return PlayerArray.Num(); }
@@ -45,6 +45,9 @@ private:
 	
 	UFUNCTION()
 	void OnRep_RemainingCount() const;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastGameStarted();
 	
 	bool mDidCountdownStart = false;
 	FTimerHandle mCountdownTimerHandle;

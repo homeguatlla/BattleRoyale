@@ -4,8 +4,8 @@
 #include "StartCountDownRule.h"
 
 #include "StartGameRule.h"
+#include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
-#include "GameFramework/GameModeBase.h"
 
 void UStartCountDownRule::Initialize(TScriptInterface<IIGameState> gameState)
 {
@@ -19,7 +19,7 @@ bool UStartCountDownRule::Evaluate()
 
 bool UStartCountDownRule::Execute(TArray<TScriptInterface<IIGameRule>>& rules) const
 {
-	UE_LOG(LogGameMode, Display, TEXT("GameRules: Executing Rule StartCountDownRule"));
+	UE_LOG(LogGameRules, Display, TEXT("GameRules: Executing Rule StartCountDownRule"));
 
 	const auto startGameRule = NewObject<UStartGameRule>();	
 	startGameRule->Initialize(mGameState);

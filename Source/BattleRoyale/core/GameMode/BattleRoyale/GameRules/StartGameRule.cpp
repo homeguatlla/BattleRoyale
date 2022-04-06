@@ -4,8 +4,8 @@
 #include "StartGameRule.h"
 
 #include "CheckThereIsOnlyOneTeamAliveRule.h"
+#include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
-#include "GameFramework/GameModeBase.h"
 
 
 void UStartGameRule::Initialize(TScriptInterface<IIGameState> gameState)
@@ -20,9 +20,9 @@ bool UStartGameRule::Evaluate()
 
 bool UStartGameRule::Execute(TArray<TScriptInterface<IIGameRule>>& rules) const
 {
-	UE_LOG(LogGameMode, Display, TEXT("GameRules: Executing Rule StartGameRule"));
+	UE_LOG(LogGameRules, Display, TEXT("GameRules: Executing Rule StartGameRule"));
 	
-	mGameState->StartGame();
+	mGameState->StartGameServer();
 	
 	rules.Empty();
 	

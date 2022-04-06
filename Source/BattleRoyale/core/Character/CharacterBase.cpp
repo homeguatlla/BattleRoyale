@@ -362,7 +362,7 @@ float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
 
 	//TODO hay que preguntar al gamemode si el instigator puede dañar al character
 	//si puede que diga cuanto daño le hace etc.
-	//TODO esta manera de pillar el game mode me perturba. No se puede pillar de otra manera?
+	//TODO esta modo de pillar el game mode me perturba. No se puede pillar de otra manera?
 	const auto gameMode = Cast<IIGameMode>(GetWorld()->GetAuthGameMode<ABattleRoyaleGameMode>());
 	if(!gameMode->CanPlayerCauseDamageTo(killer, victim))
 	{

@@ -4,9 +4,9 @@
 #include "CheckThereIsOnlyOneTeamAliveRule.h"
 
 #include "EndOfGameRule.h"
+#include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
-#include "GameFramework/GameModeBase.h"
 
 void UCheckThereIsOnlyOneTeamAliveRule::Initialize(TScriptInterface<IIGameState> gameState)
 {
@@ -46,7 +46,7 @@ bool UCheckThereIsOnlyOneTeamAliveRule::Evaluate()
 
 bool UCheckThereIsOnlyOneTeamAliveRule::Execute(TArray<TScriptInterface<IIGameRule>>& rules) const
 {
-	UE_LOG(LogGameMode, Display, TEXT("GameRules: Executing Rule CheckThereIsOnlyOneTeamAliveRule"));
+	UE_LOG(LogGameRules, Display, TEXT("GameRules: Executing Rule CheckThereIsOnlyOneTeamAliveRule"));
 	
 	//Set data 
 	mGameState->SetWinnerTeam(mTeamIdAlive);

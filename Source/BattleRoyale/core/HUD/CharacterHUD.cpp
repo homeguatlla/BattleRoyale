@@ -2,6 +2,7 @@
 
 #include "CharacterHUD.h"
 
+#include "IGameHUD.h"
 #include "IHealthHUD.h"
 #include "IPlayerHUD.h"
 #include "IWeaponHUD.h"
@@ -38,10 +39,14 @@ void ACharacterHUD::BindToDelegate()
 		const auto eventDispatcher = gameInstance->GetEventDispatcher();
 
 		eventDispatcher->OnEquippedWeapon.AddDynamic(this, &ACharacterHUD::OnEquippedWeapon);
+
 		eventDispatcher->OnUnEquippedWeapon.AddDynamic(this, &ACharacterHUD::OnUnEquippedWeapon);
 		eventDispatcher->OnRefreshHealth.AddDynamic(this, &ACharacterHUD::OnRefreshHealthReceived);
+		
 		eventDispatcher->OnPlayerDead.AddDynamic(this, &ACharacterHUD::OnPlayerDead);
 		eventDispatcher->OnRefreshNumKills.AddDynamic(this, &ACharacterHUD::OnRefreshNumKills);
+
+		eventDispatcher->OnGameStarted.AddDynamic(this, &ACharacterHUD::OnGameStarted);
 	}
 }
 
@@ -84,3 +89,12 @@ void ACharacterHUD::OnRefreshNumKills(int numKills)
 		IPlayerHUD::Execute_OnRefreshNumKills(mHUDWidget, numKills);
 	}
 }
+
+void ACharacterHUD::OnGameStarted()
+{
+	if(mHUDWidget->GetClass()->ImplementsInterface(UGameHUD::StaticClass()))
+	{
+		IGameHUD::Execute_OnGameStarted(mHUDWidget);
+	}
+}
+

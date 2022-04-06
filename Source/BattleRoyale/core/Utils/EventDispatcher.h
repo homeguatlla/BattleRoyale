@@ -8,6 +8,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnEquippedWeapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshHealth, float, health);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshNumKills, int, numKills);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDead);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAnnounceNewDeath, const FString&, killerName, const FString&, victimName);
@@ -20,7 +21,7 @@ class BATTLEROYALE_API UEventDispatcher : public UObject
 public:
 	UEventDispatcher() = default;
 
-	UPROPERTY(BlueprintAssignable, Category="Character Health")
+	UPROPERTY(BlueprintAssignable, Category="Character")
 	FRefreshHealth OnRefreshHealth;
 
 	UPROPERTY(BlueprintAssignable, Category="Character Weapon")
@@ -29,12 +30,15 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="Character Weapon")
 	FOnUnEquippedWeapon OnUnEquippedWeapon;
 
-	UPROPERTY(BlueprintAssignable, Category="Character Num Kills")
+	UPROPERTY(BlueprintAssignable, Category="Character Stats")
 	FRefreshNumKills OnRefreshNumKills;
 	
-	UPROPERTY(BlueprintAssignable, Category="Player Dead")
+	UPROPERTY(BlueprintAssignable, Category="Player")
 	FOnPlayerDead OnPlayerDead;
 	
-	UPROPERTY(BlueprintAssignable, Category="Announcement New Death")
+	UPROPERTY(BlueprintAssignable, Category="Game")
+	FOnGameStarted OnGameStarted;
+	
+	UPROPERTY(BlueprintAssignable, Category="Announcement")
 	FOnAnnounceNewDeath OnAnnounceNewDeath;
 };

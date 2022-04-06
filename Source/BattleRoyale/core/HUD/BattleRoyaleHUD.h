@@ -32,7 +32,7 @@ protected:
 private:
 	void CreateCharacterHUD(TArray<TSubclassOf<UUserWidget>> widgetClasses);
 	void CreateAnnouncementsHUD(TArray<TSubclassOf<UUserWidget>> widgetClasses);
-	
+
 	class ACharacterHUD* mCharacterHUD;
 	class AAnnouncementsHUD* mAnnouncementsHUD;
 };

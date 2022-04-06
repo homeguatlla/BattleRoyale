@@ -95,7 +95,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void StartSprinting() override;
-
+	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
 	void OnStartSprinting(float maxSpeed);
 
@@ -113,7 +113,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
 	void OnDead();
-
+	
 	//UFUNCTION(BlueprintCallable)
 	virtual bool CanJump() const override;
 
@@ -149,9 +149,6 @@ public:
 	
 protected:
 	virtual void BeginPlay();
-
-	//Test porposes
-	virtual void SetCurrentHealth(float health);
 	
 public:
 	
@@ -214,6 +211,9 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	
 	// End of APawn interface
+
+	//Only for TEST porposes
+	virtual void SetCurrentHealth(float health) override;
 	
 private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
