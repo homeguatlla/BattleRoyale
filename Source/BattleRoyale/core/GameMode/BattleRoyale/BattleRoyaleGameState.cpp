@@ -10,7 +10,8 @@
 #include "Net/UnrealNetwork.h"
 
 ABattleRoyaleGameState::ABattleRoyaleGameState() :
-mRemainingCounts{0}
+mRemainingCounts{0},
+mWinnerTeamId{-1}
 
 {
 }
@@ -26,9 +27,23 @@ void ABattleRoyaleGameState::StartCountdownServer(int duration)
 	}
 }
 
+bool ABattleRoyaleGameState::AreAllPlayersReplicated() const
+{
+	bool AreAllPlayerStatesWithPawn = true;
+	PerformActionForEachPlayerState(
+		[&AreAllPlayerStatesWithPawn](const IIPlayerState* playerState)
+		{
+			AreAllPlayerStatesWithPawn &= playerState->IsPawnReplicated();
+			return false;
+		});
+
+	return AreAllPlayerStatesWithPawn;
+}
+
 void ABattleRoyaleGameState::StartGameServer()
 {
 	mHasGameStarted = true;
+	mWinnerTeamId = -1;
 	MulticastGameStarted();
 }
 
@@ -58,6 +73,19 @@ void ABattleRoyaleGameState::PerformActionForEachPlayerState(
 				break;
 		}
 	}
+}
+
+void ABattleRoyaleGameState::NotifyAnnouncementOfWinner() const
+{
+	PerformActionForEachPlayerState(
+		[&](const IIPlayerState* playerState) -> bool
+		{
+			if(playerState->GetTeamId() == GetWinnerTeam())
+			{
+				playerState->NotifyAnnouncementOfWinner();
+			}
+			return false;
+		});
 }
 
 void ABattleRoyaleGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

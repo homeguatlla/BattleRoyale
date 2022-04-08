@@ -22,6 +22,8 @@ public:
 	virtual void StartCountdownServer(int duration) override;
 	virtual bool DidCountdownFinish() const override { return mRemainingCounts <= 0; }
 
+	virtual bool AreAllPlayersReplicated() const override;
+	
 	virtual void StartGameServer() override;
 	virtual bool HasGameStarted() const override { return mHasGameStarted; }
 	
@@ -32,6 +34,7 @@ public:
 
 	virtual void SetWinnerTeam(int teamId) override { mWinnerTeamId = teamId; }
 	virtual int GetWinnerTeam() const override { return mWinnerTeamId; }
+	virtual void NotifyAnnouncementOfWinner() const override;
 	
 	UPROPERTY(BlueprintAssignable, Category=BattleRoyaleGameState)
 	FOnRefreshCountdown OnRefreshCountDownDelegate;
@@ -48,7 +51,7 @@ private:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastGameStarted();
-	
+
 	bool mDidCountdownStart = false;
 	FTimerHandle mCountdownTimerHandle;
 

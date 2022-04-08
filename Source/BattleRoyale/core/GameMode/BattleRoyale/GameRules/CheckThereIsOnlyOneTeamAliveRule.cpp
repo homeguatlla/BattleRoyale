@@ -19,6 +19,11 @@ bool UCheckThereIsOnlyOneTeamAliveRule::Evaluate()
 	{
 		return false;
 	}
+
+	if(!mGameState->AreAllPlayersReplicated())
+	{
+		return false;
+	}
 	
 	bool thereIsOnlyOneTeamAlive = true;
 	mTeamIdAlive = -1;
@@ -46,7 +51,7 @@ bool UCheckThereIsOnlyOneTeamAliveRule::Evaluate()
 
 bool UCheckThereIsOnlyOneTeamAliveRule::Execute(TArray<TScriptInterface<IIGameRule>>& rules) const
 {
-	UE_LOG(LogGameRules, Display, TEXT("GameRules: Executing Rule CheckThereIsOnlyOneTeamAliveRule"));
+	UE_LOG(LogGameRules, Log, TEXT("GameRules: Executing Rule CheckThereIsOnlyOneTeamAliveRule"));
 	
 	//Set data 
 	mGameState->SetWinnerTeam(mTeamIdAlive);
@@ -57,6 +62,9 @@ bool UCheckThereIsOnlyOneTeamAliveRule::Execute(TArray<TScriptInterface<IIGameRu
 	
 	rules.Remove(thisRule);
 */
+
+	rules.Empty();
+	
 	//add new rules
 	const auto endOfGameRule = NewObject<UEndOfGameRule>();
 	endOfGameRule->Initialize(mGameState);

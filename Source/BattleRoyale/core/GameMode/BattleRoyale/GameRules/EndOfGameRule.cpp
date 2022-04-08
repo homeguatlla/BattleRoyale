@@ -17,9 +17,13 @@ bool UEndOfGameRule::Evaluate()
 
 bool UEndOfGameRule::Execute(TArray<TScriptInterface<IIGameRule>>& rules) const
 {
-	UE_LOG(LogGameRules, Display, TEXT("GameRules: Executing Rule EndOfGameRule"));
+	UE_LOG(LogGameRules, Log, TEXT("GameRules: Executing Rule EndOfGameRule"));
+
+	rules.Empty();
 	
 	//TODO apply end of game rule
 	//Maybe notify the winner and the end of game to the other players alive
-	return false;
+	mGameState->NotifyAnnouncementOfWinner();
+	
+	return true;
 }

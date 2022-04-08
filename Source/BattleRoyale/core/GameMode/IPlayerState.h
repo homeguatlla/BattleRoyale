@@ -23,7 +23,8 @@ class BATTLEROYALE_API IIPlayerState: public IAbilitySystemInterface
 public:
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentInterface() const = 0;
 	virtual bool IsAlive() const = 0;
-
+	virtual bool IsPawnReplicated() const = 0;
+	
 	virtual void SetTeamId(int teamId) = 0;
 	virtual int GetTeamId() const = 0;
 	
@@ -34,4 +35,5 @@ public:
 	
 	virtual void NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const = 0;
 	virtual void NotifyNumKillsToSelf() const = 0;
+	virtual void NotifyAnnouncementOfWinner() const = 0;
 };

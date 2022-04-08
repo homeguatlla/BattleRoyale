@@ -10,6 +10,7 @@
 #include "GameFramework/GameState.h"
 #include "GameRules/StartCountDownRule.h"
 
+
 ABattleRoyaleGameMode::ABattleRoyaleGameMode()
 	: Super()
 {

@@ -35,6 +35,7 @@ void AAnnouncementsHUD::BindToDelegate()
 		const auto eventDispatcher = gameInstance->GetEventDispatcher();
 
 		eventDispatcher->OnAnnounceNewDeath.AddDynamic(this, &AAnnouncementsHUD::OnAnnounceNewDeath);
+		eventDispatcher->OnAnnouncePlayerWon.AddDynamic(this, &AAnnouncementsHUD::OnAnnouncePlayerWon);
 	}
 }
 
@@ -43,5 +44,14 @@ void AAnnouncementsHUD::OnAnnounceNewDeath(const FString& killerName, const FStr
 	if (mHUDWidget->GetClass()->ImplementsInterface(UAnnouncementHUD::StaticClass()))
 	{
 		IAnnouncementHUD::Execute_OnAnnounceNewDeath(mHUDWidget, killerName, victimName);
+	}
+}
+
+
+void AAnnouncementsHUD::OnAnnouncePlayerWon()
+{
+	if (mHUDWidget->GetClass()->ImplementsInterface(UAnnouncementHUD::StaticClass()))
+	{
+		IAnnouncementHUD::Execute_OnAnnouncePlayerWon(mHUDWidget);
 	}
 }

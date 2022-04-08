@@ -16,7 +16,7 @@ APlayerStateBase::APlayerStateBase() : mTeamId(0), mNumKills(0)
 
 bool APlayerStateBase::IsAlive() const
 {
-	if(GetPawn()->Implements<UICharacter>())
+	if(GetPawn() && GetPawn()->Implements<UICharacter>())
 	{
 		//TODO quizá podríamos pillar la vida del GAS cuando sea un atributo
 		const auto character = Cast<IICharacter>(GetPawn());
@@ -34,6 +34,17 @@ void APlayerStateBase::NotifyAnnouncementOfNewDeathToAll(const FString& killerNa
 void APlayerStateBase::NotifyNumKillsToSelf() const
 {
 	ClientRefreshNumKills(GetNumKills());
+}
+
+void APlayerStateBase::NotifyAnnouncementOfWinner() const
+{
+	ClientNotifyWinner();
+}
+
+void APlayerStateBase::ClientNotifyWinner_Implementation() const
+{
+	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+	gameInstance->GetEventDispatcher()->OnAnnouncePlayerWon.Broadcast();
 }
 
 void APlayerStateBase::ClientRefreshNumKills_Implementation(int numKills) const

@@ -26,6 +26,9 @@ private:
 	
 	UFUNCTION()
 	void OnAnnounceNewDeath(const FString& killerName, const FString& victimName);
+
+	UFUNCTION()
+	void OnAnnouncePlayerWon();
 	
 public:
 	UPROPERTY()

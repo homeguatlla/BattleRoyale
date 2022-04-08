@@ -4,6 +4,7 @@
 #include "StartGameRule.h"
 
 #include "CheckThereIsOnlyOneTeamAliveRule.h"
+#include "WaitUntilCharactersAreReplicatedRule.h"
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 
@@ -20,16 +21,16 @@ bool UStartGameRule::Evaluate()
 
 bool UStartGameRule::Execute(TArray<TScriptInterface<IIGameRule>>& rules) const
 {
-	UE_LOG(LogGameRules, Display, TEXT("GameRules: Executing Rule StartGameRule"));
+	UE_LOG(LogGameRules, Log, TEXT("GameRules: Executing Rule StartGameRule"));
 	
 	mGameState->StartGameServer();
 	
 	rules.Empty();
 	
 	//Adding new rules
-	const auto checkThereIsOnlyOneTeamAliveRule = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
-	checkThereIsOnlyOneTeamAliveRule->Initialize(mGameState);
-	rules.Add(checkThereIsOnlyOneTeamAliveRule);
+	const auto waitUntilCharactersAreReplicated = NewObject<UWaitUntilCharactersAreReplicatedRule>();
+	waitUntilCharactersAreReplicated->Initialize(mGameState);
+	rules.Add(waitUntilCharactersAreReplicated);
 	
 	return true;
 }

@@ -31,6 +31,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IGameState")
 	virtual bool DidCountdownFinish() const = 0;
 
+	virtual bool AreAllPlayersReplicated() const = 0;
 	virtual void StartGameServer() = 0;
 	virtual bool HasGameStarted() const = 0;
 	
@@ -41,4 +42,5 @@ public:
 
 	virtual void SetWinnerTeam(int teamId) = 0;
 	virtual int GetWinnerTeam() const = 0;
+	virtual void NotifyAnnouncementOfWinner() const = 0;
 };

@@ -19,8 +19,11 @@ bool UStartCountDownRule::Evaluate()
 
 bool UStartCountDownRule::Execute(TArray<TScriptInterface<IIGameRule>>& rules) const
 {
-	UE_LOG(LogGameRules, Display, TEXT("GameRules: Executing Rule StartCountDownRule"));
+	UE_LOG(LogGameRules, Log, TEXT("GameRules: Executing Rule StartCountDownRule"));
 
+	rules.Empty();
+
+	//Add new rule
 	const auto startGameRule = NewObject<UStartGameRule>();	
 	startGameRule->Initialize(mGameState);
 	rules.Add(startGameRule);

@@ -23,21 +23,25 @@ void UGameRules::Execute()
 {
 	bool hasRulesListBeenModified = false;
 
-	TArray<TScriptInterface<IIGameRule>> newRules(mRules);
-	
-	for(const auto rule : mRules)
+	do
 	{
-		if(rule->Evaluate())
+		hasRulesListBeenModified = false;
+		TArray<TScriptInterface<IIGameRule>> newRules(mRules);
+		
+		for(const auto rule : mRules)
 		{
-			hasRulesListBeenModified |= rule->Execute(newRules);
+			if(rule->Evaluate())
+			{
+				hasRulesListBeenModified |= rule->Execute(newRules);
+			}
 		}
-	}
 
-	if(hasRulesListBeenModified)
-	{
-		mRules = newRules;
-	}
-
+		if(hasRulesListBeenModified)
+		{
+			mRules = newRules;
+		}
+	} while(hasRulesListBeenModified);
+	
 	//TODO 1) faltaría volver a evaluar las reglas?
 	//La opción sencilla es sí, mientras hayan reglas nuevas se van evaluando.
 	//La opción compleja, sería que cada vez que se agrega una regla se evalua. Habría que pensar como.

@@ -12,12 +12,15 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDead);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAnnounceNewDeath, const FString&, killerName, const FString&, victimName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAnnouncePlayerWon);
+
 
 UCLASS(Blueprintable)
 class BATTLEROYALE_API UEventDispatcher : public UObject
 {
 	GENERATED_BODY()
 
+	
 public:
 	UEventDispatcher() = default;
 
@@ -41,4 +44,7 @@ public:
 	
 	UPROPERTY(BlueprintAssignable, Category="Announcement")
 	FOnAnnounceNewDeath OnAnnounceNewDeath;
+
+	UPROPERTY(BlueprintAssignable, Category="Player")
+	FOnAnnouncePlayerWon OnAnnouncePlayerWon;
 };
