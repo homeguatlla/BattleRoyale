@@ -37,11 +37,6 @@ void ABattleRoyaleGameMode::BeginPlay()
 bool ABattleRoyaleGameMode::ReadyToStartMatch_Implementation()
 {
 	bool isReadyToStartMatch = Super::ReadyToStartMatch_Implementation();
-
-	if(mGameRules)
-	{
-		mGameRules->Execute();
-	}
 	
 	const auto gameState = GetGameState();
 	if(gameState != nullptr)
@@ -170,6 +165,8 @@ void ABattleRoyaleGameMode::InitializeGameRules()
 	
 	mGameRules = NewObject<UGameRules>();
 	mGameRules->AddRule(startCountdownRule);
+
+	GetWorld()->GetTimerManager().SetTimer(mGameRulesUpdateTimerHandle, this, &ABattleRoyaleGameMode::OnGameRulesUpdate, mGameRulesUpdateIntervalTime, true);
 }
 
 void ABattleRoyaleGameMode::InitializeTeamSelectionStrategy()
@@ -192,4 +189,12 @@ void ABattleRoyaleGameMode::NotifyNewKillToAll(const APlayerController* victimCo
 	playerStateKillerInterface->NotifyAnnouncementOfNewDeathToAll(
 		playerStateKillerInterface->GetPlayerNickName(),
 		playerStateVictimInterface->GetPlayerNickName());
+}
+
+void ABattleRoyaleGameMode::OnGameRulesUpdate()
+{
+	if(mGameRules)
+	{
+		mGameRules->Execute();
+	}
 }

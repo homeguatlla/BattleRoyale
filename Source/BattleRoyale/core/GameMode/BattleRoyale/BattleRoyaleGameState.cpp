@@ -124,6 +124,10 @@ void ABattleRoyaleGameState::OnRep_RemainingCount() const
 
 void ABattleRoyaleGameState::MulticastGameStarted_Implementation()
 {
+	//To notify the Menu UI
+	OnGameStartedForMenu.Broadcast();
+
+	//To notify HUD
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 	gameInstance->GetEventDispatcher()->OnGameStarted.Broadcast();
 }

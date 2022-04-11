@@ -39,6 +39,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=BattleRoyale)
 	float mCountdownTimeToStartGame = 15.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=BattleRoyale)
+	float mGameRulesUpdateIntervalTime = 1.0f;
+	
 protected:
 	virtual void GenericPlayerInitialization(AController* controller) override;
 	
@@ -53,6 +56,8 @@ private:
 	void ApplyTeamSelectionStrategy(const AController* controller) const;
 	void NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* playerStateKiller) const;
 
+	void OnGameRulesUpdate();
+	
 	TArray<AController*> mPlayerControllers;
 	
 	UPROPERTY()
@@ -60,6 +65,8 @@ private:
 
 	UPROPERTY()
 	TScriptInterface<ITeamSelectionStrategy> mTeamSelectionStrategy;
+
+	FTimerHandle mGameRulesUpdateTimerHandle;
 };
 
 

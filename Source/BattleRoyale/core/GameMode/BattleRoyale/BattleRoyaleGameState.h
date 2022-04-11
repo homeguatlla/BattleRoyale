@@ -10,6 +10,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRefreshCountdown, uint8, counter);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFinishCountdown);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStartedForMenu);
 
 UCLASS()
 class BATTLEROYALE_API ABattleRoyaleGameState : public AGameState, public IIGameState
@@ -42,7 +43,11 @@ public:
 	UPROPERTY(BlueprintAssignable, Category=BattleRoyaleGameState)
 	FOnFinishCountdown OnFinishCountDownDelegate;
 	
+	UPROPERTY(BlueprintAssignable, Category=BattleRoyaleGameState)
+	FOnGameStartedForMenu OnGameStartedForMenu;
+
 private:
+	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	void OnCountdownFinishedServer();
 	
