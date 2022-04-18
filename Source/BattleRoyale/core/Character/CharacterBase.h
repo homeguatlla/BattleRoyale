@@ -95,7 +95,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void StartSprinting() override;
-
+	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
 	void OnStartSprinting(float maxSpeed);
 
@@ -113,7 +113,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
 	void OnDead();
-
+	
 	//UFUNCTION(BlueprintCallable)
 	virtual bool CanJump() const override;
 
@@ -144,11 +144,12 @@ public:
 	                         AActor* DamageCauser) override;
 	
 	UFUNCTION(BlueprintCallable, Category = "Character")
-	void ChangeCharacterMesh1PColor(const FColor& color);	
+	void ChangeCharacterMesh1PColor(const FColor& color);
+
 	
 protected:
 	virtual void BeginPlay();
-
+	
 public:
 	
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -210,6 +211,9 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	
 	// End of APawn interface
+
+	//Only for TEST porposes
+	virtual void SetCurrentHealth(float health) override;
 	
 private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -223,14 +227,13 @@ private:
 
 	IIPlayerState* GetPlayerStateInterface() const;
 	
-	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
 	void SpawnWeapon();
 	
 	void EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptInterface<IIWeapon> weapon);
 	void UnEquipWeapon() const;
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
 	void UpdateHealth(const FTakeDamageData& damage);
-	void ServerDie();
+	void DieServer();
 	
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerSpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation);

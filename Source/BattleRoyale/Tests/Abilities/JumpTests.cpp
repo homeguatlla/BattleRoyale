@@ -1,4 +1,4 @@
-﻿#include "CoreMinimal.h"
+﻿/*#include "CoreMinimal.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 
@@ -131,4 +131,4 @@ bool FJumpTest_WhenAbilityJumpIsTriggered_And_CanJump_CharacterIsJumping::RunTes
 }
 PRAGMA_ENABLE_OPTIMIZATION_ACTUAL
 #endif
-#endif
+#endif*/

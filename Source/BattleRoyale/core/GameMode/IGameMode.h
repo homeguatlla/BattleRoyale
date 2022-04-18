@@ -20,6 +20,7 @@ class BATTLEROYALE_API IIGameMode
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	virtual void OnNewKill(const APlayerController* killerController, const APlayerController* victimController) = 0;
+	virtual bool CanPlayerCauseDamageTo(const APlayerController* killerController, const APlayerController* victimController) = 0;
 };

@@ -7,4 +7,5 @@ IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, BattleRoyale, "BattleRoya
 
 DEFINE_LOG_CATEGORY(LogCharacter);
 DEFINE_LOG_CATEGORY(LogWeapon);
+DEFINE_LOG_CATEGORY(LogGameRules);
 //DEFINE_LOG_CATEGORY(LogGameMode);
