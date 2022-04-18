@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "BattleRoyale/core/Weapons/IWeapon.h"
+#include "BattleRoyale/core/Utils/Stats/PlayerStatsData.h"
 #include "EventDispatcher.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquippedWeapon, TScriptInterface<IIWeapon>, weapon);
@@ -14,6 +15,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDead);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAnnounceNewDeath, const FString&, killerName, const FString&, victimName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAnnouncePlayerWon);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFinishCountDown);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRefreshCountDown, uint8, counter);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowStatsScreen, const FPlayerStatsData&, statsData);
 
 UCLASS(Blueprintable)
 class BATTLEROYALE_API UEventDispatcher : public UObject
@@ -47,4 +51,13 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="Player")
 	FOnAnnouncePlayerWon OnAnnouncePlayerWon;
+
+	UPROPERTY(BlueprintAssignable, Category="Menu")
+	FOnFinishCountDown OnFinishCountDown;
+
+	UPROPERTY(BlueprintAssignable, Category="Menu")
+	FOnRefreshCountDown OnRefreshCountDown;
+
+	UPROPERTY(BlueprintAssignable, Category="Menu")
+	FOnShowStatsScreen OnShowStatsScreen;
 };
