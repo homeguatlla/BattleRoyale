@@ -6,14 +6,18 @@
 #include <set>
 
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
+#include "BattleRoyale/core/Utils/FSM/StatesMachineFactory.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
+
 
 ABattleRoyaleGameState::ABattleRoyaleGameState() :
 mRemainingCounts{0},
 mWinnerTeamId{-1}
 
 {
+	PrimaryActorTick.bCanEverTick = true;
+	CreateStatesMachine();
 }
 
 void ABattleRoyaleGameState::StartCountdownServer(int duration)
@@ -88,6 +92,14 @@ void ABattleRoyaleGameState::NotifyAnnouncementOfWinner() const
 		});
 }
 
+void ABattleRoyaleGameState::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "ABattleRoyaleGameState::Tick!");
+	mStatesMachineController.Update(DeltaSeconds);
+}
+
 void ABattleRoyaleGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -96,38 +108,51 @@ void ABattleRoyaleGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 void ABattleRoyaleGameState::OnCountdownFinishedServer()
 {
+	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+		
 	mRemainingCounts--; 
 	if(mRemainingCounts <= 0)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(mCountdownTimerHandle);
-		OnFinishCountDownDelegate.Broadcast();
+
+		gameInstance->GetEventDispatcher()->OnFinishCountDown.Broadcast();
+
 		UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameStateBase::OnCountdownFinished Countdown finished"));
 	}
 	else
 	{
 		UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameStateBase::OnCountdownFinished %d"), mRemainingCounts);
 	}
-	OnRefreshCountDownDelegate.Broadcast(mRemainingCounts);
+	gameInstance->GetEventDispatcher()->OnRefreshCountDown.Broadcast(mRemainingCounts);
 }
 
 void ABattleRoyaleGameState::OnRep_RemainingCount() const
 {
 	//Este método no se ejecuta en servidor. Por eso hay que poner la llamada cuando se modifica
 	//la variable replicada
+	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 	
-	OnRefreshCountDownDelegate.Broadcast(mRemainingCounts);
+	gameInstance->GetEventDispatcher()->OnRefreshCountDown.Broadcast(mRemainingCounts);
 	if(mRemainingCounts <= 0)
 	{
-		OnFinishCountDownDelegate.Broadcast();
+		gameInstance->GetEventDispatcher()->OnFinishCountDown.Broadcast();
 	}
 }
 
 void ABattleRoyaleGameState::MulticastGameStarted_Implementation()
 {
-	//To notify the Menu UI
-	OnGameStartedForMenu.Broadcast();
-
 	//To notify HUD
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 	gameInstance->GetEventDispatcher()->OnGameStarted.Broadcast();
+}
+
+void ABattleRoyaleGameState::CreateStatesMachine()
+{
+	mGameStateFSMContext = std::make_shared<BRModeFSM::BattleRoyaleContext>(GetWorld());
+	
+	BattleRoyale::StatesMachineFactory factory;
+	mStatesMachineController.AddMachine(
+		std::move(factory.CreateBattleRoyaleModeFSM(
+			FSMType::BATTLEROYALE_GAMEMODE,
+			mGameStateFSMContext)));
 }

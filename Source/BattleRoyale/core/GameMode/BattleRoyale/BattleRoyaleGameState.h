@@ -3,14 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BattleRoyale/core/GameMode/IGameState.h"
 #include "GameFramework/GameState.h"
+#include "BattleRoyale/core/GameMode/IGameState.h"
+#include "BattleRoyale/core/Utils/FSM/StatesMachineController.h"
+#include "FSM/BattleRoyaleContext.h"
+#include "FSM/States/BattleRoyaleStates.h"
 #include "BattleRoyaleGameState.generated.h"
 
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRefreshCountdown, uint8, counter);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFinishCountdown);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStartedForMenu);
 
 UCLASS()
 class BATTLEROYALE_API ABattleRoyaleGameState : public AGameState, public IIGameState
@@ -36,21 +35,15 @@ public:
 	virtual void SetWinnerTeam(int teamId) override { mWinnerTeamId = teamId; }
 	virtual int GetWinnerTeam() const override { return mWinnerTeamId; }
 	virtual void NotifyAnnouncementOfWinner() const override;
-	
-	UPROPERTY(BlueprintAssignable, Category=BattleRoyaleGameState)
-	FOnRefreshCountdown OnRefreshCountDownDelegate;
 
-	UPROPERTY(BlueprintAssignable, Category=BattleRoyaleGameState)
-	FOnFinishCountdown OnFinishCountDownDelegate;
+	virtual void Tick(float DeltaSeconds) override;
 	
-	UPROPERTY(BlueprintAssignable, Category=BattleRoyaleGameState)
-	FOnGameStartedForMenu OnGameStartedForMenu;
-
 private:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	void OnCountdownFinishedServer();
-	
+	void CreateStatesMachine();
+		
 	UFUNCTION()
 	void OnRep_RemainingCount() const;
 
@@ -65,4 +58,8 @@ private:
 
 	int mWinnerTeamId;
 	bool mHasGameStarted = false;
+
+	//States machine to control the game state
+	StatesMachineController<BRModeFSM::BattleRoyaleState, BRModeFSM::BattleRoyaleContext> mStatesMachineController;
+	std::shared_ptr<BRModeFSM::BattleRoyaleContext> mGameStateFSMContext;
 };
