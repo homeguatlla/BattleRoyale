@@ -151,6 +151,7 @@ void ABattleRoyaleGameState::CreateStatesMachine()
 	mGameStateFSMContext = std::make_shared<BRModeFSM::BattleRoyaleContext>(GetWorld());
 	
 	BattleRoyale::StatesMachineFactory factory;
+	
 	mStatesMachineController.AddMachine(
 		std::move(factory.CreateBattleRoyaleModeFSM(
 			FSMType::BATTLEROYALE_GAMEMODE,

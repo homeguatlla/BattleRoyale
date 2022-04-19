@@ -4,9 +4,13 @@
 #include <BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Init.h>
 
 //FSM BattleRoyale Transitions
-#include <BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterIdle.h>
+#include <BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterCountdown.h>
 
 #include "StatesMachineBuilder.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Countdown.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Synchronize.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterGameLoop.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterSynchronize.h"
 
 namespace BattleRoyale
 {
@@ -18,19 +22,27 @@ namespace BattleRoyale
 
 		switch(type)
 		{
-		case FSMType::BATTLEROYALE_GAMEMODE:
-			{
-				auto init = std::make_shared<BRModeFSM::Init>();
-				
-				return builder.WithState(init)
-                              //.WithTransition(std::make_unique<TLN::EnterWalk>(idle, walk))
-                              .WithInitialState(init->GetID())
-                              .Build(context);
-			}
-		
-		default:
-			checkf(false, TEXT("States Machine type %d not defined"), type);
-			return {};
+			case FSMType::BATTLEROYALE_GAMEMODE:
+				{
+					const auto init = std::make_shared<BRModeFSM::Init>();
+					const auto countdown = std::make_shared<BRModeFSM::Countdown>();
+					const auto synchronize = std::make_shared<BRModeFSM::Synchronize>();
+					const auto gameLoop = std::make_shared<BRModeFSM::Synchronize>();
+					
+					return builder.WithState(init)
+								  .WithState(countdown)
+								  .WithState(synchronize)
+								  .WithState(gameLoop)
+	                              .WithTransition(std::make_unique<BRModeFSM::EnterCountdown>(init, countdown))
+	                              .WithTransition(std::make_unique<BRModeFSM::EnterSynchronize>(countdown, synchronize))
+	                              .WithTransition(std::make_unique<BRModeFSM::EnterGameLoop>(synchronize, gameLoop))
+	                              .WithInitialState(init->GetID())
+	                              .Build(context);
+				}
+			
+			default:
+				checkf(false, TEXT("States Machine type %d not defined"), type);
+				return {};
 		}	
 	}
 /*

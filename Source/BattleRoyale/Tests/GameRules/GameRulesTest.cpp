@@ -20,10 +20,6 @@ bool FGameRulesTest_When_AddingARuleTwice_Then_IsNotAdded::RunTest(const FString
 
 	gameState->Initialize(1, 1);
 
-	TScriptInterface<IIGameState> gameStateInterface;
-	gameStateInterface.SetObject(gameState);
-	gameStateInterface.SetInterface(Cast<IIGameState>(gameState));
-
 	UCheckThereIsOnlyOneTeamAliveRule* rule = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
 	
 	const auto rules = NewObject<UGameRules>();
@@ -48,10 +44,6 @@ bool FGameRulesTest_When_AddingTwoEqualsRules_Then_TheSecondOneIsNotAdded::RunTe
 	const auto gameState = NewObject<GameStateMock>();
 
 	gameState->Initialize(1, 1);
-
-	TScriptInterface<IIGameState> gameStateInterface;
-	gameStateInterface.SetObject(gameState);
-	gameStateInterface.SetInterface(Cast<IIGameState>(gameState));
 
 	UCheckThereIsOnlyOneTeamAliveRule* rule1 = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
 	UCheckThereIsOnlyOneTeamAliveRule* rule2 = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();

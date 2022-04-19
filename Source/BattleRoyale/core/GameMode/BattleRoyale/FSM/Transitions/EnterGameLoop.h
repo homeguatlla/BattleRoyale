@@ -5,13 +5,12 @@
 namespace BRModeFSM
 {
 	class BattleRoyaleContext;
-	class CharacterContext;
 
-	class EnterIdle : public core::utils::FSM::BaseTransition<BattleRoyaleState, BattleRoyaleContext>
+	class EnterGameLoop : public core::utils::FSM::BaseTransition<BattleRoyaleState, BattleRoyaleContext>
 	{
 	public:
-		EnterIdle(StatePtr origin, StatePtr destination);
-		virtual ~EnterIdle() = default;
+		EnterGameLoop(StatePtr origin, StatePtr destination);
+		virtual ~EnterGameLoop() = default;
 
 		void OnInit() override;
 		bool CanPerformTransition() const override;
