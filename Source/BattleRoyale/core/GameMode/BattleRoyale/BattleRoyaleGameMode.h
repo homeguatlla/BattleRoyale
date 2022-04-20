@@ -31,16 +31,16 @@ public:
 	virtual bool CanPlayerCauseDamageTo(const APlayerController* killerController, const APlayerController* victimController) override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=BattleRoyale)
-	TSubclassOf<APawn> mCharacter;
+	TSubclassOf<APawn> CharacterClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=BattleRoyale)
-	uint8 mNumPlayersPerTeam = 1;
+	uint8 NumPlayersPerTeam = 1;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=BattleRoyale)
-	float mCountdownTimeToStartGame = 15.f;
+	float CountdownTimeToStartGame = 15.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=BattleRoyale)
-	float mGameRulesUpdateIntervalTime = 1.0f;
+	float GameRulesUpdateIntervalTime = 1.0f;
 	
 protected:
 	virtual void GenericPlayerInitialization(AController* controller) override;

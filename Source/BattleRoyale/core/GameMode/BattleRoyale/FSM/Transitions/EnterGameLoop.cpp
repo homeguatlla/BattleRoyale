@@ -1,4 +1,6 @@
+
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterGameLoop.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/BattleRoyaleContext.h"
 
 namespace BRModeFSM
 {
@@ -9,11 +11,11 @@ namespace BRModeFSM
 
 	void EnterGameLoop::OnInit()
 	{
-		
+		mGameState = GetContext()->GetGameState();
 	}
 
 	bool EnterGameLoop::CanPerformTransition() const
 	{
-		return true;
+		return mGameState->AreAllPlayersReplicated();
 	}
 };

@@ -1,16 +1,21 @@
 #pragma once
+#include "BattleRoyale/core/GameMode/IGameState.h"
 
-//TODO decidir bien todos los namespaces y ver si se pueden compartir con el otro gamemode.
 namespace BRModeFSM
 {
 	class BattleRoyaleContext
 	{
 	public:
-		BattleRoyaleContext(UWorld* world);
+		BattleRoyaleContext(UWorld* world, IIGameState* gameState, float countdownTimeToStartGame);
 
 		~BattleRoyaleContext() = default;
 
+		IIGameState* GetGameState() const { return mGameState; }
+		float GetCountdownTimeToStartGame() const { return mCountdownTimeToStartGame; }
+		
 	private:
 		UWorld* mWorld;
+		float mCountdownTimeToStartGame;
+		IIGameState* mGameState;
 	};
 };

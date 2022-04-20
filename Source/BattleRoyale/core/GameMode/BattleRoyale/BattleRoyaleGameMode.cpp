@@ -14,7 +14,7 @@
 ABattleRoyaleGameMode::ABattleRoyaleGameMode()
 	: Super()
 {
-	DefaultPawnClass = mCharacter;
+	DefaultPawnClass = CharacterClass;
 
 	// use our custom HUD class
 	HUDClass = ABattleRoyaleHUD::StaticClass();
@@ -31,7 +31,7 @@ void ABattleRoyaleGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	InitializeGameRules();
+	//InitializeGameRules();
 }
 
 bool ABattleRoyaleGameMode::ReadyToStartMatch_Implementation()
@@ -161,18 +161,18 @@ void ABattleRoyaleGameMode::InitializeGameRules()
 	gameStateInterface.SetInterface(GetGameState());
 
 	startCountdownRule->Initialize(gameStateInterface);
-	startCountdownRule->SetCountdownTimeToStartGame(mCountdownTimeToStartGame);
+	startCountdownRule->SetCountdownTimeToStartGame(CountdownTimeToStartGame);
 	
 	mGameRules = NewObject<UGameRules>();
 	mGameRules->AddRule(startCountdownRule);
 
-	GetWorld()->GetTimerManager().SetTimer(mGameRulesUpdateTimerHandle, this, &ABattleRoyaleGameMode::OnGameRulesUpdate, mGameRulesUpdateIntervalTime, true);
+	GetWorld()->GetTimerManager().SetTimer(mGameRulesUpdateTimerHandle, this, &ABattleRoyaleGameMode::OnGameRulesUpdate, GameRulesUpdateIntervalTime, true);
 }
 
 void ABattleRoyaleGameMode::InitializeTeamSelectionStrategy()
 {
 	mTeamSelectionStrategy = NewObject<USimpleTeamSelectionStrategy>();
-	mTeamSelectionStrategy->Initialize(mNumPlayersPerTeam);
+	mTeamSelectionStrategy->Initialize(NumPlayersPerTeam);
 }
 
 void ABattleRoyaleGameMode::NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* const playerStateKiller) const

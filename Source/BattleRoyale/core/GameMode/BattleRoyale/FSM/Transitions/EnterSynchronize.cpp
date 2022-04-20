@@ -1,5 +1,7 @@
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterSynchronize.h"
 
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/BattleRoyaleContext.h"
+
 namespace BRModeFSM
 {
 	EnterSynchronize::EnterSynchronize(StatePtr origin, StatePtr destination) :
@@ -9,11 +11,11 @@ namespace BRModeFSM
 
 	void EnterSynchronize::OnInit()
 	{
-		
+		mGameState = GetContext()->GetGameState();
 	}
 
 	bool EnterSynchronize::CanPerformTransition() const
 	{
-		return true;
+		return mGameState->DidCountdownStart() && mGameState->DidCountdownFinish();
 	}
 };

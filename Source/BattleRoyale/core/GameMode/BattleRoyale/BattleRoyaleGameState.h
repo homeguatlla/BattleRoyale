@@ -38,11 +38,14 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 	
+protected:
+	virtual void BeginPlay() override;
+	
 private:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	void OnCountdownFinishedServer();
-	void CreateStatesMachine();
+	void CreateStatesMachineServer();
 		
 	UFUNCTION()
 	void OnRep_RemainingCount() const;

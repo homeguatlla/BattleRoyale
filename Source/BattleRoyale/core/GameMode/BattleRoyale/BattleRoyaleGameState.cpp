@@ -5,6 +5,7 @@
 
 #include <set>
 
+#include "BattleRoyaleGameMode.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Utils/FSM/StatesMachineFactory.h"
 #include "GameFramework/PlayerState.h"
@@ -17,7 +18,28 @@ mWinnerTeamId{-1}
 
 {
 	PrimaryActorTick.bCanEverTick = true;
-	CreateStatesMachine();
+	SetActorTickEnabled(false);
+}
+
+void ABattleRoyaleGameState::BeginPlay()
+{
+	Super::BeginPlay();
+	if(HasAuthority())
+	{
+		CreateStatesMachineServer();
+		SetActorTickEnabled(true);
+	}
+}
+
+void ABattleRoyaleGameState::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if(HasAuthority())
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "ABattleRoyaleGameState::Tick!");
+		mStatesMachineController.Update(DeltaSeconds);
+	}
 }
 
 void ABattleRoyaleGameState::StartCountdownServer(int duration)
@@ -92,14 +114,6 @@ void ABattleRoyaleGameState::NotifyAnnouncementOfWinner() const
 		});
 }
 
-void ABattleRoyaleGameState::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "ABattleRoyaleGameState::Tick!");
-	mStatesMachineController.Update(DeltaSeconds);
-}
-
 void ABattleRoyaleGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -146,9 +160,10 @@ void ABattleRoyaleGameState::MulticastGameStarted_Implementation()
 	gameInstance->GetEventDispatcher()->OnGameStarted.Broadcast();
 }
 
-void ABattleRoyaleGameState::CreateStatesMachine()
+void ABattleRoyaleGameState::CreateStatesMachineServer()
 {
-	mGameStateFSMContext = std::make_shared<BRModeFSM::BattleRoyaleContext>(GetWorld());
+	auto gameMode = Cast<ABattleRoyaleGameMode>(GetWorld()->GetAuthGameMode());
+	mGameStateFSMContext = std::make_shared<BRModeFSM::BattleRoyaleContext>(GetWorld(), this, gameMode->CountdownTimeToStartGame);
 	
 	BattleRoyale::StatesMachineFactory factory;
 	

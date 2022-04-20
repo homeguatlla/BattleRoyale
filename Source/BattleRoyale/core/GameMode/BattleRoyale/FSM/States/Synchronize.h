@@ -1,5 +1,6 @@
 #pragma once
 #include "BattleRoyaleStates.h"
+#include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/Utils/FSM/fsm/BaseState.h"
 
 
