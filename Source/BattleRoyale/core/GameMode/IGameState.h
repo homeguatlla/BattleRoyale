@@ -10,6 +10,9 @@
 #include "UObject/Interface.h"
 #include "IGameState.generated.h"
 
+
+class UGameRules;
+
 // This class does not need to be modified.
 UINTERFACE(Blueprintable, meta = (CannotImplementInterfaceInBlueprint))
 class UIGameState : public UInterface

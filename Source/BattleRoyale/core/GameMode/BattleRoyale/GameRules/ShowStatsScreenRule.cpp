@@ -7,23 +7,21 @@
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 
-void UShowStatsScreenRule::Initialize(TScriptInterface<IIGameState> gameState)
+void ShowStatsScreenRule::Initialize(IIGameState* gameState)
 {
 	mGameState = gameState;
 }
 
-bool UShowStatsScreenRule::Evaluate()
+bool ShowStatsScreenRule::Evaluate()
 {
-	return Super::Evaluate();
+	return false;
 }
 
-bool UShowStatsScreenRule::Execute(TArray<TScriptInterface<IIGameRule>>& rules) const
+bool ShowStatsScreenRule::Execute(std::vector<std::shared_ptr<IGameRule>>& rules) const
 {
-	Super::Execute(rules);
-	
 	UE_LOG(LogGameRules, Log, TEXT("GameRules: Executing Rule ShowStatsScreenRule"));
 
-	rules.Empty();
+	rules.clear();
 
 	//TODO gamestate show stats screen rule. Porque podríamos enviar el evento aquí pero
 	//no se haría multicast y solo lo recibiría el servidor. Pero no me gusta que el gameState

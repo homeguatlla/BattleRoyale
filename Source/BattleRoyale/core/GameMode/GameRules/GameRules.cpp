@@ -3,12 +3,26 @@
 
 #include "GameRules.h"
 
-UGameRules::UGameRules()
-{
-}
+#include "BattleRoyale/core/GameMode/BattleRoyale/GameRules/CheckThereIsOnlyOneTeamAliveRule.h"
 
-void UGameRules::AddRule(TScriptInterface<IIGameRule> rule)
+
+void GameRules::AddRule(std::shared_ptr<IGameRule> rule)
 {
+	auto tt = typeid(rule) == typeid(CheckThereIsOnlyOneTeamAliveRule);
+	
+	auto it = std::find_if(
+		mRules.begin(),
+		mRules.end(),
+		[&rule](std::shared_ptr<IGameRule> const& gameRule)
+		{
+			return typeid(*gameRule).name() == typeid(*rule).name();
+		});
+
+	if(it == mRules.end())
+	{
+		mRules.push_back(rule);
+	}
+	/*
 	if(!mRules.ContainsByPredicate(
 		[&rule](const TScriptInterface<IIGameRule> object)
 		{
@@ -16,17 +30,17 @@ void UGameRules::AddRule(TScriptInterface<IIGameRule> rule)
 		}))
 	{
 		mRules.Add(rule);
-	}
+	}*/
 }
 
-void UGameRules::Execute()
+void GameRules::Execute()
 {
 	bool hasRulesListBeenModified = false;
 
 	do
 	{
 		hasRulesListBeenModified = false;
-		TArray<TScriptInterface<IIGameRule>> newRules(mRules);
+		std::vector<std::shared_ptr<IGameRule>> newRules(mRules);
 		
 		for(const auto rule : mRules)
 		{

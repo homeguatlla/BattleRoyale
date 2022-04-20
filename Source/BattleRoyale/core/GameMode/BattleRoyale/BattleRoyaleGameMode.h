@@ -6,7 +6,6 @@
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/GameMode/MultiplayerGameMode.h"
-#include "BattleRoyale/core/GameMode/GameRules/GameRules.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 #include "BattleRoyale/core/PlayerController/IPlayerController.h"
 #include "BattleRoyale/core/Utils/TeamSelectionStrategies/ITeamSelectionStrategy.h"
@@ -56,17 +55,14 @@ private:
 	void ApplyTeamSelectionStrategy(const AController* controller) const;
 	void NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* playerStateKiller) const;
 
-	void OnGameRulesUpdate();
+	//void OnGameRulesUpdate();
 	
 	TArray<AController*> mPlayerControllers;
-	
-	UPROPERTY()
-	UGameRules* mGameRules;
 
 	UPROPERTY()
 	TScriptInterface<ITeamSelectionStrategy> mTeamSelectionStrategy;
 
-	FTimerHandle mGameRulesUpdateTimerHandle;
+	//FTimerHandle mGameRulesUpdateTimerHandle;
 };
 
 

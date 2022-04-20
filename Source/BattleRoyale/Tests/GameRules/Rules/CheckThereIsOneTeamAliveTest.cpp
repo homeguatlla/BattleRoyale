@@ -20,13 +20,9 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_NoPlayers_Then_EvaluatesFa
 	const FString& Parameters)
 {
 	const auto gameState = NewObject<GameStateMock>();
-
-	TScriptInterface<IIGameState> gameStateInterface;
-	gameStateInterface.SetObject(gameState);
-	gameStateInterface.SetInterface(Cast<IIGameState>(gameState));
-
-	UCheckThereIsOnlyOneTeamAliveRule* rule = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
-	rule->Initialize(gameStateInterface);
+	
+	auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
+	rule->Initialize(gameState);
 	const auto result = rule->Evaluate();
 
 	TestFalse(TEXT("When no players Then the aren't alive teams."), result);
@@ -45,13 +41,9 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_ThereIsOnePlayer_Then_Eval
 	const auto gameState = NewObject<GameStateMock>();
 
 	gameState->Initialize(1, 1);
-
-	TScriptInterface<IIGameState> gameStateInterface;
-	gameStateInterface.SetObject(gameState);
-	gameStateInterface.SetInterface(Cast<IIGameState>(gameState));
-
-	UCheckThereIsOnlyOneTeamAliveRule* rule = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
-	rule->Initialize(gameStateInterface);
+	
+	auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
+	rule->Initialize(gameState);
 	const auto result = rule->Evaluate();
 
 	TestTrue(TEXT("When one player Then there is one team alive."), result);
@@ -77,12 +69,8 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_SomeoneDieAndIsTheLastOne_
 	character = gameState->GetCharacter(2);
 	character->SetCurrentHealth(0.0f);
 	
-	TScriptInterface<IIGameState> gameStateInterface;
-	gameStateInterface.SetObject(gameState);
-	gameStateInterface.SetInterface(Cast<IIGameState>(gameState));
-
-	UCheckThereIsOnlyOneTeamAliveRule* rule = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
-	rule->Initialize(gameStateInterface);
+	auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
+	rule->Initialize(gameState);
 	const auto result = rule->Evaluate();
 
 	TestTrue(TEXT("When all minus one player died Then there is one team alive."), result);
@@ -106,12 +94,8 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_SomeoneDieAndIsNotTheLastO
 	auto character = gameState->GetCharacter(0);
 	character->SetCurrentHealth(0.0f);
 	
-	TScriptInterface<IIGameState> gameStateInterface;
-	gameStateInterface.SetObject(gameState);
-	gameStateInterface.SetInterface(Cast<IIGameState>(gameState));
-
-	UCheckThereIsOnlyOneTeamAliveRule* rule = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
-	rule->Initialize(gameStateInterface);
+	auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
+	rule->Initialize(gameState);
 	const auto result = rule->Evaluate();
 
 	TestFalse(TEXT("When one player died but there are two alive Then there is NOT one team alive."), result);
@@ -135,17 +119,15 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_Executed_Then_EndOfGameRul
 	auto character = gameState->GetCharacter(0);
 	character->SetCurrentHealth(0.0f);
 	
-	TScriptInterface<IIGameState> gameStateInterface;
-	gameStateInterface.SetObject(gameState);
-	gameStateInterface.SetInterface(Cast<IIGameState>(gameState));
-
-	UCheckThereIsOnlyOneTeamAliveRule* rule = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
-	rule->Initialize(gameStateInterface);
+	auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
+	rule->Initialize(gameState);
 	
-	TArray<TScriptInterface<IIGameRule>> rules;
+	std::vector<std::shared_ptr<IGameRule>> rules;
 	rule->Execute(rules);
-	
-	const auto isEndOfGameRule = rules[0].GetObject()->IsA(UEndOfGameRule::StaticClass());
+
+	auto s1 = typeid(*rules[0]).name();
+	auto s2 = typeid(EndOfGameRule).name();
+	const auto isEndOfGameRule = typeid(*rules[0]).name() == typeid(EndOfGameRule).name();
 	TestTrue(TEXT("When executed EndOfGameRule is added."), isEndOfGameRule);
 
 	return true;

@@ -16,21 +16,17 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGameRulesTest_When_AddingARuleTwice_Then_IsNot
 
 bool FGameRulesTest_When_AddingARuleTwice_Then_IsNotAdded::RunTest(const FString& Parameters)
 {
-	const auto gameState = NewObject<GameStateMock>();
-
-	gameState->Initialize(1, 1);
-
-	UCheckThereIsOnlyOneTeamAliveRule* rule = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
+	const auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
 	
-	const auto rules = NewObject<UGameRules>();
+	GameRules rules;
 
-	rules->AddRule(rule);
+	rules.AddRule(rule);
 
-	TestTrue(TEXT("New rule is added"), rules->GetNumRules() == 1);
+	TestTrue(TEXT("New rule is added"), rules.GetNumRules() == 1);
 
-	rules->AddRule(rule);
+	rules.AddRule(rule);
 	
-	TestTrue(TEXT("Adding the same rule twice is not added"), rules->GetNumRules() == 1);
+	TestTrue(TEXT("Adding the same rule twice is not added"), rules.GetNumRules() == 1);
 
 	return true;
 }
@@ -41,22 +37,18 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGameRulesTest_When_AddingTwoEqualsRules_Then_T
 
 bool FGameRulesTest_When_AddingTwoEqualsRules_Then_TheSecondOneIsNotAdded::RunTest(const FString& Parameters)
 {
-	const auto gameState = NewObject<GameStateMock>();
-
-	gameState->Initialize(1, 1);
-
-	UCheckThereIsOnlyOneTeamAliveRule* rule1 = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
-	UCheckThereIsOnlyOneTeamAliveRule* rule2 = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
+	const auto rule1 = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
+	const auto rule2 = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
 	
-	const auto rules = NewObject<UGameRules>();
+	GameRules rules;
 
-	rules->AddRule(rule1);
+	rules.AddRule(rule1);
 
-	TestTrue(TEXT("New rule is added"), rules->GetNumRules() == 1);
+	TestTrue(TEXT("New rule is added"), rules.GetNumRules() == 1);
 
-	rules->AddRule(rule2);
+	rules.AddRule(rule2);
 	
-	TestTrue(TEXT("Adding the same rule twice is not added"), rules->GetNumRules() == 1);
+	TestTrue(TEXT("Adding the same rule twice is not added"), rules.GetNumRules() == 1);
 
 	return true;
 }
@@ -75,22 +67,19 @@ bool FGameRulesTest_When_SomeoneDieAndIsTheLastOne_Then_EndOfGameRuleIsAdded::Ru
 	const auto character = gameState->GetCharacter(0);
 	character->SetCurrentHealth(0.0f);
 	
-	TScriptInterface<IIGameState> gameStateInterface;
-	gameStateInterface.SetObject(gameState);
-	gameStateInterface.SetInterface(Cast<IIGameState>(gameState));
-
-	UCheckThereIsOnlyOneTeamAliveRule* rule = NewObject<UCheckThereIsOnlyOneTeamAliveRule>();
-	rule->Initialize(gameStateInterface);
+	const auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
+	rule->Initialize(gameState);
 	
-	const auto rules = NewObject<UGameRules>();
+	GameRules rules;
 
-	rules->AddRule(rule);
+	rules.AddRule(rule);
 
-	TestTrue(TEXT("Num rules before execute "), rules->GetNumRules() == 1);
+	TestTrue(TEXT("Num rules before execute "), rules.GetNumRules() == 1);
 
-	rules->Execute();
+	//Checkthereisonlyoneteamaliverule will be removed and endofgame will be added
+	rules.Execute();
 
-	TestTrue(TEXT("When last team new rule is added"), rules->GetNumRules() == 2);
+	TestTrue(TEXT("When last team new rule is added"), rules.GetNumRules() == 1);
 
 	return true;
 }

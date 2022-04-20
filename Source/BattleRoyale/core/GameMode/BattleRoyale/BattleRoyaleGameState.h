@@ -62,6 +62,9 @@ private:
 	int mWinnerTeamId;
 	bool mHasGameStarted = false;
 
+	//UPROPERTY()
+	//class UGameRules* mGameRules;
+	
 	//States machine to control the game state
 	StatesMachineController<BRModeFSM::BattleRoyaleState, BRModeFSM::BattleRoyaleContext> mStatesMachineController;
 	std::shared_ptr<BRModeFSM::BattleRoyaleContext> mGameStateFSMContext;

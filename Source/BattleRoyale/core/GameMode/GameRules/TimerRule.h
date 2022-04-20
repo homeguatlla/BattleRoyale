@@ -2,26 +2,21 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "BattleRoyale/core/GameMode/GameRules/IGameRule.h"
-#include "TimerRule.generated.h"
+#include <future>
 
-class IIGameState;
-/**
- * 
- */
-UCLASS()
-class BATTLEROYALE_API UTimerRule: public UObject, public IIGameRule
+#include "BattleRoyale/core/GameMode/GameRules/IGameRule.h"
+
+
+class BATTLEROYALE_API TimerRule: public IGameRule
 {
-	GENERATED_BODY()
 
 public:
-	UTimerRule() = default;
-	virtual void BeginDestroy() override;
+	TimerRule() = default;
+	virtual ~TimerRule() = default;
 	
-	virtual void Initialize(TScriptInterface<IIGameState> gameState) override;
+	virtual void Initialize(IIGameState* gameState) override;
 	virtual bool Evaluate() override;
-	virtual bool Execute(TArray<TScriptInterface<IIGameRule>>& rules) const override;
+	virtual bool Execute(std::vector<std::shared_ptr<IGameRule>>& rules) const override;
 
 	void SetDuration(float duration) { mDuration = duration;}
 	void Start();

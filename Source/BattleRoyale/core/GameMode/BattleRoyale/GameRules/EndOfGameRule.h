@@ -2,27 +2,22 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "BattleRoyale/core/GameMode/GameRules/IGameRule.h"
-#include "EndOfGameRule.generated.h"
+#include <memory>
 
-class IIGameState;
-/**
- * 
- */
-UCLASS()
-class BATTLEROYALE_API UEndOfGameRule: public UObject, public IIGameRule
+#include "BattleRoyale/core/GameMode/GameRules/IGameRule.h"
+
+
+class BATTLEROYALE_API EndOfGameRule: public IGameRule
 {
-	GENERATED_BODY()
 
 public:
-	UEndOfGameRule() = default;
-
-	virtual void Initialize(TScriptInterface<IIGameState> gameState) override;
+	EndOfGameRule() = default;
+	virtual ~EndOfGameRule() = default;
+	
+	virtual void Initialize(IIGameState* gameState) override;
 	virtual bool Evaluate() override;
-	virtual bool Execute(TArray<TScriptInterface<IIGameRule>>& rules) const override;
+	virtual bool Execute(std::vector<std::shared_ptr<IGameRule>>& rules) const override;
 
 private:
-	UPROPERTY()
-	TScriptInterface<IIGameState> mGameState;
+	IIGameState* mGameState;
 };

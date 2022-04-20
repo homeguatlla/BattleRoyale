@@ -8,12 +8,12 @@
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 
-void UCheckThereIsOnlyOneTeamAliveRule::Initialize(TScriptInterface<IIGameState> gameState)
+void CheckThereIsOnlyOneTeamAliveRule::Initialize(IIGameState* gameState)
 {
 	mGameState = gameState;
 }
 
-bool UCheckThereIsOnlyOneTeamAliveRule::Evaluate()
+bool CheckThereIsOnlyOneTeamAliveRule::Evaluate()
 {
 	if(mGameState->GetNumPlayers() <= 0)
 	{
@@ -49,7 +49,7 @@ bool UCheckThereIsOnlyOneTeamAliveRule::Evaluate()
 	return thereIsOnlyOneTeamAlive;
 }
 
-bool UCheckThereIsOnlyOneTeamAliveRule::Execute(TArray<TScriptInterface<IIGameRule>>& rules) const
+bool CheckThereIsOnlyOneTeamAliveRule::Execute(std::vector<std::shared_ptr<IGameRule>>& rules) const
 {
 	UE_LOG(LogGameRules, Log, TEXT("GameRules: Executing Rule CheckThereIsOnlyOneTeamAliveRule"));
 	
@@ -63,12 +63,12 @@ bool UCheckThereIsOnlyOneTeamAliveRule::Execute(TArray<TScriptInterface<IIGameRu
 	rules.Remove(thisRule);
 */
 
-	rules.Empty();
+	rules.clear();
 	
 	//add new rules
-	const auto endOfGameRule = NewObject<UEndOfGameRule>();
+	const auto endOfGameRule = std::make_shared<EndOfGameRule>();
 	endOfGameRule->Initialize(mGameState);
-	rules.Add(endOfGameRule);
+	rules.push_back(endOfGameRule);
 
 	//return true if added/removed rules
 	return true;

@@ -8,7 +8,6 @@
 #include "BattleRoyale/core/PlayerController/PlayerControllerBase.h"
 #include "BattleRoyale/core/Utils/TeamSelectionStrategies/SimpleTeamSelectionStrategy.h"
 #include "GameFramework/GameState.h"
-#include "GameRules/StartCountDownRule.h"
 
 
 ABattleRoyaleGameMode::ABattleRoyaleGameMode()
@@ -96,8 +95,6 @@ void ABattleRoyaleGameMode::OnNewKill(const APlayerController* killerController,
 		playerStateKiller->NotifyNumKillsToSelf();
 		NotifyNewKillToAll(victimController, playerStateKiller);		
 	}
-
-	mGameRules->Execute();
 }
 
 bool ABattleRoyaleGameMode::CanPlayerCauseDamageTo(const APlayerController* killerController,
@@ -154,7 +151,7 @@ IIGameState* ABattleRoyaleGameMode::GetGameState() const
 
 void ABattleRoyaleGameMode::InitializeGameRules()
 {
-	const auto startCountdownRule = NewObject<UStartCountDownRule>();
+	/*const auto startCountdownRule = NewObject<UStartCountDownRule>();
 	
 	TScriptInterface<IIGameState> gameStateInterface;
 	gameStateInterface.SetObject(GameState);
@@ -167,6 +164,7 @@ void ABattleRoyaleGameMode::InitializeGameRules()
 	mGameRules->AddRule(startCountdownRule);
 
 	GetWorld()->GetTimerManager().SetTimer(mGameRulesUpdateTimerHandle, this, &ABattleRoyaleGameMode::OnGameRulesUpdate, GameRulesUpdateIntervalTime, true);
+	*/
 }
 
 void ABattleRoyaleGameMode::InitializeTeamSelectionStrategy()
@@ -189,12 +187,4 @@ void ABattleRoyaleGameMode::NotifyNewKillToAll(const APlayerController* victimCo
 	playerStateKillerInterface->NotifyAnnouncementOfNewDeathToAll(
 		playerStateKillerInterface->GetPlayerNickName(),
 		playerStateVictimInterface->GetPlayerNickName());
-}
-
-void ABattleRoyaleGameMode::OnGameRulesUpdate()
-{
-	if(mGameRules)
-	{
-		mGameRules->Execute();
-	}
 }
