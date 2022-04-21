@@ -29,8 +29,6 @@ ABattleRoyaleGameMode::ABattleRoyaleGameMode()
 void ABattleRoyaleGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//InitializeGameRules();
 }
 
 bool ABattleRoyaleGameMode::ReadyToStartMatch_Implementation()
@@ -147,24 +145,6 @@ IIGameState* ABattleRoyaleGameMode::GetGameState() const
 		return Cast<IIGameState>(GameState);
 	}
 	return nullptr;
-}
-
-void ABattleRoyaleGameMode::InitializeGameRules()
-{
-	/*const auto startCountdownRule = NewObject<UStartCountDownRule>();
-	
-	TScriptInterface<IIGameState> gameStateInterface;
-	gameStateInterface.SetObject(GameState);
-	gameStateInterface.SetInterface(GetGameState());
-
-	startCountdownRule->Initialize(gameStateInterface);
-	startCountdownRule->SetCountdownTimeToStartGame(CountdownTimeToStartGame);
-	
-	mGameRules = NewObject<UGameRules>();
-	mGameRules->AddRule(startCountdownRule);
-
-	GetWorld()->GetTimerManager().SetTimer(mGameRulesUpdateTimerHandle, this, &ABattleRoyaleGameMode::OnGameRulesUpdate, GameRulesUpdateIntervalTime, true);
-	*/
 }
 
 void ABattleRoyaleGameMode::InitializeTeamSelectionStrategy()

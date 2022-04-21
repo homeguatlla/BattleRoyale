@@ -23,6 +23,8 @@ namespace BRModeFSM
 		virtual void OnUpdate(float deltaTime) override;
 
 	private:
+		void InitializeGameRules();
+		
 		GameRules mGameRules;
 		IIGameState* mGameState;
 	};

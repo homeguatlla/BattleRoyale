@@ -12,7 +12,7 @@ void EndOfGameRule::Initialize(IIGameState* gameState)
 
 bool EndOfGameRule::Evaluate()
 {
-	return false;
+	return true;
 }
 
 bool EndOfGameRule::Execute(std::vector<std::shared_ptr<IGameRule>>& rules) const
@@ -21,8 +21,7 @@ bool EndOfGameRule::Execute(std::vector<std::shared_ptr<IGameRule>>& rules) cons
 
 	rules.clear();
 	
-	//TODO apply end of game rule
-	//Maybe notify the winner and the end of game to the other players alive
+	//TODO Maybe notify the winner and the end of game to the other players alive
 	mGameState->NotifyAnnouncementOfWinner();
 	
 	return true;

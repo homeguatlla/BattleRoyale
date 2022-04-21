@@ -8,6 +8,7 @@
 
 #include "StatesMachineBuilder.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Countdown.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/GameLoop.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Synchronize.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterGameLoop.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterSynchronize.h"
@@ -27,7 +28,7 @@ namespace BattleRoyale
 					const auto init = std::make_shared<BRModeFSM::Init>();
 					const auto countdown = std::make_shared<BRModeFSM::Countdown>();
 					const auto synchronize = std::make_shared<BRModeFSM::Synchronize>();
-					const auto gameLoop = std::make_shared<BRModeFSM::Synchronize>();
+					const auto gameLoop = std::make_shared<BRModeFSM::GameLoop>();
 					
 					return builder.WithState(init)
 								  .WithState(countdown)

@@ -50,19 +50,15 @@ private:
 	IIPlayerController* GetPlayerController(AController* controller) const;
 	IIGameState* GetGameState() const;
 
-	void InitializeGameRules();
 	void InitializeTeamSelectionStrategy();
 	void ApplyTeamSelectionStrategy(const AController* controller) const;
 	void NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* playerStateKiller) const;
 
-	//void OnGameRulesUpdate();
 	
 	TArray<AController*> mPlayerControllers;
 
 	UPROPERTY()
 	TScriptInterface<ITeamSelectionStrategy> mTeamSelectionStrategy;
-
-	//FTimerHandle mGameRulesUpdateTimerHandle;
 };
 
 

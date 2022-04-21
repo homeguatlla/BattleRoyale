@@ -16,6 +16,6 @@ namespace BRModeFSM
 
 	bool EnterGameLoop::CanPerformTransition() const
 	{
-		return mGameState->AreAllPlayersReplicated();
+		return mGameState->AreAllPlayersReplicated();		
 	}
 };
