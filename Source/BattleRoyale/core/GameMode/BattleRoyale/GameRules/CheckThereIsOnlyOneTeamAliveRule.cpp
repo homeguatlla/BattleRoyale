@@ -8,8 +8,9 @@
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 
-void CheckThereIsOnlyOneTeamAliveRule::Initialize(IIGameState* gameState)
+void CheckThereIsOnlyOneTeamAliveRule::Initialize(UWorld* world, IIGameState* gameState)
 {
+	mWorld = world;
 	mGameState = gameState;
 }
 
@@ -67,7 +68,7 @@ bool CheckThereIsOnlyOneTeamAliveRule::Execute(std::vector<std::shared_ptr<IGame
 	
 	//add new rules
 	const auto endOfGameRule = std::make_shared<EndOfGameRule>();
-	endOfGameRule->Initialize(mGameState);
+	endOfGameRule->Initialize(mWorld, mGameState);
 	rules.push_back(endOfGameRule);
 
 	//return true if added/removed rules

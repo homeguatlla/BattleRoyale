@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <future>
-
 #include "BattleRoyale/core/GameMode/GameRules/IGameRule.h"
 
 
@@ -14,7 +12,7 @@ public:
 	TimerRule() = default;
 	virtual ~TimerRule() = default;
 	
-	virtual void Initialize(IIGameState* gameState) override;
+	virtual void Initialize(UWorld* world, IIGameState* gameState) override;
 	virtual bool Evaluate() override;
 	virtual bool Execute(std::vector<std::shared_ptr<IGameRule>>& rules) const override;
 
@@ -24,6 +22,8 @@ public:
 private:
 	void OnTimerFinished();
 	
+	IIGameState* mGameState;
+	UWorld* mWorld;
 	FTimerHandle mTimerHandle;
 	bool mIsTimerOver;
 	float mDuration;

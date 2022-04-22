@@ -11,10 +11,6 @@ public:
 	ShowStatsScreenRule() = default;
 	virtual ~ShowStatsScreenRule() = default;
 	
-	virtual void Initialize(IIGameState* gameState) override;
-	virtual bool Evaluate() override;
+	virtual void Initialize(UWorld* world, IIGameState* gameState) override;
 	virtual bool Execute(std::vector<std::shared_ptr<IGameRule>>& rules) const override;
-
-private:
-	IIGameState* mGameState;
 };

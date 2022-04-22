@@ -7,14 +7,12 @@
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 
-void ShowStatsScreenRule::Initialize(IIGameState* gameState)
+void ShowStatsScreenRule::Initialize(UWorld* world, IIGameState* gameState)
 {
-	mGameState = gameState;
-}
+	TimerRule::Initialize(world, gameState);
 
-bool ShowStatsScreenRule::Evaluate()
-{
-	return false;
+	SetDuration(5);
+	Start();
 }
 
 bool ShowStatsScreenRule::Execute(std::vector<std::shared_ptr<IGameRule>>& rules) const
@@ -23,8 +21,7 @@ bool ShowStatsScreenRule::Execute(std::vector<std::shared_ptr<IGameRule>>& rules
 
 	rules.clear();
 
-	//TODO gamestate show stats screen rule. Porque podríamos enviar el evento aquí pero
-	//no se haría multicast y solo lo recibiría el servidor. Pero no me gusta que el gameState
-	//tenga un showstatsscreen es un poco raro pero bueno igual está bien.
+	//TODO mostrar la pantalla de stats.
+	
 	return false;
 }

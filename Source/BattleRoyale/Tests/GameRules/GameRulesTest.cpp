@@ -68,7 +68,7 @@ bool FGameRulesTest_When_SomeoneDieAndIsTheLastOne_Then_EndOfGameRuleIsAdded::Ru
 	character->SetCurrentHealth(0.0f);
 	
 	const auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
-	rule->Initialize(gameState);
+	rule->Initialize(nullptr, gameState);
 	
 	GameRules rules;
 

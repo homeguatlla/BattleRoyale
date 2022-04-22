@@ -30,7 +30,7 @@ namespace BRModeFSM
 		mGameRules.Reset();
 		
 		const auto checkThereIsOnlyOneTeamAliveRule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
-		checkThereIsOnlyOneTeamAliveRule->Initialize(mGameState);
+		checkThereIsOnlyOneTeamAliveRule->Initialize(GetContext()->GetWorld(), mGameState);
 
 		mGameRules.AddRule(checkThereIsOnlyOneTeamAliveRule);
 	}

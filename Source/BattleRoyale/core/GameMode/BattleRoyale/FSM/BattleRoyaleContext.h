@@ -12,10 +12,11 @@ namespace BRModeFSM
 
 		IIGameState* GetGameState() const { return mGameState; }
 		float GetCountdownTimeToStartGame() const { return mCountdownTimeToStartGame; }
+		UWorld* GetWorld() const { return mWorld; }
 		
 	private:
 		UWorld* mWorld;
-		float mCountdownTimeToStartGame;
 		IIGameState* mGameState;
+		float mCountdownTimeToStartGame;
 	};
 };

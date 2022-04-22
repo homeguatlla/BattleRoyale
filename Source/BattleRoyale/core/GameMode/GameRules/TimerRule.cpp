@@ -7,18 +7,13 @@
 #include "BattleRoyale/core/GameMode/IGameState.h"
 
 
-void TimerRule::Initialize(IIGameState* gameState)
+void TimerRule::Initialize(UWorld* world, IIGameState* gameState)
 {
+	mWorld = world;
+	mGameState = gameState;
 	mIsTimerOver = false;
 	mDuration = 0;
 }
-/*
-void TimerRule::BeginDestroy()
-{
-	//GetWorld()->GetTimerManager().ClearTimer(mTimerHandle);
-	
-	UObject::BeginDestroy();
-}*/
 
 bool TimerRule::Evaluate()
 {
@@ -35,10 +30,16 @@ bool TimerRule::Execute(std::vector<std::shared_ptr<IGameRule>>& rules) const
 
 void TimerRule::Start()
 {
-	//GetWorld()->GetTimerManager().SetTimer(mTimerHandle, this, &UTimerRule::OnTimerFinished, mDuration, true);
+	FTimerDelegate timerDelegate;
+	timerDelegate.BindLambda([this] {
+		OnTimerFinished();
+	});
+	
+	mWorld->GetTimerManager().SetTimer(mTimerHandle, timerDelegate, mDuration, true);
 }
 
 void TimerRule::OnTimerFinished()
 {
 	mIsTimerOver = true;
+	mWorld->GetTimerManager().ClearTimer(mTimerHandle);
 }

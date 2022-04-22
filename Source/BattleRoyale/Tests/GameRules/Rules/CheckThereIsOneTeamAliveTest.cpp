@@ -22,7 +22,7 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_NoPlayers_Then_EvaluatesFa
 	const auto gameState = NewObject<GameStateMock>();
 	
 	auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
-	rule->Initialize(gameState);
+	rule->Initialize(nullptr, gameState);
 	const auto result = rule->Evaluate();
 
 	TestFalse(TEXT("When no players Then the aren't alive teams."), result);
@@ -43,7 +43,7 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_ThereIsOnePlayer_Then_Eval
 	gameState->Initialize(1, 1);
 	
 	auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
-	rule->Initialize(gameState);
+	rule->Initialize(nullptr, gameState);
 	const auto result = rule->Evaluate();
 
 	TestTrue(TEXT("When one player Then there is one team alive."), result);
@@ -70,7 +70,7 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_SomeoneDieAndIsTheLastOne_
 	character->SetCurrentHealth(0.0f);
 	
 	auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
-	rule->Initialize(gameState);
+	rule->Initialize(nullptr, gameState);
 	const auto result = rule->Evaluate();
 
 	TestTrue(TEXT("When all minus one player died Then there is one team alive."), result);
@@ -95,7 +95,7 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_SomeoneDieAndIsNotTheLastO
 	character->SetCurrentHealth(0.0f);
 	
 	auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
-	rule->Initialize(gameState);
+	rule->Initialize(nullptr, gameState);
 	const auto result = rule->Evaluate();
 
 	TestFalse(TEXT("When one player died but there are two alive Then there is NOT one team alive."), result);
@@ -120,7 +120,7 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_Executed_Then_EndOfGameRul
 	character->SetCurrentHealth(0.0f);
 	
 	auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
-	rule->Initialize(gameState);
+	rule->Initialize(nullptr, gameState);
 	
 	std::vector<std::shared_ptr<IGameRule>> rules;
 	rule->Execute(rules);
