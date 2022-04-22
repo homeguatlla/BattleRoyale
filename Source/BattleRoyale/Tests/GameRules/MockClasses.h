@@ -10,7 +10,6 @@
 #if WITH_EDITOR
 #include "Misc/AutomationTest.h"
 
-
 #if WITH_DEV_AUTOMATION_TESTS
 
 
@@ -68,10 +67,6 @@ public:
 		IICharacter* character = Cast<IICharacter>(playerState->GetPawn());
 
 		return character;
-	}
-	
-	virtual void StartCountdownServer(int duration) override
-	{
 	}
 
 	virtual void

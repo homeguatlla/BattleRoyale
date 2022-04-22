@@ -31,7 +31,6 @@ public:
 	virtual bool HasGameStarted() const = 0;
 	virtual bool IsGameReadyToStart() const = 0;	
 	
-	virtual void StartCountdownServer(int duration) = 0;
 	virtual int GetNumPlayers() const = 0;
 	virtual int GetNumTeams() const = 0 ;
 	virtual void PerformActionForEachPlayerState(std::function<bool(const IIPlayerState* playerState)> action) const = 0;

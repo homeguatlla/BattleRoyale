@@ -1,4 +1,6 @@
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Countdown.h"
+
+#include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameState.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/BattleRoyaleContext.h"
 
 
@@ -15,7 +17,8 @@ namespace BRModeFSM
 
 	void Countdown::OnEnter(float deltaTime)
 	{
-		mGameState->StartCountdownServer(GetContext()->GetCountdownTimeToStartGame());
+		auto battleRoyaleGameState = Cast<ABattleRoyaleGameState>(mGameState);
+		battleRoyaleGameState->StartCountdownServer(GetContext()->GetCountdownTimeToStartGame());
 	}
 
 	void Countdown::OnExit(float deltaTime)

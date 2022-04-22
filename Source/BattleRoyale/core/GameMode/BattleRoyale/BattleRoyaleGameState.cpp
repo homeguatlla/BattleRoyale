@@ -8,37 +8,12 @@
 #include "BattleRoyaleGameMode.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Utils/FSM/StatesMachineFactory.h"
-#include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 
 
 ABattleRoyaleGameState::ABattleRoyaleGameState() :
-mRemainingCounts{0},
-mWinnerTeamId{-1}
+mRemainingCounts{0}
 {
-	PrimaryActorTick.bCanEverTick = true;
-	SetActorTickEnabled(false);
-}
-
-void ABattleRoyaleGameState::BeginPlay()
-{
-	Super::BeginPlay();
-	if(HasAuthority())
-	{
-		CreateStatesMachineServer();
-		SetActorTickEnabled(true);
-	}
-}
-
-void ABattleRoyaleGameState::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	if(HasAuthority())
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "ABattleRoyaleGameState::Tick!");
-		mStatesMachineController.Update(DeltaSeconds);
-	}
 }
 
 void ABattleRoyaleGameState::StartCountdownServer(int duration)
@@ -52,76 +27,11 @@ void ABattleRoyaleGameState::StartCountdownServer(int duration)
 	}
 }
 
-bool ABattleRoyaleGameState::AreAllPlayersReplicated() const
-{
-	bool AreAllPlayerStatesWithPawn = true;
-	PerformActionForEachPlayerState(
-		[&AreAllPlayerStatesWithPawn](const IIPlayerState* playerState)
-		{
-			AreAllPlayerStatesWithPawn &= playerState->IsPawnReplicated();
-			return false;
-		});
-
-	return AreAllPlayerStatesWithPawn;
-}
-
-void ABattleRoyaleGameState::StartGameServer()
-{
-	//TODO esto debería ir a otra parte en el estado de gameLoop al enter
-	mWinnerTeamId = -1;
-	MulticastGameStarted();
-}
-
-bool ABattleRoyaleGameState::HasGameStarted() const
-{
-	return mStatesMachineController.GetCurrentStateID(static_cast<int>(FSMType::BATTLEROYALE_GAMEMODE)) == BRModeFSM::BattleRoyaleState::STATE_GAMELOOP;
-}
-
 bool ABattleRoyaleGameState::IsGameReadyToStart() const
 {
 	return DidCountdownStart() && DidCountdownFinish();
 }
 
-int ABattleRoyaleGameState::GetNumTeams() const
-{
-	std::set<int> teams;
-
-	PerformActionForEachPlayerState(
-		[&teams](const IIPlayerState* playerState) -> bool
-		{
-			teams.insert(playerState->GetTeamId());
-			return false;
-		});
-	
-	return teams.size();
-}
-
-void ABattleRoyaleGameState::PerformActionForEachPlayerState(
-	std::function<bool(const IIPlayerState* playerState)> action) const
-{
-	for(const auto playerState : PlayerArray)
-	{
-		if(playerState->Implements<UIPlayerState>())
-		{
-			const auto specificPlayerState = Cast<IIPlayerState>(playerState);
-			if(action(specificPlayerState))
-				break;
-		}
-	}
-}
-
-void ABattleRoyaleGameState::NotifyAnnouncementOfWinner() const
-{
-	PerformActionForEachPlayerState(
-		[&](const IIPlayerState* playerState) -> bool
-		{
-			if(playerState->GetTeamId() == GetWinnerTeam())
-			{
-				playerState->NotifyAnnouncementOfWinner();
-			}
-			return false;
-		});
-}
 
 void ABattleRoyaleGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -149,6 +59,21 @@ void ABattleRoyaleGameState::OnCountdownFinishedServer()
 	gameInstance->GetEventDispatcher()->OnRefreshCountDown.Broadcast(mRemainingCounts);
 }
 
+void ABattleRoyaleGameState::AddStatesMachineServer(
+	StatesMachineController<BRModeFSM::BattleRoyaleState, BRModeFSM::BattleRoyaleContext>& fsmController,
+	std::shared_ptr<BRModeFSM::BattleRoyaleContext>& fsmContext)
+{
+	const auto gameMode = Cast<ABattleRoyaleGameMode>(GetWorld()->GetAuthGameMode());
+	fsmContext = std::make_shared<BRModeFSM::BattleRoyaleContext>(GetWorld(), this, gameMode->CountdownTimeToStartGame);
+	
+	BattleRoyale::StatesMachineFactory factory;
+	
+	fsmController.AddMachine(
+		std::move(factory.CreateBattleRoyaleModeFSM(
+			FSMType::BATTLEROYALE_GAMEMODE,
+			fsmContext)));
+}
+
 void ABattleRoyaleGameState::OnRep_RemainingCount() const
 {
 	//Este método no se ejecuta en servidor. Por eso hay que poner la llamada cuando se modifica
@@ -160,24 +85,4 @@ void ABattleRoyaleGameState::OnRep_RemainingCount() const
 	{
 		gameInstance->GetEventDispatcher()->OnFinishCountDown.Broadcast();
 	}
-}
-
-void ABattleRoyaleGameState::MulticastGameStarted_Implementation()
-{
-	//To notify HUD
-	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-	gameInstance->GetEventDispatcher()->OnGameStarted.Broadcast();
-}
-
-void ABattleRoyaleGameState::CreateStatesMachineServer()
-{
-	auto gameMode = Cast<ABattleRoyaleGameMode>(GetWorld()->GetAuthGameMode());
-	mGameStateFSMContext = std::make_shared<BRModeFSM::BattleRoyaleContext>(GetWorld(), this, gameMode->CountdownTimeToStartGame);
-	
-	BattleRoyale::StatesMachineFactory factory;
-	
-	mStatesMachineController.AddMachine(
-		std::move(factory.CreateBattleRoyaleModeFSM(
-			FSMType::BATTLEROYALE_GAMEMODE,
-			mGameStateFSMContext)));
 }
