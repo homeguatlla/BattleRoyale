@@ -70,9 +70,6 @@ public:
 		return character;
 	}
 	
-	virtual bool DidCountdownStart() const override { return false; }
-	virtual bool DidCountdownFinish() const override { return false; }
-
 	virtual void StartCountdownServer(int duration) override
 	{
 	}

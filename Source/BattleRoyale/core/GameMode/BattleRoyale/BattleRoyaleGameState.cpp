@@ -15,7 +15,6 @@
 ABattleRoyaleGameState::ABattleRoyaleGameState() :
 mRemainingCounts{0},
 mWinnerTeamId{-1}
-
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SetActorTickEnabled(false);
@@ -68,9 +67,19 @@ bool ABattleRoyaleGameState::AreAllPlayersReplicated() const
 
 void ABattleRoyaleGameState::StartGameServer()
 {
-	mHasGameStarted = true;
+	//TODO esto debería ir a otra parte en el estado de gameLoop al enter
 	mWinnerTeamId = -1;
 	MulticastGameStarted();
+}
+
+bool ABattleRoyaleGameState::HasGameStarted() const
+{
+	return mStatesMachineController.GetCurrentStateID(static_cast<int>(FSMType::BATTLEROYALE_GAMEMODE)) == BRModeFSM::BattleRoyaleState::STATE_GAMELOOP;
+}
+
+bool ABattleRoyaleGameState::IsGameReadyToStart() const
+{
+	return DidCountdownStart() && DidCountdownFinish();
 }
 
 int ABattleRoyaleGameState::GetNumTeams() const

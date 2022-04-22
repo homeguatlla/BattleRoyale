@@ -20,23 +20,16 @@ class UIGameState : public UInterface
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
+
 class BATTLEROYALE_API IIGameState
 {
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IGameState")
-	virtual bool DidCountdownStart() const = 0;
-	
-	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IGameState")
-	virtual bool DidCountdownFinish() const = 0;
-
 	virtual bool AreAllPlayersReplicated() const = 0;
 	virtual void StartGameServer() = 0;
 	virtual bool HasGameStarted() const = 0;
+	virtual bool IsGameReadyToStart() const = 0;	
 	
 	virtual void StartCountdownServer(int duration) = 0;
 	virtual int GetNumPlayers() const = 0;

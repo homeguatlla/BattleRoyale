@@ -38,7 +38,7 @@ bool ABattleRoyaleGameMode::ReadyToStartMatch_Implementation()
 	const auto gameState = GetGameState();
 	if(gameState != nullptr)
 	{
-		isReadyToStartMatch = isReadyToStartMatch && gameState->HasGameStarted();
+		isReadyToStartMatch = isReadyToStartMatch && gameState->IsGameReadyToStart();
 	}
 	
 	return isReadyToStartMatch;
@@ -64,9 +64,9 @@ void ABattleRoyaleGameMode::GenericPlayerInitialization(AController* controller)
 	Super::GenericPlayerInitialization(controller);
 
 	const auto gameState = GetGameState();
-	if(gameState != nullptr &&  gameState->HasGameStarted())
+	if(gameState != nullptr &&  gameState->IsGameReadyToStart())
 	{
-		//in case a player joins to the game and countdown finished
+		//in case a player joins to the game when is ready to start (because for example the countdown finished)
 		return;
 	}
 	

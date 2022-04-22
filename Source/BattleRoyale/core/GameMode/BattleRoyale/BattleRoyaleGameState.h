@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
+#include "BattleRoyale/core/Utils/FSM/FSMTypes.h"
 #include "BattleRoyale/core/Utils/FSM/StatesMachineController.h"
 #include "FSM/BattleRoyaleContext.h"
 #include "FSM/States/BattleRoyaleStates.h"
@@ -18,14 +19,14 @@ class BATTLEROYALE_API ABattleRoyaleGameState : public AGameState, public IIGame
 public:
 	ABattleRoyaleGameState();
 	
-	virtual bool DidCountdownStart() const override{ return mDidCountdownStart; }
-	virtual void StartCountdownServer(int duration) override;
-	virtual bool DidCountdownFinish() const override { return mRemainingCounts <= 0; }
-
+	virtual void StartCountdownServer(int duration) override;	
 	virtual bool AreAllPlayersReplicated() const override;
-	
+
+	//TODO esto debería ser algo así como, SetGameReadyToSTart y tendría que haber otro que fuera StartGameServer que
+	//se ejecuta en el gameloop
 	virtual void StartGameServer() override;
-	virtual bool HasGameStarted() const override { return mHasGameStarted; }
+	virtual bool HasGameStarted() const override;
+	virtual bool IsGameReadyToStart() const override;
 	
 	virtual int GetNumPlayers() const override { return PlayerArray.Num(); }
 	virtual int GetNumTeams() const override;
@@ -46,7 +47,9 @@ private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	void OnCountdownFinishedServer();
 	void CreateStatesMachineServer();
-		
+	bool DidCountdownStart() const { return mDidCountdownStart; }
+	bool DidCountdownFinish() const  { return mRemainingCounts <= 0; }
+	
 	UFUNCTION()
 	void OnRep_RemainingCount() const;
 
@@ -60,10 +63,6 @@ private:
 	int mRemainingCounts;
 
 	int mWinnerTeamId;
-	bool mHasGameStarted = false;
-
-	//UPROPERTY()
-	//class UGameRules* mGameRules;
 	
 	//States machine to control the game state
 	StatesMachineController<BRModeFSM::BattleRoyaleState, BRModeFSM::BattleRoyaleContext> mStatesMachineController;

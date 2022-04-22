@@ -53,7 +53,6 @@ private:
 	void InitializeTeamSelectionStrategy();
 	void ApplyTeamSelectionStrategy(const AController* controller) const;
 	void NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* playerStateKiller) const;
-
 	
 	TArray<AController*> mPlayerControllers;
 

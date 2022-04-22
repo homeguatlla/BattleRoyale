@@ -16,6 +16,6 @@ namespace BRModeFSM
 
 	bool EnterSynchronize::CanPerformTransition() const
 	{
-		return mGameState->DidCountdownStart() && mGameState->DidCountdownFinish();
+		return mGameState->IsGameReadyToStart();
 	}
 };

@@ -64,3 +64,8 @@ void GameRules::Execute()
 	//esto se podría optimizar para que pillara una de las dos listas cada vez al entrar
 	//en la función dependiendo de si han sido modificada o no, haciendo solo una copia en lugar de dos.
 }
+
+void GameRules::Reset()
+{
+	mRules.clear();
+}

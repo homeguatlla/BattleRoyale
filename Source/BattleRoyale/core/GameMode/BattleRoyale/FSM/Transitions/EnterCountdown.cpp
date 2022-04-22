@@ -16,6 +16,6 @@ namespace BRModeFSM
 
 	bool EnterCountdown::CanPerformTransition() const
 	{
-		return !mGameState->DidCountdownStart() && mGameState->GetNumTeams() > 1;
+		return !mGameState->IsGameReadyToStart() && mGameState->GetNumTeams() > 1;
 	}	
 };

@@ -12,14 +12,12 @@ namespace BRModeFSM
 
 	void GameLoop::OnInit()
 	{
-		mGameState = GetContext()->GetGameState();
-		InitializeGameRules();
-		
+		mGameState = GetContext()->GetGameState();				
 	}
 
 	void GameLoop::OnEnter(float deltaTime)
 	{
-		
+		InitializeGameRules();
 	}
 
 	void GameLoop::OnUpdate(float deltaTime)
@@ -29,9 +27,11 @@ namespace BRModeFSM
 
 	void GameLoop::InitializeGameRules()
 	{
+		mGameRules.Reset();
+		
 		const auto checkThereIsOnlyOneTeamAliveRule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
 		checkThereIsOnlyOneTeamAliveRule->Initialize(mGameState);
-		
+
 		mGameRules.AddRule(checkThereIsOnlyOneTeamAliveRule);
 	}
 };

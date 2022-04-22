@@ -11,11 +11,13 @@ namespace BRModeFSM
 	class Synchronize : public core::utils::FSM::BaseState<BattleRoyaleState, BattleRoyaleContext>
 	{
 	public:
+		
 		Synchronize();
 		virtual ~Synchronize() = default;
 
 		BattleRoyaleState GetID() const override { return BattleRoyaleState::STATE_SYNCHRONIZE; }
 		
-		void OnInit() override;
+		virtual void OnEnter(float deltaTime) override;
+		virtual void OnExit(float deltaTime) override;
 	};
 };

@@ -15,7 +15,8 @@ public:
 
 	void AddRule(std::shared_ptr<IGameRule> rule);
 	void Execute();
-
+	void Reset();
+	
 	//Test purposes
 	int GetNumRules() const { return mRules.size(); }
 	
