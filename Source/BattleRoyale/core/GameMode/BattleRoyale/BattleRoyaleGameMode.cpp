@@ -8,13 +8,12 @@
 #include "BattleRoyale/core/PlayerController/PlayerControllerBase.h"
 #include "BattleRoyale/core/Utils/TeamSelectionStrategies/SimpleTeamSelectionStrategy.h"
 #include "GameFramework/GameState.h"
-#include "GameRules/StartCountDownRule.h"
 
 
 ABattleRoyaleGameMode::ABattleRoyaleGameMode()
 	: Super()
 {
-	DefaultPawnClass = mCharacter;
+	DefaultPawnClass = CharacterClass;
 
 	// use our custom HUD class
 	HUDClass = ABattleRoyaleHUD::StaticClass();
@@ -30,8 +29,6 @@ ABattleRoyaleGameMode::ABattleRoyaleGameMode()
 void ABattleRoyaleGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
-	InitializeGameRules();
 }
 
 bool ABattleRoyaleGameMode::ReadyToStartMatch_Implementation()
@@ -41,7 +38,7 @@ bool ABattleRoyaleGameMode::ReadyToStartMatch_Implementation()
 	const auto gameState = GetGameState();
 	if(gameState != nullptr)
 	{
-		isReadyToStartMatch = isReadyToStartMatch && gameState->HasGameStarted();
+		isReadyToStartMatch = isReadyToStartMatch && gameState->IsGameReadyToStart();
 	}
 	
 	return isReadyToStartMatch;
@@ -67,9 +64,9 @@ void ABattleRoyaleGameMode::GenericPlayerInitialization(AController* controller)
 	Super::GenericPlayerInitialization(controller);
 
 	const auto gameState = GetGameState();
-	if(gameState != nullptr &&  gameState->HasGameStarted())
+	if(gameState != nullptr &&  gameState->IsGameReadyToStart())
 	{
-		//in case a player joins to the game and countdown finished
+		//in case a player joins to the game when is ready to start (because for example the countdown finished)
 		return;
 	}
 	
@@ -96,8 +93,6 @@ void ABattleRoyaleGameMode::OnNewKill(const APlayerController* killerController,
 		playerStateKiller->NotifyNumKillsToSelf();
 		NotifyNewKillToAll(victimController, playerStateKiller);		
 	}
-
-	mGameRules->Execute();
 }
 
 bool ABattleRoyaleGameMode::CanPlayerCauseDamageTo(const APlayerController* killerController,
@@ -152,27 +147,10 @@ IIGameState* ABattleRoyaleGameMode::GetGameState() const
 	return nullptr;
 }
 
-void ABattleRoyaleGameMode::InitializeGameRules()
-{
-	const auto startCountdownRule = NewObject<UStartCountDownRule>();
-	
-	TScriptInterface<IIGameState> gameStateInterface;
-	gameStateInterface.SetObject(GameState);
-	gameStateInterface.SetInterface(GetGameState());
-
-	startCountdownRule->Initialize(gameStateInterface);
-	startCountdownRule->SetCountdownTimeToStartGame(mCountdownTimeToStartGame);
-	
-	mGameRules = NewObject<UGameRules>();
-	mGameRules->AddRule(startCountdownRule);
-
-	GetWorld()->GetTimerManager().SetTimer(mGameRulesUpdateTimerHandle, this, &ABattleRoyaleGameMode::OnGameRulesUpdate, mGameRulesUpdateIntervalTime, true);
-}
-
 void ABattleRoyaleGameMode::InitializeTeamSelectionStrategy()
 {
 	mTeamSelectionStrategy = NewObject<USimpleTeamSelectionStrategy>();
-	mTeamSelectionStrategy->Initialize(mNumPlayersPerTeam);
+	mTeamSelectionStrategy->Initialize(NumPlayersPerTeam);
 }
 
 void ABattleRoyaleGameMode::NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* const playerStateKiller) const
@@ -189,12 +167,4 @@ void ABattleRoyaleGameMode::NotifyNewKillToAll(const APlayerController* victimCo
 	playerStateKillerInterface->NotifyAnnouncementOfNewDeathToAll(
 		playerStateKillerInterface->GetPlayerNickName(),
 		playerStateVictimInterface->GetPlayerNickName());
-}
-
-void ABattleRoyaleGameMode::OnGameRulesUpdate()
-{
-	if(mGameRules)
-	{
-		mGameRules->Execute();
-	}
 }

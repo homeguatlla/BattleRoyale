@@ -7,25 +7,25 @@
 #include "BattleRoyale/core/GameMode/IGameState.h"
 
 
-void UTimerRule::Initialize(TScriptInterface<IIGameState> gameState)
+void TimerRule::Initialize(IIGameState* gameState)
 {
 	mIsTimerOver = false;
 	mDuration = 0;
 }
-
-void UTimerRule::BeginDestroy()
+/*
+void TimerRule::BeginDestroy()
 {
-	GetWorld()->GetTimerManager().ClearTimer(mTimerHandle);
+	//GetWorld()->GetTimerManager().ClearTimer(mTimerHandle);
 	
 	UObject::BeginDestroy();
-}
+}*/
 
-bool UTimerRule::Evaluate()
+bool TimerRule::Evaluate()
 {
 	return mIsTimerOver;
 }
 
-bool UTimerRule::Execute(TArray<TScriptInterface<IIGameRule>>& rules) const
+bool TimerRule::Execute(std::vector<std::shared_ptr<IGameRule>>& rules) const
 {
 	UE_LOG(LogGameRules, Log, TEXT("GameRules: Executing Rule UTimerRule"));
 	
@@ -33,12 +33,12 @@ bool UTimerRule::Execute(TArray<TScriptInterface<IIGameRule>>& rules) const
 }
 
 
-void UTimerRule::Start()
+void TimerRule::Start()
 {
-	GetWorld()->GetTimerManager().SetTimer(mTimerHandle, this, &UTimerRule::OnTimerFinished, mDuration, true);
+	//GetWorld()->GetTimerManager().SetTimer(mTimerHandle, this, &UTimerRule::OnTimerFinished, mDuration, true);
 }
 
-void UTimerRule::OnTimerFinished()
+void TimerRule::OnTimerFinished()
 {
 	mIsTimerOver = true;
 }

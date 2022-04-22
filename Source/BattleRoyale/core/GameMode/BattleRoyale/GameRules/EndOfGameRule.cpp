@@ -5,24 +5,23 @@
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 
-void UEndOfGameRule::Initialize(TScriptInterface<IIGameState> gameState)
+void EndOfGameRule::Initialize(IIGameState* gameState)
 {
 	mGameState = gameState;
 }
 
-bool UEndOfGameRule::Evaluate()
+bool EndOfGameRule::Evaluate()
 {
 	return true;
 }
 
-bool UEndOfGameRule::Execute(TArray<TScriptInterface<IIGameRule>>& rules) const
+bool EndOfGameRule::Execute(std::vector<std::shared_ptr<IGameRule>>& rules) const
 {
 	UE_LOG(LogGameRules, Log, TEXT("GameRules: Executing Rule EndOfGameRule"));
 
-	rules.Empty();
+	rules.clear();
 	
-	//TODO apply end of game rule
-	//Maybe notify the winner and the end of game to the other players alive
+	//TODO Maybe notify the winner and the end of game to the other players alive
 	mGameState->NotifyAnnouncementOfWinner();
 	
 	return true;

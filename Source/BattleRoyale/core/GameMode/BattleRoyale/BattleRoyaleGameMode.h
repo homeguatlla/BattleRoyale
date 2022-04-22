@@ -6,7 +6,6 @@
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/GameMode/MultiplayerGameMode.h"
-#include "BattleRoyale/core/GameMode/GameRules/GameRules.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 #include "BattleRoyale/core/PlayerController/IPlayerController.h"
 #include "BattleRoyale/core/Utils/TeamSelectionStrategies/ITeamSelectionStrategy.h"
@@ -31,16 +30,16 @@ public:
 	virtual bool CanPlayerCauseDamageTo(const APlayerController* killerController, const APlayerController* victimController) override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=BattleRoyale)
-	TSubclassOf<APawn> mCharacter;
+	TSubclassOf<APawn> CharacterClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=BattleRoyale)
-	uint8 mNumPlayersPerTeam = 1;
+	uint8 NumPlayersPerTeam = 1;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=BattleRoyale)
-	float mCountdownTimeToStartGame = 15.f;
+	float CountdownTimeToStartGame = 15.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=BattleRoyale)
-	float mGameRulesUpdateIntervalTime = 1.0f;
+	float GameRulesUpdateIntervalTime = 1.0f;
 	
 protected:
 	virtual void GenericPlayerInitialization(AController* controller) override;
@@ -51,22 +50,14 @@ private:
 	IIPlayerController* GetPlayerController(AController* controller) const;
 	IIGameState* GetGameState() const;
 
-	void InitializeGameRules();
 	void InitializeTeamSelectionStrategy();
 	void ApplyTeamSelectionStrategy(const AController* controller) const;
 	void NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* playerStateKiller) const;
-
-	void OnGameRulesUpdate();
 	
 	TArray<AController*> mPlayerControllers;
-	
-	UPROPERTY()
-	UGameRules* mGameRules;
 
 	UPROPERTY()
 	TScriptInterface<ITeamSelectionStrategy> mTeamSelectionStrategy;
-
-	FTimerHandle mGameRulesUpdateTimerHandle;
 };
 
 

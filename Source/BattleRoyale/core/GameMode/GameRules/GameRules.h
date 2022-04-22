@@ -2,27 +2,25 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include <memory>
+#include <vector>
+
 #include "IGameRule.h"
-#include "GameRules.generated.h"
 
-/**
- * 
- */
-UCLASS()
-class BATTLEROYALE_API UGameRules: public UObject
+
+class BATTLEROYALE_API GameRules
 {
-	GENERATED_BODY()
-	
 public:
-	UGameRules();
+	GameRules() = default;
 
-	void AddRule(TScriptInterface<IIGameRule> rule);
+	void AddRule(std::shared_ptr<IGameRule> rule);
 	void Execute();
-
+	void Reset();
+	
 	//Test purposes
-	int GetNumRules() const { return mRules.Num(); }
+	int GetNumRules() const { return mRules.size(); }
+	
 private:
 	UPROPERTY()
-	TArray<TScriptInterface<IIGameRule>> mRules;
+	std::vector<std::shared_ptr<IGameRule>> mRules;
 };

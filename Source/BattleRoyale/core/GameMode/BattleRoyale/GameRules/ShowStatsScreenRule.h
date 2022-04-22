@@ -2,26 +2,19 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "BattleRoyale/core/GameMode/GameRules/TimerRule.h"
-#include "ShowStatsScreenRule.generated.h"
 
-/**
- * 
- */
-UCLASS()
-class BATTLEROYALE_API UShowStatsScreenRule: public UTimerRule
+
+class BATTLEROYALE_API ShowStatsScreenRule: public TimerRule
 {
-	GENERATED_BODY()
-
 public:
-	UShowStatsScreenRule() = default;
-
-	virtual void Initialize(TScriptInterface<IIGameState> gameState) override;
+	ShowStatsScreenRule() = default;
+	virtual ~ShowStatsScreenRule() = default;
+	
+	virtual void Initialize(IIGameState* gameState) override;
 	virtual bool Evaluate() override;
-	virtual bool Execute(TArray<TScriptInterface<IIGameRule>>& rules) const override;
+	virtual bool Execute(std::vector<std::shared_ptr<IGameRule>>& rules) const override;
 
 private:
-	UPROPERTY()
-	TScriptInterface<IIGameState> mGameState;
+	IIGameState* mGameState;
 };
