@@ -109,6 +109,19 @@ void AMultiplayerGameState::NotifyAnnouncementOfWinner() const
 		});
 }
 
+void AMultiplayerGameState::NotifyGameOver() const
+{
+	PerformActionForEachPlayerState(
+		[&](const IIPlayerState* playerState) -> bool
+		{
+			if(playerState->GetTeamId() == GetWinnerTeam())
+			{
+				playerState->NotifyGameOver();
+			}
+			return false;
+		});
+}
+
 void AMultiplayerGameState::MulticastGameStarted_Implementation()
 {
 	//To notify HUD

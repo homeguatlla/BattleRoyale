@@ -33,6 +33,8 @@ public:
 	virtual void NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const override;
 	virtual void NotifyNumKillsToSelf() const override;
 	virtual void NotifyAnnouncementOfWinner() const override;
+	virtual void NotifyGameOver() const override;
+	
 private:
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastAnnouncementOfNewDeath(const FString& killerName, const FString& victimName) const;
@@ -42,6 +44,9 @@ private:
 
 	UFUNCTION(Client, Unreliable)
 	void ClientNotifyWinner() const;
+
+	UFUNCTION(Client, Unreliable)
+	void ClientNotifyGameOver() const;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AbilitySystemComponent, meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemComponentBase* mAbilitySystemComponent;

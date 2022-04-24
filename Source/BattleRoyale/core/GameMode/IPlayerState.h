@@ -36,4 +36,5 @@ public:
 	virtual void NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const = 0;
 	virtual void NotifyNumKillsToSelf() const = 0;
 	virtual void NotifyAnnouncementOfWinner() const = 0;
+	virtual void NotifyGameOver() const = 0;
 };

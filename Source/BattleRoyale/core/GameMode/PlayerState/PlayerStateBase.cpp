@@ -41,6 +41,17 @@ void APlayerStateBase::NotifyAnnouncementOfWinner() const
 	ClientNotifyWinner();
 }
 
+void APlayerStateBase::NotifyGameOver() const
+{
+	ClientNotifyGameOver();
+}
+
+void APlayerStateBase::ClientNotifyGameOver_Implementation() const
+{
+	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+	gameInstance->GetEventDispatcher()->OnGameOver.Broadcast();
+}
+
 void APlayerStateBase::ClientNotifyWinner_Implementation() const
 {
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());

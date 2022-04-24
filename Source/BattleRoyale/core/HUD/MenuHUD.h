@@ -27,6 +27,8 @@ private:
 	UFUNCTION()
 	void OnGameStarted();
 	UFUNCTION()
+	void OnGameOver();
+	UFUNCTION()
 	void OnRefreshCountDown(uint8 counter);
 	UFUNCTION()
 	void OnFinishCountDown();

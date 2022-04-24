@@ -37,6 +37,7 @@ void AMenuHUD::BindToDelegate()
 	{
 		const auto eventDispatcher = gameInstance->GetEventDispatcher();
 		eventDispatcher->OnGameStarted.AddDynamic(this, &AMenuHUD::OnGameStarted);
+		eventDispatcher->OnGameOver.AddDynamic(this, &AMenuHUD::OnGameOver);
 		
 		eventDispatcher->OnRefreshCountDown.AddDynamic(this, &AMenuHUD::OnRefreshCountDown);
 		eventDispatcher->OnFinishCountDown.AddDynamic(this, &AMenuHUD::OnFinishCountDown);
@@ -50,6 +51,14 @@ void AMenuHUD::OnGameStarted()
 	if (mHUDWidget->GetClass()->ImplementsInterface(UGameHUD::StaticClass()))
 	{
 		IGameHUD::Execute_OnGameStarted(mHUDWidget);
+	}
+}
+
+void AMenuHUD::OnGameOver()
+{
+	if (mHUDWidget->GetClass()->ImplementsInterface(UGameHUD::StaticClass()))
+	{
+		IGameHUD::Execute_OnGameOver(mHUDWidget);
 	}
 }
 

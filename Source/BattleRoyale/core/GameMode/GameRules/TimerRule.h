@@ -21,11 +21,12 @@ public:
 	
 private:
 	void OnTimerFinished();
-	
-	IIGameState* mGameState;
-	UWorld* mWorld;
 	FTimerHandle mTimerHandle;
 	bool mIsTimerOver;
 	float mDuration;
+	
+protected:	
+	IIGameState* mGameState;
+	UWorld* mWorld;
 };
 

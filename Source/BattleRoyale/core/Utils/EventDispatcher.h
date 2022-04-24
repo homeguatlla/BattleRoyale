@@ -10,6 +10,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshHealth, float, health);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshNumKills, int, numKills);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStarted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDead);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAnnounceNewDeath, const FString&, killerName, const FString&, victimName);
@@ -45,6 +46,9 @@ public:
 	
 	UPROPERTY(BlueprintAssignable, Category="Game")
 	FOnGameStarted OnGameStarted;
+	
+	UPROPERTY(BlueprintAssignable, Category="Game")
+	FOnGameOver OnGameOver;
 	
 	UPROPERTY(BlueprintAssignable, Category="Announcement")
 	FOnAnnounceNewDeath OnAnnounceNewDeath;
