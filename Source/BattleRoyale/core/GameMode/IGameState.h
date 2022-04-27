@@ -33,7 +33,7 @@ public:
 	
 	virtual int GetNumPlayers() const = 0;
 	virtual int GetNumTeams() const = 0 ;
-	virtual void PerformActionForEachPlayerState(std::function<bool(const IIPlayerState* playerState)> action) const = 0;
+	virtual void PerformActionForEachPlayerState(std::function<bool(IIPlayerState* playerState)> action) const = 0;
 
 	virtual void SetWinnerTeam(int teamId) = 0;
 	virtual int GetWinnerTeam() const = 0;

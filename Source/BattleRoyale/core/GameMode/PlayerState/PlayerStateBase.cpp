@@ -7,23 +7,46 @@
 #include "AbilitySystemGlobals.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
+#include "BattleRoyale/core/Utils/FSM/StatesMachineFactory.h"
+
 
 APlayerStateBase::APlayerStateBase() : mTeamId(0), mNumKills(0)
 {
 	mAbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponentBase>(TEXT("AbilitySystemComponent"));
 	mAbilitySystemComponent->SetIsReplicated(true);
+	PrimaryActorTick.bCanEverTick = true;
+	SetActorTickEnabled(false);
+}
+
+void APlayerStateBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if(HasAuthority())
+	{
+		mStatesMachineController.Update(DeltaSeconds);
+	}
 }
 
 bool APlayerStateBase::IsAlive() const
 {
-	if(GetPawn() && GetPawn()->Implements<UICharacter>())
+	if(const auto character = GetCharacter())
 	{
 		//TODO quizá podríamos pillar la vida del GAS cuando sea un atributo
-		const auto character = Cast<IICharacter>(GetPawn());
 		return character->IsAlive();
 	}
 	
 	return false;
+}
+
+IICharacter* APlayerStateBase::GetCharacter() const
+{
+	if(GetPawn() && GetPawn()->Implements<UICharacter>())
+	{
+		return Cast<IICharacter>(GetPawn());
+	}
+	
+	return nullptr;
 }
 
 void APlayerStateBase::NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const
@@ -44,6 +67,16 @@ void APlayerStateBase::NotifyAnnouncementOfWinner() const
 void APlayerStateBase::NotifyGameOver() const
 {
 	ClientNotifyGameOver();
+}
+
+void APlayerStateBase::OnGameStarted()
+{
+	//We are sure all pawns are created
+	if(HasAuthority())
+	{
+		CreateStatesMachineServer();
+		SetActorTickEnabled(true);
+	}
 }
 
 void APlayerStateBase::ClientNotifyGameOver_Implementation() const
@@ -68,4 +101,14 @@ void APlayerStateBase::MulticastAnnouncementOfNewDeath_Implementation(const FStr
 {
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 	gameInstance->GetEventDispatcher()->OnAnnounceNewDeath.Broadcast(killerName, victimName);
+}
+
+void APlayerStateBase::CreateStatesMachineServer()
+{
+	mGameStateFSMContext = std::make_shared<BRPlayerStateFSM::PlayerStateContext>(GetWorld(), this, GetCharacter());
+	
+	BattleRoyale::StatesMachineFactory factory;
+	
+	mStatesMachineController.AddMachine(
+		std::move(factory.CreatePlayerStateFSM(FSMType::PLAYER_STATE, mGameStateFSMContext)));
 }

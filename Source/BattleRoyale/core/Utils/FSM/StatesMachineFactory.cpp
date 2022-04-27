@@ -12,10 +12,17 @@
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Synchronize.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterGameLoop.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterSynchronize.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Dead.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/PSGameLoop.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Init.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Stats.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterDead.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterGameLoop.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterStats.h"
 
 namespace BattleRoyale
 {
-	std::unique_ptr<StatesMachineFactory::BRGameModeFSM> StatesMachineFactory::CreateBattleRoyaleModeFSM(
+	std::unique_ptr<StatesMachineFactory::GameModeFSM> StatesMachineFactory::CreateModeFSM(
 		FSMType type, 
 		std::shared_ptr<BRModeFSM::BattleRoyaleContext> context)
 	{
@@ -46,44 +53,35 @@ namespace BattleRoyale
 				return {};
 		}	
 	}
-/*
-	std::unique_ptr<StatesMachineFactory::ChickenStatesMachine> StatesMachineFactory::CreateChicken(FSMType type, std::shared_ptr<TLN::Chicken::ChickenContext> context)
+	std::unique_ptr<StatesMachineFactory::PlayerStateFSM> StatesMachineFactory::CreatePlayerStateFSM(
+			FSMType type, 
+			std::shared_ptr<BRPlayerStateFSM::PlayerStateContext> context)
 	{
-		StatesMachineBuilder<TLN::Chicken::ChickenState, TLN::Chicken::ChickenContext> builder;
+		StatesMachineBuilder<BRPlayerStateFSM::PlayerStateState, BRPlayerStateFSM::PlayerStateContext> builder;
 
 		switch(type)
 		{
-		case FSMType::CHICKEN_MOVEMENT:
+		case FSMType::PLAYER_STATE:
 			{
-				auto idle = std::make_shared<TLN::Chicken::Idle>();
-				auto walk = std::make_shared<TLN::Chicken::Walk>();
-				
-				return builder.WithState(idle)
-                              .WithState(walk)
-                              .WithTransition(std::make_unique<TLN::Chicken::EnterWalk>(idle, walk))
-                              .WithTransition(std::make_unique<TLN::Chicken::EnterIdle>(walk, idle))
-                              .WithInitialState(idle->GetID())
-                              .Build(context);
+				const auto init = std::make_shared<BRPlayerStateFSM::Init>();
+				const auto gameLoop = std::make_shared<BRPlayerStateFSM::PSGameLoop>();
+				const auto dead = std::make_shared<BRPlayerStateFSM::Dead>();
+				const auto stats = std::make_shared<BRPlayerStateFSM::Stats>();
+					
+				return builder.WithState(init)
+							  .WithState(gameLoop)
+							  .WithState(dead)
+							  .WithState(stats)
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterGameLoop>(init, gameLoop))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterDead>(gameLoop, dead))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterStats>(dead, stats))
+							  .WithInitialState(init->GetID())
+							  .Build(context);
 			}
-		case FSMType::CHICKEN_STATE:
-			{
-				auto idle = std::make_shared<TLN::Chicken::IdleState>();
-				auto explore = std::make_shared<TLN::Chicken::Explore>();
-				auto eat = std::make_shared<TLN::Chicken::Eat>();
-				
-				return builder.WithState(idle)
-                              .WithState(explore)
-                              .WithState(eat)
-                              .WithTransition(std::make_unique<TLN::Chicken::EnterExplore>(idle, explore))
-                              .WithTransition(std::make_unique<TLN::Chicken::LeaveExplore>(explore, idle))
-                              .WithTransition(std::make_unique<TLN::Chicken::EnterEat>(idle, eat))
-                              .WithTransition(std::make_unique<TLN::Chicken::LeaveEat>(eat, idle))
-                              .WithInitialState(idle->GetID())
-                              .Build(context);
-			}
+			
 		default:
 			checkf(false, TEXT("States Machine type %d not defined"), type);
 			return {};
 		}	
-	}*/
+	}
 }

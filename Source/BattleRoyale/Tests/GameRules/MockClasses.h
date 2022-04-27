@@ -70,7 +70,7 @@ public:
 	}
 
 	virtual void
-	PerformActionForEachPlayerState(std::function<bool(const IIPlayerState* playerState)> action) const override
+	PerformActionForEachPlayerState(std::function<bool(IIPlayerState* playerState)> action) const override
 	{
 		//TODO pensar esto. En teoría creo que lo ideal sería poder agregar player states con datos
 		//pero eso es más complicado creo.

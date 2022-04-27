@@ -32,6 +32,8 @@ public:
 
 	virtual void AddKill() = 0;
 	virtual int GetNumKills() const = 0;
+
+	virtual void OnGameStarted() = 0;
 	
 	virtual void NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const = 0;
 	virtual void NotifyNumKillsToSelf() const = 0;

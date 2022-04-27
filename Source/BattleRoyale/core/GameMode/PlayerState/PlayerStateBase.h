@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/AbilitySystemComponentBase.h"
+#include "BattleRoyale/core/Utils/FSM/StatesMachineController.h"
+#include "FSM/PlayerStateContext.h"
+#include "FSM/States/PlayerStateStates.h"
 #include "GameFramework/PlayerState.h"
 #include "PlayerStateBase.generated.h"
 
@@ -20,9 +23,12 @@ class BATTLEROYALE_API APlayerStateBase : public APlayerState, public IIPlayerSt
 public:
 	
 	APlayerStateBase();
+	virtual void Tick(float DeltaSeconds) override;
+	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return mAbilitySystemComponent; }
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentInterface() const override { return Cast<IIAbilitySystemInterfaceBase>(mAbilitySystemComponent); }
 	virtual bool IsAlive() const override;
+	
 	virtual bool IsPawnReplicated() const override { return GetPawn() != nullptr; }
 	virtual void SetTeamId(int teamId) override { mTeamId = teamId; }
 	virtual int GetTeamId() const override { return mTeamId; }
@@ -34,6 +40,8 @@ public:
 	virtual void NotifyNumKillsToSelf() const override;
 	virtual void NotifyAnnouncementOfWinner() const override;
 	virtual void NotifyGameOver() const override;
+
+	virtual void OnGameStarted() override;
 	
 private:
 	UFUNCTION(NetMulticast, Unreliable)
@@ -47,10 +55,17 @@ private:
 
 	UFUNCTION(Client, Unreliable)
 	void ClientNotifyGameOver() const;
+
+	void CreateStatesMachineServer();
+	IICharacter* GetCharacter() const;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AbilitySystemComponent, meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemComponentBase* mAbilitySystemComponent;
 
 	int mTeamId;
 	int mNumKills;
+
+	//States machine to control the player state
+	StatesMachineController<BRPlayerStateFSM::PlayerStateState, BRPlayerStateFSM::PlayerStateContext> mStatesMachineController;
+	std::shared_ptr<BRPlayerStateFSM::PlayerStateContext> mGameStateFSMContext;
 };

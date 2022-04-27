@@ -83,7 +83,7 @@ int AMultiplayerGameState::GetNumTeams() const
 }
 
 void AMultiplayerGameState::PerformActionForEachPlayerState(
-	std::function<bool(const IIPlayerState* playerState)> action) const
+	std::function<bool(IIPlayerState* playerState)> action) const
 {
 	for(const auto playerState : PlayerArray)
 	{
@@ -127,4 +127,14 @@ void AMultiplayerGameState::MulticastGameStarted_Implementation()
 	//To notify HUD
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 	gameInstance->GetEventDispatcher()->OnGameStarted.Broadcast();
+	
+	//To notify all playerStates about gameStarted
+	//This way we give the opportunity to the player state to initiate
+	//once the server pawn is already spawned.
+	PerformActionForEachPlayerState(
+		[](IIPlayerState* playerState) -> bool
+		{
+			playerState->OnGameStarted();
+			return false;
+		});
 }

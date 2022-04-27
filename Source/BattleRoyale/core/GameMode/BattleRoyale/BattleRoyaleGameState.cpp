@@ -69,7 +69,7 @@ void ABattleRoyaleGameState::AddStatesMachineServer(
 	BattleRoyale::StatesMachineFactory factory;
 	
 	fsmController.AddMachine(
-		std::move(factory.CreateBattleRoyaleModeFSM(
+		std::move(factory.CreateModeFSM(
 			FSMType::BATTLEROYALE_GAMEMODE,
 			fsmContext)));
 }
