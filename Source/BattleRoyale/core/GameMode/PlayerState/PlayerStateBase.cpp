@@ -54,7 +54,7 @@ void APlayerStateBase::NotifyAnnouncementOfNewDeathToAll(const FString& killerNa
 	MulticastAnnouncementOfNewDeath(killerName, victimName);
 }
 
-void APlayerStateBase::NotifyNumKillsToSelf() const
+void APlayerStateBase::NotifyNumKillsToSelf()
 {
 	ClientRefreshNumKills(GetNumKills());
 }
@@ -81,8 +81,18 @@ void APlayerStateBase::OnGameStarted()
 
 void APlayerStateBase::ClientNotifyGameOver_Implementation() const
 {
+	//Notify game over event
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 	gameInstance->GetEventDispatcher()->OnGameOver.Broadcast();
+
+	//TODO no sé si sería mejor poner las stats dentro del gameover y listos
+	//Porque este evento de stats screen es un poco raro, no es genérico de la IPlayerState
+	//Notify game stats event
+	FPlayerStatsData data;
+	data.mNumKills = mNumKills;
+	data.mTeamId = mTeamId;
+	data.mPlayerName = GetPlayerNickName();
+	gameInstance->GetEventDispatcher()->OnShowStatsScreen.Broadcast(data);
 }
 
 void APlayerStateBase::ClientNotifyWinner_Implementation() const
@@ -91,8 +101,9 @@ void APlayerStateBase::ClientNotifyWinner_Implementation() const
 	gameInstance->GetEventDispatcher()->OnAnnouncePlayerWon.Broadcast();
 }
 
-void APlayerStateBase::ClientRefreshNumKills_Implementation(int numKills) const
+void APlayerStateBase::ClientRefreshNumKills_Implementation(int numKills)
 {
+	mNumKills = numKills;
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 	gameInstance->GetEventDispatcher()->OnRefreshNumKills.Broadcast(numKills);
 }

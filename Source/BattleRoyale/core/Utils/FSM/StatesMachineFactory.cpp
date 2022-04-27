@@ -13,7 +13,7 @@
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterGameLoop.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterSynchronize.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Dead.h"
-#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/PSGameLoop.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/GameLoop.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Init.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Stats.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterDead.h"
@@ -64,7 +64,7 @@ namespace BattleRoyale
 		case FSMType::PLAYER_STATE:
 			{
 				const auto init = std::make_shared<BRPlayerStateFSM::Init>();
-				const auto gameLoop = std::make_shared<BRPlayerStateFSM::PSGameLoop>();
+				const auto gameLoop = std::make_shared<BRPlayerStateFSM::GameLoop>();
 				const auto dead = std::make_shared<BRPlayerStateFSM::Dead>();
 				const auto stats = std::make_shared<BRPlayerStateFSM::Stats>();
 					

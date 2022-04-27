@@ -15,7 +15,7 @@ namespace BRPlayerStateFSM
 	static std::map<PlayerStateState, std::string> PlayerStateStateMap =
 	{
 		{ PlayerStateState::STATE_INIT, std::string("Init") },
-		{ PlayerStateState::STATE_GAMELOOP, std::string("PSGameLoop") },
+		{ PlayerStateState::STATE_GAMELOOP, std::string("GameLoop") },
 		{ PlayerStateState::STATE_DEAD, std::string("Dead") },
 		{ PlayerStateState::STATE_STATS, std::string("Stats") }
 	};

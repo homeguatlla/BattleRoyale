@@ -37,7 +37,7 @@ public:
 	virtual int GetNumKills() const override { return mNumKills; }
 
 	virtual void NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const override;
-	virtual void NotifyNumKillsToSelf() const override;
+	virtual void NotifyNumKillsToSelf() override;
 	virtual void NotifyAnnouncementOfWinner() const override;
 	virtual void NotifyGameOver() const override;
 
@@ -48,7 +48,7 @@ private:
 	void MulticastAnnouncementOfNewDeath(const FString& killerName, const FString& victimName) const;
 
 	UFUNCTION(Client, Unreliable)
-	void ClientRefreshNumKills(int numKills) const;
+	void ClientRefreshNumKills(int numKills);
 
 	UFUNCTION(Client, Unreliable)
 	void ClientNotifyWinner() const;

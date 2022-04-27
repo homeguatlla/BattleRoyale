@@ -7,11 +7,11 @@ namespace BRPlayerStateFSM
 {
 	class PlayerStateContext;
 
-	class PSGameLoop : public core::utils::FSM::BaseState<PlayerStateState, PlayerStateContext>
+	class GameLoop : public core::utils::FSM::BaseState<PlayerStateState, PlayerStateContext>
 	{
 	public:
-		PSGameLoop() = default;
-		virtual ~PSGameLoop() = default;
+		GameLoop() = default;
+		virtual ~GameLoop() = default;
 
 		PlayerStateState GetID() const override { return PlayerStateState::STATE_GAMELOOP; }
 		
