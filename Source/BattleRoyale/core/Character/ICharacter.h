@@ -76,6 +76,15 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool CanShoot() const = 0;
 
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual bool AnyKeyPressed() const = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual void DieServer() = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual void DieClient() = 0;
+	
 	/**
 	 * Shoot is aim and try to hit something
 	 **/

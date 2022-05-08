@@ -36,12 +36,18 @@ public:
 	virtual void AddKill() override { mNumKills++; }
 	virtual int GetNumKills() const override { return mNumKills; }
 
+	virtual void SetAsWinner();
+	virtual bool DidPlayerWin() const;
+	
 	virtual void NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const override;
 	virtual void NotifyNumKillsToSelf() override;
 	virtual void NotifyAnnouncementOfWinner() const override;
 	virtual void NotifyGameOver() const override;
 
 	virtual void OnGameStarted() override;
+	virtual void ShowStatsScreen() const override;
+
+	virtual void ForceFSMStateClient(BRPlayerStateFSM::PlayerStateState state) override;
 	
 private:
 	UFUNCTION(NetMulticast, Unreliable)
@@ -56,7 +62,10 @@ private:
 	UFUNCTION(Client, Unreliable)
 	void ClientNotifyGameOver() const;
 
-	void CreateStatesMachineServer();
+	UFUNCTION(Client, Reliable)
+	void ClientForceFSMState(int state);
+	
+	void CreateStatesMachine();
 	IICharacter* GetCharacter() const;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AbilitySystemComponent, meta = (AllowPrivateAccess = "true"))
@@ -64,8 +73,9 @@ private:
 
 	int mTeamId;
 	int mNumKills;
+	bool mDidWin;
 
 	//States machine to control the player state
 	StatesMachineController<BRPlayerStateFSM::PlayerStateState, BRPlayerStateFSM::PlayerStateContext> mStatesMachineController;
-	std::shared_ptr<BRPlayerStateFSM::PlayerStateContext> mGameStateFSMContext;
+	std::shared_ptr<BRPlayerStateFSM::PlayerStateContext> mPlayerStateFSMContext;
 };

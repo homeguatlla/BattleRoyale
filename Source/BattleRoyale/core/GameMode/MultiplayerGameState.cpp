@@ -99,10 +99,11 @@ void AMultiplayerGameState::PerformActionForEachPlayerState(
 void AMultiplayerGameState::NotifyAnnouncementOfWinner() const
 {
 	PerformActionForEachPlayerState(
-		[&](const IIPlayerState* playerState) -> bool
+		[&](IIPlayerState* playerState) -> bool
 		{
 			if(playerState->GetTeamId() == GetWinnerTeam())
 			{
+				playerState->SetAsWinner();
 				playerState->NotifyAnnouncementOfWinner();
 			}
 			return false;

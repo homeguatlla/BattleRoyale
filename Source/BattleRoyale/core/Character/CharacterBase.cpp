@@ -73,6 +73,17 @@ void ACharacterBase::BeginPlay()
 	UE_LOG(LogCharacter, Log, TEXT("ACharacterBase::BeginPlay"));
 }
 
+void ACharacterBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if(mAnyKeyPressed)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "Key pressed");
+		UE_LOG(LogCharacter, Log, TEXT("Key pressed"));
+	}
+}
+
 void ACharacterBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -124,7 +135,8 @@ TScriptInterface<IIWeapon> ACharacterBase::GetEquippedWeapon() const
 
 //////////////////////////////////////////////////////////////////////////
 // Input
-
+// Let the input binding that refer to the character specific into the character itself.
+// we can bind more other kind of binding in the Playercontroller.
 void ACharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// set up gameplay key bindings
@@ -133,7 +145,9 @@ void ACharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	// Bind fire event
 	//PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ACharacterBase::OnFire);
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ACharacterBase::OnResetVR);
-
+	PlayerInputComponent->BindAction("AnyKey", IE_Pressed, this, &ACharacterBase::OnAnyKeyPressed);
+	PlayerInputComponent->BindAction("AnyKey", IE_Released, this, &ACharacterBase::OnAnyKeyReleased);
+	
 	// Bind movement events
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACharacterBase::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACharacterBase::MoveRight);
@@ -342,6 +356,11 @@ IIAbilitySystemInterfaceBase* ACharacterBase::GetAbilitySystemComponentBase() co
 	return GetPlayerStateInterface()->GetAbilitySystemComponentInterface();
 }
 
+IIGameMode* ACharacterBase::GetGameModeServer() const
+{
+	return Cast<IIGameMode>(GetWorld()->GetAuthGameMode<ABattleRoyaleGameMode>());
+}
+
 float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
                                  AActor* DamageCauser)
 {
@@ -362,8 +381,7 @@ float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
 
 	//TODO hay que preguntar al gamemode si el instigator puede dañar al character
 	//si puede que diga cuanto daño le hace etc.
-	//TODO esta modo de pillar el game mode me perturba. No se puede pillar de otra manera?
-	const auto gameMode = Cast<IIGameMode>(GetWorld()->GetAuthGameMode<ABattleRoyaleGameMode>());
+	const auto gameMode = GetGameModeServer();
 	if(!gameMode->CanPlayerCauseDamageTo(killer, victim))
 	{
 		return actualDamage;
@@ -378,14 +396,24 @@ float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
 	mDamageCauser.playerCauser = EventInstigator->GetCharacter();
 	//the replication is not received by server so, we need to update it here
 	UpdateHealth(mDamageCauser);
-	
+
+	//This is ok here because only server can increase the number of kills.
 	if(mCurrentHealth <= 0)
 	{
-		DieServer();
 		gameMode->OnNewKill(killer,	victim);
 	}
 	
 	return actualDamage;
+}
+
+void ACharacterBase::OnAnyKeyPressed()
+{
+	mAnyKeyPressed = true;
+}
+
+void ACharacterBase::OnAnyKeyReleased()
+{
+	mAnyKeyPressed = false;
 }
 
 void ACharacterBase::OnResetVR()
@@ -538,26 +566,40 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation(), mCurrentHealth);
 			if(mCurrentHealth <= 0)
 			{
-				OnDead();
-				
+				OnDead();				
 			}
 		}
 	}
 
-	if (mCurrentHealth <= 0)
+	/*if (mCurrentHealth <= 0)
 	{
 		UnEquipWeapon();
 		HideFirstPersonMesh();
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		//GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
-		
 		if(IsLocallyControlled())
 		{
 			DisableInput(Cast<APlayerController>(GetController()));
 			
 			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 			gameInstance->GetEventDispatcher()->OnPlayerDead.Broadcast();
-		}
+		}		
+	}*/
+}
+
+void ACharacterBase::DieClient()
+{
+	UnEquipWeapon();
+	HideFirstPersonMesh();
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	
+	if(IsLocallyControlled())
+	{
+		DisableInput(Cast<APlayerController>(GetController()));
+			
+		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+		gameInstance->GetEventDispatcher()->OnPlayerDead.Broadcast();
 	}
 }
 
@@ -567,6 +609,19 @@ void ACharacterBase::DieServer()
 	GetCharacterMovement()->StopMovementImmediately();
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->SetComponentTickEnabled(false);
+	
+	UnEquipWeapon();
+	HideFirstPersonMesh();
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+
+	if(IsLocallyControlled())
+	{
+		DisableInput(Cast<APlayerController>(GetController()));
+			
+		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+		gameInstance->GetEventDispatcher()->OnPlayerDead.Broadcast();
+	}
 }
 
 void ACharacterBase::HideFirstPersonMesh() const

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
+#include "PlayerState/FSM/States/PlayerStateStates.h"
 #include "IPlayerState.generated.h"
 
 // This class does not need to be modified.
@@ -34,9 +35,15 @@ public:
 	virtual int GetNumKills() const = 0;
 
 	virtual void OnGameStarted() = 0;
+	virtual void ShowStatsScreen() const = 0;
+
+	virtual void SetAsWinner() = 0;
+	virtual bool DidPlayerWin() const = 0;
 	
 	virtual void NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const = 0;
 	virtual void NotifyNumKillsToSelf() = 0;
 	virtual void NotifyAnnouncementOfWinner() const = 0;
 	virtual void NotifyGameOver() const = 0;
+
+	virtual void ForceFSMStateClient(BRPlayerStateFSM::PlayerStateState state) = 0;
 };

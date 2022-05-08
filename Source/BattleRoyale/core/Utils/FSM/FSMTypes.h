@@ -6,7 +6,8 @@ enum class FSMType
 {
 	BATTLEROYALE_GAMEMODE = 0,
 	COOPERATIVE_GAMEMODE = 1,
-	PLAYER_STATE = 2
+	PLAYER_STATE_SERVER = 2,
+	PLAYER_STATE_CLIENT = 3
 };
 
 template<typename TStateID>

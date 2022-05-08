@@ -43,7 +43,6 @@ void AMultiplayerGameSession::CreateSession(bool isLan, uint8 maxNumPlayers, con
 void AMultiplayerGameSession::DestroySessionAndLeaveGame()
 {
 	const FString sessionName(LexToString(GameSessionName));
-		
 	m_OnlineSubsystem->DestroySession(GameSessionName);
 }
 

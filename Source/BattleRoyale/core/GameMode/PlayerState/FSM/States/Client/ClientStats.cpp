@@ -1,18 +1,18 @@
 
-#include "Stats.h"
+#include "ClientStats.h"
 
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/PlayerStateContext.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 
 namespace BRPlayerStateFSM
 {
-	void Stats::OnInit()
+	void ClientStats::OnInit()
 	{
 		mPlayerState = GetContext()->GetPlayerState();
 	}
 
-	void Stats::OnEnter(float deltaTime)
+	void ClientStats::OnEnter(float deltaTime)
 	{
-		mPlayerState->NotifyGameOver();
+		mPlayerState->ShowStatsScreen();
 	}
 };

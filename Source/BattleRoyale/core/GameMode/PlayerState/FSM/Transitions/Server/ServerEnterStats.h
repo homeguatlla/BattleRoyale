@@ -7,11 +7,11 @@ namespace BRPlayerStateFSM
 {
 	class PlayerStateContext;
 
-	class EnterStats : public core::utils::FSM::BaseTransition<PlayerStateState, PlayerStateContext>
+	class ServerEnterStats : public core::utils::FSM::BaseTransition<PlayerStateState, PlayerStateContext>
 	{
 	public:
-		EnterStats(StatePtr origin, StatePtr destination);
-		virtual ~EnterStats() = default;
+		ServerEnterStats(StatePtr origin, StatePtr destination);
+		virtual ~ServerEnterStats() = default;
 
 		void OnInit() override;
 		bool CanPerformTransition() const override;

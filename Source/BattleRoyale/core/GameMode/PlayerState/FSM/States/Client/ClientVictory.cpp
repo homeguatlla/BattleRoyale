@@ -1,16 +1,16 @@
 
-#include "Dead.h"
+#include "ClientVictory.h"
 
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/PlayerStateContext.h"
 
 namespace BRPlayerStateFSM
 {
-	void Dead::OnInit()
+	void ClientVictory::OnInit()
 	{
 		
 	}
 	
-	void Dead::OnEnter(float deltaTime)
+	void ClientVictory::OnEnter(float deltaTime)
 	{
 		GetContext()->StartTimer(5);
 	}

@@ -10,7 +10,7 @@
 #include "BattleRoyale/core/Utils/FSM/StatesMachineFactory.h"
 
 
-APlayerStateBase::APlayerStateBase() : mTeamId(0), mNumKills(0)
+APlayerStateBase::APlayerStateBase() : mTeamId(0), mNumKills(0), mDidWin(false)
 {
 	mAbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponentBase>(TEXT("AbilitySystemComponent"));
 	mAbilitySystemComponent->SetIsReplicated(true);
@@ -22,7 +22,7 @@ void APlayerStateBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if(HasAuthority())
+	//if(HasAuthority())
 	{
 		mStatesMachineController.Update(DeltaSeconds);
 	}
@@ -49,6 +49,16 @@ IICharacter* APlayerStateBase::GetCharacter() const
 	return nullptr;
 }
 
+void APlayerStateBase::SetAsWinner()
+{
+	mDidWin = true;
+}
+
+bool APlayerStateBase::DidPlayerWin() const
+{
+	return mDidWin;
+}
+
 void APlayerStateBase::NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const
 {
 	MulticastAnnouncementOfNewDeath(killerName, victimName);
@@ -72,9 +82,9 @@ void APlayerStateBase::NotifyGameOver() const
 void APlayerStateBase::OnGameStarted()
 {
 	//We are sure all pawns are created
-	if(HasAuthority())
+	//if(HasAuthority())
 	{
-		CreateStatesMachineServer();
+		CreateStatesMachine();
 		SetActorTickEnabled(true);
 	}
 }
@@ -84,7 +94,14 @@ void APlayerStateBase::ClientNotifyGameOver_Implementation() const
 	//Notify game over event
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 	gameInstance->GetEventDispatcher()->OnGameOver.Broadcast();
+}
 
+void APlayerStateBase::ShowStatsScreen() const
+{
+	if(!GetPawn()->IsLocallyControlled())
+	{
+		return;
+	}
 	//TODO no sé si sería mejor poner las stats dentro del gameover y listos
 	//Porque este evento de stats screen es un poco raro, no es genérico de la IPlayerState
 	//Notify game stats event
@@ -92,7 +109,14 @@ void APlayerStateBase::ClientNotifyGameOver_Implementation() const
 	data.mNumKills = mNumKills;
 	data.mTeamId = mTeamId;
 	data.mPlayerName = GetPlayerNickName();
+	
+	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 	gameInstance->GetEventDispatcher()->OnShowStatsScreen.Broadcast(data);
+}
+
+void APlayerStateBase::ForceFSMStateClient(BRPlayerStateFSM::PlayerStateState state)
+{
+	ClientForceFSMState(static_cast<int>(state));
 }
 
 void APlayerStateBase::ClientNotifyWinner_Implementation() const
@@ -114,12 +138,19 @@ void APlayerStateBase::MulticastAnnouncementOfNewDeath_Implementation(const FStr
 	gameInstance->GetEventDispatcher()->OnAnnounceNewDeath.Broadcast(killerName, victimName);
 }
 
-void APlayerStateBase::CreateStatesMachineServer()
+void APlayerStateBase::ClientForceFSMState_Implementation(int state)
 {
-	mGameStateFSMContext = std::make_shared<BRPlayerStateFSM::PlayerStateContext>(GetWorld(), this, GetCharacter());
+	mStatesMachineController.ForceState(0, static_cast<BRPlayerStateFSM::PlayerStateState>(state));
+}
+
+void APlayerStateBase::CreateStatesMachine()
+{
+	mPlayerStateFSMContext = std::make_shared<BRPlayerStateFSM::PlayerStateContext>(GetWorld(), this, GetCharacter());
 	
 	BattleRoyale::StatesMachineFactory factory;
 	
+	const auto fsmType = HasAuthority() ? FSMType::PLAYER_STATE_SERVER : FSMType::PLAYER_STATE_CLIENT;
+		
 	mStatesMachineController.AddMachine(
-		std::move(factory.CreatePlayerStateFSM(FSMType::PLAYER_STATE, mGameStateFSMContext)));
+		std::move(factory.CreatePlayerStateFSM(fsmType, mPlayerStateFSMContext)));
 }

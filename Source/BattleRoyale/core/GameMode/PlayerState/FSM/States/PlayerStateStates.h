@@ -8,15 +8,23 @@ namespace BRPlayerStateFSM
 	{
 		STATE_INIT = 0,
 		STATE_GAMELOOP = 1,
-		STATE_DEAD = 2,
-		STATE_STATS = 3
+		STATE_DEAD_SERVER = 2,
+		STATE_DEAD_CLIENT = 3,
+		STATE_VICTORY_SERVER = 4,
+		STATE_VICTORY_CLIENT = 5,
+		STATE_STATS_SERVER = 6,
+		STATE_STATS_CLIENT = 7
 	};
 
 	static std::map<PlayerStateState, std::string> PlayerStateStateMap =
 	{
 		{ PlayerStateState::STATE_INIT, std::string("Init") },
 		{ PlayerStateState::STATE_GAMELOOP, std::string("GameLoop") },
-		{ PlayerStateState::STATE_DEAD, std::string("Dead") },
-		{ PlayerStateState::STATE_STATS, std::string("Stats") }
+		{ PlayerStateState::STATE_DEAD_SERVER, std::string("DeadServer") },
+		{ PlayerStateState::STATE_DEAD_CLIENT, std::string("DeadClient") },
+		{ PlayerStateState::STATE_VICTORY_SERVER, std::string("VictoryServer") },
+		{ PlayerStateState::STATE_VICTORY_CLIENT, std::string("VictoryClient") },
+		{ PlayerStateState::STATE_STATS_SERVER, std::string("StatsServer") },
+		{ PlayerStateState::STATE_STATS_CLIENT, std::string("StatsClient") }
 	};
 };

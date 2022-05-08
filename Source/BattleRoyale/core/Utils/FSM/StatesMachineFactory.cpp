@@ -12,13 +12,20 @@
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Synchronize.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterGameLoop.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterSynchronize.h"
-#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Dead.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/GameLoop.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Init.h"
-#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Stats.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientDead.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientStats.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientVictory.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerDead.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerStats.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerVictory.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterDead.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterGameLoop.h"
-#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterStats.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterVictory.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/Client/ClientEnterInit.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/Server/ServerEnterInit.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/Server/ServerEnterStats.h"
 
 namespace BattleRoyale
 {
@@ -61,24 +68,48 @@ namespace BattleRoyale
 
 		switch(type)
 		{
-		case FSMType::PLAYER_STATE:
+		case FSMType::PLAYER_STATE_SERVER:
 			{
 				const auto init = std::make_shared<BRPlayerStateFSM::Init>();
 				const auto gameLoop = std::make_shared<BRPlayerStateFSM::GameLoop>();
-				const auto dead = std::make_shared<BRPlayerStateFSM::Dead>();
-				const auto stats = std::make_shared<BRPlayerStateFSM::Stats>();
+				const auto dead = std::make_shared<BRPlayerStateFSM::ServerDead>();
+				const auto won = std::make_shared<BRPlayerStateFSM::ServerVictory>();
+				const auto stats = std::make_shared<BRPlayerStateFSM::ServerStats>();
 					
 				return builder.WithState(init)
 							  .WithState(gameLoop)
 							  .WithState(dead)
+							  .WithState(won)
 							  .WithState(stats)
 							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterGameLoop>(init, gameLoop))
 							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterDead>(gameLoop, dead))
-							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterStats>(dead, stats))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterVictory>(gameLoop, won))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::ServerEnterStats>(dead, stats))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::ServerEnterStats>(won, stats))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::ServerEnterInit>(stats, init))
 							  .WithInitialState(init->GetID())
 							  .Build(context);
 			}
-			
+		case FSMType::PLAYER_STATE_CLIENT:
+			{
+				const auto init = std::make_shared<BRPlayerStateFSM::Init>();
+				const auto gameLoop = std::make_shared<BRPlayerStateFSM::GameLoop>();
+				const auto dead = std::make_shared<BRPlayerStateFSM::ClientDead>();
+				const auto won = std::make_shared<BRPlayerStateFSM::ClientVictory>();
+				const auto stats = std::make_shared<BRPlayerStateFSM::ClientStats>();
+					
+				return builder.WithState(init)
+							  .WithState(gameLoop)
+							  .WithState(dead)
+							  .WithState(won)
+							  .WithState(stats)
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterGameLoop>(init, gameLoop))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterDead>(gameLoop, dead))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterVictory>(gameLoop, won))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::ClientEnterInit>(stats, init))
+							  .WithInitialState(init->GetID())
+							  .Build(context);
+			}
 		default:
 			checkf(false, TEXT("States Machine type %d not defined"), type);
 			return {};
