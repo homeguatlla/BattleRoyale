@@ -36,13 +36,12 @@ public:
 	virtual void AddKill() override { mNumKills++; }
 	virtual int GetNumKills() const override { return mNumKills; }
 
-	virtual void SetAsWinner();
-	virtual bool DidPlayerWin() const;
+	virtual void SetAsWinner() override;
+	virtual bool DidPlayerWin() const override;
 	
 	virtual void NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const override;
 	virtual void NotifyNumKillsToSelf() override;
-	virtual void NotifyAnnouncementOfWinner() const override;
-	virtual void NotifyGameOver() const override;
+	virtual void NotifyGameOver(bool isWinner) override;
 
 	virtual void OnGameStarted() override;
 	virtual void ShowStatsScreen() const override;
@@ -55,12 +54,9 @@ private:
 
 	UFUNCTION(Client, Unreliable)
 	void ClientRefreshNumKills(int numKills);
-
+	
 	UFUNCTION(Client, Unreliable)
-	void ClientNotifyWinner() const;
-
-	UFUNCTION(Client, Unreliable)
-	void ClientNotifyGameOver() const;
+	void ClientNotifyGameOver(bool isWinner);
 
 	UFUNCTION(Client, Reliable)
 	void ClientForceFSMState(int state);

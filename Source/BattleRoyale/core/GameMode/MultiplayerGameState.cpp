@@ -96,29 +96,12 @@ void AMultiplayerGameState::PerformActionForEachPlayerState(
 	}
 }
 
-void AMultiplayerGameState::NotifyAnnouncementOfWinner() const
+void AMultiplayerGameState::NotifyGameOver()
 {
 	PerformActionForEachPlayerState(
 		[&](IIPlayerState* playerState) -> bool
 		{
-			if(playerState->GetTeamId() == GetWinnerTeam())
-			{
-				playerState->SetAsWinner();
-				playerState->NotifyAnnouncementOfWinner();
-			}
-			return false;
-		});
-}
-
-void AMultiplayerGameState::NotifyGameOver() const
-{
-	PerformActionForEachPlayerState(
-		[&](const IIPlayerState* playerState) -> bool
-		{
-			if(playerState->GetTeamId() == GetWinnerTeam())
-			{
-				playerState->NotifyGameOver();
-			}
+			playerState->NotifyGameOver(playerState->GetTeamId() == GetWinnerTeam());
 			return false;
 		});
 }

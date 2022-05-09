@@ -1,4 +1,5 @@
 #pragma once
+
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/PlayerStateStates.h"
 #include "BattleRoyale/core/Utils/FSM/fsm/BaseState.h"
 
@@ -8,14 +9,14 @@ namespace BRPlayerStateFSM
 {
 	class PlayerStateContext;
 
-	class ServerStats : public core::utils::FSM::BaseState<PlayerStateState, PlayerStateContext>
+	class ClientGameOver : public core::utils::FSM::BaseState<PlayerStateState, PlayerStateContext>
 	{
 	public:
 		
-		ServerStats() = default;
-		virtual ~ServerStats() = default;
+		ClientGameOver() = default;
+		virtual ~ClientGameOver() = default;
 
-		PlayerStateState GetID() const override { return PlayerStateState::STATE_STATS_SERVER; }
+		PlayerStateState GetID() const override { return PlayerStateState::STATE_GAME_OVER_CLIENT; }
 		
 		virtual void OnInit() override;
 		virtual void OnEnter(float deltaTime) override;

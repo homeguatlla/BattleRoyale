@@ -12,6 +12,5 @@ namespace BRPlayerStateFSM
 	
 	void ClientVictory::OnEnter(float deltaTime)
 	{
-		GetContext()->StartTimer(5);
 	}
 };

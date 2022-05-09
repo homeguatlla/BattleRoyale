@@ -15,17 +15,17 @@
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/GameLoop.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Init.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientDead.h"
-#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientStats.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientGameOver.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientVictory.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerDead.h"
-#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerStats.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerGameOver.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerVictory.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterDead.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterGameLoop.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterVictory.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/Client/ClientEnterInit.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/Server/ServerEnterInit.h"
-#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/Server/ServerEnterStats.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/Server/ServerEnterGameOver.h"
 
 namespace BattleRoyale
 {
@@ -73,20 +73,20 @@ namespace BattleRoyale
 				const auto init = std::make_shared<BRPlayerStateFSM::Init>();
 				const auto gameLoop = std::make_shared<BRPlayerStateFSM::GameLoop>();
 				const auto dead = std::make_shared<BRPlayerStateFSM::ServerDead>();
-				const auto won = std::make_shared<BRPlayerStateFSM::ServerVictory>();
-				const auto stats = std::make_shared<BRPlayerStateFSM::ServerStats>();
+				const auto victory = std::make_shared<BRPlayerStateFSM::ServerVictory>();
+				const auto gameOver = std::make_shared<BRPlayerStateFSM::ServerGameOver>();
 					
 				return builder.WithState(init)
 							  .WithState(gameLoop)
 							  .WithState(dead)
-							  .WithState(won)
-							  .WithState(stats)
+							  .WithState(victory)
+							  .WithState(gameOver)
 							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterGameLoop>(init, gameLoop))
 							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterDead>(gameLoop, dead))
-							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterVictory>(gameLoop, won))
-							  .WithTransition(std::make_unique<BRPlayerStateFSM::ServerEnterStats>(dead, stats))
-							  .WithTransition(std::make_unique<BRPlayerStateFSM::ServerEnterStats>(won, stats))
-							  .WithTransition(std::make_unique<BRPlayerStateFSM::ServerEnterInit>(stats, init))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterVictory>(gameLoop, victory))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::ServerEnterGameOver>(dead, gameOver))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::ServerEnterGameOver>(victory, gameOver))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::ServerEnterInit>(gameOver, init))
 							  .WithInitialState(init->GetID())
 							  .Build(context);
 			}
@@ -95,18 +95,18 @@ namespace BattleRoyale
 				const auto init = std::make_shared<BRPlayerStateFSM::Init>();
 				const auto gameLoop = std::make_shared<BRPlayerStateFSM::GameLoop>();
 				const auto dead = std::make_shared<BRPlayerStateFSM::ClientDead>();
-				const auto won = std::make_shared<BRPlayerStateFSM::ClientVictory>();
-				const auto stats = std::make_shared<BRPlayerStateFSM::ClientStats>();
+				const auto victory = std::make_shared<BRPlayerStateFSM::ClientVictory>();
+				const auto gameOver = std::make_shared<BRPlayerStateFSM::ClientGameOver>();
 					
 				return builder.WithState(init)
 							  .WithState(gameLoop)
 							  .WithState(dead)
-							  .WithState(won)
-							  .WithState(stats)
+							  .WithState(victory)
+							  .WithState(gameOver)
 							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterGameLoop>(init, gameLoop))
 							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterDead>(gameLoop, dead))
-							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterVictory>(gameLoop, won))
-							  .WithTransition(std::make_unique<BRPlayerStateFSM::ClientEnterInit>(stats, init))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterVictory>(gameLoop, victory))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::ClientEnterInit>(gameOver, init))
 							  .WithInitialState(init->GetID())
 							  .Build(context);
 			}

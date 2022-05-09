@@ -32,8 +32,7 @@ public:
 
 	virtual void SetWinnerTeam(int teamId) override { mWinnerTeamId = teamId; }
 	virtual int GetWinnerTeam() const override { return mWinnerTeamId; }
-	virtual void NotifyAnnouncementOfWinner() const override;
-	virtual void NotifyGameOver() const override;
+	virtual void NotifyGameOver() override;
 
 	virtual float GetDurationInDeadState() const override { return DurationInDeadState; }
 	

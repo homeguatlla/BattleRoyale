@@ -17,8 +17,8 @@ namespace BRPlayerStateFSM
 
 	bool ClientEnterInit::CanPerformTransition() const
 	{
-		const auto result = mCharacter->AnyKeyPressed();
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("EnterInit anykeypressed?: %d"), result));
-		return mCharacter->AnyKeyPressed();
+		const auto anyKeyPressed = mCharacter->AnyKeyPressed();
+		
+		return anyKeyPressed;
 	}	
 };

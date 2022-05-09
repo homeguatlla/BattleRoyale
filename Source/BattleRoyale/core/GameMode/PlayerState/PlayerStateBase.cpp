@@ -22,10 +22,7 @@ void APlayerStateBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	//if(HasAuthority())
-	{
-		mStatesMachineController.Update(DeltaSeconds);
-	}
+	mStatesMachineController.Update(DeltaSeconds);
 }
 
 bool APlayerStateBase::IsAlive() const
@@ -69,28 +66,30 @@ void APlayerStateBase::NotifyNumKillsToSelf()
 	ClientRefreshNumKills(GetNumKills());
 }
 
-void APlayerStateBase::NotifyAnnouncementOfWinner() const
+void APlayerStateBase::NotifyGameOver(bool isWinner)
 {
-	ClientNotifyWinner();
-}
-
-void APlayerStateBase::NotifyGameOver() const
-{
-	ClientNotifyGameOver();
+	if(isWinner)
+	{
+		SetAsWinner();
+	}
+	ClientNotifyGameOver(isWinner);
 }
 
 void APlayerStateBase::OnGameStarted()
 {
-	//We are sure all pawns are created
-	//if(HasAuthority())
-	{
-		CreateStatesMachine();
-		SetActorTickEnabled(true);
-	}
+	CreateStatesMachine();
+	SetActorTickEnabled(true);
 }
 
-void APlayerStateBase::ClientNotifyGameOver_Implementation() const
+void APlayerStateBase::ClientNotifyGameOver_Implementation(bool isWinner)
 {
+	if(isWinner)
+	{
+		SetAsWinner();
+		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+		gameInstance->GetEventDispatcher()->OnAnnouncePlayerWon.Broadcast();
+	}
+	
 	//Notify game over event
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 	gameInstance->GetEventDispatcher()->OnGameOver.Broadcast();
@@ -117,12 +116,6 @@ void APlayerStateBase::ShowStatsScreen() const
 void APlayerStateBase::ForceFSMStateClient(BRPlayerStateFSM::PlayerStateState state)
 {
 	ClientForceFSMState(static_cast<int>(state));
-}
-
-void APlayerStateBase::ClientNotifyWinner_Implementation() const
-{
-	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-	gameInstance->GetEventDispatcher()->OnAnnouncePlayerWon.Broadcast();
 }
 
 void APlayerStateBase::ClientRefreshNumKills_Implementation(int numKills)

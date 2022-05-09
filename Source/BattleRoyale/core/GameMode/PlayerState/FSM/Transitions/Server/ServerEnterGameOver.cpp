@@ -1,21 +1,21 @@
 
-#include "ServerEnterStats.h"
+#include "ServerEnterGameOver.h"
 
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/PlayerStateContext.h"
 
 namespace BRPlayerStateFSM
 {
-	ServerEnterStats::ServerEnterStats(StatePtr origin, StatePtr destination) :
+	ServerEnterGameOver::ServerEnterGameOver(StatePtr origin, StatePtr destination) :
 		core::utils::FSM::BaseTransition<PlayerStateState, PlayerStateContext>(origin, destination)
 	{
 	}
 
-	void ServerEnterStats::OnInit()
+	void ServerEnterGameOver::OnInit()
 	{
 		
 	}
 
-	bool ServerEnterStats::CanPerformTransition() const
+	bool ServerEnterGameOver::CanPerformTransition() const
 	{
 		return GetContext()->IsTimeOver();
 	}	

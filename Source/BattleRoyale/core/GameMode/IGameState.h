@@ -37,8 +37,7 @@ public:
 
 	virtual void SetWinnerTeam(int teamId) = 0;
 	virtual int GetWinnerTeam() const = 0;
-	virtual void NotifyAnnouncementOfWinner() const = 0;
-	virtual void NotifyGameOver() const = 0;
+	virtual void NotifyGameOver() = 0;
 	
 	virtual float GetDurationInDeadState() const = 0;
 };
