@@ -36,7 +36,9 @@ public:
 
 	virtual void OnGameStarted() = 0;
 	virtual void ShowStatsScreen() const = 0;
-
+	virtual void ShowVictoryScreen() const = 0;
+	virtual void ShowDeathScreen() const = 0;
+	
 	//TODO estos métodos probablemente deberían estar en un player state más específico del battle royale
 	//o si el equipo ganador lo ponemos en un atributo de gas pues igual ya se podrá consultar de una manera
 	//más genérica.
@@ -46,6 +48,5 @@ public:
 	virtual void NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const = 0;
 	virtual void NotifyNumKillsToSelf() = 0;
 	virtual void NotifyGameOver(bool isWinner) = 0;
-
 	virtual void ForceFSMStateClient(BRPlayerStateFSM::PlayerStateState state) = 0;
 };

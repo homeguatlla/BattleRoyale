@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/AbilitySystemComponentBase.h"
+#include "BattleRoyale/core/Utils/EventDispatcher.h"
 #include "BattleRoyale/core/Utils/FSM/StatesMachineController.h"
 #include "FSM/PlayerStateContext.h"
 #include "FSM/States/PlayerStateStates.h"
@@ -43,9 +44,12 @@ public:
 	virtual void NotifyNumKillsToSelf() override;
 	virtual void NotifyGameOver(bool isWinner) override;
 
+	
 	virtual void OnGameStarted() override;
 	virtual void ShowStatsScreen() const override;
-
+	virtual void ShowVictoryScreen() const override;
+	virtual void ShowDeathScreen() const override;
+	
 	virtual void ForceFSMStateClient(BRPlayerStateFSM::PlayerStateState state) override;
 	
 private:
@@ -62,6 +66,7 @@ private:
 	void ClientForceFSMState(int state);
 	
 	void CreateStatesMachine();
+	UEventDispatcher* GetEventDispatcher() const;
 	IICharacter* GetCharacter() const;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AbilitySystemComponent, meta = (AllowPrivateAccess = "true"))

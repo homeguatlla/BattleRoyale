@@ -6,10 +6,11 @@
 
 namespace BRPlayerStateFSM
 {
-	PlayerStateContext::PlayerStateContext(UWorld* world, IIPlayerState* playerState, IICharacter* character) :
+	PlayerStateContext::PlayerStateContext(UWorld* world, IIPlayerState* playerState, IICharacter* character, UEventDispatcher* eventDispatcher) :
 	mWorld{ world },
 	mPlayerState { playerState },
 	mCharacter {character },
+	mEventDispatcher { eventDispatcher },
 	mIsTimerOver {true}
 	{
 	}

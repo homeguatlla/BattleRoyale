@@ -598,8 +598,8 @@ void ACharacterBase::DieClient()
 	{
 		DisableInput(Cast<APlayerController>(GetController()));
 			
-		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-		gameInstance->GetEventDispatcher()->OnPlayerDead.Broadcast();
+		//const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+		//gameInstance->GetEventDispatcher()->OnPlayerDead.Broadcast();
 	}
 }
 
@@ -619,8 +619,8 @@ void ACharacterBase::DieServer()
 	{
 		DisableInput(Cast<APlayerController>(GetController()));
 			
-		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-		gameInstance->GetEventDispatcher()->OnPlayerDead.Broadcast();
+		//const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+		//gameInstance->GetEventDispatcher()->OnPlayerDead.Broadcast();
 	}
 }
 

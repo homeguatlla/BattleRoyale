@@ -75,6 +75,22 @@ void APlayerStateBase::NotifyGameOver(bool isWinner)
 	ClientNotifyGameOver(isWinner);
 }
 
+void APlayerStateBase::ShowVictoryScreen() const
+{
+	if(GetPawn()->IsLocallyControlled())
+	{
+		GetEventDispatcher()->OnAnnouncePlayerWon.Broadcast();
+	}
+}
+
+void APlayerStateBase::ShowDeathScreen() const
+{
+	if(GetPawn()->IsLocallyControlled())
+	{
+		GetEventDispatcher()->OnPlayerDead.Broadcast();
+	}
+}
+
 void APlayerStateBase::OnGameStarted()
 {
 	CreateStatesMachine();
@@ -86,13 +102,10 @@ void APlayerStateBase::ClientNotifyGameOver_Implementation(bool isWinner)
 	if(isWinner)
 	{
 		SetAsWinner();
-		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-		gameInstance->GetEventDispatcher()->OnAnnouncePlayerWon.Broadcast();
 	}
 	
 	//Notify game over event
-	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-	gameInstance->GetEventDispatcher()->OnGameOver.Broadcast();
+	GetEventDispatcher()->OnGameOver.Broadcast();
 }
 
 void APlayerStateBase::ShowStatsScreen() const
@@ -109,8 +122,7 @@ void APlayerStateBase::ShowStatsScreen() const
 	data.mTeamId = mTeamId;
 	data.mPlayerName = GetPlayerNickName();
 	
-	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-	gameInstance->GetEventDispatcher()->OnShowStatsScreen.Broadcast(data);
+	GetEventDispatcher()->OnShowStatsScreen.Broadcast(data);
 }
 
 void APlayerStateBase::ForceFSMStateClient(BRPlayerStateFSM::PlayerStateState state)
@@ -121,14 +133,12 @@ void APlayerStateBase::ForceFSMStateClient(BRPlayerStateFSM::PlayerStateState st
 void APlayerStateBase::ClientRefreshNumKills_Implementation(int numKills)
 {
 	mNumKills = numKills;
-	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-	gameInstance->GetEventDispatcher()->OnRefreshNumKills.Broadcast(numKills);
+	GetEventDispatcher()->OnRefreshNumKills.Broadcast(numKills);
 }
 
 void APlayerStateBase::MulticastAnnouncementOfNewDeath_Implementation(const FString& killerName, const FString& victimName) const
 {
-	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-	gameInstance->GetEventDispatcher()->OnAnnounceNewDeath.Broadcast(killerName, victimName);
+	GetEventDispatcher()->OnAnnounceNewDeath.Broadcast(killerName, victimName);
 }
 
 void APlayerStateBase::ClientForceFSMState_Implementation(int state)
@@ -138,7 +148,11 @@ void APlayerStateBase::ClientForceFSMState_Implementation(int state)
 
 void APlayerStateBase::CreateStatesMachine()
 {
-	mPlayerStateFSMContext = std::make_shared<BRPlayerStateFSM::PlayerStateContext>(GetWorld(), this, GetCharacter());
+	mPlayerStateFSMContext = std::make_shared<BRPlayerStateFSM::PlayerStateContext>(
+		GetWorld(),
+		this,
+		GetCharacter(),
+		GetEventDispatcher());
 	
 	BattleRoyale::StatesMachineFactory factory;
 	
@@ -146,4 +160,10 @@ void APlayerStateBase::CreateStatesMachine()
 		
 	mStatesMachineController.AddMachine(
 		std::move(factory.CreatePlayerStateFSM(fsmType, mPlayerStateFSMContext)));
+}
+
+UEventDispatcher* APlayerStateBase::GetEventDispatcher() const
+{
+	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+	return gameInstance->GetEventDispatcher();
 }
