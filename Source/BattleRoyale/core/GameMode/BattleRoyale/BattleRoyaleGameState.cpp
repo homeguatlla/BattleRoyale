@@ -19,11 +19,15 @@ mRemainingCounts{0}
 void ABattleRoyaleGameState::StartCountdownServer(int duration)
 {
 	mDidCountdownStart = true;
-
 	mRemainingCounts = duration;
+	
 	if(HasAuthority())
 	{
 		GetWorld()->GetTimerManager().SetTimer(mCountdownTimerHandle, this, &ABattleRoyaleGameState::OnCountdownFinishedServer, 1, true);
+
+		//Refreshing initial countdown
+		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+		gameInstance->GetEventDispatcher()->OnRefreshCountDown.Broadcast(mRemainingCounts);
 	}
 }
 

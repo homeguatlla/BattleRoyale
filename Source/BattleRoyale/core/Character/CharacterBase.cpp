@@ -597,9 +597,6 @@ void ACharacterBase::DieClient()
 	if(IsLocallyControlled())
 	{
 		DisableInput(Cast<APlayerController>(GetController()));
-			
-		//const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-		//gameInstance->GetEventDispatcher()->OnPlayerDead.Broadcast();
 	}
 }
 
@@ -610,18 +607,7 @@ void ACharacterBase::DieServer()
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->SetComponentTickEnabled(false);
 	
-	UnEquipWeapon();
-	HideFirstPersonMesh();
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	//GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
-
-	if(IsLocallyControlled())
-	{
-		DisableInput(Cast<APlayerController>(GetController()));
-			
-		//const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-		//gameInstance->GetEventDispatcher()->OnPlayerDead.Broadcast();
-	}
+	DieClient();
 }
 
 void ACharacterBase::HideFirstPersonMesh() const
