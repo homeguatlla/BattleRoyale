@@ -7,16 +7,16 @@ namespace BRModeFSM
 {
 	class BattleRoyaleContext;
 
-	class EnterCountdown : public core::utils::FSM::BaseTransition<BattleRoyaleState, BattleRoyaleContext>
+	class EnterMatchEnd : public core::utils::FSM::BaseTransition<BattleRoyaleState, BattleRoyaleContext>
 	{
 	public:
-		EnterCountdown(StatePtr origin, StatePtr destination);
-		virtual ~EnterCountdown() = default;
+		EnterMatchEnd(StatePtr origin, StatePtr destination);
+		virtual ~EnterMatchEnd() = default;
 
 		void OnInit() override;
 		bool CanPerformTransition() const override;
-
+		
 	private:
-		const IIGameState* mGameState;
+		IIGameState* mGameState;
 	};
 };

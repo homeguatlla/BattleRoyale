@@ -2,8 +2,9 @@
 
 namespace BRModeFSM
 {
-	BattleRoyaleContext::BattleRoyaleContext(UWorld* world, IIGameState* gameState, float countdownTimeToStartGame) :
-	mWorld{ world },
+	BattleRoyaleContext::BattleRoyaleContext(UWorld* world, const IIGameMode* gameMode, IIGameState* gameState, float countdownTimeToStartGame) :
+	FSMContextBase(world),
+	mGameMode{ gameMode },
 	mGameState{ gameState },
 	mCountdownTimeToStartGame{ countdownTimeToStartGame}
 	{

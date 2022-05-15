@@ -99,23 +99,23 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void StartSprinting() override;
 	
-	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
-	void OnStartSprinting(float maxSpeed);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnStartSprinting))
+	void BP_OnStartSprinting(float maxSpeed);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void StopSprinting() override;
 	
-	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
-	void OnStopSprinting(float maxSpeed);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnStopSprinting))
+	void BP_OnStopSprinting(float maxSpeed);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
-	void OnShoot();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnShoot))
+	void BP_OnShoot();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
 	void OnTakenDamage(float damage, const FVector& damageCauserLocation, float currentHealth);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
-	void OnDead();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnDead))
+	void BP_OnDead();
 	
 	//UFUNCTION(BlueprintCallable)
 	virtual bool CanJump() const override;

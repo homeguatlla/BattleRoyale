@@ -26,6 +26,8 @@ public:
 	virtual IIGameState* GetGameState() const override;
 	virtual void OnNewKill(const APlayerController* killerController, const APlayerController* victimController) override;
 	virtual bool CanPlayerCauseDamageTo(const APlayerController* killerController, const APlayerController* victimController) override;
+	virtual void DestroyGameSession() const  override;
+	virtual bool HasCurrentGameSession() const override;
 	
 private:
 	virtual void GenericPlayerInitialization(AController* controller) override;

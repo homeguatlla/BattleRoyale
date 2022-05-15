@@ -29,7 +29,8 @@ public:
 	virtual bool AreAllPlayersReplicated() const = 0;
 	virtual void StartGameServer() = 0;
 	virtual bool HasGameStarted() const = 0;
-	virtual bool IsGameReadyToStart() const = 0;	
+	virtual bool IsGameReadyToStart() const = 0;
+	virtual bool HasMatchEnded() const = 0;
 	
 	virtual int GetNumPlayers() const = 0;
 	virtual int GetNumTeams() const = 0 ;
@@ -37,7 +38,7 @@ public:
 
 	virtual void SetWinnerTeam(int teamId) = 0;
 	virtual int GetWinnerTeam() const = 0;
-	virtual void NotifyGameOver() = 0;
+	virtual void MatchEndServer() = 0;
 	
 	virtual float GetDurationInDeadState() const = 0;
 };

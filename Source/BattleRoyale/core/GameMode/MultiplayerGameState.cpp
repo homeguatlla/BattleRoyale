@@ -7,6 +7,7 @@
 
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Utils/FSM/StatesMachineFactory.h"
+#include "GameFramework/GameMode.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 
@@ -58,6 +59,12 @@ void AMultiplayerGameState::StartGameServer()
 	MulticastGameStarted();
 }
 
+void AMultiplayerGameState::MatchEndServer()
+{
+	EndMatchServer();	
+	NotifyGameOver();
+}
+
 bool AMultiplayerGameState::HasGameStarted() const
 {
 	return mStatesMachineController.GetCurrentStateID(static_cast<int>(FSMType::BATTLEROYALE_GAMEMODE)) == BRModeFSM::BattleRoyaleState::STATE_GAMELOOP;
@@ -66,6 +73,11 @@ bool AMultiplayerGameState::HasGameStarted() const
 bool AMultiplayerGameState::IsGameReadyToStart() const
 {
 	return true;
+}
+
+bool AMultiplayerGameState::HasMatchEnded() const
+{
+	return AGameState::HasMatchEnded();
 }
 
 int AMultiplayerGameState::GetNumTeams() const
@@ -82,6 +94,11 @@ int AMultiplayerGameState::GetNumTeams() const
 	return teams.size();
 }
 
+void AMultiplayerGameState::EndMatchServer()
+{
+	SetMatchState(MatchState::WaitingPostMatch);
+}
+
 void AMultiplayerGameState::PerformActionForEachPlayerState(
 	std::function<bool(IIPlayerState* playerState)> action) const
 {
@@ -96,7 +113,7 @@ void AMultiplayerGameState::PerformActionForEachPlayerState(
 	}
 }
 
-void AMultiplayerGameState::NotifyGameOver()
+void AMultiplayerGameState::NotifyGameOver() const
 {
 	PerformActionForEachPlayerState(
 		[&](IIPlayerState* playerState) -> bool

@@ -2,37 +2,28 @@
 #include <functional>
 
 #include "BattleRoyale/core/Utils/EventDispatcher.h"
+#include "BattleRoyale/core/Utils/FSM/FSMContextBase.h"
 
 class IICharacter;
 class IIPlayerState;
 
 namespace BRPlayerStateFSM
 {
-	class PlayerStateContext
+	class PlayerStateContext : public FSMContextBase
 	{
 	public:
 		PlayerStateContext(UWorld* world, IIPlayerState* playerState, IICharacter* character, UEventDispatcher* eventDispatcher);
 
 		~PlayerStateContext() = default;
 		
-		UWorld* GetWorld() const { return mWorld; }
 		IIPlayerState* GetPlayerState() const { return mPlayerState; }
 		IICharacter* GetCharacter() const { return mCharacter; }
 		UEventDispatcher* GetEventDispatcher() const { return mEventDispatcher; }
-		void StartTimer(float duration);
-		void StartTimer(float duration, std::function<void()> callback);
-		void StopTimer();
-		bool IsTimeOver() const { return mIsTimerOver; }
-		
+	
 	private:
-		void OnTimeOver();
 		
-		UWorld* mWorld;
 		IIPlayerState* mPlayerState;
 		IICharacter* mCharacter;
 		UEventDispatcher* mEventDispatcher;
-		
-		FTimerHandle mTimerHandle;
-		bool mIsTimerOver;
 	};
 };

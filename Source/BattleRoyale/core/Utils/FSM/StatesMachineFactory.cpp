@@ -9,8 +9,12 @@
 #include "StatesMachineBuilder.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Countdown.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/GameLoop.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/MatchEnd.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Reset.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Synchronize.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterGameLoop.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterMatchEnd.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterReset.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterSynchronize.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/GameLoop.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Init.h"
@@ -43,14 +47,20 @@ namespace BattleRoyale
 					const auto countdown = std::make_shared<BRModeFSM::Countdown>();
 					const auto synchronize = std::make_shared<BRModeFSM::Synchronize>();
 					const auto gameLoop = std::make_shared<BRModeFSM::GameLoop>();
+					const auto matchEnd = std::make_shared<BRModeFSM::MatchEnd>();
+					const auto reset = std::make_shared<BRModeFSM::Reset>();
 					
 					return builder.WithState(init)
 								  .WithState(countdown)
 								  .WithState(synchronize)
 								  .WithState(gameLoop)
+								  .WithState(matchEnd)
+								  .WithState(reset)
 	                              .WithTransition(std::make_unique<BRModeFSM::EnterCountdown>(init, countdown))
 	                              .WithTransition(std::make_unique<BRModeFSM::EnterSynchronize>(countdown, synchronize))
 	                              .WithTransition(std::make_unique<BRModeFSM::EnterGameLoop>(synchronize, gameLoop))
+								  .WithTransition(std::make_unique<BRModeFSM::EnterMatchEnd>(gameLoop, matchEnd))
+								  .WithTransition(std::make_unique<BRModeFSM::EnterReset>(matchEnd, reset))
 	                              .WithInitialState(init->GetID())
 	                              .Build(context);
 				}

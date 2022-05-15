@@ -23,6 +23,9 @@ public:
 	virtual void DoInitGame() {}
 	
 	virtual IIGameState* GetGameState() const = 0;
+
+	virtual void DestroyGameSession() const = 0;
+	virtual bool HasCurrentGameSession() const = 0;
 	
 	virtual void OnNewKill(const APlayerController* killerController, const APlayerController* victimController) = 0;
 	virtual bool CanPlayerCauseDamageTo(const APlayerController* killerController, const APlayerController* victimController) = 0;

@@ -53,8 +53,11 @@ bool CheckThereIsOnlyOneTeamAliveRule::Evaluate()
 bool CheckThereIsOnlyOneTeamAliveRule::Execute(std::vector<std::shared_ptr<IGameRule>>& rules) const
 {
 	UE_LOG(LogGameRules, Log, TEXT("GameRules: Executing Rule CheckThereIsOnlyOneTeamAliveRule"));
-	
-	//Set data 
+
+	//TODO es un poco raro que tengamos que decirle al game state quién es el equipo ganador.
+	//igual lo podría hacer todo el mismo. Aunque luego, la regla igual perdería sentido pues
+	//no podría hacer muchas cosas operando con el gamestate?
+	//Set data
 	mGameState->SetWinnerTeam(mTeamIdAlive);
 
 	//remove rules not needed

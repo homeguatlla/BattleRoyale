@@ -10,7 +10,10 @@
 #include "BattleRoyale/core/Utils/FSM/StatesMachineFactory.h"
 
 
-APlayerStateBase::APlayerStateBase() : mTeamId(0), mNumKills(0), mDidWin(false)
+APlayerStateBase::APlayerStateBase() :
+mTeamId(0),
+mNumKills(0),
+mDidWin(false)
 {
 	mAbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponentBase>(TEXT("AbilitySystemComponent"));
 	mAbilitySystemComponent->SetIsReplicated(true);
@@ -157,7 +160,7 @@ void APlayerStateBase::CreateStatesMachine()
 	BattleRoyale::StatesMachineFactory factory;
 	
 	const auto fsmType = HasAuthority() ? FSMType::PLAYER_STATE_SERVER : FSMType::PLAYER_STATE_CLIENT;
-		
+	
 	mStatesMachineController.AddMachine(
 		std::move(factory.CreatePlayerStateFSM(fsmType, mPlayerStateFSMContext)));
 }

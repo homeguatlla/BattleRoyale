@@ -21,9 +21,10 @@ public:
 	
 	virtual bool AreAllPlayersReplicated() const override;
 
-	virtual void StartGameServer() override;
+	virtual void StartGameServer() override;	
 	virtual bool HasGameStarted() const override;
 	virtual bool IsGameReadyToStart() const override;
+	virtual bool HasMatchEnded() const override;
 	
 	virtual int GetNumPlayers() const override { return PlayerArray.Num(); }
 	virtual int GetNumTeams() const override;
@@ -32,7 +33,7 @@ public:
 
 	virtual void SetWinnerTeam(int teamId) override { mWinnerTeamId = teamId; }
 	virtual int GetWinnerTeam() const override { return mWinnerTeamId; }
-	virtual void NotifyGameOver() override;
+	virtual void MatchEndServer() override;
 
 	virtual float GetDurationInDeadState() const override { return DurationInDeadState; }
 	
@@ -48,6 +49,9 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
+
+	void NotifyGameOver() const;
+	void EndMatchServer();
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastGameStarted();

@@ -228,13 +228,13 @@ bool ACharacterBase::CanSprint() const
 void ACharacterBase::StartSprinting()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
-	OnStartSprinting(600.0f);
+	BP_OnStartSprinting(600.0f);
 }
 
 void ACharacterBase::StopSprinting()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 100.f;
-	OnStopSprinting(100.0f);
+	BP_OnStopSprinting(100.0f);
 }
 
 bool ACharacterBase::CanJump() const
@@ -312,7 +312,7 @@ void ACharacterBase::Shoot()
 		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::FillWithWeaponMuzzleLocationAndRotation] weapon is null"), *GetName());
 		return;
 	}
-	OnShoot();
+	BP_OnShoot();
 	weapon->FireClient(true);
 	ServerSpawnProjectile(FVector::ZeroVector, FRotator::ZeroRotator);
 }
@@ -553,7 +553,7 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 			if(mCurrentHealth <=0)
 			{
 				//notify the character has dead
-				OnDead();
+				BP_OnDead();
 			}
 		}
 	}
@@ -566,7 +566,7 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation(), mCurrentHealth);
 			if(mCurrentHealth <= 0)
 			{
-				OnDead();				
+				BP_OnDead();				
 			}
 		}
 	}
