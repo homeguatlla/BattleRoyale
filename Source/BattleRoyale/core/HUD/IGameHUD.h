@@ -14,4 +14,6 @@ class IGameHUD
 public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Game HUD")
 	void OnGameStarted();
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Game HUD")
+	void OnGameOver();
 };

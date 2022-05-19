@@ -75,7 +75,15 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool CanShoot() const = 0;
+	
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual void DieServer() = 0;
 
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual void DieClient() = 0;
+	
+	virtual void SetEnableInput(bool enable, const FInputModeDataBase& inputMode = FInputModeGameAndUI()) = 0;
+	
 	/**
 	 * Shoot is aim and try to hit something
 	 **/

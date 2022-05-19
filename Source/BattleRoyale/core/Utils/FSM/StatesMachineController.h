@@ -15,7 +15,8 @@ public:
 	void Update(float elapsedTime);
 	TStateID GetCurrentStateID(unsigned int machineIndex) const;
 	void PerformActionOnEachCurrentState(std::function<void(std::shared_ptr<core::utils::FSM::IState<TStateID, TContext>> state)> action);
-
+	void ForceState(unsigned machineIndex, TStateID state);
+	
 private:
 	std::vector<std::shared_ptr<StatesMachineType>> mMachines;
 };
@@ -33,7 +34,7 @@ void StatesMachineController<TStateID, TContext>::Update(float elapsedTime)
 	for(auto&& machine : mMachines)
 	{
 		machine->Update(elapsedTime);
-		UE_LOG(LogTemp, Warning, TEXT("StatesMachineController state:%d"), machine->GetCurrentState()->GetID());
+		//UE_LOG(LogTemp, Warning, TEXT("StatesMachineController state:%d"), machine->GetCurrentState()->GetID());
 	}
 }
 
@@ -53,4 +54,10 @@ void StatesMachineController<TStateID, TContext>::PerformActionOnEachCurrentStat
 	{
 		action(machine->GetCurrentState());
 	}
+}
+
+template <typename TStateID, class TContext>
+void StatesMachineController<TStateID, TContext>::ForceState(unsigned machineIndex, TStateID state)
+{
+	mMachines[machineIndex]->ForceState(state, 0.0f);
 }

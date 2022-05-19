@@ -15,4 +15,6 @@ class IStatsMenuHUD
 public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Menu Stats HUD")
 	void OnShowStatsScreen(const FPlayerStatsData& playerStatsData);
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Menu Stats HUD")
+	void OnHideStatsScreen();
 };

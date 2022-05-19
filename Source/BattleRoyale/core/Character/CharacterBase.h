@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ICharacter.h"
 #include "BattleRoyale/core/Data/TakeDamageData.h"
+#include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/Weapons/WeaponBase.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -54,6 +55,8 @@ class ACharacterBase : public ACharacter, public IICharacter
 	UPROPERTY(ReplicatedUsing=OnRep_TakeDamageData)
 	FTakeDamageData mDamageCauser;
 
+	bool mAnyKeyPressed = false;
+
 public:
 	ACharacterBase();
 	
@@ -95,24 +98,26 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void StartSprinting() override;
+
+	virtual void SetEnableInput(bool enable, const FInputModeDataBase& inputMode = FInputModeGameAndUI()) override;
 	
-	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
-	void OnStartSprinting(float maxSpeed);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnStartSprinting))
+	void BP_OnStartSprinting(float maxSpeed);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void StopSprinting() override;
 	
-	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
-	void OnStopSprinting(float maxSpeed);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnStopSprinting))
+	void BP_OnStopSprinting(float maxSpeed);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
-	void OnShoot();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnShoot))
+	void BP_OnShoot();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
 	void OnTakenDamage(float damage, const FVector& damageCauserLocation, float currentHealth);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
-	void OnDead();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnDead))
+	void BP_OnDead();
 	
 	//UFUNCTION(BlueprintCallable)
 	virtual bool CanJump() const override;
@@ -122,7 +127,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void StopJumping_() override;
-
+	
 	UFUNCTION(BlueprintCallable)
 	virtual bool CanShoot() const override;
 
@@ -130,6 +135,10 @@ public:
 
 	virtual void Shoot() override;
 
+	virtual void DieServer() override;
+
+	virtual void DieClient() override;
+	
 	virtual UAnimMontage* GetShootingMontage() const override;
 
 	virtual UAnimMontage* GetSimulatedShootingMontage() const override;
@@ -142,13 +151,16 @@ public:
 	
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	                         AActor* DamageCauser) override;
-	
+	void OnAnyKeyPressed();
+	void OnAnyKeyReleased();
+
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	void ChangeCharacterMesh1PColor(const FColor& color);
 
 	
 protected:
 	virtual void BeginPlay();
+	virtual void Tick(float DeltaSeconds) override;
 	
 public:
 	
@@ -233,8 +245,9 @@ private:
 	void UnEquipWeapon() const;
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
 	void UpdateHealth(const FTakeDamageData& damage);
-	void DieServer();
 	
+	IIGameMode* GetGameModeServer() const;
+
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerSpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation);
 	
@@ -249,6 +262,7 @@ private:
 	
 	UFUNCTION()
 	void OnRep_TakeDamageData();
+
 public:
 	/** Returns Mesh1P subobject **/
 	USkeletalMeshComponent* GetMesh1P() const { return mCharacterMesh1P; }

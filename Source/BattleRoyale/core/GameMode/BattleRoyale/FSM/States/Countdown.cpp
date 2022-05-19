@@ -23,6 +23,5 @@ namespace BRModeFSM
 
 	void Countdown::OnExit(float deltaTime)
 	{
-		mGameState->StartGameServer();
 	}
 };

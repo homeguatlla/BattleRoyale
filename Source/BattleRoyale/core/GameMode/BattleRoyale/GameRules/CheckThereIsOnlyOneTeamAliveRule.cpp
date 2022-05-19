@@ -8,8 +8,9 @@
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 
-void CheckThereIsOnlyOneTeamAliveRule::Initialize(IIGameState* gameState)
+void CheckThereIsOnlyOneTeamAliveRule::Initialize(UWorld* world, IIGameState* gameState)
 {
+	mWorld = world;
 	mGameState = gameState;
 }
 
@@ -52,8 +53,11 @@ bool CheckThereIsOnlyOneTeamAliveRule::Evaluate()
 bool CheckThereIsOnlyOneTeamAliveRule::Execute(std::vector<std::shared_ptr<IGameRule>>& rules) const
 {
 	UE_LOG(LogGameRules, Log, TEXT("GameRules: Executing Rule CheckThereIsOnlyOneTeamAliveRule"));
-	
-	//Set data 
+
+	//TODO es un poco raro que tengamos que decirle al game state quién es el equipo ganador.
+	//igual lo podría hacer todo el mismo. Aunque luego, la regla igual perdería sentido pues
+	//no podría hacer muchas cosas operando con el gamestate?
+	//Set data
 	mGameState->SetWinnerTeam(mTeamIdAlive);
 
 	//remove rules not needed
@@ -67,7 +71,7 @@ bool CheckThereIsOnlyOneTeamAliveRule::Execute(std::vector<std::shared_ptr<IGame
 	
 	//add new rules
 	const auto endOfGameRule = std::make_shared<EndOfGameRule>();
-	endOfGameRule->Initialize(mGameState);
+	endOfGameRule->Initialize(mWorld, mGameState);
 	rules.push_back(endOfGameRule);
 
 	//return true if added/removed rules

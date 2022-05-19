@@ -7,6 +7,7 @@
 
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Utils/FSM/StatesMachineFactory.h"
+#include "GameFramework/GameMode.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 
@@ -25,6 +26,18 @@ void AMultiplayerGameState::BeginPlay()
 	{
 		AddStatesMachineServer(mStatesMachineController, mGameStateFSMContext);
 		SetActorTickEnabled(true);
+	}
+}
+
+void AMultiplayerGameState::PlayerInteraction(const APlayerController* playerController, const FString& action)
+{
+	if(playerController != nullptr)
+	{
+		const auto playerState = playerController->GetPlayerState<IIPlayerState>();
+		if(playerState != nullptr)
+		{
+			playerState->PlayerInteraction(action);
+		}
 	}
 }
 
@@ -58,6 +71,23 @@ void AMultiplayerGameState::StartGameServer()
 	MulticastGameStarted();
 }
 
+void AMultiplayerGameState::MatchEndServer()
+{
+	//Setting unreal state
+	SetMatchState(MatchState::WaitingPostMatch);
+	NotifyMatchEndedServer();
+}
+
+void AMultiplayerGameState::CloseAllPlayersGameSessionServer() const
+{
+	PerformActionForEachPlayerState(
+		[](IIPlayerState* playerState) -> bool
+		{
+			playerState->Restart();
+			return false;
+		});	
+}
+
 bool AMultiplayerGameState::HasGameStarted() const
 {
 	return mStatesMachineController.GetCurrentStateID(static_cast<int>(FSMType::BATTLEROYALE_GAMEMODE)) == BRModeFSM::BattleRoyaleState::STATE_GAMELOOP;
@@ -66,6 +96,11 @@ bool AMultiplayerGameState::HasGameStarted() const
 bool AMultiplayerGameState::IsGameReadyToStart() const
 {
 	return true;
+}
+
+bool AMultiplayerGameState::HasMatchEnded() const
+{
+	return AGameState::HasMatchEnded();
 }
 
 int AMultiplayerGameState::GetNumTeams() const
@@ -83,7 +118,7 @@ int AMultiplayerGameState::GetNumTeams() const
 }
 
 void AMultiplayerGameState::PerformActionForEachPlayerState(
-	std::function<bool(const IIPlayerState* playerState)> action) const
+	std::function<bool(IIPlayerState* playerState)> action) const
 {
 	for(const auto playerState : PlayerArray)
 	{
@@ -96,15 +131,12 @@ void AMultiplayerGameState::PerformActionForEachPlayerState(
 	}
 }
 
-void AMultiplayerGameState::NotifyAnnouncementOfWinner() const
+void AMultiplayerGameState::NotifyMatchEndedServer() const
 {
 	PerformActionForEachPlayerState(
-		[&](const IIPlayerState* playerState) -> bool
+		[&](IIPlayerState* playerState) -> bool
 		{
-			if(playerState->GetTeamId() == GetWinnerTeam())
-			{
-				playerState->NotifyAnnouncementOfWinner();
-			}
+			playerState->NotifyGameOverServer(true, playerState->GetTeamId() == GetWinnerTeam());
 			return false;
 		});
 }
@@ -114,4 +146,14 @@ void AMultiplayerGameState::MulticastGameStarted_Implementation()
 	//To notify HUD
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 	gameInstance->GetEventDispatcher()->OnGameStarted.Broadcast();
+	
+	//To notify all playerStates about gameStarted
+	//This way we give the opportunity to the player state to initiate
+	//once the server pawn is already spawned.
+	PerformActionForEachPlayerState(
+		[](IIPlayerState* playerState) -> bool
+		{
+			playerState->OnGameStarted();
+			return false;
+		});
 }

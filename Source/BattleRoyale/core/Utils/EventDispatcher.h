@@ -10,6 +10,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshHealth, float, health);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshNumKills, int, numKills);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStarted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDead);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAnnounceNewDeath, const FString&, killerName, const FString&, victimName);
@@ -18,6 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAnnouncePlayerWon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFinishCountDown);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRefreshCountDown, uint8, counter);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowStatsScreen, const FPlayerStatsData&, statsData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHideStatsScreen);
 
 UCLASS(Blueprintable)
 class BATTLEROYALE_API UEventDispatcher : public UObject
@@ -46,6 +48,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="Game")
 	FOnGameStarted OnGameStarted;
 	
+	UPROPERTY(BlueprintAssignable, Category="Game")
+	FOnGameOver OnGameOver;
+	
 	UPROPERTY(BlueprintAssignable, Category="Announcement")
 	FOnAnnounceNewDeath OnAnnounceNewDeath;
 
@@ -60,4 +65,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="Menu")
 	FOnShowStatsScreen OnShowStatsScreen;
+
+	UPROPERTY(BlueprintAssignable, Category="Menu")
+	FOnHideStatsScreen OnHideStatsScreen;
 };

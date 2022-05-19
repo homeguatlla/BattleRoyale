@@ -2,20 +2,43 @@
 
 //FSM BattleRoyale States
 #include <BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Init.h>
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Countdown.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/GameLoop.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/MatchEnd.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Reset.h"
 
 //FSM BattleRoyale Transitions
 #include <BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterCountdown.h>
-
-#include "StatesMachineBuilder.h"
-#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Countdown.h"
-#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/GameLoop.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Synchronize.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterGameLoop.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterMatchEnd.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterReset.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterSynchronize.h"
+
+//FSM PlayerState States
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/GameLoop.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Init.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientRestart.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientDead.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientGameOver.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientVictory.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerDead.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerGameOver.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerVictory.h"
+
+//FSM PlayerState Transitions
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterDead.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterGameLoop.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterRestart.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterVictory.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/Server/ServerEnterGameOver.h"
+
+#include "StatesMachineBuilder.h"
+
 
 namespace BattleRoyale
 {
-	std::unique_ptr<StatesMachineFactory::BRGameModeFSM> StatesMachineFactory::CreateBattleRoyaleModeFSM(
+	std::unique_ptr<StatesMachineFactory::GameModeFSM> StatesMachineFactory::CreateModeFSM(
 		FSMType type, 
 		std::shared_ptr<BRModeFSM::BattleRoyaleContext> context)
 	{
@@ -29,14 +52,20 @@ namespace BattleRoyale
 					const auto countdown = std::make_shared<BRModeFSM::Countdown>();
 					const auto synchronize = std::make_shared<BRModeFSM::Synchronize>();
 					const auto gameLoop = std::make_shared<BRModeFSM::GameLoop>();
+					const auto matchEnd = std::make_shared<BRModeFSM::MatchEnd>();
+					const auto reset = std::make_shared<BRModeFSM::Reset>();
 					
 					return builder.WithState(init)
 								  .WithState(countdown)
 								  .WithState(synchronize)
 								  .WithState(gameLoop)
+								  .WithState(matchEnd)
+								  .WithState(reset)
 	                              .WithTransition(std::make_unique<BRModeFSM::EnterCountdown>(init, countdown))
 	                              .WithTransition(std::make_unique<BRModeFSM::EnterSynchronize>(countdown, synchronize))
 	                              .WithTransition(std::make_unique<BRModeFSM::EnterGameLoop>(synchronize, gameLoop))
+								  .WithTransition(std::make_unique<BRModeFSM::EnterMatchEnd>(gameLoop, matchEnd))
+								  .WithTransition(std::make_unique<BRModeFSM::EnterReset>(matchEnd, reset))
 	                              .WithInitialState(init->GetID())
 	                              .Build(context);
 				}
@@ -46,44 +75,60 @@ namespace BattleRoyale
 				return {};
 		}	
 	}
-/*
-	std::unique_ptr<StatesMachineFactory::ChickenStatesMachine> StatesMachineFactory::CreateChicken(FSMType type, std::shared_ptr<TLN::Chicken::ChickenContext> context)
+	std::unique_ptr<StatesMachineFactory::PlayerStateFSM> StatesMachineFactory::CreatePlayerStateFSM(
+			FSMType type, 
+			std::shared_ptr<BRPlayerStateFSM::PlayerStateContext> context)
 	{
-		StatesMachineBuilder<TLN::Chicken::ChickenState, TLN::Chicken::ChickenContext> builder;
+		StatesMachineBuilder<BRPlayerStateFSM::PlayerStateState, BRPlayerStateFSM::PlayerStateContext> builder;
 
 		switch(type)
 		{
-		case FSMType::CHICKEN_MOVEMENT:
+		case FSMType::PLAYER_STATE_SERVER:
 			{
-				auto idle = std::make_shared<TLN::Chicken::Idle>();
-				auto walk = std::make_shared<TLN::Chicken::Walk>();
-				
-				return builder.WithState(idle)
-                              .WithState(walk)
-                              .WithTransition(std::make_unique<TLN::Chicken::EnterWalk>(idle, walk))
-                              .WithTransition(std::make_unique<TLN::Chicken::EnterIdle>(walk, idle))
-                              .WithInitialState(idle->GetID())
-                              .Build(context);
+				const auto init = std::make_shared<BRPlayerStateFSM::Init>();
+				const auto gameLoop = std::make_shared<BRPlayerStateFSM::GameLoop>();
+				const auto dead = std::make_shared<BRPlayerStateFSM::ServerDead>();
+				const auto victory = std::make_shared<BRPlayerStateFSM::ServerVictory>();
+				const auto gameOver = std::make_shared<BRPlayerStateFSM::ServerGameOver>();
+					
+				return builder.WithState(init)
+							  .WithState(gameLoop)
+							  .WithState(dead)
+							  .WithState(victory)
+							  .WithState(gameOver)
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterGameLoop>(init, gameLoop))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterDead>(gameLoop, dead))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterVictory>(gameLoop, victory))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::ServerEnterGameOver>(dead, gameOver))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::ServerEnterGameOver>(victory, gameOver))
+							  .WithInitialState(init->GetID())
+							  .Build(context);
 			}
-		case FSMType::CHICKEN_STATE:
+		case FSMType::PLAYER_STATE_CLIENT:
 			{
-				auto idle = std::make_shared<TLN::Chicken::IdleState>();
-				auto explore = std::make_shared<TLN::Chicken::Explore>();
-				auto eat = std::make_shared<TLN::Chicken::Eat>();
+				const auto init = std::make_shared<BRPlayerStateFSM::Init>();
+				const auto gameLoop = std::make_shared<BRPlayerStateFSM::GameLoop>();
+				const auto dead = std::make_shared<BRPlayerStateFSM::ClientDead>();
+				const auto victory = std::make_shared<BRPlayerStateFSM::ClientVictory>();
+				const auto gameOver = std::make_shared<BRPlayerStateFSM::ClientGameOver>();
+				const auto restart = std::make_shared<BRPlayerStateFSM::ClientRestart>();
 				
-				return builder.WithState(idle)
-                              .WithState(explore)
-                              .WithState(eat)
-                              .WithTransition(std::make_unique<TLN::Chicken::EnterExplore>(idle, explore))
-                              .WithTransition(std::make_unique<TLN::Chicken::LeaveExplore>(explore, idle))
-                              .WithTransition(std::make_unique<TLN::Chicken::EnterEat>(idle, eat))
-                              .WithTransition(std::make_unique<TLN::Chicken::LeaveEat>(eat, idle))
-                              .WithInitialState(idle->GetID())
-                              .Build(context);
+				return builder.WithState(init)
+							  .WithState(gameLoop)
+							  .WithState(dead)
+							  .WithState(victory)
+							  .WithState(gameOver)
+							  .WithState(restart)
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterGameLoop>(init, gameLoop))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterDead>(gameLoop, dead))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterVictory>(gameLoop, victory))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterRestart>(gameOver, restart))
+							  .WithInitialState(init->GetID())
+							  .Build(context);
 			}
 		default:
 			checkf(false, TEXT("States Machine type %d not defined"), type);
 			return {};
 		}	
-	}*/
+	}
 }

@@ -17,6 +17,6 @@ namespace BRModeFSM
 		bool CanPerformTransition() const override;
 
 	private:
-		IIGameState* mGameState;
+		const IIGameState* mGameState;
 	};
 };

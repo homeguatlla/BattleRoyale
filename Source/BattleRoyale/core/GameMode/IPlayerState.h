@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
+#include "PlayerState/FSM/States/PlayerStateStates.h"
 #include "IPlayerState.generated.h"
 
+class IICharacter;
 // This class does not need to be modified.
 UINTERFACE(Blueprintable, meta = (CannotImplementInterfaceInBlueprint))
 class UIPlayerState : public UAbilitySystemInterface
@@ -32,8 +34,31 @@ public:
 
 	virtual void AddKill() = 0;
 	virtual int GetNumKills() const = 0;
+
+	virtual void OnGameStarted() = 0;
+
+	virtual void ShowStatsScreen() const = 0;
+	virtual void HideStatsScreen() const = 0;
+	
+	virtual void ShowVictoryScreen() const = 0;
+	virtual void ShowDeathScreen() const = 0;
+
+	virtual void Restart() = 0;
+	
+	//TODO estos métodos probablemente deberían estar en un player state más específico del battle royale
+	//o si el equipo ganador lo ponemos en un atributo de gas pues igual ya se podrá consultar de una manera
+	//más genérica.
+	virtual void SetAsWinner() = 0;
+	virtual bool DidPlayerWin() const = 0;
+
+	virtual void PlayerInteraction(const FString& action) = 0;
+	virtual FString GetPlayerInteraction() const = 0;
+	virtual void ResetPlayerInteraction() = 0;
+	
+	virtual IICharacter* GetCharacter() const = 0;
 	
 	virtual void NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const = 0;
-	virtual void NotifyNumKillsToSelf() const = 0;
-	virtual void NotifyAnnouncementOfWinner() const = 0;
+	virtual void NotifyNumKillsToSelf() = 0;
+	virtual void NotifyGameOverServer(bool hasMatchEnded, bool isWinner) = 0;
+	virtual void ForceFSMStateClient(BRPlayerStateFSM::PlayerStateState state) = 0;
 };

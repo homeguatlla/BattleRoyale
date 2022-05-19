@@ -37,11 +37,13 @@ void AMenuHUD::BindToDelegate()
 	{
 		const auto eventDispatcher = gameInstance->GetEventDispatcher();
 		eventDispatcher->OnGameStarted.AddDynamic(this, &AMenuHUD::OnGameStarted);
+		eventDispatcher->OnGameOver.AddDynamic(this, &AMenuHUD::OnGameOver);
 		
 		eventDispatcher->OnRefreshCountDown.AddDynamic(this, &AMenuHUD::OnRefreshCountDown);
 		eventDispatcher->OnFinishCountDown.AddDynamic(this, &AMenuHUD::OnFinishCountDown);
 
 		eventDispatcher->OnShowStatsScreen.AddDynamic(this, &AMenuHUD::OnShowStatsScreen);
+		eventDispatcher->OnHideStatsScreen.AddDynamic(this, &AMenuHUD::OnHideStatsScreen);
 	}
 }
 
@@ -50,6 +52,14 @@ void AMenuHUD::OnGameStarted()
 	if (mHUDWidget->GetClass()->ImplementsInterface(UGameHUD::StaticClass()))
 	{
 		IGameHUD::Execute_OnGameStarted(mHUDWidget);
+	}
+}
+
+void AMenuHUD::OnGameOver()
+{
+	if (mHUDWidget->GetClass()->ImplementsInterface(UGameHUD::StaticClass()))
+	{
+		IGameHUD::Execute_OnGameOver(mHUDWidget);
 	}
 }
 
@@ -74,5 +84,13 @@ void AMenuHUD::OnShowStatsScreen(const FPlayerStatsData& playerStatsData)
 	if(mHUDWidget->GetClass()->ImplementsInterface(UStatsMenuHUD::StaticClass()))
 	{
 		IStatsMenuHUD::Execute_OnShowStatsScreen(mHUDWidget, playerStatsData);
+	}
+}
+
+void AMenuHUD::OnHideStatsScreen()
+{
+	if(mHUDWidget->GetClass()->ImplementsInterface(UStatsMenuHUD::StaticClass()))
+	{
+		IStatsMenuHUD::Execute_OnHideStatsScreen(mHUDWidget);
 	}
 }

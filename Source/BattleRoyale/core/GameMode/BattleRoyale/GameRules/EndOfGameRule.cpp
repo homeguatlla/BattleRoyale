@@ -2,11 +2,13 @@
 
 
 #include "EndOfGameRule.h"
+
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 
-void EndOfGameRule::Initialize(IIGameState* gameState)
+void EndOfGameRule::Initialize(UWorld* world, IIGameState* gameState)
 {
+	mWorld = world;
 	mGameState = gameState;
 }
 
@@ -21,8 +23,7 @@ bool EndOfGameRule::Execute(std::vector<std::shared_ptr<IGameRule>>& rules) cons
 
 	rules.clear();
 	
-	//TODO Maybe notify the winner and the end of game to the other players alive
-	mGameState->NotifyAnnouncementOfWinner();
+	mGameState->MatchEndServer();
 	
 	return true;
 }

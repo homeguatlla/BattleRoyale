@@ -21,19 +21,24 @@ public:
 	
 	virtual bool AreAllPlayersReplicated() const override;
 
-	virtual void StartGameServer() override;
+	virtual void StartGameServer() override;	
 	virtual bool HasGameStarted() const override;
 	virtual bool IsGameReadyToStart() const override;
+	virtual bool HasMatchEnded() const override;
 	
 	virtual int GetNumPlayers() const override { return PlayerArray.Num(); }
 	virtual int GetNumTeams() const override;
 	
-	virtual void PerformActionForEachPlayerState(std::function<bool(const IIPlayerState* playerState)> action) const override;
+	virtual void PerformActionForEachPlayerState(std::function<bool(IIPlayerState* playerState)> action) const override;
 
 	virtual void SetWinnerTeam(int teamId) override { mWinnerTeamId = teamId; }
 	virtual int GetWinnerTeam() const override { return mWinnerTeamId; }
-	virtual void NotifyAnnouncementOfWinner() const override;
-
+	virtual void MatchEndServer() override;
+	virtual void CloseAllPlayersGameSessionServer() const override;
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void PlayerInteraction(const APlayerController* playerController, const FString& action) override;
+	
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void AddStatesMachineServer(
 		StatesMachineController<BRModeFSM::BattleRoyaleState, BRModeFSM::BattleRoyaleContext>& fsmController,
@@ -43,7 +48,8 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
-	
+	void NotifyMatchEndedServer() const;
+
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastGameStarted();
 	

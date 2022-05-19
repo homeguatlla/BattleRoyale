@@ -3,7 +3,6 @@
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/BattleRoyaleContext.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/GameRules/CheckThereIsOnlyOneTeamAliveRule.h"
 
-
 namespace BRModeFSM
 {
 	GameLoop::GameLoop()
@@ -18,6 +17,7 @@ namespace BRModeFSM
 	void GameLoop::OnEnter(float deltaTime)
 	{
 		InitializeGameRules();
+		mGameState->StartGameServer();
 	}
 
 	void GameLoop::OnUpdate(float deltaTime)
@@ -30,7 +30,7 @@ namespace BRModeFSM
 		mGameRules.Reset();
 		
 		const auto checkThereIsOnlyOneTeamAliveRule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
-		checkThereIsOnlyOneTeamAliveRule->Initialize(mGameState);
+		checkThereIsOnlyOneTeamAliveRule->Initialize(GetContext()->GetWorld(), mGameState);
 
 		mGameRules.AddRule(checkThereIsOnlyOneTeamAliveRule);
 	}

@@ -27,11 +27,15 @@ private:
 	UFUNCTION()
 	void OnGameStarted();
 	UFUNCTION()
+	void OnGameOver();
+	UFUNCTION()
 	void OnRefreshCountDown(uint8 counter);
 	UFUNCTION()
 	void OnFinishCountDown();
 	UFUNCTION()
 	void OnShowStatsScreen(const FPlayerStatsData& playerStatsData);
+	UFUNCTION()
+	void OnHideStatsScreen();
 	
 public:
 	UPROPERTY()
