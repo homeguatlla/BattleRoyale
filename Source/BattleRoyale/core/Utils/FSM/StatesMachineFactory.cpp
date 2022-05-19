@@ -25,7 +25,6 @@
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerDead.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerGameOver.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerVictory.h"
-#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerRestart.h"
 
 //FSM PlayerState Transitions
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterDead.h"
