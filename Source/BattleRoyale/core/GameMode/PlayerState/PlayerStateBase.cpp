@@ -5,15 +5,21 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "OnlineSubsystem.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
+#include "BattleRoyale/core/GameMode/MultiplayerGameMode.h"
 #include "BattleRoyale/core/Utils/FSM/StatesMachineFactory.h"
+#include "Interfaces/OnlineGameMatchesInterface.h"
+#include "Interfaces/OnlineSessionInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 
 APlayerStateBase::APlayerStateBase() :
 mTeamId(0),
 mNumKills(0),
-mDidWin(false)
+mDidWin(false),
+mPlayerInteraction("")
 {
 	mAbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponentBase>(TEXT("AbilitySystemComponent"));
 	mAbilitySystemComponent->SetIsReplicated(true);
@@ -59,6 +65,21 @@ bool APlayerStateBase::DidPlayerWin() const
 	return mDidWin;
 }
 
+void APlayerStateBase::PlayerInteraction(const FString& action)
+{
+	mPlayerInteraction = action;
+}
+
+FString APlayerStateBase::GetPlayerInteraction() const
+{
+	return mPlayerInteraction;
+}
+
+void APlayerStateBase::ResetPlayerInteraction()
+{
+	mPlayerInteraction.Empty();
+}
+
 void APlayerStateBase::NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const
 {
 	MulticastAnnouncementOfNewDeath(killerName, victimName);
@@ -69,11 +90,16 @@ void APlayerStateBase::NotifyNumKillsToSelf()
 	ClientRefreshNumKills(GetNumKills());
 }
 
-void APlayerStateBase::NotifyGameOver(bool isWinner)
+void APlayerStateBase::NotifyGameOverServer(bool hasMatchEnded, bool isWinner)
 {
 	if(isWinner)
 	{
 		SetAsWinner();
+	}
+	
+	if(hasMatchEnded)
+	{
+		//TODO enter spectator mode	
 	}
 	ClientNotifyGameOver(isWinner);
 }
@@ -128,9 +154,42 @@ void APlayerStateBase::ShowStatsScreen() const
 	GetEventDispatcher()->OnShowStatsScreen.Broadcast(data);
 }
 
+void APlayerStateBase::HideStatsScreen() const
+{
+	if(!GetPawn()->IsLocallyControlled())
+	{
+		return;
+	}
+	GetEventDispatcher()->OnHideStatsScreen.Broadcast();
+}
+
+void APlayerStateBase::DestroyGameSession()
+{
+	IOnlineSubsystem* onlineSub = IOnlineSubsystem::Get();
+	onlineSub->GetSessionInterface()->DestroySession(NAME_GameSession);
+}
+
+void APlayerStateBase::Restart()
+{
+	//TODO esto no me gusta. Tendría que estar quizá en el gameinstance
+	//además que la ruta del mapa está hardcodeada. No creo que se pueda obtener del gamemode.
+	//Hay que poner esta información en un dataasset de configuración de gamemode??
+	DestroyGameSession();
+	UGameplayStatics::OpenLevel(this, FName("/Game/Maps/MainMenu"), true);
+}
+
 void APlayerStateBase::ForceFSMStateClient(BRPlayerStateFSM::PlayerStateState state)
 {
 	ClientForceFSMState(static_cast<int>(state));
+}
+
+void APlayerStateBase::BeginDestroy()
+{
+	if(!HasAuthority())
+	{
+		DestroyGameSession();
+	}
+	Super::BeginDestroy();
 }
 
 void APlayerStateBase::ClientRefreshNumKills_Implementation(int numKills)
@@ -163,6 +222,18 @@ void APlayerStateBase::CreateStatesMachine()
 	
 	mStatesMachineController.AddMachine(
 		std::move(factory.CreatePlayerStateFSM(fsmType, mPlayerStateFSMContext)));
+}
+
+APlayerController* APlayerStateBase::GetPlayerController() const
+{
+	if(GetPawn())
+	{
+		if(auto controller = GetPawn()->GetController())
+		{
+			return Cast<APlayerController>(controller);
+		}
+	}
+	return nullptr;
 }
 
 UEventDispatcher* APlayerStateBase::GetEventDispatcher() const

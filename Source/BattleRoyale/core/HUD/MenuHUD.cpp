@@ -43,6 +43,7 @@ void AMenuHUD::BindToDelegate()
 		eventDispatcher->OnFinishCountDown.AddDynamic(this, &AMenuHUD::OnFinishCountDown);
 
 		eventDispatcher->OnShowStatsScreen.AddDynamic(this, &AMenuHUD::OnShowStatsScreen);
+		eventDispatcher->OnHideStatsScreen.AddDynamic(this, &AMenuHUD::OnHideStatsScreen);
 	}
 }
 
@@ -83,5 +84,13 @@ void AMenuHUD::OnShowStatsScreen(const FPlayerStatsData& playerStatsData)
 	if(mHUDWidget->GetClass()->ImplementsInterface(UStatsMenuHUD::StaticClass()))
 	{
 		IStatsMenuHUD::Execute_OnShowStatsScreen(mHUDWidget, playerStatsData);
+	}
+}
+
+void AMenuHUD::OnHideStatsScreen()
+{
+	if(mHUDWidget->GetClass()->ImplementsInterface(UStatsMenuHUD::StaticClass()))
+	{
+		IStatsMenuHUD::Execute_OnHideStatsScreen(mHUDWidget);
 	}
 }

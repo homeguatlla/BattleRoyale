@@ -34,25 +34,22 @@ public:
 	virtual void SetWinnerTeam(int teamId) override { mWinnerTeamId = teamId; }
 	virtual int GetWinnerTeam() const override { return mWinnerTeamId; }
 	virtual void MatchEndServer() override;
-
-	virtual float GetDurationInDeadState() const override { return DurationInDeadState; }
+	virtual void CloseAllPlayersGameSessionServer() const override;
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void PlayerInteraction(const APlayerController* playerController, const FString& action) override;
 	
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void AddStatesMachineServer(
 		StatesMachineController<BRModeFSM::BattleRoyaleState, BRModeFSM::BattleRoyaleContext>& fsmController,
 		std::shared_ptr<BRModeFSM::BattleRoyaleContext>& fsmContext) {};
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gameplay")
-	float DurationInDeadState = 5;
 	
 protected:
 	virtual void BeginPlay() override;
 	
 private:
+	void NotifyMatchEndedServer() const;
 
-	void NotifyGameOver() const;
-	void EndMatchServer();
-	
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastGameStarted();
 	

@@ -23,7 +23,6 @@ bool EndOfGameRule::Execute(std::vector<std::shared_ptr<IGameRule>>& rules) cons
 
 	rules.clear();
 	
-	//TODO Maybe notify the winner and the end of game to the other players alive
 	mGameState->MatchEndServer();
 	
 	return true;

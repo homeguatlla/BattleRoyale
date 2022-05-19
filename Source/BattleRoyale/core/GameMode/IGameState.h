@@ -39,6 +39,8 @@ public:
 	virtual void SetWinnerTeam(int teamId) = 0;
 	virtual int GetWinnerTeam() const = 0;
 	virtual void MatchEndServer() = 0;
+	virtual void CloseAllPlayersGameSessionServer() const = 0;
 	
-	virtual float GetDurationInDeadState() const = 0;
+	UFUNCTION(BlueprintCallable)
+	virtual void PlayerInteraction(const APlayerController* playerController, const FString& action) = 0;
 };

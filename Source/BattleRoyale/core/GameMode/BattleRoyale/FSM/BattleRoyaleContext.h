@@ -14,7 +14,7 @@ namespace BRModeFSM
 		const IIGameMode* GetGameMode() const { return mGameMode; }
 		IIGameState* GetGameState() const { return mGameState; }
 		float GetCountdownTimeToStartGame() const { return mCountdownTimeToStartGame; }
-		
+
 	private:		
 		const IIGameMode* mGameMode;
 		IIGameState* mGameState;

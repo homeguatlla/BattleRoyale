@@ -34,6 +34,8 @@ private:
 	void OnFinishCountDown();
 	UFUNCTION()
 	void OnShowStatsScreen(const FPlayerStatsData& playerStatsData);
+	UFUNCTION()
+	void OnHideStatsScreen();
 	
 public:
 	UPROPERTY()

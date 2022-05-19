@@ -1,6 +1,7 @@
 
 #include "ClientGameOver.h"
 
+#include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/PlayerStateContext.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 

@@ -29,6 +29,18 @@ void AMultiplayerGameState::BeginPlay()
 	}
 }
 
+void AMultiplayerGameState::PlayerInteraction(const APlayerController* playerController, const FString& action)
+{
+	if(playerController != nullptr)
+	{
+		const auto playerState = playerController->GetPlayerState<IIPlayerState>();
+		if(playerState != nullptr)
+		{
+			playerState->PlayerInteraction(action);
+		}
+	}
+}
+
 void AMultiplayerGameState::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -61,8 +73,19 @@ void AMultiplayerGameState::StartGameServer()
 
 void AMultiplayerGameState::MatchEndServer()
 {
-	EndMatchServer();	
-	NotifyGameOver();
+	//Setting unreal state
+	SetMatchState(MatchState::WaitingPostMatch);
+	NotifyMatchEndedServer();
+}
+
+void AMultiplayerGameState::CloseAllPlayersGameSessionServer() const
+{
+	PerformActionForEachPlayerState(
+		[](IIPlayerState* playerState) -> bool
+		{
+			playerState->Restart();
+			return false;
+		});	
 }
 
 bool AMultiplayerGameState::HasGameStarted() const
@@ -94,11 +117,6 @@ int AMultiplayerGameState::GetNumTeams() const
 	return teams.size();
 }
 
-void AMultiplayerGameState::EndMatchServer()
-{
-	SetMatchState(MatchState::WaitingPostMatch);
-}
-
 void AMultiplayerGameState::PerformActionForEachPlayerState(
 	std::function<bool(IIPlayerState* playerState)> action) const
 {
@@ -113,12 +131,12 @@ void AMultiplayerGameState::PerformActionForEachPlayerState(
 	}
 }
 
-void AMultiplayerGameState::NotifyGameOver() const
+void AMultiplayerGameState::NotifyMatchEndedServer() const
 {
 	PerformActionForEachPlayerState(
 		[&](IIPlayerState* playerState) -> bool
 		{
-			playerState->NotifyGameOver(playerState->GetTeamId() == GetWinnerTeam());
+			playerState->NotifyGameOverServer(true, playerState->GetTeamId() == GetWinnerTeam());
 			return false;
 		});
 }

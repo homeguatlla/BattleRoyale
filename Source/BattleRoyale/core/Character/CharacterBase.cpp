@@ -145,8 +145,6 @@ void ACharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	// Bind fire event
 	//PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ACharacterBase::OnFire);
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ACharacterBase::OnResetVR);
-	PlayerInputComponent->BindAction("AnyKey", IE_Pressed, this, &ACharacterBase::OnAnyKeyPressed);
-	PlayerInputComponent->BindAction("AnyKey", IE_Released, this, &ACharacterBase::OnAnyKeyReleased);
 	
 	// Bind movement events
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACharacterBase::MoveForward);
@@ -229,6 +227,21 @@ void ACharacterBase::StartSprinting()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	BP_OnStartSprinting(600.0f);
+}
+
+void ACharacterBase::SetEnableInput(bool enable, const FInputModeDataBase& inputMode)
+{
+	const auto playerController = Cast<APlayerController>(GetController());
+	playerController->SetInputMode(inputMode);
+	
+	if(enable)
+	{
+		EnableInput(playerController);
+	}
+	else
+	{
+		DisableInput(playerController);
+	}
 }
 
 void ACharacterBase::StopSprinting()

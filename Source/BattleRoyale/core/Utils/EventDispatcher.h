@@ -19,6 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAnnouncePlayerWon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFinishCountDown);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRefreshCountDown, uint8, counter);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowStatsScreen, const FPlayerStatsData&, statsData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHideStatsScreen);
 
 UCLASS(Blueprintable)
 class BATTLEROYALE_API UEventDispatcher : public UObject
@@ -64,4 +65,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="Menu")
 	FOnShowStatsScreen OnShowStatsScreen;
+
+	UPROPERTY(BlueprintAssignable, Category="Menu")
+	FOnHideStatsScreen OnHideStatsScreen;
 };

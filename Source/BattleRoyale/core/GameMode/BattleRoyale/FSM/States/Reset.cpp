@@ -1,5 +1,7 @@
+
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Reset.h"
 
+#include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/BattleRoyaleContext.h"
 
 namespace BRModeFSM
@@ -10,14 +12,11 @@ namespace BRModeFSM
 
 	void Reset::OnInit()
 	{
-		mGameMode = GetContext()->GetGameMode();
+		mGameState = GetContext()->GetGameState();
 	}
 
 	void Reset::OnEnter(float deltaTime)
 	{
-		if(mGameMode->HasCurrentGameSession())
-		{
-			mGameMode->DestroyGameSession();
-		}
+		mGameState->CloseAllPlayersGameSessionServer();
 	}
 };

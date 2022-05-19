@@ -63,8 +63,6 @@ IIGameState* AGameModeCommon::GetGameState() const
 
 void AGameModeCommon::OnNewKill(const APlayerController* killerController, const APlayerController* victimController)
 {
-	//TODO refactorizar y poner dos métodos.
-	
 	const auto playerStateKiller = killerController->GetPlayerState<APlayerStateBase>();
 	if(playerStateKiller && playerStateKiller->Implements<UIPlayerState>())
 	{
@@ -72,12 +70,12 @@ void AGameModeCommon::OnNewKill(const APlayerController* killerController, const
 		playerStateKiller->NotifyNumKillsToSelf();
 		NotifyNewKillToAll(victimController, playerStateKiller);
 	}
-/*
+
 	const auto playerStateVictim = victimController->GetPlayerState<APlayerStateBase>();
 	if(playerStateVictim && playerStateVictim->Implements<UIPlayerState>())
 	{
-		playerStateVictim->NotifyGameOver();
-	}*/
+		playerStateVictim->NotifyGameOverServer(false, false);
+	}
 }
 
 bool AGameModeCommon::CanPlayerCauseDamageTo(const APlayerController* killerController,

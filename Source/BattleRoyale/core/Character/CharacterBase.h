@@ -98,6 +98,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void StartSprinting() override;
+
+	virtual void SetEnableInput(bool enable, const FInputModeDataBase& inputMode = FInputModeGameAndUI()) override;
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnStartSprinting))
 	void BP_OnStartSprinting(float maxSpeed);
@@ -125,9 +127,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void StopJumping_() override;
-
-	UFUNCTION(BlueprintCallable)
-	virtual bool AnyKeyPressed() const override { return mAnyKeyPressed; }
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool CanShoot() const override;

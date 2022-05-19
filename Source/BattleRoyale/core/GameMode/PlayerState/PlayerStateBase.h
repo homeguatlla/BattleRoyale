@@ -39,19 +39,28 @@ public:
 
 	virtual void SetAsWinner() override;
 	virtual bool DidPlayerWin() const override;
+
+	virtual void PlayerInteraction(const FString& action) override;
+	virtual FString GetPlayerInteraction() const override;
+	virtual void ResetPlayerInteraction() override;
+	
+	virtual IICharacter* GetCharacter() const override;
 	
 	virtual void NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const override;
 	virtual void NotifyNumKillsToSelf() override;
-	virtual void NotifyGameOver(bool isWinner) override;
-
+	virtual void NotifyGameOverServer(bool hasMatchEnded, bool isWinner) override;
 	
 	virtual void OnGameStarted() override;
 	virtual void ShowStatsScreen() const override;
+	virtual void HideStatsScreen() const override;
+	
 	virtual void ShowVictoryScreen() const override;
 	virtual void ShowDeathScreen() const override;
-	
+
+	virtual void Restart() override;
 	virtual void ForceFSMStateClient(BRPlayerStateFSM::PlayerStateState state) override;
-	
+
+	virtual void BeginDestroy() override;
 private:
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastAnnouncementOfNewDeath(const FString& killerName, const FString& victimName) const;
@@ -64,10 +73,13 @@ private:
 
 	UFUNCTION(Client, Reliable)
 	void ClientForceFSMState(int state);
-	
+
 	void CreateStatesMachine();
+	void DestroyGameSession();
+	
+	APlayerController* GetPlayerController() const;
 	UEventDispatcher* GetEventDispatcher() const;
-	IICharacter* GetCharacter() const;
+	
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AbilitySystemComponent, meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemComponentBase* mAbilitySystemComponent;
@@ -79,4 +91,6 @@ private:
 	//States machine to control the player state
 	StatesMachineController<BRPlayerStateFSM::PlayerStateState, BRPlayerStateFSM::PlayerStateContext> mStatesMachineController;
 	std::shared_ptr<BRPlayerStateFSM::PlayerStateContext> mPlayerStateFSMContext;
+	
+	FString mPlayerInteraction;
 };

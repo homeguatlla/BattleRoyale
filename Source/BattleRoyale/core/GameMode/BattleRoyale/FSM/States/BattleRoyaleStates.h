@@ -11,7 +11,7 @@ namespace BRModeFSM
 		STATE_SYNCHRONIZE = 2,
 		STATE_GAMELOOP = 3,
 		STATE_MATCHEND = 4,
-		STATE_RESET = 5
+		STATE_RESTART = 5
 	};
 
 	static std::map<BattleRoyaleState, std::string> BattleRoyaleStateMap =
@@ -21,6 +21,6 @@ namespace BRModeFSM
 		{ BattleRoyaleState::STATE_SYNCHRONIZE, std::string("Synchronize") },
 		{ BattleRoyaleState::STATE_GAMELOOP, std::string("GameLoop") },
 		{ BattleRoyaleState::STATE_MATCHEND, std::string("MatchEnd") },
-		{ BattleRoyaleState::STATE_RESET, std::string("Reset") }
+		{ BattleRoyaleState::STATE_RESTART, std::string("Restart") }
 	};
 };

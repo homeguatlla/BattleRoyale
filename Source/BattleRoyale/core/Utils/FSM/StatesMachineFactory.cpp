@@ -2,34 +2,40 @@
 
 //FSM BattleRoyale States
 #include <BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Init.h>
-
-//FSM BattleRoyale Transitions
-#include <BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterCountdown.h>
-
-#include "StatesMachineBuilder.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Countdown.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/GameLoop.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/MatchEnd.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Reset.h"
+
+//FSM BattleRoyale Transitions
+#include <BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterCountdown.h>
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/Synchronize.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterGameLoop.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterMatchEnd.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterReset.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterSynchronize.h"
+
+//FSM PlayerState States
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/GameLoop.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Init.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientRestart.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientDead.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientGameOver.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientVictory.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerDead.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerGameOver.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerVictory.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerRestart.h"
+
+//FSM PlayerState Transitions
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterDead.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterGameLoop.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterRestart.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/EnterVictory.h"
-#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/Client/ClientEnterInit.h"
-#include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/Server/ServerEnterInit.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/Server/ServerEnterGameOver.h"
+
+#include "StatesMachineBuilder.h"
+
 
 namespace BattleRoyale
 {
@@ -96,7 +102,6 @@ namespace BattleRoyale
 							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterVictory>(gameLoop, victory))
 							  .WithTransition(std::make_unique<BRPlayerStateFSM::ServerEnterGameOver>(dead, gameOver))
 							  .WithTransition(std::make_unique<BRPlayerStateFSM::ServerEnterGameOver>(victory, gameOver))
-							  .WithTransition(std::make_unique<BRPlayerStateFSM::ServerEnterInit>(gameOver, init))
 							  .WithInitialState(init->GetID())
 							  .Build(context);
 			}
@@ -107,16 +112,18 @@ namespace BattleRoyale
 				const auto dead = std::make_shared<BRPlayerStateFSM::ClientDead>();
 				const auto victory = std::make_shared<BRPlayerStateFSM::ClientVictory>();
 				const auto gameOver = std::make_shared<BRPlayerStateFSM::ClientGameOver>();
-					
+				const auto restart = std::make_shared<BRPlayerStateFSM::ClientRestart>();
+				
 				return builder.WithState(init)
 							  .WithState(gameLoop)
 							  .WithState(dead)
 							  .WithState(victory)
 							  .WithState(gameOver)
+							  .WithState(restart)
 							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterGameLoop>(init, gameLoop))
 							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterDead>(gameLoop, dead))
 							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterVictory>(gameLoop, victory))
-							  .WithTransition(std::make_unique<BRPlayerStateFSM::ClientEnterInit>(gameOver, init))
+							  .WithTransition(std::make_unique<BRPlayerStateFSM::EnterRestart>(gameOver, restart))
 							  .WithInitialState(init->GetID())
 							  .Build(context);
 			}
