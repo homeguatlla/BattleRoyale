@@ -2,6 +2,7 @@
 
 #pragma once
 #include "CoreMinimal.h"
+#include "BattleRoyale/core/GameMode/Configuration/MultiplayerConfigurationInfo.h"
 
 #include "GameFramework/GameSession.h"
 #include "Interfaces/OnlineSessionInterface.h"
@@ -20,7 +21,8 @@ public:
 	
 	void BeginPlay() override;
 	void BeginDestroy() override;
-	
+
+	void Initialize(const UMultiplayerConfigurationInfo* configuration);
 	void CreateSession(bool isLan, uint8 maxNumPlayers, const FString& defaultPlayerName);
 	void FindSessions();
 	bool JoinSession(const FString& sessionId);
@@ -44,7 +46,6 @@ private:
 	APlayerController* GetPlayerControllerFromUserId(const FUniqueNetId& userId) const;
 
 	AMultiplayerGameMode* GetGameMode() const;
-	FName GetValidMapName(const FName& mapName) const;
 	
 	void OnCreateSessionComplete(FName sessionName, bool wasSuccessful) const;
 	void OnDestroySessionComplete(FName sessionName, bool wasSuccessful) const;
@@ -64,4 +65,7 @@ private:
 	TSharedPtr<class FOnlineSessionSearch> m_Sessions;
 	bool m_IsLAN;
 	FString m_DefaultPlayerName;
+	
+	UPROPERTY()
+	const UMultiplayerConfigurationInfo* mConfigurationInfo;
 };

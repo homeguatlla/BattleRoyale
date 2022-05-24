@@ -3,6 +3,7 @@
 #include "MultiplayerGameMode.h"
 #include "OnlineSessionSettings.h"
 #include "BattleRoyale/core/GameMode/GameSession/MultiplayerGameSession.h"
+#include "Configuration/GameModeConfigurationInfo.h"
 #include "GameFramework/PlayerState.h"
 
 AMultiplayerGameMode::AMultiplayerGameMode() : m_PlayerStartIndex{0}, m_PlayersAlreadySync {0}
@@ -40,7 +41,10 @@ void AMultiplayerGameMode::Logout(AController* Exiting)
 
 void AMultiplayerGameMode::CreateSession(bool isLAN)
 {
-	GetGameSession()->CreateSession(isLAN, MaxNumPlayers, DefaultPlayerName.ToString());
+	GetGameSession()->CreateSession(
+		isLAN,
+		mConfigurationInfo->GetMaxNumPlayers(),
+		DefaultPlayerName.ToString());
 }
 
 void AMultiplayerGameMode::DestroySessionAndLeaveGame()
@@ -99,12 +103,22 @@ uint8 AMultiplayerGameMode::GetFindSessionsStatus() const
 
 bool AMultiplayerGameMode::HasLobbyMap() const
 {
-	return !LobbyMapName.IsNone();
+	return !mConfigurationInfo->GetLobbyMapName().IsNone();
 }
 
 void AMultiplayerGameMode::StartGame()
 {
 	GetGameSession()->StartGame();
+}
+
+void AMultiplayerGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	if(mConfigurationInfo)
+	{
+		GetGameSession()->Initialize(mConfigurationInfo);
+	}
 }
 
 void AMultiplayerGameMode::NotifyAllSyncReady()

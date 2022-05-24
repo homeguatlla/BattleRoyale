@@ -38,11 +38,14 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void PlayerInteraction(const APlayerController* playerController, const FString& action) override;
+	virtual void NotifyGameModeConfigurationInfo(const UGameModeConfigurationInfo* configurationInfo) override;
+	
 	
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void AddStatesMachineServer(
 		StatesMachineController<BRModeFSM::BattleRoyaleState, BRModeFSM::BattleRoyaleContext>& fsmController,
 		std::shared_ptr<BRModeFSM::BattleRoyaleContext>& fsmContext) {};
+
 	
 protected:
 	virtual void BeginPlay() override;
@@ -52,6 +55,10 @@ private:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastGameStarted();
+
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void MulticastGameModeConfigurationInfo(const UGameModeConfigurationInfo* configurationInfo);
+	
 	
 	int mWinnerTeamId;
 	

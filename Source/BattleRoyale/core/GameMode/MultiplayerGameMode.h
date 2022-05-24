@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "EngineUtils.h"
+#include "Configuration/MultiplayerConfigurationInfo.h"
+
 #include "SessionsOnlineSubsystem/IOnlineGameSession.h"
 #include "GameFramework/GameMode.h"
 #include "MultiplayerGameMode.generated.h"
 
+class UGameModeConfigurationInfo;
 class AMultiplayerGameSession;
 class APlayerStart;
 class AMSGameSession;
@@ -55,21 +58,13 @@ public:
     bool HasLobbyMap() const override;
 	UFUNCTION(BlueprintCallable, Category="Game")
     void StartGame() override;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMultiplayerConfigurationInfo* mConfigurationInfo;
 
-	FString GetGameMapName() const { return GameMapName.ToString(); }
+protected:
+	virtual void BeginPlay() override;
 	
-	/** Max number of players allowed to play in a multiplayer game together */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Multiplayer")
-	uint8 MaxNumPlayers = 4;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Travelling")
-	FName LobbyMapName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Travelling")
-	FName MainMapName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Travelling")
-	FName GameMapName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Travelling")
-	FString MapsPath;
 private:
 	void NotifyAllSyncReady();
 	void CheckIfNotifyAllSync(AController* Exiting);

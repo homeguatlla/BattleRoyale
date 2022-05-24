@@ -10,12 +10,14 @@ namespace BRPlayerStateFSM
 	void ServerDead::OnInit()
 	{
 		mCharacter = GetContext()->GetCharacter();
+		mPlayerState = GetContext()->GetPlayerState();
 	}
 	
 	void ServerDead::OnEnter(float deltaTime)
 	{
 		mCharacter->DieServer();
-		GetContext()->GetPlayerState()->ShowDeathScreen();
-		GetContext()->StartTimer(5);
+		mPlayerState->ShowDeathScreen();
+		
+		GetContext()->StartTimer(mPlayerState->GetTimeBetweenEndOfGameAndStatsScreen());
 	}
 };

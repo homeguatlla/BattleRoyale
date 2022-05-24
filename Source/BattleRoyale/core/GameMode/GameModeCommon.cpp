@@ -4,6 +4,7 @@
 #include "GameModeCommon.h"
 
 #include "IGameState.h"
+#include "OnlineSubsystem.h"
 #include "BattleRoyale/core/PlayerController/IPlayerController.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameSession/MultiplayerGameSession.h"
@@ -87,14 +88,15 @@ bool AGameModeCommon::CanPlayerCauseDamageTo(const APlayerController* killerCont
 	return killerPlayerState->GetTeamId() != victimPlayerState->GetTeamId();
 }
 
-void AGameModeCommon::DestroyGameSession() const
-{
-	GetGameSession()->DestroySessionAndLeaveGame();
-}
-
 bool AGameModeCommon::HasCurrentGameSession() const
 {
 	return Cast<AMultiplayerGameMode>(this)->HasCurrentSession();
+}
+
+void AGameModeCommon::DestroyGameSession()
+{
+	const auto onlineSub = IOnlineSubsystem::Get();
+	onlineSub->GetSessionInterface()->DestroySession(NAME_GameSession);
 }
 
 void AGameModeCommon::NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* const playerStateKiller) const

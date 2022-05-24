@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/PlayerStateStates.h"
 #include "BattleRoyale/core/Utils/FSM/fsm/BaseState.h"
 
@@ -19,5 +20,8 @@ namespace BRPlayerStateFSM
 		
 		virtual void OnInit() override;
 		virtual void OnEnter(float deltaTime) override;
+
+	private:
+		IIPlayerState* mPlayerState;
 	};
 };

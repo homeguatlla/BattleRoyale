@@ -11,6 +11,7 @@
 #include "IGameState.generated.h"
 
 
+class UGameModeConfigurationInfo;
 class UGameRules;
 
 // This class does not need to be modified.
@@ -43,4 +44,5 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void PlayerInteraction(const APlayerController* playerController, const FString& action) = 0;
+	virtual void NotifyGameModeConfigurationInfo(const UGameModeConfigurationInfo* configurationInfo) = 0;
 };

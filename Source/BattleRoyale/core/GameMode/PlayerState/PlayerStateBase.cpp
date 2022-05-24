@@ -8,6 +8,7 @@
 #include "OnlineSubsystem.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
+#include "BattleRoyale/core/GameMode/GameModeCommon.h"
 #include "BattleRoyale/core/GameMode/MultiplayerGameMode.h"
 #include "BattleRoyale/core/Utils/FSM/StatesMachineFactory.h"
 #include "Interfaces/OnlineGameMatchesInterface.h"
@@ -32,6 +33,11 @@ void APlayerStateBase::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	mStatesMachineController.Update(DeltaSeconds);
+}
+
+void APlayerStateBase::Initialize(const UGameModeConfigurationInfo* gameModeConfiguration)
+{
+	mGameModeConfiguration = gameModeConfiguration;
 }
 
 bool APlayerStateBase::IsAlive() const
@@ -163,19 +169,15 @@ void APlayerStateBase::HideStatsScreen() const
 	GetEventDispatcher()->OnHideStatsScreen.Broadcast();
 }
 
-void APlayerStateBase::DestroyGameSession()
-{
-	IOnlineSubsystem* onlineSub = IOnlineSubsystem::Get();
-	onlineSub->GetSessionInterface()->DestroySession(NAME_GameSession);
-}
-
 void APlayerStateBase::Restart()
 {
 	//TODO esto no me gusta. Tendría que estar quizá en el gameinstance
 	//además que la ruta del mapa está hardcodeada. No creo que se pueda obtener del gamemode.
 	//Hay que poner esta información en un dataasset de configuración de gamemode??
-	DestroyGameSession();
-	UGameplayStatics::OpenLevel(this, FName("/Game/Maps/MainMenu"), true);
+	AGameModeCommon::DestroyGameSession();
+	auto multiplayerConfiguration = mGameModeConfiguration->GetMultiplayerConfigurationInfo();
+	auto levelMap = multiplayerConfiguration->GetMapsPath().ToString() + multiplayerConfiguration->GetMainMapName().ToString();
+	UGameplayStatics::OpenLevel(this, FName(levelMap), true);
 }
 
 void APlayerStateBase::ForceFSMStateClient(BRPlayerStateFSM::PlayerStateState state)
@@ -187,7 +189,7 @@ void APlayerStateBase::BeginDestroy()
 {
 	if(!HasAuthority())
 	{
-		DestroyGameSession();
+		AGameModeCommon::DestroyGameSession();
 	}
 	Super::BeginDestroy();
 }

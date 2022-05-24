@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "IGameMode.generated.h"
 
+class UGameModeConfigurationInfo;
 class IIGameState;
 
 UINTERFACE(MinimalAPI)
@@ -24,9 +25,11 @@ public:
 	
 	virtual IIGameState* GetGameState() const = 0;
 
-	virtual void DestroyGameSession() const = 0;
 	virtual bool HasCurrentGameSession() const = 0;
+	
+	virtual float GetGameRulesUpdateIntervalTime() const = 0;
 	
 	virtual void OnNewKill(const APlayerController* killerController, const APlayerController* victimController) = 0;
 	virtual bool CanPlayerCauseDamageTo(const APlayerController* killerController, const APlayerController* victimController) = 0;
+	virtual const UGameModeConfigurationInfo* GetGameModeConfiguration() const = 0;
 };

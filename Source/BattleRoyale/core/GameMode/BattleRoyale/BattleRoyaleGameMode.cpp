@@ -28,6 +28,21 @@ void ABattleRoyaleGameMode::DoGenereicPlayerInitialization(AController* controll
 	ApplyTeamSelectionStrategy(controller);
 }
 
+float ABattleRoyaleGameMode::GetOnceMatchEndedTimeToResetSessionTime() const
+{
+	return GetConfigurationInfo()->GetOnceMatchEndedTimeToResetSessionTime();
+}
+
+uint8 ABattleRoyaleGameMode::GetNumPlayersPerTeam() const
+{
+	return GetConfigurationInfo()->GetNumPlayersPerTeam();
+}
+
+float ABattleRoyaleGameMode::GetCountdownTimeToStartGame() const
+{
+	return GetConfigurationInfo()->GetCountdownTimeToStartGame();
+}
+
 void ABattleRoyaleGameMode::ApplyTeamSelectionStrategy(const AController* controller) const
 {
 	if(mTeamSelectionStrategy != nullptr)
@@ -43,9 +58,14 @@ void ABattleRoyaleGameMode::ApplyTeamSelectionStrategy(const AController* contro
 	}
 }
 
+UBattleRoyaleConfigurationInfo* ABattleRoyaleGameMode::GetConfigurationInfo() const
+{
+	return Cast<UBattleRoyaleConfigurationInfo>(ConfigurationInfo);
+}
+
 void ABattleRoyaleGameMode::InitializeTeamSelectionStrategy()
 {
 	mTeamSelectionStrategy = NewObject<USimpleTeamSelectionStrategy>();
-	mTeamSelectionStrategy->Initialize(NumPlayersPerTeam);
+	mTeamSelectionStrategy->Initialize(GetNumPlayersPerTeam());
 }
 

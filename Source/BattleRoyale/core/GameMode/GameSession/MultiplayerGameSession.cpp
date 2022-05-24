@@ -3,6 +3,7 @@
 #include "OnlineSessionSettings.h"
 #include "BattleRoyale/core/GameMode/MultiplayerGameMode.h"
 #include "BattleRoyale/core/GameMode/SessionsOnlineSubsystem/SessionsOnlineSubsystem.h"
+#include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "Engine/LocalPlayer.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
@@ -23,6 +24,11 @@ void AMultiplayerGameSession::BeginDestroy()
 	Super::BeginDestroy();
 	
 	UnregisterOnlineSubsystemDelegates();
+}
+
+void AMultiplayerGameSession::Initialize(const UMultiplayerConfigurationInfo* configuration)
+{
+	mConfigurationInfo = configuration;
 }
 
 void AMultiplayerGameSession::CreateSession(bool isLan, uint8 maxNumPlayers, const FString& defaultPlayerName)
@@ -59,8 +65,8 @@ EOnlineAsyncTaskState::Type AMultiplayerGameSession::GetFindSessionsStatus() con
 void AMultiplayerGameSession::StartGame()
 {
 	const FString url =
-		GetGameMode()->MapsPath +
-		GetValidMapName(GetGameMode()->GameMapName).ToString() +
+		mConfigurationInfo->GetMapsPath().ToString() +
+		utils::UtilsLibrary::GetValidMapName(GetWorld(), mConfigurationInfo->GetGameMapName()).ToString() +
 		//"?game=/Game/ThirdPersonCPP/Blueprints/BP_MSGameMode.BP_MSGameMode_C" +
 		"?listen";
 		
@@ -79,7 +85,7 @@ void AMultiplayerGameSession::FindSessions()
 
 bool AMultiplayerGameSession::JoinSession(const FString& sessionId)
 {
-	ULocalPlayer* const player = GetLocalPlayer();
+	const auto player = GetLocalPlayer();
 
 	if(!sessionId.IsEmpty())
 	{
@@ -108,7 +114,12 @@ void AMultiplayerGameSession::OnCreateSessionComplete(FName sessionName, bool wa
 {		
 	if (wasSuccessful)
 	{
-		UGameplayStatics::OpenLevel(GetWorld(), GetValidMapName(GetGameMode()->LobbyMapName), true, "listen");
+		const auto map =utils::UtilsLibrary::GetValidMapName(GetWorld(), mConfigurationInfo->GetLobbyMapName());
+		UGameplayStatics::OpenLevel(
+			GetWorld(),
+			map,
+			true,
+			"listen");
 	}
 	else
 	{
@@ -120,7 +131,10 @@ void AMultiplayerGameSession::OnDestroySessionComplete(FName sessionName, bool w
 {
 	if (wasSuccessful)
 	{
-		UGameplayStatics::OpenLevel(GetWorld(), GetValidMapName(GetGameMode()->MainMapName), true);
+		UGameplayStatics::OpenLevel(
+			GetWorld(),
+			utils::UtilsLibrary::GetValidMapName(GetWorld(), mConfigurationInfo->GetMainMapName()),
+			true);
 	}
 	else
 	{
@@ -187,7 +201,10 @@ void AMultiplayerGameSession::OnEndSessionComplete(FName sessionName, bool wasSu
 {
 	if (wasSuccessful)
 	{
-		UGameplayStatics::OpenLevel(GetWorld(), GetValidMapName(GetGameMode()->MainMapName), true);
+		UGameplayStatics::OpenLevel(
+			GetWorld(),
+			utils::UtilsLibrary::GetValidMapName(GetWorld(), mConfigurationInfo->GetMainMapName()),
+			true);
 	}
 	else
 	{
@@ -205,20 +222,6 @@ AMultiplayerGameMode* AMultiplayerGameSession::GetGameMode() const
 bool AMultiplayerGameSession::IsLAN() const
 {
 	return m_IsLAN || m_OnlineSubsystem->GetSubsystemName() == "NULL";
-}
-
-
-FName AMultiplayerGameSession::GetValidMapName(const FName& mapName) const
-{
-	if(mapName.IsNone())
-	{
-		FString LevelName = GetWorld()->GetMapName();
-		LevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
-		
-		return *LevelName;
-	}
-	
-	return mapName;
 }
 
 ULocalPlayer* AMultiplayerGameSession::GetLocalPlayer() const

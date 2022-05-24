@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
+#include "Configuration/MultiplayerConfigurationInfo.h"
 #include "PlayerState/FSM/States/PlayerStateStates.h"
 #include "IPlayerState.generated.h"
 
+class UGameModeConfigurationInfo;
 class IICharacter;
 // This class does not need to be modified.
 UINTERFACE(Blueprintable, meta = (CannotImplementInterfaceInBlueprint))
@@ -23,6 +25,8 @@ class BATTLEROYALE_API IIPlayerState: public IAbilitySystemInterface
 	GENERATED_BODY()
 
 public:
+	virtual void Initialize(const UGameModeConfigurationInfo* gameModeConfiguration) = 0;
+	
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentInterface() const = 0;
 	virtual bool IsAlive() const = 0;
 	virtual bool IsPawnReplicated() const = 0;
@@ -54,6 +58,8 @@ public:
 	virtual void PlayerInteraction(const FString& action) = 0;
 	virtual FString GetPlayerInteraction() const = 0;
 	virtual void ResetPlayerInteraction() = 0;
+
+	virtual float GetTimeBetweenEndOfGameAndStatsScreen() const = 0;
 	
 	virtual IICharacter* GetCharacter() const = 0;
 	

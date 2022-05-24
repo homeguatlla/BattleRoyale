@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
+#include "BattleRoyale/core/GameMode/Configuration/GameModeConfigurationInfo.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/AbilitySystemComponentBase.h"
 #include "BattleRoyale/core/Utils/EventDispatcher.h"
 #include "BattleRoyale/core/Utils/FSM/StatesMachineController.h"
@@ -25,7 +26,8 @@ public:
 	
 	APlayerStateBase();
 	virtual void Tick(float DeltaSeconds) override;
-	
+
+	virtual void Initialize(const UGameModeConfigurationInfo* gameModeConfiguration) override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return mAbilitySystemComponent; }
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentInterface() const override { return Cast<IIAbilitySystemInterfaceBase>(mAbilitySystemComponent); }
 	virtual bool IsAlive() const override;
@@ -53,6 +55,8 @@ public:
 	virtual void OnGameStarted() override;
 	virtual void ShowStatsScreen() const override;
 	virtual void HideStatsScreen() const override;
+
+	virtual float GetTimeBetweenEndOfGameAndStatsScreen() const override { return mGameModeConfiguration->GetTimeBetweenEndOfGameAndStatsScreen(); }
 	
 	virtual void ShowVictoryScreen() const override;
 	virtual void ShowDeathScreen() const override;
@@ -75,11 +79,12 @@ private:
 	void ClientForceFSMState(int state);
 
 	void CreateStatesMachine();
-	void DestroyGameSession();
 	
 	APlayerController* GetPlayerController() const;
 	UEventDispatcher* GetEventDispatcher() const;
 	
+	UPROPERTY()
+	const UGameModeConfigurationInfo* mGameModeConfiguration;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AbilitySystemComponent, meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemComponentBase* mAbilitySystemComponent;

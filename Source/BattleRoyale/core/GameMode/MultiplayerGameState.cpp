@@ -41,6 +41,21 @@ void AMultiplayerGameState::PlayerInteraction(const APlayerController* playerCon
 	}
 }
 
+void AMultiplayerGameState::NotifyGameModeConfigurationInfo(const UGameModeConfigurationInfo* configurationInfo)
+{
+	MulticastGameModeConfigurationInfo(configurationInfo);
+}
+
+void AMultiplayerGameState::MulticastGameModeConfigurationInfo_Implementation(
+	const UGameModeConfigurationInfo* configurationInfo)
+{
+	PerformActionForEachPlayerState([&configurationInfo](IIPlayerState* playerState)
+		{
+			playerState->Initialize(configurationInfo);
+			return false;
+		});
+}
+
 void AMultiplayerGameState::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);

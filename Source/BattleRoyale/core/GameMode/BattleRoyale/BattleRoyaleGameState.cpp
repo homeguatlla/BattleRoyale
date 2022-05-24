@@ -72,7 +72,7 @@ void ABattleRoyaleGameState::AddStatesMachineServer(
 		GetWorld(),
 		gameMode,
 		this,
-		gameMode->CountdownTimeToStartGame);
+		gameMode->GetCountdownTimeToStartGame());
 	
 	BattleRoyale::StatesMachineFactory factory;
 	

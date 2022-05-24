@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BattleRoyaleConfigurationInfo.h"
 #include "BattleRoyale/core/GameMode/GameModeCommon.h"
 #include "BattleRoyale/core/GameMode/MultiplayerGameMode.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
@@ -19,24 +20,20 @@ public:
 
 	virtual void DoInitGame() override;
 	virtual void DoGenereicPlayerInitialization(AController* controller) override;
+
+	float GetOnceMatchEndedTimeToResetSessionTime() const;
+	uint8 GetNumPlayersPerTeam() const;
+	float GetCountdownTimeToStartGame() const;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=BattleRoyale)
 	TSubclassOf<APawn> CharacterClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=BattleRoyale)
-	uint8 NumPlayersPerTeam = 1;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=BattleRoyale)
-	float CountdownTimeToStartGame = 15.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=BattleRoyale)
-	float GameRulesUpdateIntervalTime = 1.0f;
 
 private:
 	
 	void InitializeTeamSelectionStrategy();
 	void ApplyTeamSelectionStrategy(const AController* controller) const;
-
+	UBattleRoyaleConfigurationInfo* GetConfigurationInfo() const;
+	
 	UPROPERTY()
 	TScriptInterface<ITeamSelectionStrategy> mTeamSelectionStrategy;
 };

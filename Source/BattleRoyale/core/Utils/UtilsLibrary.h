@@ -120,5 +120,18 @@ class BATTLEROYALE_API UtilsLibrary
 			q.W = static_cast<float>(FGenericPlatformMath::Cos(halfAngle));
 			return q;
 		}
+
+	static FName GetValidMapName(const UWorld* world, const FName& mapName)
+		{
+			if(mapName.IsNone())
+			{
+				FString LevelName = world->GetMapName();
+				LevelName.RemoveFromStart(world->StreamingLevelsPrefix);
+		
+				return *LevelName;
+			}
+	
+			return mapName;
+		}
 };
 }

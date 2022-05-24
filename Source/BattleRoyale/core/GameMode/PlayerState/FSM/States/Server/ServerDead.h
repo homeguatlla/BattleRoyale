@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/PlayerStateStates.h"
 #include "BattleRoyale/core/Utils/FSM/fsm/BaseState.h"
 
@@ -24,5 +25,6 @@ namespace BRPlayerStateFSM
 
 	private:
 		IICharacter* mCharacter;
+		IIPlayerState* mPlayerState;
 	};
 };

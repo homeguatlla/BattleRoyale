@@ -5,10 +5,13 @@
 #include "CoreMinimal.h"
 #include "IGameMode.h"
 #include "MultiplayerGameMode.h"
+#include "Configuration/GameModeConfigurationInfo.h"
 #include "GameModeCommon.generated.h"
 
 class IIPlayerController;
 class APlayerStateBase;
+class UMultiplayerConfigurationInfo;
+
 /**
  * 
  */
@@ -21,13 +24,21 @@ public:
 	virtual void BeginPlay() override;
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;	
+
+	//Configuration
+	virtual float GetGameRulesUpdateIntervalTime() const override { return ConfigurationInfo->GetGameRulesUpdateIntervalTime(); }
 	
 	//Inherit from IIGameMode
 	virtual IIGameState* GetGameState() const override;
 	virtual void OnNewKill(const APlayerController* killerController, const APlayerController* victimController) override;
 	virtual bool CanPlayerCauseDamageTo(const APlayerController* killerController, const APlayerController* victimController) override;
-	virtual void DestroyGameSession() const  override;
 	virtual bool HasCurrentGameSession() const override;
+	virtual const UGameModeConfigurationInfo* GetGameModeConfiguration() const override { return ConfigurationInfo;}
+	
+	static void DestroyGameSession();
+protected:
+	UPROPERTY(EditAnywhere)
+	UGameModeConfigurationInfo* ConfigurationInfo;
 	
 private:
 	virtual void GenericPlayerInitialization(AController* controller) override;

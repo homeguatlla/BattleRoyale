@@ -9,12 +9,12 @@ namespace BRPlayerStateFSM
 {
 	void ServerVictory::OnInit()
 	{
-		
+		mPlayerState = GetContext()->GetPlayerState();
 	}
 	
 	void ServerVictory::OnEnter(float deltaTime)
 	{
-		GetContext()->StartTimer(5);
-		GetContext()->GetPlayerState()->ShowVictoryScreen();
+		GetContext()->StartTimer(mPlayerState->GetTimeBetweenEndOfGameAndStatsScreen());
+		mPlayerState->ShowVictoryScreen();
 	}
 };
