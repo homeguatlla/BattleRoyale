@@ -6,14 +6,21 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
+#include "BattleRoyale/core/GameplayEffects/CooldownGameplayEffect.h"
 
 UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 {
 	AbilityInputID = EAbilityInputID::Fire;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalOnly;
+	//Esto estaba pensado para que fuera LocalOnly. Pero si es LocalOnly, el cooldown no funciona
+	//cuando se trata de un cliente porque tiene que ser la autoridad.
+	//Lo he puesto en LocalPredicted, y parece que funciona todo bien. Pero hay que revisar
+	//que no se esté haciendo algo mal.
+	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Shoot.Projectile")));
+
+	CooldownGameplayEffectClass = UCooldownGameplayEffect::StaticClass();
 }
 
 void UAbilityShootProjectileGun::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -23,12 +30,13 @@ void UAbilityShootProjectileGun::ActivateAbility(const FGameplayAbilitySpecHandl
 {
 	//if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
 	{
+		mCharacter = GetCharacter(ActorInfo);
+		
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 		{
 			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		}
 
-		mCharacter = GetCharacter(ActorInfo);
 		if (mCharacter != nullptr)
 		{
 			SubscribeToEventMontageShoot(mCharacter);
@@ -43,6 +51,7 @@ bool UAbilityShootProjectileGun::CanActivateAbility(const FGameplayAbilitySpecHa
                                         const FGameplayTagContainer* TargetTags,
                                         OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
+	auto time = GetCooldownTimeRemaining(ActorInfo);
 	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
 	{
 		return false;
@@ -91,6 +100,38 @@ void UAbilityShootProjectileGun::CancelAbility(const FGameplayAbilitySpecHandle 
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 }
 
+const FGameplayTagContainer* UAbilityShootProjectileGun::GetCooldownTags() const
+{
+	const auto parentTags = Super::GetCooldownTags();
+
+	const auto tagContainer = const_cast<FGameplayTagContainer*>(&CooldownTagContainer);
+	tagContainer->Reset();
+	if(parentTags)
+	{
+		tagContainer->AppendTags(*parentTags);
+	}
+	
+	tagContainer->AppendTags(GetWeaponCooldownGameplayTags());
+	
+	return tagContainer;
+}
+
+void UAbilityShootProjectileGun::ApplyCooldown(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
+{
+	
+	const auto cooldownGameplayEffect = Cast<UCooldownGameplayEffect>(GetCooldownGameplayEffect());
+	if(cooldownGameplayEffect)
+	{
+		const auto specHandle = MakeOutgoingGameplayEffectSpec(cooldownGameplayEffect->GetClass(), GetAbilityLevel());
+		specHandle.Data.Get()->DynamicGrantedTags.AppendTags(GetWeaponCooldownGameplayTags());
+		cooldownGameplayEffect->SetDuration(GetWeaponCooldownDuration());
+		ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, specHandle);
+	}
+
+	//Super::ApplyCooldown(Handle, ActorInfo, ActivationInfo);
+}
+
 void UAbilityShootProjectileGun::OnMontageCompleted()
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
@@ -108,6 +149,29 @@ void UAbilityShootProjectileGun::OnEventMontageShootReceived(const FGameplayEven
 		//mCharacter->ServerShoot();
 		mCharacter->Shoot();
 	}
+}
+
+FGameplayTagContainer UAbilityShootProjectileGun::GetWeaponCooldownGameplayTags() const
+{
+	if(mCharacter)
+	{
+		const auto weapon = mCharacter->GetEquippedWeapon();
+		check(weapon);
+		return weapon->GetCooldownTags();
+	}
+	
+	return FGameplayTagContainer();
+}
+
+float UAbilityShootProjectileGun::GetWeaponCooldownDuration() const
+{
+	if(mCharacter)
+	{
+		const auto weapon = mCharacter->GetEquippedWeapon();
+		check(weapon);
+		return weapon->GetCooldownTime();
+	}
+	return 0.0f;
 }
 
 void UAbilityShootProjectileGun::SubscribeToEventMontageShoot(const IICharacter* character)

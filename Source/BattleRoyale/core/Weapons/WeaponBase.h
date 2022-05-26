@@ -38,6 +38,12 @@ class BATTLEROYALE_API AWeaponBase : public AActor, public IIWeapon
 	float DistanceFromMuzzleLocation = { 20.0f};
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	float CooldownTime = {3.0f};
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	FGameplayTagContainer CooldownTags;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	bool IsDebugEnabled { false };
 	
 public:	
@@ -49,6 +55,8 @@ public:
 
 	virtual FVector GetMuzzleLocation() const override;
 	virtual FRotator GetMuzzleRotation() const override;
+	virtual float GetCooldownTime() const override { return CooldownTime; }
+	virtual FGameplayTagContainer GetCooldownTags() const override { return CooldownTags; }
 	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules,
 	                               const FName& socketName) override;
 	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) override;

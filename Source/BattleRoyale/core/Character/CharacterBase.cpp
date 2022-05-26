@@ -392,8 +392,6 @@ float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
 	const auto killer = Cast<APlayerController>(EventInstigator);
 	const auto victim = Cast<APlayerController>(GetController());
 
-	//TODO hay que preguntar al gamemode si el instigator puede dañar al character
-	//si puede que diga cuanto daño le hace etc.
 	const auto gameMode = GetGameModeServer();
 	if(!gameMode->CanPlayerCauseDamageTo(killer, victim))
 	{

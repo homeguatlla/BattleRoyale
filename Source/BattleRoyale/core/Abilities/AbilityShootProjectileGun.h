@@ -25,6 +25,11 @@ public:
 
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
 
+	virtual const FGameplayTagContainer* GetCooldownTags() const override;
+	
+	virtual void ApplyCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	                           const FGameplayAbilityActivationInfo ActivationInfo) const override;
+	
 private:
 	UFUNCTION()
 	void OnMontageCompleted();
@@ -35,10 +40,15 @@ private:
 	UFUNCTION()
 	void OnEventMontageShootReceived(const FGameplayEventData Payload);
 	
+	FGameplayTagContainer GetWeaponCooldownGameplayTags() const;
+	float GetWeaponCooldownDuration() const;
 	void SubscribeToEventMontageShoot(const IICharacter* character);
 	void CreateTaskPlayMontageShooting(const IICharacter* character, const FGameplayAbilityActorInfo* ActorInfo);
 
 	IICharacter* mCharacter;
 	//METHOD FDelegateHandle mEventMontageShootHandle;
+
+	UPROPERTY(Transient)
+	FGameplayTagContainer CooldownTagContainer;
 };
 
