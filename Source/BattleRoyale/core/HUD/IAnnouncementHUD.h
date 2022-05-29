@@ -18,5 +18,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Announcement HUD")
 	void OnAnnouncePlayerWon();
-	
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Announcement HUD")
+	void OnAnnounceTeamsAndPlayersAlive(uint8 numTeams, uint8 numPlayers);
 };

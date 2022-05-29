@@ -66,5 +66,6 @@ public:
 	virtual void NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const = 0;
 	virtual void NotifyNumKillsToSelf() = 0;
 	virtual void NotifyGameOverServer(bool hasMatchEnded, bool isWinner) = 0;
+	virtual void NotifyNumTeamsAndPlayersAlive(uint8 numTeams, uint8 numPlayers) = 0;
 	virtual void ForceFSMStateClient(BRPlayerStateFSM::PlayerStateState state) = 0;
 };

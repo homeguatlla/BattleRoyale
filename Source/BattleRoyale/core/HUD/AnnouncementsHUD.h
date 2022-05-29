@@ -29,6 +29,9 @@ private:
 
 	UFUNCTION()
 	void OnAnnouncePlayerWon();
+
+	UFUNCTION()
+	void OnAnnounceTeamsAndPlayersAlive(uint8 numTeams, uint8 numPlayers);
 	
 public:
 	UPROPERTY()

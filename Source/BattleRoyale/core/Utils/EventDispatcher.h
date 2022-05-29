@@ -15,6 +15,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDead);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAnnounceNewDeath, const FString&, killerName, const FString&, victimName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAnnouncePlayerWon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAnnounceTeamsAndPlayersAlive, uint8, numTeams, uint8, numPlayers);
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFinishCountDown);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRefreshCountDown, uint8, counter);
@@ -57,6 +59,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="Player")
 	FOnAnnouncePlayerWon OnAnnouncePlayerWon;
 
+	UPROPERTY(BlueprintAssignable, Category="Announcement")
+	FOnAnnounceTeamsAndPlayersAlive OnAnnounceTeamsAndPlayersAlive;
+	
 	UPROPERTY(BlueprintAssignable, Category="Menu")
 	FOnFinishCountDown OnFinishCountDown;
 

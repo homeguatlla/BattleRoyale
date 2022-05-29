@@ -51,6 +51,7 @@ public:
 	virtual void NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const override;
 	virtual void NotifyNumKillsToSelf() override;
 	virtual void NotifyGameOverServer(bool hasMatchEnded, bool isWinner) override;
+	virtual void NotifyNumTeamsAndPlayersAlive(uint8 numTeams, uint8 numPlayers) override;
 	
 	virtual void OnGameStarted() override;
 	virtual void ShowStatsScreen() const override;
@@ -78,6 +79,9 @@ private:
 	UFUNCTION(Client, Reliable)
 	void ClientForceFSMState(int state);
 
+	UFUNCTION(Client, Unreliable)
+	void ClientNotifyTeamsAndPlayersAlive(uint8 numTeams, uint8 numPlayers);
+	
 	void CreateStatesMachine();
 	
 	APlayerController* GetPlayerController() const;

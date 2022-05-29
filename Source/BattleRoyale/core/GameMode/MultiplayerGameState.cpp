@@ -46,6 +46,17 @@ void AMultiplayerGameState::NotifyGameModeConfigurationInfo(const UGameModeConfi
 	MulticastGameModeConfigurationInfo(configurationInfo);
 }
 
+void AMultiplayerGameState::NotifyNumTeamsAndPlayersAlive()
+{
+	uint8 numTeamsAlive = GetNumTeamsAlive();
+	uint8 numPlayersAlive = GetNumPlayersAlive();
+	PerformActionForEachPlayerState([&numTeamsAlive, &numPlayersAlive](IIPlayerState* playerState)
+		{
+			playerState->NotifyNumTeamsAndPlayersAlive(numTeamsAlive, numPlayersAlive);
+			return false;
+		});
+}
+
 void AMultiplayerGameState::MulticastGameModeConfigurationInfo_Implementation(
 	const UGameModeConfigurationInfo* configurationInfo)
 {
@@ -84,6 +95,7 @@ void AMultiplayerGameState::StartGameServer()
 {
 	mWinnerTeamId = -1;
 	MulticastGameStarted();
+	NotifyNumTeamsAndPlayersAlive();
 }
 
 void AMultiplayerGameState::MatchEndServer()
@@ -154,6 +166,40 @@ void AMultiplayerGameState::NotifyMatchEndedServer() const
 			playerState->NotifyGameOverServer(true, playerState->GetTeamId() == GetWinnerTeam());
 			return false;
 		});
+}
+
+uint8 AMultiplayerGameState::GetNumPlayersAlive() const
+{
+	uint8 numPlayersAlive = 0;
+	
+	PerformActionForEachPlayerState(
+		[this, &numPlayersAlive](const IIPlayerState* playerState)
+		{
+			if(playerState->IsAlive())
+			{
+				numPlayersAlive++;
+			}
+			return false;
+		});
+
+	return numPlayersAlive;
+}
+
+uint8 AMultiplayerGameState::GetNumTeamsAlive() const
+{
+	std::set<int> teams;
+	
+	PerformActionForEachPlayerState(
+			[this, &teams](const IIPlayerState* playerState)
+			{
+				if(playerState->IsAlive())
+				{
+					teams.insert(playerState->GetTeamId());
+				}
+				return false;
+			});
+	
+	return teams.size();
 }
 
 void AMultiplayerGameState::MulticastGameStarted_Implementation()

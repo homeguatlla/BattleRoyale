@@ -45,4 +45,5 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void PlayerInteraction(const APlayerController* playerController, const FString& action) = 0;
 	virtual void NotifyGameModeConfigurationInfo(const UGameModeConfigurationInfo* configurationInfo) = 0;
+	virtual void NotifyNumTeamsAndPlayersAlive() = 0;
 };

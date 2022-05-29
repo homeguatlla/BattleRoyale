@@ -34,8 +34,9 @@ void AAnnouncementsHUD::BindToDelegate()
 	{
 		const auto eventDispatcher = gameInstance->GetEventDispatcher();
 
-		eventDispatcher->OnAnnounceNewDeath.AddDynamic(this, &AAnnouncementsHUD::OnAnnounceNewDeath);
-		eventDispatcher->OnAnnouncePlayerWon.AddDynamic(this, &AAnnouncementsHUD::OnAnnouncePlayerWon);
+		eventDispatcher->OnAnnounceNewDeath.AddUniqueDynamic(this, &AAnnouncementsHUD::OnAnnounceNewDeath);
+		eventDispatcher->OnAnnouncePlayerWon.AddUniqueDynamic(this, &AAnnouncementsHUD::OnAnnouncePlayerWon);
+		eventDispatcher->OnAnnounceTeamsAndPlayersAlive.AddUniqueDynamic(this, &AAnnouncementsHUD::OnAnnounceTeamsAndPlayersAlive);
 	}
 }
 
@@ -53,5 +54,13 @@ void AAnnouncementsHUD::OnAnnouncePlayerWon()
 	if (mHUDWidget->GetClass()->ImplementsInterface(UAnnouncementHUD::StaticClass()))
 	{
 		IAnnouncementHUD::Execute_OnAnnouncePlayerWon(mHUDWidget);
+	}
+}
+
+void AAnnouncementsHUD::OnAnnounceTeamsAndPlayersAlive(uint8 numTeams, uint8 numPlayers)
+{
+	if (mHUDWidget->GetClass()->ImplementsInterface(UAnnouncementHUD::StaticClass()))
+	{
+		IAnnouncementHUD::Execute_OnAnnounceTeamsAndPlayersAlive(mHUDWidget, numTeams, numPlayers);
 	}
 }

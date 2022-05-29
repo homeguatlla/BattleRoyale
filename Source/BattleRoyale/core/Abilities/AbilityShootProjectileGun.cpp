@@ -12,6 +12,7 @@ UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 {
 	AbilityInputID = EAbilityInputID::Fire;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	
 	//Esto estaba pensado para que fuera LocalOnly. Pero si es LocalOnly, el cooldown no funciona
 	//cuando se trata de un cliente porque tiene que ser la autoridad.
 	//Lo he puesto en LocalPredicted, y parece que funciona todo bien. Pero hay que revisar
@@ -51,7 +52,6 @@ bool UAbilityShootProjectileGun::CanActivateAbility(const FGameplayAbilitySpecHa
                                         const FGameplayTagContainer* TargetTags,
                                         OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
-	auto time = GetCooldownTimeRemaining(ActorInfo);
 	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
 	{
 		return false;
@@ -201,7 +201,7 @@ void UAbilityShootProjectileGun::CreateTaskPlayMontageShooting(const IICharacter
 	//const auto abilitySystemInterface = character->GetAbilitySystemComponentBase();
 	//abilitySystemInterface->SetSimulatedMontage(character->GetSimulatedShootingMontage());
 
-	//Ejecutamos el play montage solo en cliente.
+	//Ejecutamos el play montage solo en local.
 	animInstance->Montage_Play(character->GetShootingMontage(), 1.0);
 
 	//Si hacemos un task, este se replica y entonces no funciona bien porque ejecuta un montage en primera persona

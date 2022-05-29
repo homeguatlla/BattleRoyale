@@ -77,6 +77,8 @@ void AGameModeCommon::OnNewKill(const APlayerController* killerController, const
 	{
 		playerStateVictim->NotifyGameOverServer(false, false);
 	}
+
+	GetGameState()->NotifyNumTeamsAndPlayersAlive();
 }
 
 bool AGameModeCommon::CanPlayerCauseDamageTo(const APlayerController* killerController,

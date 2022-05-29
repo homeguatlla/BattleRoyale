@@ -39,7 +39,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void PlayerInteraction(const APlayerController* playerController, const FString& action) override;
 	virtual void NotifyGameModeConfigurationInfo(const UGameModeConfigurationInfo* configurationInfo) override;
-	
+	virtual void NotifyNumTeamsAndPlayersAlive() override;
 	
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void AddStatesMachineServer(
@@ -52,7 +52,9 @@ protected:
 	
 private:
 	void NotifyMatchEndedServer() const;
-
+	uint8 GetNumPlayersAlive() const;
+	uint8 GetNumTeamsAlive() const;
+	
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastGameStarted();
 

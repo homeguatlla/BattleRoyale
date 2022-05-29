@@ -110,6 +110,11 @@ void APlayerStateBase::NotifyGameOverServer(bool hasMatchEnded, bool isWinner)
 	ClientNotifyGameOver(isWinner);
 }
 
+void APlayerStateBase::NotifyNumTeamsAndPlayersAlive(uint8 numTeams, uint8 numPlayers)
+{
+	ClientNotifyTeamsAndPlayersAlive(numTeams, numPlayers);
+}
+
 void APlayerStateBase::ShowVictoryScreen() const
 {
 	if(GetPawn()->IsLocallyControlled())
@@ -208,6 +213,11 @@ void APlayerStateBase::MulticastAnnouncementOfNewDeath_Implementation(const FStr
 void APlayerStateBase::ClientForceFSMState_Implementation(int state)
 {
 	mStatesMachineController.ForceState(0, static_cast<BRPlayerStateFSM::PlayerStateState>(state));
+}
+
+void APlayerStateBase::ClientNotifyTeamsAndPlayersAlive_Implementation(uint8 numTeams, uint8 numPlayers)
+{
+	GetEventDispatcher()->OnAnnounceTeamsAndPlayersAlive.Broadcast(numTeams, numPlayers);
 }
 
 void APlayerStateBase::CreateStatesMachine()
