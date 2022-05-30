@@ -11,6 +11,7 @@ UAbilitySprint::UAbilitySprint()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
 
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Sprint")));
+	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Shoot")));	
 	
 	//To enable sprint ability from a trigger
 	/*FAbilityTriggerData triggerData;
