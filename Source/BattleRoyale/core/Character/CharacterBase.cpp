@@ -218,9 +218,10 @@ void ACharacterBase::SetCurrentHealth(float health)
 
 bool ACharacterBase::CanSprint() const
 {
-	const auto velocity = GetVelocity();
-	
-	return velocity.Size() > 0.0f && GetCharacterMovement()->IsWalking();
+	//We are not checking if the Velocity > 0 to sprint because
+	//if the shift is pressed and then the player starts walking (velocity >0) then
+	//the ability is not activated.
+	return GetCharacterMovement()->IsWalking();
 }
 
 void ACharacterBase::StartSprinting()
