@@ -45,7 +45,7 @@ public:
 	 * Fire is to activate the mechanism of the weapon. Pulling the trigger.
 	 **/
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
-	virtual void Fire() const = 0;
+	virtual void Fire(const FVector& muzzleLocation, const FRotator& muzzleRotation) const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual void FireClient(bool isFirstPerson) = 0;

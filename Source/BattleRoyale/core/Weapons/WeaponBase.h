@@ -62,7 +62,7 @@ public:
 	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) override;
 	virtual void Destroy() override;
 	virtual bool CanBeFired() const override;
-	virtual void Fire() const override;
+	virtual void Fire(const FVector& muzzleLocation, const FRotator& muzzleRotation) const override;
 	virtual void FireClient(bool isFirstPerson) override;
 
 	virtual USoundBase* GetFireSound() const override { return FireSound; }
@@ -77,7 +77,7 @@ public:
 
 private:
 	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
-	FVector GetProjectileSpawnLocation(float distanceFromMuzzleLocation) const;
+	FVector GetProjectileSpawnLocation(const FVector& location, const FRotator& rotation, float distanceFromMuzzleLocation) const;
 	
 	void DebugDrawAiming() const;
 };

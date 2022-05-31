@@ -42,10 +42,9 @@ FVector AWeaponBase::GetMuzzleLocation() const
 	{
 		return weaponMuzzleSocket->GetSocketLocation(Mesh);
 	}
-	else
-	{
-		UE_LOG(LogWeapon, Error, TEXT("[%s][AWeaponBase::GetMuzzleLocation] muzzle socket not found"), *MuzzleSocketName.ToString());
-	}
+
+	UE_LOG(LogWeapon, Error, TEXT("[%s][AWeaponBase::GetMuzzleLocation] muzzle socket not found"), *MuzzleSocketName.ToString());
+
 	return FVector::ZeroVector;
 }
 
@@ -74,11 +73,14 @@ void AWeaponBase::SpawnProjectile(const FVector& muzzleLocation, const FRotator&
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-			const auto location = GetProjectileSpawnLocation(DistanceFromMuzzleLocation);
+			const auto location = GetProjectileSpawnLocation(muzzleLocation, muzzleRotation, DistanceFromMuzzleLocation);
 
-			//const FString Message = FString::Printf(TEXT("Location: %s, Rotation: %s"),*location.ToString(), *muzzleRotation.ToString());
-			//GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Black, Message);
-			
+			/*const FString Message = FString::Printf(TEXT("Location: %s, Rotation: %s"),*location.ToString(), *muzzleRotation.ToString());
+			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Black, Message);
+			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Black, Mesh->GetName());
+				
+			DrawDebugLine(GetWorld(), location, GetProjectileSpawnLocation(muzzleLocation, muzzleRotation, 500), FColor::Red, false, 60);
+			DrawDebugSphere(GetWorld(), muzzleLocation, 5, 10, FColor::Blue, true, -1, 0, 3);*/
 			// spawn the projectile at the muzzle
 			const auto projectile = World->SpawnActor<AProjectileBase>(ProjectileClass, location, muzzleRotation, ActorSpawnParams);
 			if(projectile)
@@ -141,27 +143,27 @@ void AWeaponBase::OnFire_Implementation(bool isFirstPerson)
 {
 }
 
-void AWeaponBase::Fire() const
+void AWeaponBase::Fire(const FVector& muzzleLocation, const FRotator& muzzleRotation) const
 {
 	// try and fire a projectile:
 	//the server has the weapon in FP1, but for the clients it has the weapons as 3P
 	//so, we need when shooting send to the server our weapon location and rotation
 	//because server will get wrong location and rotation for clients
-	SpawnProjectile(GetMuzzleLocation(), GetMuzzleRotation());
+	SpawnProjectile(muzzleLocation, muzzleRotation);
 }
 
-FVector AWeaponBase::GetProjectileSpawnLocation(float distanceFromMuzzleLocation) const
+FVector AWeaponBase::GetProjectileSpawnLocation(const FVector& location, const FRotator& rotation, float distanceFromMuzzleLocation) const
 {
-	auto direction = GetMuzzleRotation().RotateVector(FVector::ForwardVector);
+	auto direction = rotation.RotateVector(FVector::ForwardVector);
 	direction.Normalize();
-	return GetMuzzleLocation() +  direction * distanceFromMuzzleLocation;
+	return location +  direction * distanceFromMuzzleLocation;
 }
 
 void AWeaponBase::DebugDrawAiming() const
 {
-	const auto muzzleLocation = GetProjectileSpawnLocation(DistanceFromMuzzleLocation);
+	const auto muzzleLocation = GetProjectileSpawnLocation(GetMuzzleLocation(), GetMuzzleRotation(), DistanceFromMuzzleLocation);
 	
 	DrawDebugSphere(GetWorld(), GetMuzzleLocation(), 5, 12, FColor::White, false);
 	DrawDebugSphere(GetWorld(), muzzleLocation, 3, 12, FColor::Blue, false);
-	DrawDebugLine(GetWorld(), muzzleLocation, GetProjectileSpawnLocation(500), FColor::Blue, false);
+	DrawDebugLine(GetWorld(), muzzleLocation, GetProjectileSpawnLocation(GetMuzzleLocation(), GetMuzzleRotation(), 500), FColor::Blue, false);
 }

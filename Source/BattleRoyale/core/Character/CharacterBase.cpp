@@ -314,7 +314,7 @@ void ACharacterBase::ServerShoot()
 	//y hacer un multicast en el server para que se ejecute en los clientes y así añadir el tema efectos y sonido.
 	if(HasAuthority())
 	{
-		weapon->Fire();
+		weapon->Fire(weapon->GetMuzzleLocation(), weapon->GetMuzzleRotation());
 	}
 }
 
@@ -328,7 +328,8 @@ void ACharacterBase::Shoot()
 	}
 	BP_OnShoot();
 	weapon->FireClient(true);
-	ServerSpawnProjectile(FVector::ZeroVector, FRotator::ZeroRotator);
+	//We must send the weapon information because the weapon the client and server are in different positions (3P, 1P)
+	ServerSpawnProjectile(weapon->GetMuzzleLocation(), weapon->GetMuzzleRotation());
 }
 
 UAnimMontage* ACharacterBase::GetShootingMontage() const
@@ -478,7 +479,7 @@ void ACharacterBase::ServerSpawnProjectile_Implementation(const FVector& muzzleL
 {
 	//SpawnProjectile(muzzleLocation, muzzleRotation);
 	const auto weapon = GetEquippedWeapon();
-	weapon->Fire();
+	weapon->Fire(muzzleLocation, muzzleRotation);
 	//Notify all about a fire in order they can play the proper animation.
 	MulticastOnFire();
 }
