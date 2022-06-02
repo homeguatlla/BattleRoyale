@@ -74,6 +74,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual FVector GetCurrentVelocity() const override { return GetVelocity(); }
+
+	UFUNCTION(BlueprintCallable)
+	virtual FVector GetCurrentMeshSpaceVelocity() const override;
 	
 	UFUNCTION(BlueprintCallable)
 	virtual FRotator GetCurrentRotation() const override { return GetActorRotation(); }

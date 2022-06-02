@@ -34,6 +34,9 @@ public:
 	virtual FVector GetCurrentVelocity() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual FVector GetCurrentMeshSpaceVelocity() const = 0;
+	
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual FRotator GetCurrentRotation() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")

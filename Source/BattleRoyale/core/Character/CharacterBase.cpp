@@ -133,6 +133,11 @@ TScriptInterface<IIWeapon> ACharacterBase::GetEquippedWeapon() const
 	return mEquipedWeapon;
 }
 
+FVector ACharacterBase::GetCurrentMeshSpaceVelocity() const
+{
+	return GetMesh()->GetComponentTransform().InverseTransformVector(GetVelocity());
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 // Let the input binding that refer to the character specific into the character itself.
