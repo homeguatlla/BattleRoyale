@@ -9,15 +9,17 @@ void UAttributeSetBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UAttributeSetBase, Health);
-	DOREPLIFETIME(UAttributeSetBase, MaxHealth);
+	//TODO probar esto con un rep notify normala ver que sucede
+	DOREPLIFETIME_CONDITION_NOTIFY(UAttributeSetBase, Health, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAttributeSetBase, MaxHealth, COND_None, REPNOTIFY_Always);
 }
 
-void UAttributeSetBase::OnRepHealth()
+void UAttributeSetBase::OnRepHealth(const FGameplayAttributeData& OldHealth)
 {
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetBase, Health, OldHealth);
 }
 
-void UAttributeSetBase::OnRepMaxHealth()
+void UAttributeSetBase::OnRepMaxHealth(const FGameplayAttributeData& OldMaxHealth)
 {
-	
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAttributeSetBase, MaxHealth, OldMaxHealth);
 }

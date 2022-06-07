@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AttributeSetBase.h"
 #include "ICharacter.h"
 #include "BattleRoyale/core/Data/TakeDamageData.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
@@ -39,7 +40,9 @@ class ACharacterBase : public ACharacter, public IICharacter
 	TScriptInterface<IIWeapon> mEquipedWeapon;
 
 	float mCurrentHealth;
-	
+
+	UPROPERTY()
+	UAttributeSetBase* mGameplayAbilityAttributes;	
 	
 	UPROPERTY(ReplicatedUsing=OnRep_TakeDamageData)
 	FTakeDamageData mDamageCauser;
@@ -146,9 +149,6 @@ public:
 	
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	                         AActor* DamageCauser) override;
-	
-	void OnAnyKeyPressed();
-	void OnAnyKeyReleased();
 	
 protected:
 	virtual void BeginPlay();

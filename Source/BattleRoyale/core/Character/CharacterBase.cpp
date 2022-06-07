@@ -48,7 +48,13 @@ ACharacterBase::ACharacterBase()
 	L_MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("L_MotionController"));
 	L_MotionController->SetupAttachment(RootComponent);
 
+	//Create gameplayability attributes for this character
+	mGameplayAbilityAttributes = CreateDefaultSubobject<UAttributeSetBase>("GameplayAbilityAttributes");
+	
 	mCurrentHealth = MaxHealth;
+	
+	mGameplayAbilityAttributes->InitHealth(MaxHealth);
+	mGameplayAbilityAttributes->InitMaxHealth(MaxHealth);
 }
 
 void ACharacterBase::BeginPlay()
@@ -413,16 +419,6 @@ UCameraComponent* ACharacterBase::GetCamera() const
 		return cameras[0];
 	}
 	return nullptr;
-}
-
-void ACharacterBase::OnAnyKeyPressed()
-{
-	mAnyKeyPressed = true;
-}
-
-void ACharacterBase::OnAnyKeyReleased()
-{
-	mAnyKeyPressed = false;
 }
 
 void ACharacterBase::OnResetVR()

@@ -32,8 +32,9 @@ public:
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UAttributeSetBase, MaxHealth)
 
+private:
 	UFUNCTION()
-	void OnRepHealth();
+	void OnRepHealth(const FGameplayAttributeData& OldHealth);
 	UFUNCTION()
-	void OnRepMaxHealth();	
+	void OnRepMaxHealth(const FGameplayAttributeData& OldMaxHealth);
 };
