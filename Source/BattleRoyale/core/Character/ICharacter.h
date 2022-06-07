@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "ICharacter.generated.h"
 
+class UCameraComponent;
 class IIAbilitySystemInterfaceBase;
 class IAbilitySystemInterface;
 class IIWeapon;
@@ -86,6 +87,8 @@ public:
 	virtual void DieClient() = 0;
 	
 	virtual void SetEnableInput(bool enable, const FInputModeDataBase& inputMode = FInputModeGameAndUI()) = 0;
+
+	virtual UCameraComponent* GetCamera() const = 0;
 	
 	/**
 	 * Shoot is aim and try to hit something

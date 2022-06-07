@@ -37,22 +37,7 @@ ACharacterBase::ACharacterBase()
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
-
-	// Create a CameraComponent	
-	mFirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
-	mFirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
-	mFirstPersonCameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
-	mFirstPersonCameraComponent->bUsePawnControlRotation = true;
-
-	// Create a mesh component that will be used when being viewed from a '1st person' view (when controlling this pawn)
-	mCharacterMesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
-	mCharacterMesh1P->SetOnlyOwnerSee(true);
-	mCharacterMesh1P->SetupAttachment(mFirstPersonCameraComponent);
-	mCharacterMesh1P->bCastDynamicShadow = false;
-	mCharacterMesh1P->CastShadow = false;
-	mCharacterMesh1P->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
-	mCharacterMesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
-
+	
 	//The Character has a Mesh by default so, this mesh will be the 3rd person mesh
 	GetMesh()->SetOwnerNoSee(true);	
 	
@@ -105,8 +90,9 @@ void ACharacterBase::OnRep_PlayerState()
 
 void ACharacterBase::Initialize(bool isLocallyControlled)
 {
-	EquipWeapon(isLocallyControlled ? mCharacterMesh1P: GetMesh(), mEquipedWeapon);
-	mCharacterMesh1P->SetHiddenInGame(!isLocallyControlled, true);
+	EquipWeapon(GetCurrentMesh(isLocallyControlled), mEquipedWeapon);
+	
+	DoInitialize(isLocallyControlled);
 }
 
 void ACharacterBase::InitializeGAS()
@@ -356,14 +342,7 @@ UAnimMontage* ACharacterBase::GetSimulatedShootingMontage() const
 
 UAnimInstance* ACharacterBase::GetAnimationInstance() const
 {
-	if(IsLocallyControlled())
-	{
-		return mCharacterMesh1P->GetAnimInstance();
-	}
-	else
-	{
-		return GetMesh()->GetAnimInstance();
-	}
+	return GetMesh()->GetAnimInstance();
 }
 
 IAbilitySystemInterface* ACharacterBase::GetAbilitySystemComponent() const
@@ -422,6 +401,18 @@ float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
 	}
 	
 	return actualDamage;
+}
+
+UCameraComponent* ACharacterBase::GetCamera() const
+{
+	TArray<UCameraComponent*> cameras;
+	GetComponents<UCameraComponent>(cameras);
+
+	if(cameras.Num() > 0)
+	{
+		return cameras[0];
+	}
+	return nullptr;
 }
 
 void ACharacterBase::OnAnyKeyPressed()
@@ -608,7 +599,6 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 void ACharacterBase::DieClient()
 {
 	UnEquipWeapon();
-	HideFirstPersonMesh();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 	
@@ -616,6 +606,8 @@ void ACharacterBase::DieClient()
 	{
 		DisableInput(Cast<APlayerController>(GetController()));
 	}
+
+	DoDieClient();
 }
 
 void ACharacterBase::DieServer()
@@ -626,16 +618,6 @@ void ACharacterBase::DieServer()
 	GetCharacterMovement()->SetComponentTickEnabled(false);
 	
 	DieClient();
-}
-
-void ACharacterBase::HideFirstPersonMesh() const
-{
-	if(!IsLocallyControlled())
-	{
-		return;
-	}
-
-	mCharacterMesh1P->SetHiddenInGame(true, true);
 }
 
 void ACharacterBase::OnRep_TakeDamageData()
@@ -707,14 +689,4 @@ void ACharacterBase::SpawnWeapon()
 	{
 		UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::SpawnWeapon] weapon not implementing IIWeapon"));
 	}
-}
-
-void ACharacterBase::ChangeCharacterMesh1PColor(const FColor& color)
-{
-	if(mCharacterMesh1PMaterial == nullptr)
-	{
-		mCharacterMesh1PMaterial = UGameplayBlueprintFunctionLibrary::CreateAndAssignMaterialInstanceDynamicToMesh(mCharacterMesh1P);
-	}
-
-	mCharacterMesh1PMaterial->SetVectorParameterValue("BodyColor", color);
 }

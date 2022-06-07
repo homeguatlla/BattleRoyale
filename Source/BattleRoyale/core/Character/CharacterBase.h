@@ -16,7 +16,6 @@ class IIPlayerState;
 class UInputComponent;
 class USkeletalMeshComponent;
 class USceneComponent;
-class UCameraComponent;
 class UMotionControllerComponent;
 class UAnimMontage;
 class USoundBase;
@@ -25,15 +24,7 @@ UCLASS(config=Game)
 class ACharacterBase : public ACharacter, public IICharacter
 {
 	GENERATED_BODY()
-
-	/** Pawn mesh: 1st person view (arms; seen only by self) */
-	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
-	USkeletalMeshComponent* mCharacterMesh1P;
 	
-	/** First person camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* mFirstPersonCameraComponent;
-
 	/** Motion controller (right hand) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UMotionControllerComponent* R_MotionController;
@@ -49,8 +40,6 @@ class ACharacterBase : public ACharacter, public IICharacter
 
 	float mCurrentHealth;
 	
-	UPROPERTY()
-	UMaterialInstanceDynamic* mCharacterMesh1PMaterial = nullptr;
 	
 	UPROPERTY(ReplicatedUsing=OnRep_TakeDamageData)
 	FTakeDamageData mDamageCauser;
@@ -102,6 +91,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void StartSprinting() override;
 
+	UFUNCTION(BlueprintCallable)
+	virtual UCameraComponent* GetCamera() const override;
+	
 	virtual void SetEnableInput(bool enable, const FInputModeDataBase& inputMode = FInputModeGameAndUI()) override;
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnStartSprinting))
@@ -154,12 +146,9 @@ public:
 	
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	                         AActor* DamageCauser) override;
+	
 	void OnAnyKeyPressed();
 	void OnAnyKeyReleased();
-
-	UFUNCTION(BlueprintCallable, Category = "Character")
-	void ChangeCharacterMesh1PColor(const FColor& color);
-
 	
 protected:
 	virtual void BeginPlay();
@@ -233,8 +222,9 @@ protected:
 private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	void Initialize(bool isLocallyControlled);
-	void HideFirstPersonMesh() const;
+	virtual void Initialize(bool isLocallyControlled);
+	virtual void DoInitialize(bool isLocallyControlled) {}
+	
 	void InitializeGAS();
 
 	void BindAbilityActivationToInputComponent() const;
@@ -251,6 +241,10 @@ private:
 	
 	IIGameMode* GetGameModeServer() const;
 
+	virtual void DoDieClient() {}
+	
+	virtual USkeletalMeshComponent* GetCurrentMesh(bool isLocallyControlled) const { return GetMesh(); }
+	
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerSpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation);
 	
@@ -265,12 +259,5 @@ private:
 	
 	UFUNCTION()
 	void OnRep_TakeDamageData();
-
-public:
-	/** Returns Mesh1P subobject **/
-	USkeletalMeshComponent* GetMesh1P() const { return mCharacterMesh1P; }
-	/** Returns FirstPersonCameraComponent subobject **/
-	UCameraComponent* GetFirstPersonCameraComponent() const { return mFirstPersonCameraComponent; }
-
 };
 
