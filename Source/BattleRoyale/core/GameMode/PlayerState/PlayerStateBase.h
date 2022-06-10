@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BattleRoyale/core/Character/AttributeSetBase.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "BattleRoyale/core/GameMode/Configuration/GameModeConfigurationInfo.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/AbilitySystemComponentBase.h"
@@ -14,6 +15,7 @@
 #include "PlayerStateBase.generated.h"
 
 
+class UAttributeSetBase;
 /**
  * 
  */
@@ -39,6 +41,8 @@ public:
 	virtual void AddKill() override { mNumKills++; }
 	virtual int GetNumKills() const override { return mNumKills; }
 
+	virtual float GetCurrentHealth() override { return mGameplayAbilityAttributes->GetHealth(); }
+	
 	virtual void SetAsWinner() override;
 	virtual bool DidPlayerWin() const override;
 
@@ -92,7 +96,9 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AbilitySystemComponent, meta = (AllowPrivateAccess = "true"))
 	UAbilitySystemComponentBase* mAbilitySystemComponent;
-
+	UPROPERTY()
+	UAttributeSetBase* mGameplayAbilityAttributes;
+	
 	int mTeamId;
 	int mNumKills;
 	bool mDidWin;

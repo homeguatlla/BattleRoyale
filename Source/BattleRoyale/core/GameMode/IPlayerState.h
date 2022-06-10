@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
-#include "Configuration/MultiplayerConfigurationInfo.h"
 #include "PlayerState/FSM/States/PlayerStateStates.h"
 #include "IPlayerState.generated.h"
 
@@ -48,6 +48,8 @@ public:
 	virtual void ShowDeathScreen() const = 0;
 
 	virtual void Restart() = 0;
+
+	virtual float GetCurrentHealth() =0;
 	
 	//TODO estos métodos probablemente deberían estar en un player state más específico del battle royale
 	//o si el equipo ganador lo ponemos en un atributo de gas pues igual ya se podrá consultar de una manera

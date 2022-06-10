@@ -39,15 +39,15 @@ class ACharacterBase : public ACharacter, public IICharacter
 	
 	TScriptInterface<IIWeapon> mEquipedWeapon;
 
-	float mCurrentHealth;
 
-	UPROPERTY()
-	UAttributeSetBase* mGameplayAbilityAttributes;	
+	
+	//float mCurrentHealth;
+
+	//UPROPERTY()
+	//UAttributeSetBase* mGameplayAbilityAttributes;	
 	
 	UPROPERTY(ReplicatedUsing=OnRep_TakeDamageData)
 	FTakeDamageData mDamageCauser;
-
-	bool mAnyKeyPressed = false;
 
 public:
 	ACharacterBase();
@@ -77,13 +77,13 @@ public:
 	virtual FRotator GetCurrentControlRotation() const override { return mControlRotation; }
 
 	UFUNCTION(BlueprintCallable)
-	virtual float GetCurrentHealth() const override { return mCurrentHealth; }
+	virtual float GetCurrentHealth() const override;// { return GetPlayerStateInterface()->GetCurrentHealth();}//return mGameplayAbilityAttributes->GetHealth(); }
 	
 	UFUNCTION(BlueprintCallable)
 	virtual float GetMaxHealth() const override { return MaxHealth; }
 
 	UFUNCTION(BlueprintCallable)
-	virtual bool IsAlive() const override { return mCurrentHealth > 0; }
+	virtual bool IsAlive() const override { return true; }//return mGameplayAbilityAttributes->IsAlive(); }
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsFalling() const override { return GetCharacterMovement()->IsFalling(); }
@@ -111,8 +111,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnShoot))
 	void BP_OnShoot();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Character")
-	void OnTakenDamage(float damage, const FVector& damageCauserLocation, float currentHealth);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnTakenDamage))
+	void BP_OnTakenDamage(float damage, const FVector& damageCauserLocation, float currentHealth);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnDead))
 	void BP_OnDead();
@@ -182,6 +182,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Character")
 	TArray<TSubclassOf<class UGameplayAbilityBase>> mDefaultAbilities;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS Effects")
+	TSubclassOf<class UGameplayEffect> DefaultAttributeEffect;
+	
 	/** The player's maximum health. This is the highest that their health can be, and the value that their health starts at when spawned.*/
 	UPROPERTY(EditDefaultsOnly, Category = "Character")
 	float MaxHealth{100.0};
@@ -226,6 +229,9 @@ private:
 	virtual void DoInitialize(bool isLocallyControlled) {}
 	
 	void InitializeGAS();
+	void InitializeAttributes();
+
+	void OnHealthChanged(const FOnAttributeChangeData& data) const;
 
 	void BindAbilityActivationToInputComponent() const;
 	void GiveAbilitiesServer();

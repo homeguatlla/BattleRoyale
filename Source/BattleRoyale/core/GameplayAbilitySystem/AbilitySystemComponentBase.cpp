@@ -2,6 +2,8 @@
 
 
 #include "AbilitySystemComponentBase.h"
+
+#include "AbilitySystemInterface.h"
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 
@@ -12,6 +14,33 @@ void UAbilitySystemComponentBase::SetSimulatedMontage(UAnimMontage* montage)
 	
 	SetRepAnimMontageInfo(animMontage);
 }
+
+FActiveGameplayEffectHandle UAbilitySystemComponentBase::ApplyGameplayEffectToTarget(const TSubclassOf<UGameplayEffect>& effect, const IICharacter* target)
+{
+	if(const auto targetAbilityComponent = target->GetAbilitySystemComponent())
+	{
+		auto effectContext = MakeEffectContext();
+		auto owner = GetOwnerActor();
+		effectContext.AddSourceObject(GetOwnerActor());
+
+		const auto gameplayEffectHandle = MakeOutgoingSpec(effect, 1, effectContext);
+		if(gameplayEffectHandle.IsValid())
+		{
+			return ApplyGameplayEffectSpecToTarget(*gameplayEffectHandle.Data.Get(), targetAbilityComponent->GetAbilitySystemComponent());
+		}
+	}
+	return FActiveGameplayEffectHandle();
+}
+
+FActiveGameplayEffectHandle UAbilitySystemComponentBase::ApplyGameplayEffectToSelf(const TSubclassOf<UGameplayEffect>& effectClass)
+{
+	auto effectContext = MakeEffectContext();
+	auto owner = GetOwnerActor();
+	effectContext.AddSourceObject(GetOwnerActor());
+
+	return UAbilitySystemComponent::ApplyGameplayEffectToSelf(effectClass->GetDefaultObject<UGameplayEffect>(), 1, effectContext);
+}
+
 /*
 static int kk = 0;
 float UAbilitySystemComponentBase::PlayMontage(UGameplayAbility* AnimatingAbility,

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffect.h"
 #include "IProjectile.h"
 #include "GameFramework/Actor.h"
 #include "ProjectileBase.generated.h"
@@ -39,7 +40,9 @@ class AProjectileBase : public AActor, public IIProjectile
 	UPROPERTY(EditAnywhere, Category="Projectile")
 	float Damage;
 
-
+	UPROPERTY(EditAnywhere, Category = "Projectile")
+	TSubclassOf<UGameplayEffect> DamageEffect;
+	
 public:
 	AProjectileBase();
 

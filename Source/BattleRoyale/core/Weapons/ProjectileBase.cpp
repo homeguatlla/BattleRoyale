@@ -1,6 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "ProjectileBase.h"
+
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
+#include "BattleRoyale/core/Character/ICharacter.h"
+#include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/DamageType.h"
@@ -59,8 +64,37 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 		{
 			OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 		}
+
+		/*
+		 TODO: quizá podríamos comprobar si el proyectil puede hacer daño al other actor?? quizá no es el mejor lugar
+		 *const auto gameMode = GetGameModeServer();
+		if(!gameMode->CanPlayerCauseDamageTo(killer, victim))
+		*/
 		if(OtherActor->CanBeDamaged())
 		{
+			if(const auto hurtCharacter = Cast<IICharacter>(OtherActor))
+			{
+				const auto gameplayAbilityInterface = hurtCharacter->GetAbilitySystemComponentBase();
+				const auto damageEffectHandle = gameplayAbilityInterface->ApplyGameplayEffectToSelf(DamageEffect);
+				if(!damageEffectHandle.IsValid())
+				{
+					UE_LOG(LogTemp, Error, TEXT("AProjectileBase::OnHit gameplay effect Damage couldn't be applied"));
+				}
+				
+				/*if(const auto shooterCharacter = Cast<IICharacter>(GetInstigator()))
+				{
+
+					const auto localRole = GetInstigator()->GetLocalRole();
+					UE_LOG(LogTemp, Warning, TEXT("AProjectileBase::OnHit instigator local role = %d"), localRole);
+					const auto otherLocalRole = OtherActor->GetLocalRole();
+					UE_LOG(LogTemp, Warning, TEXT("AProjectileBase::OnHit hurt character local role = %d"), otherLocalRole);
+					
+					const auto gameplayAbilityInterface = shooterCharacter->GetAbilitySystemComponentBase();
+					gameplayAbilityInterface->ApplyGameplayEffectToTarget(DamageEffect, hurtCharacter);
+				}*/
+			}
+			
+			/*
 			AController* controller = nullptr;
 			if(GetInstigator())
 			{
@@ -74,7 +108,7 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 				Hit,
 				controller, //the controller of the character who shoot
 				this, //projectile is causing damage
-				DamageType);
+				DamageType);*/
 		}
 		Destroy();
 	}

@@ -32,6 +32,11 @@ public:
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UAttributeSetBase, MaxHealth)
 
+	bool IsAlive() const { return Health.GetCurrentValue() > 0;}
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	
 private:
 	UFUNCTION()
 	void OnRepHealth(const FGameplayAttributeData& OldHealth);

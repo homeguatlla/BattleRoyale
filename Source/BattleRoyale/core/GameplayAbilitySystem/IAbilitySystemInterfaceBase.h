@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystemInterface.h"
 #include "UObject/Interface.h"
+#include "GameplayEffect.h"
 #include "IAbilitySystemInterfaceBase.generated.h"
 
 class UAbilitySystemComponentBase;
+class IICharacter;
 
 // This class does not need to be modified.
 UINTERFACE()
@@ -25,4 +26,6 @@ class BATTLEROYALE_API IIAbilitySystemInterfaceBase
 
 public:
 	virtual void SetSimulatedMontage(UAnimMontage* montage) = 0;
+	virtual FActiveGameplayEffectHandle ApplyGameplayEffectToTarget(const TSubclassOf<UGameplayEffect>& effect, const IICharacter* target) = 0;
+	virtual FActiveGameplayEffectHandle ApplyGameplayEffectToSelf(const TSubclassOf<UGameplayEffect>& effectClass) = 0;
 };

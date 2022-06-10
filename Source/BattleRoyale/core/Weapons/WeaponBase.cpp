@@ -85,6 +85,8 @@ void AWeaponBase::SpawnProjectile(const FVector& muzzleLocation, const FRotator&
 			const auto projectile = World->SpawnActor<AProjectileBase>(ProjectileClass, location, muzzleRotation, ActorSpawnParams);
 			if(projectile)
 			{
+				const auto owner = GetOwner();
+				UE_LOG(LogTemp, Warning, TEXT("WeaponBase::SpawnProjectile %d"), owner->GetLocalRole());
 				projectile->SetInstigator(Cast<APawn>(GetOwner()));
 			}
 			else

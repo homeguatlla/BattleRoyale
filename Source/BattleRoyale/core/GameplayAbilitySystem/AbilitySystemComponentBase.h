@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "IAbilitySystemInterfaceBase.h"
-#include "UObject/Object.h"
 #include "AbilitySystemComponentBase.generated.h"
 
 /**
@@ -19,6 +18,9 @@ class BATTLEROYALE_API UAbilitySystemComponentBase : public UAbilitySystemCompon
 public:
 
 	virtual void SetSimulatedMontage(UAnimMontage* montage) override;
+	virtual FActiveGameplayEffectHandle ApplyGameplayEffectToTarget(const TSubclassOf<UGameplayEffect>& effect, const IICharacter* target) override;
+	virtual FActiveGameplayEffectHandle ApplyGameplayEffectToSelf(const TSubclassOf<UGameplayEffect>& effectClass) override;
+	
 	/*virtual float PlayMontage(UGameplayAbility* AnimatingAbility, FGameplayAbilityActivationInfo ActivationInfo, UAnimMontage* Montage, float InPlayRate, FName StartSectionName = NAME_None, float StartTimeSeconds = 0.0f) override;
 	virtual float PlayMontageSimulated(UAnimMontage* Montage, float InPlayRate, FName StartSectionName = NAME_None) override;*/
 };

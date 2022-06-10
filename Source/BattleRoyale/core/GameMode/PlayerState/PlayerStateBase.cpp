@@ -5,14 +5,12 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
-#include "OnlineSubsystem.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
+#include "BattleRoyale/core/Character/AttributeSetBase.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/GameMode/GameModeCommon.h"
 #include "BattleRoyale/core/GameMode/MultiplayerGameMode.h"
 #include "BattleRoyale/core/Utils/FSM/StatesMachineFactory.h"
-#include "Interfaces/OnlineGameMatchesInterface.h"
-#include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -24,6 +22,9 @@ mPlayerInteraction("")
 {
 	mAbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponentBase>(TEXT("AbilitySystemComponent"));
 	mAbilitySystemComponent->SetIsReplicated(true);
+	//Create gameplayability attributes for this character
+	mGameplayAbilityAttributes = CreateDefaultSubobject<UAttributeSetBase>("GameplayAbilityAttributes");
+	
 	PrimaryActorTick.bCanEverTick = true;
 	SetActorTickEnabled(false);
 }

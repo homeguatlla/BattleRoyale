@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CharacterBase.h"
+
+
 #include "BattleRoyale/core/Weapons/ProjectileBase.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
@@ -20,9 +22,7 @@
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
-#include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
 #include "GameFramework/PlayerState.h"
-#include "Materials/MaterialInstanceDynamic.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -49,12 +49,10 @@ ACharacterBase::ACharacterBase()
 	L_MotionController->SetupAttachment(RootComponent);
 
 	//Create gameplayability attributes for this character
-	mGameplayAbilityAttributes = CreateDefaultSubobject<UAttributeSetBase>("GameplayAbilityAttributes");
+	//mGameplayAbilityAttributes = CreateDefaultSubobject<UAttributeSetBase>("GameplayAbilityAttributes");
 	
-	mCurrentHealth = MaxHealth;
-	
-	mGameplayAbilityAttributes->InitHealth(MaxHealth);
-	mGameplayAbilityAttributes->InitMaxHealth(MaxHealth);
+	//mGameplayAbilityAttributes->InitHealth(MaxHealth);
+	//mGameplayAbilityAttributes->InitMaxHealth(MaxHealth);
 }
 
 void ACharacterBase::BeginPlay()
@@ -67,12 +65,6 @@ void ACharacterBase::BeginPlay()
 void ACharacterBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	if(mAnyKeyPressed)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, "Key pressed");
-		UE_LOG(LogCharacter, Log, TEXT("Key pressed"));
-	}
 }
 
 void ACharacterBase::PossessedBy(AController* NewController)
@@ -103,10 +95,50 @@ void ACharacterBase::Initialize(bool isLocallyControlled)
 
 void ACharacterBase::InitializeGAS()
 {
-	IIPlayerState* playerState = GetPlayerStateInterface();
+	const IIPlayerState* playerState = GetPlayerStateInterface();
 	if (playerState)
 	{
 		playerState->GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
+		InitializeAttributes();
+	}
+}
+
+void ACharacterBase::InitializeAttributes()
+{
+	const IIPlayerState* playerState = GetPlayerStateInterface();
+	if (playerState)
+	{
+		const auto abilitySystemComponent = playerState->GetAbilitySystemComponent();
+		
+		if(abilitySystemComponent && DefaultAttributeEffect)
+		{
+			FGameplayEffectContextHandle EffectContext = abilitySystemComponent->MakeEffectContext();
+			EffectContext.AddSourceObject(this);
+
+			const FGameplayEffectSpecHandle SpecHandle = abilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffect, 1, EffectContext);
+
+			if(SpecHandle.IsValid())
+			{
+				const auto attributes = abilitySystemComponent->GetSet<UAttributeSetBase>();
+				if(attributes)
+				{
+					auto& delegateOnHealthChanged = abilitySystemComponent->GetGameplayAttributeValueChangeDelegate(attributes->GetHealthAttribute());
+					delegateOnHealthChanged.AddUObject(this, &ACharacterBase::OnHealthChanged);
+				}
+				//This apply works although the handle it returns is not valid
+				abilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+			}
+		}
+	}
+}
+void ACharacterBase::OnHealthChanged(const FOnAttributeChangeData& data) const
+{
+	const auto abilitySystemComponent = GetPlayerStateInterface()->GetAbilitySystemComponent();
+		
+	if(abilitySystemComponent)
+	{
+		const auto attributes = abilitySystemComponent->GetSet<UAttributeSetBase>();
+		UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::OnHealthChanged] Health current value %f"), attributes->GetHealth());	
 	}
 }
 
@@ -128,6 +160,11 @@ TScriptInterface<IIWeapon> ACharacterBase::GetEquippedWeapon() const
 FVector ACharacterBase::GetCurrentMeshSpaceVelocity() const
 {
 	return GetMesh()->GetComponentTransform().InverseTransformVector(GetVelocity());
+}
+
+float ACharacterBase::GetCurrentHealth() const
+{
+	return GetPlayerStateInterface()->GetCurrentHealth();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -210,7 +247,7 @@ void ACharacterBase::GiveAbilitiesServer()
 
 void ACharacterBase::SetCurrentHealth(float health)
 {
-	mCurrentHealth = health;
+	//mGameplayAbilityAttributes->SetHealth(health);
 }
 
 bool ACharacterBase::CanSprint() const
@@ -384,7 +421,7 @@ float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
 	const auto killer = Cast<APlayerController>(EventInstigator);
 	const auto victim = Cast<APlayerController>(GetController());
 
-	const auto gameMode = GetGameModeServer();
+	/*const auto gameMode = GetGameModeServer();
 	if(!gameMode->CanPlayerCauseDamageTo(killer, victim))
 	{
 		return actualDamage;
@@ -393,7 +430,7 @@ float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
 	//TODO el damage se podría tratar en un componente Health o Damage del actor
 	//o bien en una abilidad.
 	UE_LOG(LogCharacter, Warning, TEXT("ACharacterBase::TakeDamage Server"));
-	const auto newHealth = mCurrentHealth - actualDamage;
+	const auto newHealth = mGameplayAbilityAttributes->GetHealth() - actualDamage;
 	mDamageCauser.health = FMath::Clamp(newHealth, 0.0f, MaxHealth);
 	mDamageCauser.damage = actualDamage;
 	mDamageCauser.playerCauser = EventInstigator->GetCharacter();
@@ -401,10 +438,10 @@ float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
 	UpdateHealth(mDamageCauser);
 
 	//This is ok here because only server can increase the number of kills.
-	if(mCurrentHealth <= 0)
+	if(!mGameplayAbilityAttributes->IsAlive())
 	{
 		gameMode->OnNewKill(killer,	victim);
-	}
+	}*/
 	
 	return actualDamage;
 }
@@ -536,14 +573,15 @@ void ACharacterBase::PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* 
 
 void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 {
-	mCurrentHealth = damage.health;
+	/*mGameplayAbilityAttributes->SetHealth(damage.health);
+	auto currentHealth = mGameplayAbilityAttributes->GetHealth();
 	
 	//Client specific
 	if(IsLocallyControlled())
 	{
 		//Update health hud
 		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-		gameInstance->GetEventDispatcher()->OnRefreshHealth.Broadcast(mCurrentHealth);
+		gameInstance->GetEventDispatcher()->OnRefreshHealth.Broadcast(currentHealth);
 	}
 	
 	if(!IsLocallyControlled())
@@ -554,8 +592,8 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 		if(damage.playerCauser->GetLocalRole() == ENetRole::ROLE_AutonomousProxy)
 		{
 			//notify to the character recieved damage, to show hit points
-			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation(), mCurrentHealth);
-			if(mCurrentHealth <=0)
+			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation(), currentHealth);
+			if(!mGameplayAbilityAttributes->IsAlive())
 			{
 				//notify the character has dead
 				BP_OnDead();
@@ -568,13 +606,13 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 		//And also if we are in the server, then if the causer is locallycontrolled
 		if(damage.playerCauser->IsLocallyControlled())
 		{
-			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation(), mCurrentHealth);
-			if(mCurrentHealth <= 0)
+			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation(), currentHealth);
+			if(!mGameplayAbilityAttributes->IsAlive())
 			{
 				BP_OnDead();				
 			}
 		}
-	}
+	}*/
 
 	/*if (mCurrentHealth <= 0)
 	{
