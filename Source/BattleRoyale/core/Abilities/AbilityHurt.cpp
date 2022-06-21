@@ -31,24 +31,10 @@ void UAbilityHurt::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
-	if(auto hurtComponent = character->GetHurtComponent())
+	if(const auto hurtComponent = character->GetHurtComponent())
 	{
 		hurtComponent->RegisterToHealthAttributeDelegate(std::bind(&UAbilityHurt::OnHealthChanged, this, std::placeholders::_1));
 	}
-}
-
-bool UAbilityHurt::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
-	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
-{
-	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
-}
-
-void UAbilityHurt::CancelAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	bool bReplicateCancelAbility)
-{
-	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 }
 
 void UAbilityHurt::OnAvatarSet(const FGameplayAbilityActorInfo * ActorInfo, const FGameplayAbilitySpec & Spec)
@@ -76,12 +62,10 @@ void UAbilityHurt::OnHealthChanged(const FOnAttributeChangeData& data) const
 		const auto instigator = data.GEModData->EffectSpec.GetEffectContext().GetInstigator();
 		if(instigator)
 		{
-			
+			//TODO aquí deberíamos actualizar el HUD
+			//este método podría ser llamado por otras heridas.
+			//const auto attributes = abilitySystemComponent->GetSet<UAttributeSetHealth>();
+			//UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::OnHealthChanged] Health current value %f"), attributes->GetHealth());	
 		}
-		
-		//TODO aquí deberíamos actualizar el HUD
-		//este método podría ser llamado por otras heridas.
-		//const auto attributes = abilitySystemComponent->GetSet<UAttributeSetHealth>();
-		//UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::OnHealthChanged] Health current value %f"), attributes->GetHealth());	
 	}
 }

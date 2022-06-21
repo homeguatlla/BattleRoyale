@@ -137,20 +137,6 @@ void ACharacterBase::InitializeAttributes()
 		}
 	}
 }
-/*
-void ACharacterBase::OnHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData) const
-{
-	const IIPlayerState* playerState = GetPlayerStateInterface();
-	if (playerState)
-	{
-		const auto abilitySystemComponent = playerState->GetAbilitySystemComponent();
-		const auto attributes = abilitySystemComponent->GetSet<UAttributeSetHealth>();
-		if(attributes == nullptr)
-		{
-			return;
-		}
-	}
-}*/
 	
 IIPlayerState* ACharacterBase::GetPlayerStateInterface() const
 {

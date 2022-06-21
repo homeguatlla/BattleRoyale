@@ -36,16 +36,43 @@ class ACharacterBase : public ACharacter, public IICharacter
 
 	UPROPERTY(EditDefaultsOnly, Category = Character)
 	FName RightHandSocketName;
+
+	UPROPERTY(EditDefaultsOnly, Category = EquipedWeapon)
+	TSubclassOf<class AWeaponBase> WeaponClass;
 	
+	/** AnimMontage to play each time we fire first person */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* FireAnimation1P;
+
+	/** AnimMontage to play each time we fire third person */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* FireAnimation3P;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	TArray<TSubclassOf<class UGameplayAbilityBase>> mDefaultAbilities;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS Effects", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class UGameplayEffect> DefaultAttributeEffect;
+	
+	/** The player's maximum health. This is the highest that their health can be, and the value that their health starts at when spawned.*/
+	UPROPERTY(EditDefaultsOnly, Category = "Character")
+	float MaxHealth{100.0};
+	
+	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera, meta = (AllowPrivateAccess = "true"))
+	float BaseTurnRate;
+
+	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera, meta = (AllowPrivateAccess = "true"))
+	float BaseLookUpRate;
+	
+	/** Replicated control rotation in order to update remotes pitch */
+	UPROPERTY(Transient, Replicated)
+	struct FRotator mControlRotation;
 	TScriptInterface<IIWeapon> mEquipedWeapon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UHurtComponent* HurtComponent;
-	
-	//float mCurrentHealth;
-
-	//UPROPERTY()
-	//UAttributeSetBase* mGameplayAbilityAttributes;	
 	
 	UPROPERTY(ReplicatedUsing=OnRep_TakeDamageData)
 	FTakeDamageData mDamageCauser;
@@ -157,41 +184,6 @@ public:
 protected:
 	virtual void BeginPlay();
 	virtual void Tick(float DeltaSeconds) override;
-	
-public:
-	
-	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	float BaseTurnRate;
-
-	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-	float BaseLookUpRate;
-
-	UPROPERTY(EditDefaultsOnly, Category = EquipedWeapon)
-	TSubclassOf<class AWeaponBase> WeaponClass;
-	
-	/** AnimMontage to play each time we fire first person */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	UAnimMontage* FireAnimation1P;
-
-	/** AnimMontage to play each time we fire third person */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	UAnimMontage* FireAnimation3P;
-
-	/** Replicated control rotation in order to update remotes pitch */
-	UPROPERTY(Transient, Replicated)
-	struct FRotator mControlRotation;
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Character")
-	TArray<TSubclassOf<class UGameplayAbilityBase>> mDefaultAbilities;
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS Effects")
-	TSubclassOf<class UGameplayEffect> DefaultAttributeEffect;
-	
-	/** The player's maximum health. This is the highest that their health can be, and the value that their health starts at when spawned.*/
-	UPROPERTY(EditDefaultsOnly, Category = "Character")
-	float MaxHealth{100.0};
 
 protected:
 	
