@@ -2,9 +2,7 @@
 
 
 #include "AbilitySystemComponentBase.h"
-
 #include "AbilitySystemInterface.h"
-#include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 
 void UAbilitySystemComponentBase::SetSimulatedMontage(UAnimMontage* montage)
@@ -20,7 +18,6 @@ FActiveGameplayEffectHandle UAbilitySystemComponentBase::ApplyGameplayEffectToTa
 	if(const auto targetAbilityComponent = target->GetAbilitySystemComponent())
 	{
 		auto effectContext = MakeEffectContext();
-		auto owner = GetOwnerActor();
 		effectContext.AddSourceObject(GetOwnerActor());
 
 		const auto gameplayEffectHandle = MakeOutgoingSpec(effect, 1, effectContext);
@@ -39,6 +36,16 @@ FActiveGameplayEffectHandle UAbilitySystemComponentBase::ApplyGameplayEffectToSe
 	effectContext.AddSourceObject(GetOwnerActor());
 
 	return UAbilitySystemComponent::ApplyGameplayEffectToSelf(effectClass->GetDefaultObject<UGameplayEffect>(), 1, effectContext);
+}
+
+void UAbilitySystemComponentBase::AddAttributeSet(UAttributeSet* attributeSet)
+{
+	GetSpawnedAttributes_Mutable().Add(attributeSet);
+}
+
+FOnGameplayAttributeValueChange& UAbilitySystemComponentBase::GetGameplayAttributeValueChangeDelegate_(FGameplayAttribute Attribute)
+{
+	return Super::GetGameplayAttributeValueChangeDelegate(Attribute);
 }
 
 /*

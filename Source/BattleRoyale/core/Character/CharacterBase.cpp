@@ -22,6 +22,7 @@
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
+#include "Components/HurtComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 
@@ -48,6 +49,9 @@ ACharacterBase::ACharacterBase()
 	L_MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("L_MotionController"));
 	L_MotionController->SetupAttachment(RootComponent);
 
+	//Create hurtComponent
+	HurtComponent = CreateDefaultSubobject<UHurtComponent>(TEXT("HurtComponent"));
+	
 	//Create gameplayability attributes for this character
 	//mGameplayAbilityAttributes = CreateDefaultSubobject<UAttributeSetBase>("GameplayAbilityAttributes");
 	
@@ -119,29 +123,35 @@ void ACharacterBase::InitializeAttributes()
 
 			if(SpecHandle.IsValid())
 			{
-				const auto attributes = abilitySystemComponent->GetSet<UAttributeSetBase>();
+				/*const auto attributes = abilitySystemComponent->GetSet<UAttributeSetHealth>();
 				if(attributes)
 				{
 					auto& delegateOnHealthChanged = abilitySystemComponent->GetGameplayAttributeValueChangeDelegate(attributes->GetHealthAttribute());
 					delegateOnHealthChanged.AddUObject(this, &ACharacterBase::OnHealthChanged);
-				}
+				}*/
 				//This apply works although the handle it returns is not valid
 				abilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+
+				HurtComponent->Initialize();
 			}
 		}
 	}
 }
-void ACharacterBase::OnHealthChanged(const FOnAttributeChangeData& data) const
+/*
+void ACharacterBase::OnHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData) const
 {
-	const auto abilitySystemComponent = GetPlayerStateInterface()->GetAbilitySystemComponent();
-		
-	if(abilitySystemComponent)
+	const IIPlayerState* playerState = GetPlayerStateInterface();
+	if (playerState)
 	{
-		const auto attributes = abilitySystemComponent->GetSet<UAttributeSetBase>();
-		UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::OnHealthChanged] Health current value %f"), attributes->GetHealth());	
+		const auto abilitySystemComponent = playerState->GetAbilitySystemComponent();
+		const auto attributes = abilitySystemComponent->GetSet<UAttributeSetHealth>();
+		if(attributes == nullptr)
+		{
+			return;
+		}
 	}
-}
-
+}*/
+	
 IIPlayerState* ACharacterBase::GetPlayerStateInterface() const
 {
 	const auto playerState = GetPlayerState();
@@ -421,27 +431,13 @@ float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
 	const auto killer = Cast<APlayerController>(EventInstigator);
 	const auto victim = Cast<APlayerController>(GetController());
 
-	/*const auto gameMode = GetGameModeServer();
+	const auto gameMode = GetGameModeServer();
 	if(!gameMode->CanPlayerCauseDamageTo(killer, victim))
 	{
 		return actualDamage;
 	}
-	
-	//TODO el damage se podría tratar en un componente Health o Damage del actor
-	//o bien en una abilidad.
-	UE_LOG(LogCharacter, Warning, TEXT("ACharacterBase::TakeDamage Server"));
-	const auto newHealth = mGameplayAbilityAttributes->GetHealth() - actualDamage;
-	mDamageCauser.health = FMath::Clamp(newHealth, 0.0f, MaxHealth);
-	mDamageCauser.damage = actualDamage;
-	mDamageCauser.playerCauser = EventInstigator->GetCharacter();
-	//the replication is not received by server so, we need to update it here
-	UpdateHealth(mDamageCauser);
 
-	//This is ok here because only server can increase the number of kills.
-	if(!mGameplayAbilityAttributes->IsAlive())
-	{
-		gameMode->OnNewKill(killer,	victim);
-	}*/
+	HurtComponent->TakeDamageServer(actualDamage, killer, victim);
 	
 	return actualDamage;
 }

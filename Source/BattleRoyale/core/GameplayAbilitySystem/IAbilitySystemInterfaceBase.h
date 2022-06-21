@@ -28,4 +28,6 @@ public:
 	virtual void SetSimulatedMontage(UAnimMontage* montage) = 0;
 	virtual FActiveGameplayEffectHandle ApplyGameplayEffectToTarget(const TSubclassOf<UGameplayEffect>& effect, const IICharacter* target) = 0;
 	virtual FActiveGameplayEffectHandle ApplyGameplayEffectToSelf(const TSubclassOf<UGameplayEffect>& effectClass) = 0;
+	virtual void AddAttributeSet(UAttributeSet* attributeSet) = 0;
+	virtual FOnGameplayAttributeValueChange& GetGameplayAttributeValueChangeDelegate_(FGameplayAttribute Attribute) = 0;
 };

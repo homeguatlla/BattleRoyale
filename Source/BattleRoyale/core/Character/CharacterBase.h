@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AttributeSetBase.h"
+#include "AttributeSetHealth.h"
 #include "ICharacter.h"
 #include "BattleRoyale/core/Data/TakeDamageData.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
@@ -39,7 +39,8 @@ class ACharacterBase : public ACharacter, public IICharacter
 	
 	TScriptInterface<IIWeapon> mEquipedWeapon;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	class UHurtComponent* HurtComponent;
 	
 	//float mCurrentHealth;
 
@@ -96,6 +97,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual UCameraComponent* GetCamera() const override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual UHurtComponent* GetHurtComponent() const override { return HurtComponent; }
 	
 	virtual void SetEnableInput(bool enable, const FInputModeDataBase& inputMode = FInputModeGameAndUI()) override;
 	
@@ -230,9 +234,7 @@ private:
 	
 	void InitializeGAS();
 	void InitializeAttributes();
-
-	void OnHealthChanged(const FOnAttributeChangeData& data) const;
-
+	//void OnHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData) const;
 	void BindAbilityActivationToInputComponent() const;
 	void GiveAbilitiesServer();
 

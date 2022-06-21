@@ -10,6 +10,8 @@ class UCameraComponent;
 class IIAbilitySystemInterfaceBase;
 class IAbilitySystemInterface;
 class IIWeapon;
+class UHurtComponent;
+
 // This class does not need to be modified.
 UINTERFACE(Blueprintable, meta = (CannotImplementInterfaceInBlueprint))
 class UICharacter : public UInterface
@@ -89,6 +91,9 @@ public:
 	virtual void SetEnableInput(bool enable, const FInputModeDataBase& inputMode = FInputModeGameAndUI()) = 0;
 
 	virtual UCameraComponent* GetCamera() const = 0;
+
+	virtual UHurtComponent* GetHurtComponent() const = 0;
+	
 	
 	/**
 	 * Shoot is aim and try to hit something

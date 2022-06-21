@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "AttributeSet.h"
-#include "AttributeSetBase.generated.h"
+#include "AttributeSetHealth.generated.h"
 
 // Uses macros from AttributeSet.h
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
@@ -18,7 +18,7 @@ GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
  * 
  */
 UCLASS()
-class BATTLEROYALE_API UAttributeSetBase : public UAttributeSet
+class BATTLEROYALE_API UAttributeSetHealth : public UAttributeSet
 {
 	GENERATED_BODY()
 
@@ -26,11 +26,11 @@ public:
 	//TODO si el nombre de atributos crece igual vale la pena crear varias clases heredando de base
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepHealth)
 	FGameplayAttributeData Health;
-	ATTRIBUTE_ACCESSORS(UAttributeSetBase, Health)
+	ATTRIBUTE_ACCESSORS(UAttributeSetHealth, Health)
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepMaxHealth)
 	FGameplayAttributeData MaxHealth;
-	ATTRIBUTE_ACCESSORS(UAttributeSetBase, MaxHealth)
+	ATTRIBUTE_ACCESSORS(UAttributeSetHealth, MaxHealth)
 
 	bool IsAlive() const { return Health.GetCurrentValue() > 0;}
 
