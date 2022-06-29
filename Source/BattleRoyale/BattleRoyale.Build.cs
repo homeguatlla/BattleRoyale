@@ -19,6 +19,7 @@ public class BattleRoyale : ModuleRules
 			//online subsystem
 			"OnlineSubsystem",
 			"OnlineSubsystemUtils",
+			"OnlineSubsystemSteam",
 			//GAS
 			"GameplayAbilities",
 			"GameplayTags",
