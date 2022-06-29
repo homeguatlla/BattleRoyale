@@ -82,6 +82,11 @@ void APlayerStateBase::ResetPlayerInteraction()
 	mPlayerInteraction.Empty();
 }
 
+void APlayerStateBase::NotifyRefreshHealth(float health) const
+{
+	ClientRefreshHealth(health);
+}
+
 void APlayerStateBase::NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const
 {
 	MulticastAnnouncementOfNewDeath(killerName, victimName);
@@ -193,6 +198,11 @@ void APlayerStateBase::BeginDestroy()
 		AGameModeCommon::DestroyGameSession();
 	}
 	Super::BeginDestroy();
+}
+
+void APlayerStateBase::ClientRefreshHealth_Implementation(float health) const
+{
+	GetEventDispatcher()->OnRefreshHealth.Broadcast(health);
 }
 
 void APlayerStateBase::ClientRefreshNumKills_Implementation(int numKills)

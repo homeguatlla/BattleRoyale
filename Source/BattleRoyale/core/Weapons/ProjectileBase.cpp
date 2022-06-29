@@ -3,10 +3,11 @@
 #include "ProjectileBase.h"
 
 #include "AbilitySystemComponent.h"
-#include "AbilitySystemInterface.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
+#include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GameFramework/PlayerState.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/DamageType.h"
 #include "Kismet/GameplayStatics.h"
@@ -68,11 +69,15 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 		if(const auto hurtCharacter = Cast<IICharacter>(OtherActor))
         {
         	const auto gameplayAbilityInterface = hurtCharacter->GetAbilitySystemComponentBase();
-        	const auto damageEffectHandle = gameplayAbilityInterface->ApplyGameplayEffectToSelf(DamageEffect);
-        	if(!damageEffectHandle.IsValid())
-        	{
-        		UE_LOG(LogTemp, Error, TEXT("AProjectileBase::OnHit gameplay effect Damage couldn't be applied"));
-        	}
+			const auto instigatorPlayerState = Cast<IIPlayerState>(GetInstigator()->GetPlayerState());
+			if(instigatorPlayerState)
+			{
+				const auto damageEffectHandle = instigatorPlayerState->GetAbilitySystemComponentInterface()->ApplyGameplayEffectToTarget(DamageEffect, hurtCharacter);
+				if(!damageEffectHandle.IsValid())
+				{
+					UE_LOG(LogTemp, Error, TEXT("AProjectileBase::OnHit gameplay effect Damage couldn't be applied"));
+				}
+			}
         }
 		
 		/*

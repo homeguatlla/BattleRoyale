@@ -14,6 +14,7 @@ GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
 GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+class IIGameMode;
 /**
  * 
  */
@@ -23,21 +24,24 @@ class BATTLEROYALE_API UAttributeSetHealth : public UAttributeSet
 	GENERATED_BODY()
 
 public:
-	//TODO si el nombre de atributos crece igual vale la pena crear varias clases heredando de base
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepMaxHealth)
+	FGameplayAttributeData MaxHealth;
+	ATTRIBUTE_ACCESSORS(UAttributeSetHealth, MaxHealth)
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepHealth)
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UAttributeSetHealth, Health)
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRepMaxHealth)
-	FGameplayAttributeData MaxHealth;
-	ATTRIBUTE_ACCESSORS(UAttributeSetHealth, MaxHealth)
-
+	UAttributeSetHealth();
 	bool IsAlive() const { return Health.GetCurrentValue() > 0;}
 
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
-	
 private:
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	IIGameMode* GetGameModeServer() const;
+
 	UFUNCTION()
 	void OnRepHealth(const FGameplayAttributeData& OldHealth);
 	UFUNCTION()

@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "IGameMode.generated.h"
 
+class IIPlayerState;
 class UGameModeConfigurationInfo;
 class IIGameState;
 
@@ -30,6 +31,6 @@ public:
 	virtual float GetGameRulesUpdateIntervalTime() const = 0;
 	
 	virtual void OnNewKill(const APlayerController* killerController, const APlayerController* victimController) = 0;
-	virtual bool CanPlayerCauseDamageTo(const APlayerController* killerController, const APlayerController* victimController) = 0;
+	virtual bool CanPlayerCauseDamageTo(const IIPlayerState* causerPlayerState, const IIPlayerState* victimPlayerState) = 0;
 	virtual const UGameModeConfigurationInfo* GetGameModeConfiguration() const = 0;
 };

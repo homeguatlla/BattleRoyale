@@ -50,7 +50,8 @@ public:
 	virtual void ResetPlayerInteraction() override;
 	
 	virtual IICharacter* GetCharacter() const override;
-	
+
+	virtual void NotifyRefreshHealth(float health) const override;
 	virtual void NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const override;
 	virtual void NotifyNumKillsToSelf() override;
 	virtual void NotifyGameOverServer(bool hasMatchEnded, bool isWinner) override;
@@ -73,6 +74,9 @@ private:
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastAnnouncementOfNewDeath(const FString& killerName, const FString& victimName) const;
 
+	UFUNCTION(Client, Reliable)
+	void ClientRefreshHealth(float health) const;
+	
 	UFUNCTION(Client, Unreliable)
 	void ClientRefreshNumKills(int numKills);
 	

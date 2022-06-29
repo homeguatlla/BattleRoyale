@@ -3,6 +3,7 @@
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "AbilitiesInput.h"
 #include "AbilitySystemComponent.h"
+#include "GameplayTagsList.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
@@ -19,7 +20,7 @@ UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 	//que no se esté haciendo algo mal.
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Shoot.Projectile")));
+	AbilityTags.AddTag(TAG_ABILITY_SHOOT_PROJECTILE);
 
 	CooldownGameplayEffectClass = UCooldownGameplayEffect::StaticClass();
 }
@@ -177,7 +178,7 @@ float UAbilityShootProjectileGun::GetWeaponCooldownDuration() const
 void UAbilityShootProjectileGun::SubscribeToEventMontageShoot(const IICharacter* character)
 {
 	UAbilityTask_WaitGameplayEvent* newTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
-			this, FGameplayTag::RequestGameplayTag(FName("Event.Montage.Shoot")), nullptr, true);
+			this, TAG_EVENT_MONTAGE_SHOOT, nullptr, true);
 	newTask->EventReceived.AddDynamic(this, &UAbilityShootProjectileGun::OnEventMontageShootReceived);
 	newTask->Activate();
 

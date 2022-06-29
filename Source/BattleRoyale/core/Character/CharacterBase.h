@@ -167,6 +167,8 @@ public:
 	virtual void DieServer() override;
 
 	virtual void DieClient() override;
+
+	virtual void NotifyRefreshHealth(float health) const override;
 	
 	virtual UAnimMontage* GetShootingMontage() const override;
 
@@ -225,7 +227,7 @@ private:
 	virtual void DoInitialize(bool isLocallyControlled) {}
 	
 	void InitializeGAS();
-	void InitializeAttributes();
+	void InitializeAttributes() const;
 	//void OnHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData) const;
 	void BindAbilityActivationToInputComponent() const;
 	void GiveAbilitiesServer();

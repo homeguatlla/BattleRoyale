@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayAbilityBase.h"
+#include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "AbilityHurt.generated.h"
 
 /**
@@ -24,4 +25,5 @@ public:
 
 private:
 	void OnHealthChanged(const FOnAttributeChangeData& data) const;
+	IIGameMode* GetGameModeServer() const;
 };

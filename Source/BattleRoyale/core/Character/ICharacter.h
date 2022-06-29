@@ -93,7 +93,8 @@ public:
 	virtual UCameraComponent* GetCamera() const = 0;
 
 	virtual UHurtComponent* GetHurtComponent() const = 0;
-	
+
+	virtual void NotifyRefreshHealth(float health) const = 0;
 	
 	/**
 	 * Shoot is aim and try to hit something

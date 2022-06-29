@@ -64,7 +64,8 @@ public:
 	virtual float GetTimeBetweenEndOfGameAndStatsScreen() const = 0;
 	
 	virtual IICharacter* GetCharacter() const = 0;
-	
+
+	virtual void NotifyRefreshHealth(float health) const = 0;
 	virtual void NotifyAnnouncementOfNewDeathToAll(const FString& killerName, const FString& victimName) const = 0;
 	virtual void NotifyNumKillsToSelf() = 0;
 	virtual void NotifyGameOverServer(bool hasMatchEnded, bool isWinner) = 0;

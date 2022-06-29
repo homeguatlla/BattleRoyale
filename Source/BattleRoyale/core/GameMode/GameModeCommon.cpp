@@ -81,13 +81,10 @@ void AGameModeCommon::OnNewKill(const APlayerController* killerController, const
 	GetGameState()->NotifyNumTeamsAndPlayersAlive();
 }
 
-bool AGameModeCommon::CanPlayerCauseDamageTo(const APlayerController* killerController,
-	const APlayerController* victimController)
+bool AGameModeCommon::CanPlayerCauseDamageTo(const IIPlayerState* causerPlayerState,
+                                             const IIPlayerState* victimPlayerState)
 {
-	const auto killerPlayerState = killerController->GetPlayerState<IIPlayerState>();
-	const auto victimPlayerState = victimController->GetPlayerState<IIPlayerState>();
-	
-	return killerPlayerState->GetTeamId() != victimPlayerState->GetTeamId();
+	return causerPlayerState->GetTeamId() != victimPlayerState->GetTeamId();
 }
 
 bool AGameModeCommon::HasCurrentGameSession() const

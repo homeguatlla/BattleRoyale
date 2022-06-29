@@ -8,6 +8,7 @@
 #include "Configuration/GameModeConfigurationInfo.h"
 #include "GameModeCommon.generated.h"
 
+class IIPlayerState;
 class IIPlayerController;
 class APlayerStateBase;
 class UMultiplayerConfigurationInfo;
@@ -31,7 +32,7 @@ public:
 	//Inherit from IIGameMode
 	virtual IIGameState* GetGameState() const override;
 	virtual void OnNewKill(const APlayerController* killerController, const APlayerController* victimController) override;
-	virtual bool CanPlayerCauseDamageTo(const APlayerController* killerController, const APlayerController* victimController) override;
+	virtual bool CanPlayerCauseDamageTo(const IIPlayerState* causerPlayerState, const IIPlayerState* victimPlayerState) override;
 	virtual bool HasCurrentGameSession() const override;
 	virtual const UGameModeConfigurationInfo* GetGameModeConfiguration() const override { return ConfigurationInfo;}
 	

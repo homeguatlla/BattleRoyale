@@ -4,8 +4,12 @@
 #include "AbilityHurt.h"
 
 #include "GameplayEffectExtension.h"
+#include "GameplayTagsList.h"
+#include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/Character/Components/HurtComponent.h"
+#include "BattleRoyale/core/GameMode/IGameMode.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
 
 
 UAbilityHurt::UAbilityHurt()
@@ -16,7 +20,8 @@ UAbilityHurt::UAbilityHurt()
 	//and will be activated when granted(added)
 	ActivateAbilityOnGranted = true;
 	
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Hurt")));
+	AbilityTags.AddTag(TAG_ABILITY_HURT);
+	ActivationOwnedTags.AddTag(TAG_STATE_CAN_BE_HURT);
 }
 
 void UAbilityHurt::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -50,22 +55,34 @@ void UAbilityHurt::OnAvatarSet(const FGameplayAbilityActorInfo * ActorInfo, cons
 
 void UAbilityHurt::OnHealthChanged(const FOnAttributeChangeData& data) const
 {
-	//const auto abilitySystemComponent = GetPlayerStateInterface()->GetAbilitySystemComponent();
-		
-	//if(abilitySystemComponent)
+	if(!data.GEModData)
 	{
-		if(!data.GEModData)
-		{
-			return;
-		}
-		
-		const auto instigator = data.GEModData->EffectSpec.GetEffectContext().GetInstigator();
-		if(instigator)
-		{
-			//TODO aquí deberíamos actualizar el HUD
-			//este método podría ser llamado por otras heridas.
-			//const auto attributes = abilitySystemComponent->GetSet<UAttributeSetHealth>();
-			//UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::OnHealthChanged] Health current value %f"), attributes->GetHealth());	
-		}
+		return;
 	}
+
+	const auto victim = Cast<IICharacter>(CurrentActorInfo->AvatarActor);
+	const auto attributeSetHealth = victim->GetAbilitySystemComponent()->GetAbilitySystemComponent()->GetSet<UAttributeSetHealth>();
+	if(victim)
+	{
+		const auto currentHealth = attributeSetHealth->GetHealth();//data.GEModData->EvaluatedData.Attribute.GetNumericValue(attributeSetHealth);
+		victim->NotifyRefreshHealth(currentHealth);
+	}
+	
+	const auto instigator = data.GEModData->EffectSpec.GetEffectContext().GetInstigator();
+	
+	if(!instigator || !victim)
+	{
+		return;
+	}
+
+	
+		//TODO aquí deberíamos actualizar el HUD
+		//este método podría ser llamado por otras heridas.
+		//const auto attributes = abilitySystemComponent->GetSet<UAttributeSetHealth>();
+	//UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::OnHealthChanged] Health current value %f"), attributes->GetHealth());	
+}
+
+IIGameMode* UAbilityHurt::GetGameModeServer() const
+{
+	return Cast<IIGameMode>(GetWorld()->GetAuthGameMode<ABattleRoyaleGameMode>());
 }

@@ -107,8 +107,10 @@ void ACharacterBase::InitializeGAS()
 	}
 }
 
-void ACharacterBase::InitializeAttributes()
+void ACharacterBase::InitializeAttributes() const
 {
+	HurtComponent->Initialize();
+		
 	const IIPlayerState* playerState = GetPlayerStateInterface();
 	if (playerState)
 	{
@@ -123,16 +125,9 @@ void ACharacterBase::InitializeAttributes()
 
 			if(SpecHandle.IsValid())
 			{
-				/*const auto attributes = abilitySystemComponent->GetSet<UAttributeSetHealth>();
-				if(attributes)
-				{
-					auto& delegateOnHealthChanged = abilitySystemComponent->GetGameplayAttributeValueChangeDelegate(attributes->GetHealthAttribute());
-					delegateOnHealthChanged.AddUObject(this, &ACharacterBase::OnHealthChanged);
-				}*/
+				
 				//This apply works although the handle it returns is not valid
 				abilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-
-				HurtComponent->Initialize();
 			}
 		}
 	}
@@ -417,13 +412,13 @@ float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
 	const auto killer = Cast<APlayerController>(EventInstigator);
 	const auto victim = Cast<APlayerController>(GetController());
 
-	const auto gameMode = GetGameModeServer();
+	/*const auto gameMode = GetGameModeServer();
 	if(!gameMode->CanPlayerCauseDamageTo(killer, victim))
 	{
 		return actualDamage;
 	}
-
-	HurtComponent->TakeDamageServer(actualDamage, killer, victim);
+*/
+	//HurtComponent->TakeDamageServer(actualDamage, killer, victim);
 	
 	return actualDamage;
 }
@@ -626,6 +621,7 @@ void ACharacterBase::DieClient()
 	DoDieClient();
 }
 
+
 void ACharacterBase::DieServer()
 {
 	SetCanBeDamaged(false); //replicated
@@ -634,6 +630,11 @@ void ACharacterBase::DieServer()
 	GetCharacterMovement()->SetComponentTickEnabled(false);
 	
 	DieClient();
+}
+
+void ACharacterBase::NotifyRefreshHealth(float health) const
+{
+	GetPlayerStateInterface()->NotifyRefreshHealth(health);
 }
 
 void ACharacterBase::OnRep_TakeDamageData()

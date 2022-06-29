@@ -3,6 +3,7 @@
 #include "AbilitiesInput.h"
 #include "AbilitySystemGlobals.h"
 #include "GameplayCueManager.h"
+#include "GameplayTagsList.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 
 UAbilityJump::UAbilityJump()
@@ -10,7 +11,7 @@ UAbilityJump::UAbilityJump()
 	AbilityInputID = EAbilityInputID::Jump;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
 
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Jump")));
+	AbilityTags.AddTag(TAG_ABILITY_JUMP);
 }
 
 void UAbilityJump::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -30,12 +31,12 @@ void UAbilityJump::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		{
 			UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
 				ActorInfo->AvatarActor.Get(),
-				FGameplayTag::RequestGameplayTag(FName("GameplayCue.Jump")),
+				TAG_GAMEPLAYCUE_JUMP,
 				EGameplayCueEvent::Type::OnActive,
 				FGameplayCueParameters());
 			UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
 				ActorInfo->AvatarActor.Get(),
-				FGameplayTag::RequestGameplayTag(FName("GameplayCue.Jump")),
+				TAG_GAMEPLAYCUE_JUMP,
 				EGameplayCueEvent::Type::WhileActive,
 				FGameplayCueParameters());
 			
@@ -92,7 +93,7 @@ void UAbilityJump::CancelAbility(const FGameplayAbilitySpecHandle Handle, const 
 	{
 		UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
 				ActorInfo->AvatarActor.Get(),
-				FGameplayTag::RequestGameplayTag(FName("GameplayCue.Jump")),
+				TAG_GAMEPLAYCUE_JUMP,
 				EGameplayCueEvent::Type::Removed,
 				FGameplayCueParameters());
 		character->StopJumping_();

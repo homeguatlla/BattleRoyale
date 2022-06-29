@@ -33,7 +33,7 @@ void UHurtComponent::Initialize()
 		return;
 	}
 	
-	mHealthAttributes = NewObject<UAttributeSetHealth>(this);
+	mHealthAttributes = NewObject<UAttributeSetHealth>(GetOwner());
 	abilitySystemComponentInterface->AddAttributeSet(mHealthAttributes);
 	
 	//Play a gameplay effect to add the ability
