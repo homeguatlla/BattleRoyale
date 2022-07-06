@@ -57,6 +57,11 @@ bool UHurtComponent::RegisterToHealthAttributeDelegate(std::function<void (const
 	return true;
 }
 
+//TODO añadir un método para hacerte inmune que lo que hará es lanzar un efecto que añadirá un tag durante un tiempo
+//no sé si tiene que ser un tag nuevo, porque el tema es que se añade y se quita un gameplayeffect entonces
+//o bien, creamos un tag nuevo o difícilmente le podremos quitar le tag de can_be_hurt
+
+
 void UHurtComponent::TakeDamageServer(float damage, APlayerController* instigator, APlayerController* hurt)
 {
 	/*UE_LOG(LogCharacter, Warning, TEXT("ACharacterBase::TakeDamage Server"));

@@ -182,6 +182,7 @@ IOnlineSessionPtr SessionsOnlineSubsystem::GetSession() const
 
 	if (session.IsValid())
 	{
+		UE_LOG(LogNet, Error, TEXT("SessionsOnlineSubsystem::GetSession Subsystem name %s"), *onlineSub->GetSubsystemName().ToString());
 		return session;
 	}
 	UE_LOG(LogNet, Error, TEXT("SessionsOnlineSubsystem::GetSession Return NULLPTR"));

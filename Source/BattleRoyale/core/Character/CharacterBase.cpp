@@ -14,6 +14,7 @@
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h"
 #include "AbilitySystemComponent.h"
+#include "OnlineSubsystem.h"
 #include "BattleRoyale/core/Abilities/AbilitiesInput.h"
 #include "BattleRoyale/core/Abilities/GameplayAbilityBase.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
@@ -57,6 +58,21 @@ ACharacterBase::ACharacterBase()
 	
 	//mGameplayAbilityAttributes->InitHealth(MaxHealth);
 	//mGameplayAbilityAttributes->InitMaxHealth(MaxHealth);
+/*
+	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
+	if(OnlineSubsystem)
+	{
+		OnlineSessionInterface = OnlineSubsystem->GetSessionInterface();
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1
+				15.0f,
+				FColor::Blue,
+				FString::Printf(TEXT("Found subsystem %s"), *OnlineSubsystem->GetSubsystemName().ToString())
+				);
+		}
+	}*/
 }
 
 void ACharacterBase::BeginPlay()

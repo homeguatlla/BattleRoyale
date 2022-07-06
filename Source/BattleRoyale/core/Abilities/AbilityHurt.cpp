@@ -8,12 +8,14 @@
 #include "GameplayTagsList.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/Character/Components/HurtComponent.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
 
 
 UAbilityHurt::UAbilityHurt()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	//Like a passive ability: will be granted by an gameplay effect, GE_AddHurtAbility
+	//Esta habilidad si es LocalOnly, no funcionará cuando dispare el servidor!!? no se modifica la vida. Averiguar porque.
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerOnly;
 	//and will be activated when granted(added)
 	ActivateAbilityOnGranted = true;
@@ -29,11 +31,12 @@ void UAbilityHurt::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	const auto character = Cast<IICharacter>(CurrentActorInfo->AvatarActor);
-	if(!character)
+	if(!character || !ActorInfo->IsNetAuthority())
 	{
 		return;
 	}
 
+	//Only make sense subscribe to the attribute change if server
 	if(const auto hurtComponent = character->GetHurtComponent())
 	{
 		hurtComponent->RegisterToHealthAttributeDelegate(std::bind(&UAbilityHurt::OnHealthChanged, this, std::placeholders::_1));
@@ -51,6 +54,7 @@ void UAbilityHurt::OnAvatarSet(const FGameplayAbilityActorInfo * ActorInfo, cons
 	}
 }
 
+
 void UAbilityHurt::OnHealthChanged(const FOnAttributeChangeData& data) const
 {
 	if(!data.GEModData)
@@ -64,7 +68,10 @@ void UAbilityHurt::OnHealthChanged(const FOnAttributeChangeData& data) const
 	{
 		const auto currentHealth = attributeSetHealth->GetHealth();
 		victim->NotifyRefreshHealth(currentHealth);
+		//const auto gameInstance = Cast<UBattleRoyaleGameInstance>(CurrentActorInfo->AvatarActor->GetGameInstance());
+		//gameInstance->GetEventDispatcher()->OnRefreshHealth.Broadcast(currentHealth);
 	}
-	
+
+	//TODO aquí queda por poner la muerte
 	//const auto instigator = data.GEModData->EffectSpec.GetEffectContext().GetInstigator();
 }
