@@ -10,7 +10,6 @@
 #include "BattleRoyale/core/Weapons/WeaponBase.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Interfaces/OnlineSessionInterface.h"
 #include "CharacterBase.generated.h"
 
 class IIWeapon;
@@ -77,8 +76,6 @@ class ACharacterBase : public ACharacter, public IICharacter
 	
 	UPROPERTY(ReplicatedUsing=OnRep_TakeDamageData)
 	FTakeDamageData mDamageCauser;
-
-	//IOnlineSessionPtr OnlineSessionInterface;
 
 public:
 	ACharacterBase();

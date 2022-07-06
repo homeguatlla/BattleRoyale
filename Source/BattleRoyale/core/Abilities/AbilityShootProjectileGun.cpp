@@ -20,7 +20,7 @@ UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 	//que no se esté haciendo algo mal.
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	
-	AbilityTags.AddTag(TAG_ABILITY_SHOOT_PROJECTILE);
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SHOOT_PROJECTILE));
 
 	CooldownGameplayEffectClass = UCooldownGameplayEffect::StaticClass();
 }
@@ -178,7 +178,7 @@ float UAbilityShootProjectileGun::GetWeaponCooldownDuration() const
 void UAbilityShootProjectileGun::SubscribeToEventMontageShoot(const IICharacter* character)
 {
 	UAbilityTask_WaitGameplayEvent* newTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
-			this, TAG_EVENT_MONTAGE_SHOOT, nullptr, true);
+			this, FGameplayTag::RequestGameplayTag(TAG_EVENT_MONTAGE_SHOOT), nullptr, true);
 	newTask->EventReceived.AddDynamic(this, &UAbilityShootProjectileGun::OnEventMontageShootReceived);
 	newTask->Activate();
 

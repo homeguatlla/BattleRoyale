@@ -11,7 +11,7 @@ UAbilityJump::UAbilityJump()
 	AbilityInputID = EAbilityInputID::Jump;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
 
-	AbilityTags.AddTag(TAG_ABILITY_JUMP);
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_JUMP));
 }
 
 void UAbilityJump::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -31,12 +31,12 @@ void UAbilityJump::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		{
 			UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
 				ActorInfo->AvatarActor.Get(),
-				TAG_GAMEPLAYCUE_JUMP,
+				FGameplayTag::RequestGameplayTag(TAG_GAMEPLAYCUE_JUMP),
 				EGameplayCueEvent::Type::OnActive,
 				FGameplayCueParameters());
 			UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
 				ActorInfo->AvatarActor.Get(),
-				TAG_GAMEPLAYCUE_JUMP,
+				FGameplayTag::RequestGameplayTag(TAG_GAMEPLAYCUE_JUMP),
 				EGameplayCueEvent::Type::WhileActive,
 				FGameplayCueParameters());
 			
@@ -93,7 +93,7 @@ void UAbilityJump::CancelAbility(const FGameplayAbilitySpecHandle Handle, const 
 	{
 		UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
 				ActorInfo->AvatarActor.Get(),
-				TAG_GAMEPLAYCUE_JUMP,
+				FGameplayTag::RequestGameplayTag(TAG_GAMEPLAYCUE_JUMP),
 				EGameplayCueEvent::Type::Removed,
 				FGameplayCueParameters());
 		character->StopJumping_();

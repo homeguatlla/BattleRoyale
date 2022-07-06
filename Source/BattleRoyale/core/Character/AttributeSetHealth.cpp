@@ -40,7 +40,7 @@ bool UAttributeSetHealth::PreGameplayEffectExecute(FGameplayEffectModCallbackDat
 		return false;
 	}
 
-	if(!abilitySystemComponent->HasMatchingGameplayTag(TAG_STATE_CAN_BE_HURT))
+	if(!abilitySystemComponent->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_CAN_BE_HURT)))
 	{
 		return false;		
 	}

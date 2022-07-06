@@ -11,8 +11,8 @@ UAbilitySprint::UAbilitySprint()
 	AbilityInputID = EAbilityInputID::Sprint;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
 
-	AbilityTags.AddTag(TAG_ABILITY_SPRINT);
-	BlockAbilitiesWithTag.AddTag(TAG_ABILITY_SHOOT);	
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SPRINT));
+	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SHOOT));	
 	
 	//To enable sprint ability from a trigger
 	/*FAbilityTriggerData triggerData;
@@ -38,12 +38,12 @@ void UAbilitySprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		{
 			UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
 				ActorInfo->AvatarActor.Get(),
-				TAG_GAMEPLAYCUE_SPRINT,
+				FGameplayTag::RequestGameplayTag(TAG_GAMEPLAYCUE_SPRINT),
 				EGameplayCueEvent::Type::OnActive,
 				FGameplayCueParameters());
 			UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
 				ActorInfo->AvatarActor.Get(),
-				TAG_GAMEPLAYCUE_SPRINT,
+				FGameplayTag::RequestGameplayTag(TAG_GAMEPLAYCUE_SPRINT),
 				EGameplayCueEvent::Type::WhileActive,
 				FGameplayCueParameters());
 			
@@ -100,7 +100,7 @@ void UAbilitySprint::CancelAbility(const FGameplayAbilitySpecHandle Handle, cons
 	{
 		UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
 				ActorInfo->AvatarActor.Get(),
-				TAG_GAMEPLAYCUE_SPRINT,
+				FGameplayTag::RequestGameplayTag(TAG_GAMEPLAYCUE_SPRINT),
 				EGameplayCueEvent::Type::Removed,
 				FGameplayCueParameters());
 		character->StopSprinting();
