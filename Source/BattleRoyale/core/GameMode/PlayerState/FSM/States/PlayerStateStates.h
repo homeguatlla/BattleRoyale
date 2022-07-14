@@ -7,21 +7,23 @@ namespace BRPlayerStateFSM
 	enum class PlayerStateState
 	{
 		STATE_INIT = 0,
-		STATE_GAMELOOP = 1,
-		STATE_DEAD_SERVER = 2,
-		STATE_DEAD_CLIENT = 3,
-		STATE_VICTORY_SERVER = 4,
-		STATE_VICTORY_CLIENT = 5,
-		STATE_GAME_OVER_SERVER = 6,
-		STATE_GAME_OVER_CLIENT = 7,
-		STATE_RESTART_CLIENT = 8,
-		STATE_RESTART_SERVER = 9
+		STATE_GAMELOOP_SERVER = 1,
+		STATE_GAMELOOP_CLIENT = 2,
+		STATE_DEAD_SERVER = 3,
+		STATE_DEAD_CLIENT = 4,
+		STATE_VICTORY_SERVER = 5,
+		STATE_VICTORY_CLIENT = 6,
+		STATE_GAME_OVER_SERVER = 7,
+		STATE_GAME_OVER_CLIENT = 8,
+		STATE_RESTART_CLIENT = 9,
+		STATE_RESTART_SERVER = 10
 	};
 
 	static std::map<PlayerStateState, std::string> PlayerStateStateMap =
 	{
 		{ PlayerStateState::STATE_INIT, std::string("Init") },
-		{ PlayerStateState::STATE_GAMELOOP, std::string("GameLoop") },
+		{ PlayerStateState::STATE_GAMELOOP_SERVER, std::string("GameLoopServer") },
+		{ PlayerStateState::STATE_GAMELOOP_CLIENT, std::string("GameLoopClient") },
 		{ PlayerStateState::STATE_DEAD_SERVER, std::string("DeadServer") },
 		{ PlayerStateState::STATE_DEAD_CLIENT, std::string("DeadClient") },
 		{ PlayerStateState::STATE_VICTORY_SERVER, std::string("VictoryServer") },

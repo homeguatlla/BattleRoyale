@@ -16,12 +16,13 @@
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterSynchronize.h"
 
 //FSM PlayerState States
-#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/GameLoop.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Init.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientGameLoop.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientRestart.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientDead.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientGameOver.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Client/ClientVictory.h"
+#include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerGameLoop.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerDead.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerGameOver.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/States/Server/ServerVictory.h"
@@ -86,7 +87,7 @@ namespace BattleRoyale
 		case FSMType::PLAYER_STATE_SERVER:
 			{
 				const auto init = std::make_shared<BRPlayerStateFSM::Init>();
-				const auto gameLoop = std::make_shared<BRPlayerStateFSM::GameLoop>();
+				const auto gameLoop = std::make_shared<BRPlayerStateFSM::ServerGameLoop>();
 				const auto dead = std::make_shared<BRPlayerStateFSM::ServerDead>();
 				const auto victory = std::make_shared<BRPlayerStateFSM::ServerVictory>();
 				const auto gameOver = std::make_shared<BRPlayerStateFSM::ServerGameOver>();
@@ -107,7 +108,7 @@ namespace BattleRoyale
 		case FSMType::PLAYER_STATE_CLIENT:
 			{
 				const auto init = std::make_shared<BRPlayerStateFSM::Init>();
-				const auto gameLoop = std::make_shared<BRPlayerStateFSM::GameLoop>();
+				const auto gameLoop = std::make_shared<BRPlayerStateFSM::ClientGameLoop>();
 				const auto dead = std::make_shared<BRPlayerStateFSM::ClientDead>();
 				const auto victory = std::make_shared<BRPlayerStateFSM::ClientVictory>();
 				const auto gameOver = std::make_shared<BRPlayerStateFSM::ClientGameOver>();

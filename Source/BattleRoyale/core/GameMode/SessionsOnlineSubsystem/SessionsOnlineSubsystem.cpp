@@ -34,13 +34,18 @@ SessionsOnlineSubsystem::~SessionsOnlineSubsystem()
 bool SessionsOnlineSubsystem::CreateSession(TSharedPtr<const FUniqueNetId> userId, FName sessionName, bool isLan, bool isPresence, int32 maxNumPlayers)
 {
 	UE_LOG(LogNet, Display, TEXT("SessionsOnlineSubsystem::CreateSession"));
-	IOnlineSessionPtr sessions = GetSession();
+	const auto sessions = GetSession();
 
 	if (!sessions || !userId.IsValid())
 	{
 		return false;
 	}
 
+	if(sessions->GetNamedSession(sessionName)) //exist session
+	{
+		sessions->DestroySession(sessionName);
+	}
+	
 	m_SessionSettings = MakeShareable(new FOnlineSessionSettings());
 
 	m_SessionSettings->bIsLANMatch = isLan;
@@ -61,7 +66,7 @@ bool SessionsOnlineSubsystem::CreateSession(TSharedPtr<const FUniqueNetId> userI
 void SessionsOnlineSubsystem::DestroySession(FName sessionName)
 {
 	UE_LOG(LogNet, Display, TEXT("SessionsOnlineSubsystem::DestroySession"));
-	IOnlineSessionPtr sessions = GetSession();
+	const auto sessions = GetSession();
 
 	if (!sessions)
 	{
@@ -75,7 +80,7 @@ void SessionsOnlineSubsystem::DestroySession(FName sessionName)
 void SessionsOnlineSubsystem::StartSession(FName sessionName)
 {
 	UE_LOG(LogNet, Display, TEXT("SessionsOnlineSubsystem::StartSession"));
-	IOnlineSessionPtr sessions = GetSession();
+	const auto sessions = GetSession();
 
 	if (sessions)
 	{
@@ -87,7 +92,7 @@ void SessionsOnlineSubsystem::StartSession(FName sessionName)
 void SessionsOnlineSubsystem::EndSession(FName sessionName)
 {
 	UE_LOG(LogNet, Display, TEXT("SessionsOnlineSubsystem::EndSession"));
-	IOnlineSessionPtr sessions = GetSession();
+	const auto sessions = GetSession();
 
 	if (sessions)
 	{
@@ -99,7 +104,7 @@ void SessionsOnlineSubsystem::EndSession(FName sessionName)
 void SessionsOnlineSubsystem::FindSessions(TSharedPtr<const FUniqueNetId> userId, bool isLan, bool isPresence)
 {
 	UE_LOG(LogNet, Display, TEXT("SessionsOnlineSubsystem::FindSessions"));
-	IOnlineSessionPtr sessions = GetSession();
+	const auto sessions = GetSession();
 
 	if (!sessions || !userId.IsValid())
 	{
@@ -109,7 +114,7 @@ void SessionsOnlineSubsystem::FindSessions(TSharedPtr<const FUniqueNetId> userId
 	
 	m_SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	m_SessionSearch->bIsLanQuery = isLan;
-	m_SessionSearch->MaxSearchResults = 20;
+	m_SessionSearch->MaxSearchResults = 10000;
 	m_SessionSearch->PingBucketSize = 50;
 	
 	if (isPresence)
@@ -125,7 +130,7 @@ void SessionsOnlineSubsystem::FindSessions(TSharedPtr<const FUniqueNetId> userId
 bool SessionsOnlineSubsystem::JoinSession(TSharedPtr<const FUniqueNetId> userId, FName sessionName, const FString& sessionId)
 {
 	UE_LOG(LogNet, Display, TEXT("SessionsOnlineSubsystem::JoinSession"));
-	IOnlineSessionPtr sessions = GetSession();
+	const auto sessions = GetSession();
 
 	if (!sessions || !userId.IsValid())
 	{
@@ -145,14 +150,14 @@ bool SessionsOnlineSubsystem::JoinSession(TSharedPtr<const FUniqueNetId> userId,
 
 FString SessionsOnlineSubsystem::GetSubsystemName() const
 {
-	IOnlineSubsystem* const onlineSub = IOnlineSubsystem::Get();
+	const auto onlineSub = IOnlineSubsystem::Get();
 	return onlineSub->GetSubsystemName().ToString();
 }
 
 FNamedOnlineSession* SessionsOnlineSubsystem::GetNamedSession(FName sessionName) const
 {
 	//UE_LOG(LogNet, Display, TEXT("SessionsOnlineSubsystem::GetNamedSession"));
-	IOnlineSessionPtr sessions = GetSession();
+	const auto sessions = GetSession();
 
 	if (!sessions)
 	{
@@ -169,7 +174,7 @@ EOnlineAsyncTaskState::Type SessionsOnlineSubsystem::GetFindSessionsStatus() con
 
 IOnlineSessionPtr SessionsOnlineSubsystem::GetSession() const
 {
-	IOnlineSubsystem* const onlineSub = IOnlineSubsystem::Get();
+	const auto onlineSub = IOnlineSubsystem::Get();
 
 	if (!onlineSub)
 	{
@@ -215,7 +220,7 @@ bool SessionsOnlineSubsystem::FillWithSessionBySessionId(const FString& sessionI
 void SessionsOnlineSubsystem::OnCreateSessionComplete(FName sessionName, bool wasSuccessful)
 {
 	UE_LOG(LogNet, Display, TEXT("SessionsOnlineSubsystem::OnCreateSessionComplete"));
-	IOnlineSessionPtr sessions = GetSession();
+	const auto sessions = GetSession();
 
 	if (sessions)
 	{
@@ -231,7 +236,7 @@ void SessionsOnlineSubsystem::OnCreateSessionComplete(FName sessionName, bool wa
 void SessionsOnlineSubsystem::OnDestroySessionComplete(FName sessionName, bool wasSuccessful)
 {
 	UE_LOG(LogNet, Display, TEXT("SessionsOnlineSubsystem::OnDestroySessionComplete"));
-	IOnlineSessionPtr sessions = GetSession();
+	const auto sessions = GetSession();
 	if (sessions)
 	{
 		sessions->ClearOnDestroySessionCompleteDelegate_Handle(OnDestroySessionCompleteDelegateHandle);
@@ -245,7 +250,7 @@ void SessionsOnlineSubsystem::OnDestroySessionComplete(FName sessionName, bool w
 void SessionsOnlineSubsystem::OnStartOnlineGameComplete(FName sessionName, bool wasSuccessful)
 {
 	UE_LOG(LogNet, Display, TEXT("SessionsOnlineSubsystem::OnStartOnlineGameComplete"));
-	IOnlineSessionPtr sessions = GetSession();
+	const auto sessions = GetSession();
 
 	if (sessions)
 	{
@@ -260,7 +265,7 @@ void SessionsOnlineSubsystem::OnStartOnlineGameComplete(FName sessionName, bool 
 void SessionsOnlineSubsystem::OnEndOnlineGameComplete(FName sessionName, bool wasSuccessful)
 {
 	UE_LOG(LogNet, Display, TEXT("SessionsOnlineSubsystem::OnEndOnlineGameComplete"));
-	IOnlineSessionPtr sessions = GetSession();
+	const auto sessions = GetSession();
 
 	if (sessions)
 	{
@@ -275,7 +280,7 @@ void SessionsOnlineSubsystem::OnEndOnlineGameComplete(FName sessionName, bool wa
 void SessionsOnlineSubsystem::OnFindSessionsComplete(bool wasSuccessful)
 {
 	UE_LOG(LogNet, Display, TEXT("SessionsOnlineSubsystem::OnFindSessionsComplete"));
-	IOnlineSessionPtr sessions = GetSession();
+	const auto sessions = GetSession();
 
 	if (sessions)
 	{
@@ -292,7 +297,7 @@ void SessionsOnlineSubsystem::OnJoinSessionComplete(FName sessionName, EOnJoinSe
 	UE_LOG(LogNet, Display, TEXT("SessionsOnlineSubsystem::OnJoinSessionComplete"));
 	FString travelURL;
 	
-	IOnlineSessionPtr sessions = GetSession();
+	const auto sessions = GetSession();
 	if (sessions)
 	{
 		sessions->ClearOnJoinSessionCompleteDelegate_Handle(OnJoinSessionCompleteDelegateHandle);

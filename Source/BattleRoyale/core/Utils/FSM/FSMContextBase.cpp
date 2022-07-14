@@ -20,7 +20,7 @@ void FSMContextBase::StartTimer(float duration)
 void FSMContextBase::StartTimer(float duration, std::function<void()> callback)
 {
 	FTimerDelegate timerDelegate;
-	timerDelegate.BindLambda([this, &callback] {
+	timerDelegate.BindLambda([this, callback] {
 		callback();
 		OnTimeOver();
 	});

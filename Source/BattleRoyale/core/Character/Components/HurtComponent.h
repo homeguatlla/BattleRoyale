@@ -21,6 +21,7 @@ public:
 
 	void Initialize();
 	bool RegisterToHealthAttributeDelegate(std::function<void(const FOnAttributeChangeData& data)> callback) const;
+	void SetInvulnerableServer(bool isInvulnerable);
 	
 	//TODO remove it
 	void TakeDamageServer(float damage, APlayerController* instigator, APlayerController* hurt);
@@ -32,6 +33,14 @@ private:
 	// Implement IAbilitySystemInterface
 	virtual class IIAbilitySystemInterfaceBase* GetAbilitySystemComponent() const;
 
+	UFUNCTION(Server, Reliable)
+	void ServerSetInvulnerable(bool isInvulnerable);
+	
 	UPROPERTY()
 	UAttributeSetHealth* mHealthAttributes;
+	
+	FActiveGameplayEffectHandle mVulnerableEffectHandle;
+
+	UPROPERTY(EditAnywhere, Category = "Hurt")
+	TSubclassOf<UGameplayEffect> VulnerableEffect;
 };

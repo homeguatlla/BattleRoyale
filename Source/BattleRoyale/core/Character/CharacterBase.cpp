@@ -158,6 +158,11 @@ float ACharacterBase::GetCurrentHealth() const
 	return GetPlayerStateInterface()->GetCurrentHealth();
 }
 
+void ACharacterBase::SetInvulnerableServer(bool isInvulnerable)
+{
+	HurtComponent->SetInvulnerableServer(isInvulnerable);
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 // Let the input binding that refer to the character specific into the character itself.
@@ -170,6 +175,7 @@ void ACharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	// Bind fire event
 	//PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ACharacterBase::OnFire);
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ACharacterBase::OnResetVR);
+	PlayerInputComponent->BindAction("Invulnerable", IE_Pressed, this, &ACharacterBase::OnSetInvulnerable);
 	
 	// Bind movement events
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACharacterBase::MoveForward);
@@ -438,6 +444,12 @@ UCameraComponent* ACharacterBase::GetCamera() const
 void ACharacterBase::OnResetVR()
 {
 	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
+}
+
+void ACharacterBase::OnSetInvulnerable()
+{
+	m_IsInvulnerable = !m_IsInvulnerable;
+	HurtComponent->SetInvulnerableServer(m_IsInvulnerable);
 }
 
 void ACharacterBase::MoveForward(float Value)

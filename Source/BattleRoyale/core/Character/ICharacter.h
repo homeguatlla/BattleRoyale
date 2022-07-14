@@ -49,6 +49,8 @@ public:
 	virtual float GetCurrentHealth() const = 0;
 
 	virtual void SetCurrentHealth(float health) = 0;
+
+	virtual void SetInvulnerableServer(bool isInvulnerable) = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual float GetMaxHealth() const = 0;

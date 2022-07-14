@@ -38,14 +38,24 @@ FActiveGameplayEffectHandle UAbilitySystemComponentBase::ApplyGameplayEffectToSe
 	return UAbilitySystemComponent::ApplyGameplayEffectToSelf(effectClass->GetDefaultObject<UGameplayEffect>(), 1, effectContext);
 }
 
+bool UAbilitySystemComponentBase::RemoveGameplayEffect(FActiveGameplayEffectHandle handle)
+{
+	return UAbilitySystemComponent::RemoveActiveGameplayEffect(handle);
+}
+
 void UAbilitySystemComponentBase::AddAttributeSet(UAttributeSet* attributeSet)
 {
 	GetSpawnedAttributes_Mutable().Add(attributeSet);
 }
 
-FOnGameplayAttributeValueChange& UAbilitySystemComponentBase::GetGameplayAttributeValueChangeDelegate_(FGameplayAttribute Attribute)
+FOnGameplayAttributeValueChange& UAbilitySystemComponentBase::GetAttributeValueChangeDelegate(FGameplayAttribute attribute)
 {
-	return Super::GetGameplayAttributeValueChangeDelegate(Attribute);
+	return Super::GetGameplayAttributeValueChangeDelegate(attribute);
+}
+
+bool UAbilitySystemComponentBase::HasGameplayTag(FGameplayTag tag) const
+{
+	return HasMatchingGameplayTag(tag);
 }
 
 /*

@@ -8,6 +8,7 @@
 
 #include "AbilitySystemInterface.h"
 #include "GameplayEffectExtension.h"
+#include "BattleRoyale/core/Abilities/GameplayTagsList.h"
 #include "BattleRoyale/core/Character/AttributeSetHealth.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
@@ -51,16 +52,16 @@ bool UHurtComponent::RegisterToHealthAttributeDelegate(std::function<void (const
 		return false;
 	}
 	
-	auto& delegateOnHealthChanged = abilitySystemComponentInterface->GetGameplayAttributeValueChangeDelegate_(mHealthAttributes->GetHealthAttribute());
+	auto& delegateOnHealthChanged = abilitySystemComponentInterface->GetAttributeValueChangeDelegate(mHealthAttributes->GetHealthAttribute());
 	delegateOnHealthChanged.AddLambda(callback);
 	
 	return true;
 }
 
-//TODO añadir un método para hacerte inmune que lo que hará es lanzar un efecto que añadirá un tag durante un tiempo
-//no sé si tiene que ser un tag nuevo, porque el tema es que se añade y se quita un gameplayeffect entonces
-//o bien, creamos un tag nuevo o difícilmente le podremos quitar le tag de can_be_hurt
-
+void UHurtComponent::SetInvulnerableServer(bool isInvulnerable)
+{
+	ServerSetInvulnerable(isInvulnerable);
+}
 
 void UHurtComponent::TakeDamageServer(float damage, APlayerController* instigator, APlayerController* hurt)
 {
@@ -88,4 +89,21 @@ IIAbilitySystemInterfaceBase* UHurtComponent::GetAbilitySystemComponent() const
 	}
 
 	return character->GetAbilitySystemComponentBase();
+}
+
+void UHurtComponent::ServerSetInvulnerable_Implementation(bool isInvulnerable)
+{
+	const auto abilitySystemComponentInterface = GetAbilitySystemComponent();
+	if(!abilitySystemComponentInterface)
+	{
+		return;
+	}
+	if(isInvulnerable && mVulnerableEffectHandle.IsValid())
+	{
+		abilitySystemComponentInterface->RemoveGameplayEffect(mVulnerableEffectHandle);
+	}
+	else if(!isInvulnerable)
+	{
+		mVulnerableEffectHandle = abilitySystemComponentInterface->ApplyGameplayEffectToSelf(VulnerableEffect);
+	}
 }

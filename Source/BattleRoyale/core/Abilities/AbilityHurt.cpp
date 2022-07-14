@@ -21,7 +21,6 @@ UAbilityHurt::UAbilityHurt()
 	ActivateAbilityOnGranted = true;
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_HURT));
-	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_STATE_CAN_BE_HURT));
 }
 
 void UAbilityHurt::ActivateAbility(const FGameplayAbilitySpecHandle Handle,

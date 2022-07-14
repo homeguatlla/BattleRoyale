@@ -77,6 +77,8 @@ class ACharacterBase : public ACharacter, public IICharacter
 	UPROPERTY(ReplicatedUsing=OnRep_TakeDamageData)
 	FTakeDamageData mDamageCauser;
 
+	bool m_IsInvulnerable = true;
+
 public:
 	ACharacterBase();
 	
@@ -106,6 +108,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual float GetCurrentHealth() const override;// { return GetPlayerStateInterface()->GetCurrentHealth();}//return mGameplayAbilityAttributes->GetHealth(); }
+
+	UFUNCTION(BlueprintCallable)
+	virtual void SetInvulnerableServer(bool isInvulnerable) override;
 	
 	UFUNCTION(BlueprintCallable)
 	virtual float GetMaxHealth() const override { return MaxHealth; }
@@ -191,6 +196,7 @@ protected:
 	
 	/** Resets HMD orientation and position in VR. */
 	void OnResetVR();
+	void OnSetInvulnerable();
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
