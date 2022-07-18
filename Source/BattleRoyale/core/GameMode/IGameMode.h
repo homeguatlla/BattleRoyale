@@ -30,7 +30,7 @@ public:
 	
 	virtual float GetGameRulesUpdateIntervalTime() const = 0;
 	
-	virtual void OnNewKill(const APlayerController* killerController, const APlayerController* victimController) = 0;
+	virtual void OnNewKill(IIPlayerState* killerPlayerState, IIPlayerState* victimPlayerState) = 0;
 	virtual bool CanPlayerCauseDamageTo(const IIPlayerState* causerPlayerState, const IIPlayerState* victimPlayerState) = 0;
 	virtual const UGameModeConfigurationInfo* GetGameModeConfiguration() const = 0;
 };

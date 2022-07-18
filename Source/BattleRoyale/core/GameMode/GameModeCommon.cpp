@@ -62,20 +62,18 @@ IIGameState* AGameModeCommon::GetGameState() const
 	return nullptr;
 }
 
-void AGameModeCommon::OnNewKill(const APlayerController* killerController, const APlayerController* victimController)
+void AGameModeCommon::OnNewKill(IIPlayerState* killerPlayerState, IIPlayerState* victimPlayerState)
 {
-	const auto playerStateKiller = killerController->GetPlayerState<APlayerStateBase>();
-	if(playerStateKiller && playerStateKiller->Implements<UIPlayerState>())
+	if(killerPlayerState)
 	{
-		playerStateKiller->AddKill();
-		playerStateKiller->NotifyNumKillsToSelf();
-		NotifyNewKillToAll(victimController, playerStateKiller);
+		killerPlayerState->AddKill();
+		killerPlayerState->NotifyNumKillsToSelf();
+		NotifyNewKillToAll(victimPlayerState, killerPlayerState);
 	}
 
-	const auto playerStateVictim = victimController->GetPlayerState<APlayerStateBase>();
-	if(playerStateVictim && playerStateVictim->Implements<UIPlayerState>())
+	if(victimPlayerState)
 	{
-		playerStateVictim->NotifyGameOverServer(false, false);
+		victimPlayerState->NotifyGameOverServer(false, false);
 	}
 
 	GetGameState()->NotifyNumTeamsAndPlayersAlive();
@@ -98,20 +96,16 @@ void AGameModeCommon::DestroyGameSession()
 	onlineSub->GetSessionInterface()->DestroySession(NAME_GameSession);
 }
 
-void AGameModeCommon::NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* const playerStateKiller) const
+void AGameModeCommon::NotifyNewKillToAll(const IIPlayerState* victimPlayerState, const IIPlayerState* playerStateKiller) const
 {
-	const auto playerStateVictim = victimController->GetPlayerState<APlayerStateBase>();
-	if(playerStateVictim == nullptr || !playerStateVictim->Implements<UIPlayerState>())
+	if(victimPlayerState == nullptr)
 	{
 		return;
 	}
 	
-	const auto playerStateVictimInterface = Cast<IIPlayerState>(playerStateVictim);		
-	const auto playerStateKillerInterface = Cast<IIPlayerState>(playerStateKiller);
-		
-	playerStateKillerInterface->NotifyAnnouncementOfNewDeathToAll(
-		playerStateKillerInterface->GetPlayerNickName(),
-		playerStateVictimInterface->GetPlayerNickName());
+	playerStateKiller->NotifyAnnouncementOfNewDeathToAll(
+		playerStateKiller->GetPlayerNickName(),
+		victimPlayerState->GetPlayerNickName());
 }
 
 bool AGameModeCommon::ReadyToStartMatch_Implementation()

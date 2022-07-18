@@ -399,7 +399,7 @@ IIGameMode* ACharacterBase::GetGameModeServer() const
 {
 	return Cast<IIGameMode>(GetWorld()->GetAuthGameMode<ABattleRoyaleGameMode>());
 }
-
+/*
 float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
                                  AActor* DamageCauser)
 {
@@ -418,16 +418,16 @@ float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
 	const auto killer = Cast<APlayerController>(EventInstigator);
 	const auto victim = Cast<APlayerController>(GetController());
 
-	/*const auto gameMode = GetGameModeServer();
-	if(!gameMode->CanPlayerCauseDamageTo(killer, victim))
-	{
-		return actualDamage;
-	}
-*/
+	//const auto gameMode = GetGameModeServer();
+	//if(!gameMode->CanPlayerCauseDamageTo(killer, victim))
+	//{
+	//	return actualDamage;
+	//}
+
 	//HurtComponent->TakeDamageServer(actualDamage, killer, victim);
 	
 	return actualDamage;
-}
+}*/
 
 UCameraComponent* ACharacterBase::GetCamera() const
 {

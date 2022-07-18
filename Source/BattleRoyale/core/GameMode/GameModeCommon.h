@@ -31,7 +31,7 @@ public:
 	
 	//Inherit from IIGameMode
 	virtual IIGameState* GetGameState() const override;
-	virtual void OnNewKill(const APlayerController* killerController, const APlayerController* victimController) override;
+	virtual void OnNewKill(IIPlayerState* killerPlayerState, IIPlayerState* victimPlayerState) override;
 	virtual bool CanPlayerCauseDamageTo(const IIPlayerState* causerPlayerState, const IIPlayerState* victimPlayerState) override;
 	virtual bool HasCurrentGameSession() const override;
 	virtual const UGameModeConfigurationInfo* GetGameModeConfiguration() const override { return ConfigurationInfo;}
@@ -47,5 +47,5 @@ private:
 	void DisableControllerInput(AController* controller) const;
 	IIPlayerController* GetPlayerController(AController* controller) const;
 	
-	void NotifyNewKillToAll(const APlayerController* victimController, APlayerStateBase* playerStateKiller) const;
+	void NotifyNewKillToAll(const IIPlayerState* victimPlayerState, const IIPlayerState* playerStateKiller) const;
 };

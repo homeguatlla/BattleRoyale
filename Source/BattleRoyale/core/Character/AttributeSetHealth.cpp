@@ -67,8 +67,27 @@ void UAttributeSetHealth::PostGameplayEffectExecute(const FGameplayEffectModCall
 	//The attribute changed by an gameplay effect is Health then
 	if(Data.EvaluatedData.Attribute.GetUProperty() == FindFieldChecked<UProperty>(UAttributeSetHealth::StaticClass(), GET_MEMBER_NAME_CHECKED(UAttributeSetHealth, Health)))
 	{
-		//TODO aquí tenemos que poner si tenemos los datos que nos hacen falta el tema del number of kills, e informar de una kill
-		//Esto no tiene sentido que esté en la habilidad porque es un tema genérico. Igual debería hacerlo el player state.
+		if(IsAlive())
+		{
+			return;
+		}
+		
+		const auto character = Cast<IICharacter>(GetOwningActor());
+		const auto abilitySystemComponent = character->GetAbilitySystemComponent()->GetAbilitySystemComponent();
+		if(!abilitySystemComponent)
+		{
+			return;
+		}
+
+		const auto instigatorPlayerState = Cast<IIPlayerState>(Data.EffectSpec.GetContext().GetInstigator());
+		const auto receptorPlayerState = Cast<IIPlayerState>(abilitySystemComponent->GetOwner());
+
+		if(instigatorPlayerState && receptorPlayerState)
+		{
+			const auto gameMode = GetGameModeServer();
+			gameMode->OnNewKill(instigatorPlayerState, receptorPlayerState);
+		}
+		
 		UE_LOG(LogTemp, Display, TEXT("UAttributeSetBase::PostGameplayEffectExecute Health current value = %f"), Health.GetCurrentValue());
 	}
 }

@@ -67,8 +67,6 @@ void UAbilityHurt::OnHealthChanged(const FOnAttributeChangeData& data) const
 	{
 		const auto currentHealth = attributeSetHealth->GetHealth();
 		victim->NotifyRefreshHealth(currentHealth);
-		//const auto gameInstance = Cast<UBattleRoyaleGameInstance>(CurrentActorInfo->AvatarActor->GetGameInstance());
-		//gameInstance->GetEventDispatcher()->OnRefreshHealth.Broadcast(currentHealth);
 	}
 
 	//TODO aquí queda por poner la muerte

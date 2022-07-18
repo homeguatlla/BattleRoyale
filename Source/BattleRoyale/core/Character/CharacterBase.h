@@ -185,8 +185,8 @@ public:
 
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const override;
 	
-	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	                         AActor* DamageCauser) override;
+	//virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	//                         AActor* DamageCauser) override;
 	
 protected:
 	virtual void BeginPlay();
