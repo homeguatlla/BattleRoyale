@@ -5,7 +5,6 @@
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
 #include "ICharacter.h"
-#include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Abilities/GameplayTagsList.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
 
@@ -56,7 +55,6 @@ bool UAttributeSetHealth::PreGameplayEffectExecute(FGameplayEffectModCallbackDat
 			return false;
 		}
 	}
-	
 	return Super::PreGameplayEffectExecute(Data);
 }
 
@@ -65,8 +63,10 @@ void UAttributeSetHealth::PostGameplayEffectExecute(const FGameplayEffectModCall
 	Super::PostGameplayEffectExecute(Data);
 
 	//The attribute changed by an gameplay effect is Health then
-	if(Data.EvaluatedData.Attribute.GetUProperty() == FindFieldChecked<UProperty>(UAttributeSetHealth::StaticClass(), GET_MEMBER_NAME_CHECKED(UAttributeSetHealth, Health)))
+	if(Data.EvaluatedData.Attribute.GetUProperty() == FindFieldChecked<FProperty>(UAttributeSetHealth::StaticClass(), GET_MEMBER_NAME_CHECKED(UAttributeSetHealth, Health)))
 	{
+		UE_LOG(LogTemp, Display, TEXT("UAttributeSetBase::PostGameplayEffectExecute Health current value = %f"), Health.GetCurrentValue());
+	
 		if(IsAlive())
 		{
 			return;
@@ -87,8 +87,6 @@ void UAttributeSetHealth::PostGameplayEffectExecute(const FGameplayEffectModCall
 			const auto gameMode = GetGameModeServer();
 			gameMode->OnNewKill(instigatorPlayerState, receptorPlayerState);
 		}
-		
-		UE_LOG(LogTemp, Display, TEXT("UAttributeSetBase::PostGameplayEffectExecute Health current value = %f"), Health.GetCurrentValue());
 	}
 }
 

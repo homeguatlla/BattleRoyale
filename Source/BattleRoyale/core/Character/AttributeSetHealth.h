@@ -33,14 +33,14 @@ public:
 	ATTRIBUTE_ACCESSORS(UAttributeSetHealth, Health)
 
 	UAttributeSetHealth();
-	bool IsAlive() const { return Health.GetCurrentValue() > 0;}
-
+	
 private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 	IIGameMode* GetGameModeServer() const;
+	bool IsAlive() const { return Health.GetCurrentValue() > 0.0f;}
 
 	UFUNCTION()
 	void OnRepHealth(const FGameplayAttributeData& OldHealth);
