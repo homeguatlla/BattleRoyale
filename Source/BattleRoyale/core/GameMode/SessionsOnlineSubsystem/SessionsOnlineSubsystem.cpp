@@ -303,7 +303,10 @@ void SessionsOnlineSubsystem::OnJoinSessionComplete(FName sessionName, EOnJoinSe
 		sessions->ClearOnJoinSessionCompleteDelegate_Handle(OnJoinSessionCompleteDelegateHandle);
 		if(result == EOnJoinSessionCompleteResult::Success)
 		{
-			sessions->GetResolvedConnectString(sessionName, travelURL);
+			if(!sessions->GetResolvedConnectString(sessionName, travelURL))
+			{
+				UE_LOG(LogNet, Error, TEXT("SessionsOnlineSubsystem::OnJoinSessionComplete Could not Resolve connect string"));
+			}
 		}
 	}
 
