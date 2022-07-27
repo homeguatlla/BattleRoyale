@@ -65,9 +65,9 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_SomeoneDieAndIsTheLastOne_
 
 	//we eliminate two characters so only one team is alive
 	auto character = gameState->GetCharacter(0);
-	character->SetCurrentHealth(0.0f);
+	character->SetCurrentHealthTest(0.0f);
 	character = gameState->GetCharacter(2);
-	character->SetCurrentHealth(0.0f);
+	character->SetCurrentHealthTest(0.0f);
 	
 	auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
 	rule->Initialize(nullptr, gameState);
@@ -92,7 +92,7 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_SomeoneDieAndIsNotTheLastO
 
 	//Eliminate one character so 2 teams are alive
 	auto character = gameState->GetCharacter(0);
-	character->SetCurrentHealth(0.0f);
+	character->SetCurrentHealthTest(0.0f);
 	
 	auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
 	rule->Initialize(nullptr, gameState);
@@ -117,7 +117,7 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_Executed_Then_EndOfGameRul
 
 	//Eliminate one character so 2 teams are alive
 	auto character = gameState->GetCharacter(0);
-	character->SetCurrentHealth(0.0f);
+	character->SetCurrentHealthTest(0.0f);
 	
 	auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
 	rule->Initialize(nullptr, gameState);

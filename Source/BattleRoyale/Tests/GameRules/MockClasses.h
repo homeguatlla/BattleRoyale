@@ -20,7 +20,7 @@ public:
 
 	void Initialize(float health)
 	{
-		SetCurrentHealth(health);
+		SetCurrentHealthTest(health);
 	}
 };
 
