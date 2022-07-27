@@ -45,7 +45,7 @@ bool UAbilitySystemComponentBase::RemoveGameplayEffect(FActiveGameplayEffectHand
 
 void UAbilitySystemComponentBase::AddAttributeSet(UAttributeSet* attributeSet)
 {
-	GetSpawnedAttributes_Mutable().Add(attributeSet);
+	AddAttributeSetSubobject(attributeSet);
 }
 
 FOnGameplayAttributeValueChange& UAbilitySystemComponentBase::GetAttributeValueChangeDelegate(FGameplayAttribute attribute)

@@ -75,7 +75,7 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 				const auto damageEffectHandle = instigatorPlayerState->GetAbilitySystemComponentInterface()->ApplyGameplayEffectToTarget(DamageEffect, hurtCharacter);
 				if(!damageEffectHandle.IsValid())
 				{
-					UE_LOG(LogTemp, Error, TEXT("AProjectileBase::OnHit gameplay effect Damage couldn't be applied"));
+					//UE_LOG(LogTemp, Error, TEXT("AProjectileBase::OnHit gameplay effect Damage couldn't be applied"));
 				}
 			}
         }
