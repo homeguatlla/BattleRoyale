@@ -51,12 +51,7 @@ ACharacterBase::ACharacterBase()
 
 	//Create hurtComponent
 	HurtComponent = CreateDefaultSubobject<UHurtComponent>(TEXT("HurtComponent"));
-	
-	//Create gameplayability attributes for this character
-	//mGameplayAbilityAttributes = CreateDefaultSubobject<UAttributeSetBase>("GameplayAbilityAttributes");
-	
-	//mGameplayAbilityAttributes->InitHealth(MaxHealth);
-	//mGameplayAbilityAttributes->InitMaxHealth(MaxHealth);
+	//HurtComponent->SetIsReplicated(true);
 }
 
 void ACharacterBase::BeginPlay()
@@ -155,7 +150,7 @@ FVector ACharacterBase::GetCurrentMeshSpaceVelocity() const
 
 float ACharacterBase::GetCurrentHealth() const
 {
-	return GetPlayerStateInterface()->GetCurrentHealth();
+	return HurtComponent->GetCurrentHealth();
 }
 
 void ACharacterBase::SetInvulnerableServer(bool isInvulnerable)
@@ -242,7 +237,7 @@ void ACharacterBase::GiveAbilitiesServer()
 	}	
 }
 
-void ACharacterBase::SetCurrentHealth(float health)
+void ACharacterBase::SetCurrentHealthTest(float health)
 {
 	//mGameplayAbilityAttributes->SetHealth(health);
 }
@@ -399,35 +394,6 @@ IIGameMode* ACharacterBase::GetGameModeServer() const
 {
 	return Cast<IIGameMode>(GetWorld()->GetAuthGameMode<ABattleRoyaleGameMode>());
 }
-/*
-float ACharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
-                                 AActor* DamageCauser)
-{
-	const auto actualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
-
-	if(!HasAuthority())
-	{
-		return actualDamage;
-	}
-	
-	if(!EventInstigator->IsA(APlayerController::StaticClass()))
-	{
-		return actualDamage;
-	}
-
-	const auto killer = Cast<APlayerController>(EventInstigator);
-	const auto victim = Cast<APlayerController>(GetController());
-
-	//const auto gameMode = GetGameModeServer();
-	//if(!gameMode->CanPlayerCauseDamageTo(killer, victim))
-	//{
-	//	return actualDamage;
-	//}
-
-	//HurtComponent->TakeDamageServer(actualDamage, killer, victim);
-	
-	return actualDamage;
-}*/
 
 UCameraComponent* ACharacterBase::GetCamera() const
 {
@@ -562,47 +528,6 @@ void ACharacterBase::PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* 
 
 void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 {
-	/*mGameplayAbilityAttributes->SetHealth(damage.health);
-	auto currentHealth = mGameplayAbilityAttributes->GetHealth();
-	
-	//Client specific
-	if(IsLocallyControlled())
-	{
-		//Update health hud
-		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-		gameInstance->GetEventDispatcher()->OnRefreshHealth.Broadcast(currentHealth);
-	}
-	
-	if(!IsLocallyControlled())
-	{
-		//Remote specific no server
-		//only the remote where the playerCauser is autonomous (is the player who shoot without taking into accout the server case)
-		//can see the hit points over the damaged.
-		if(damage.playerCauser->GetLocalRole() == ENetRole::ROLE_AutonomousProxy)
-		{
-			//notify to the character recieved damage, to show hit points
-			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation(), currentHealth);
-			if(!mGameplayAbilityAttributes->IsAlive())
-			{
-				//notify the character has dead
-				BP_OnDead();
-			}
-		}
-	}
-	
-	if(HasAuthority()) //Server specific
-	{
-		//And also if we are in the server, then if the causer is locallycontrolled
-		if(damage.playerCauser->IsLocallyControlled())
-		{
-			OnTakenDamage(damage.damage, damage.playerCauser->GetActorLocation(), currentHealth);
-			if(!mGameplayAbilityAttributes->IsAlive())
-			{
-				BP_OnDead();				
-			}
-		}
-	}*/
-
 	/*if (mCurrentHealth <= 0)
 	{
 		UnEquipWeapon();
@@ -633,6 +558,10 @@ void ACharacterBase::DieClient()
 	DoDieClient();
 }
 
+void ACharacterBase::NotifyTakeDamage(float damage, const AActor* causer, float currentHealth)
+{
+	MulticastTakeDamage(damage, causer, currentHealth);
+}
 
 void ACharacterBase::DieServer()
 {
@@ -647,6 +576,20 @@ void ACharacterBase::DieServer()
 void ACharacterBase::NotifyRefreshHealth(float health) const
 {
 	GetPlayerStateInterface()->NotifyRefreshHealth(health);
+}
+
+void ACharacterBase::MulticastTakeDamage_Implementation(float damage, const AActor* causer, float currentHealth)
+{
+	const bool isNotLocallyControlledAndCauserIsAutonomousProxy = !IsLocallyControlled() && causer && causer->GetLocalRole() == ROLE_AutonomousProxy;
+	const bool isAuthorityAndCauserIsLocallyControlled = HasAuthority() && Cast<ACharacter>(causer)->IsLocallyControlled();
+	if(isNotLocallyControlledAndCauserIsAutonomousProxy || isAuthorityAndCauserIsLocallyControlled)
+	{
+		BP_OnTakenDamage(damage, causer->GetActorLocation(), currentHealth);
+		if(currentHealth<= 0.0f)
+		{
+			BP_OnDead();
+		}
+	}
 }
 
 void ACharacterBase::OnRep_TakeDamageData()

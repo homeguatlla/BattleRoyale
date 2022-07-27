@@ -11,6 +11,7 @@ class IIAbilitySystemInterfaceBase;
 class IAbilitySystemInterface;
 class IIWeapon;
 class UHurtComponent;
+class IICharacter;
 
 // This class does not need to be modified.
 UINTERFACE(Blueprintable, meta = (CannotImplementInterfaceInBlueprint))
@@ -48,7 +49,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual float GetCurrentHealth() const = 0;
 
-	virtual void SetCurrentHealth(float health) = 0;
+	virtual void SetCurrentHealthTest(float health) = 0;
 
 	virtual void SetInvulnerableServer(bool isInvulnerable) = 0;
 	
@@ -97,6 +98,8 @@ public:
 	virtual UHurtComponent* GetHurtComponent() const = 0;
 
 	virtual void NotifyRefreshHealth(float health) const = 0;
+	
+	virtual void NotifyTakeDamage(float damage, const AActor* causer, float currentHealth) = 0;
 	
 	/**
 	 * Shoot is aim and try to hit something

@@ -8,6 +8,7 @@
 #include "BattleRoyale/core/Data/TakeDamageData.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/Weapons/WeaponBase.h"
+#include "Components/HurtComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CharacterBase.generated.h"
@@ -116,7 +117,7 @@ public:
 	virtual float GetMaxHealth() const override { return MaxHealth; }
 
 	UFUNCTION(BlueprintCallable)
-	virtual bool IsAlive() const override { return true; }//return mGameplayAbilityAttributes->IsAlive(); }
+	virtual bool IsAlive() const override { return HurtComponent->IsAlive(); }
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsFalling() const override { return GetCharacterMovement()->IsFalling(); }
@@ -164,25 +165,21 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool CanShoot() const override;
-
 	virtual void ServerShoot() override;
-
 	virtual void Shoot() override;
 
 	virtual void DieServer() override;
-
 	virtual void DieClient() override;
-
+	
 	virtual void NotifyRefreshHealth(float health) const override;
+	virtual void NotifyTakeDamage(float damage, const AActor* causer, float currentHealth) override;
 	
 	virtual UAnimMontage* GetShootingMontage() const override;
-
 	virtual UAnimMontage* GetSimulatedShootingMontage() const override;
-
+	
 	virtual UAnimInstance* GetAnimationInstance() const override;
-
+	
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const override;
-
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const override;
 	
 	//virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
@@ -224,7 +221,7 @@ protected:
 	// End of APawn interface
 
 	//Only for TEST porposes
-	virtual void SetCurrentHealth(float health) override;
+	virtual void SetCurrentHealthTest(float health) override;
 	
 private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -261,6 +258,9 @@ private:
 
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastSpawnWeapon();
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastTakeDamage(float damage, const AActor* causer, float currentHealth);
 	
 	UFUNCTION(Unreliable, Server, WithValidation)
 	void ServerSetCharacterControlRotation(const FRotator& rotation);
