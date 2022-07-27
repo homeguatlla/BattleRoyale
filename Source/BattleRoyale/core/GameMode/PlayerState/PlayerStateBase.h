@@ -40,8 +40,6 @@ public:
 	virtual void AddKill() override { mNumKills++; }
 	virtual int GetNumKills() const override { return mNumKills; }
 
-	virtual float GetCurrentHealth() override { return 100.0f; } //return mGameplayAbilityAttributes->GetHealth(); }
-	
 	virtual void SetAsWinner() override;
 	virtual bool DidPlayerWin() const override;
 

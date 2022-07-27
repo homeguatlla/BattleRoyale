@@ -40,7 +40,6 @@ bool APlayerStateBase::IsAlive() const
 {
 	if(const auto character = GetCharacter())
 	{
-		//TODO quizá podríamos pillar la vida del GAS cuando sea un atributo
 		return character->IsAlive();
 	}
 	
