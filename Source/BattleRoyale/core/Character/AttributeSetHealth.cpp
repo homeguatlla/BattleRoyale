@@ -4,7 +4,6 @@
 #include "AttributeSetHealth.h"
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
-#include "ICharacter.h"
 #include "BattleRoyale/core/Abilities/GameplayTagsList.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
 
@@ -32,8 +31,8 @@ void UAttributeSetHealth::PreAttributeChange(const FGameplayAttribute& Attribute
 
 bool UAttributeSetHealth::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
 {
-	const auto character = Cast<IICharacter>(GetOwningActor());
-	const auto abilitySystemComponent = character->GetAbilitySystemComponent()->GetAbilitySystemComponent();
+	const auto playerState = Cast<APlayerStateBase>(GetOwningActor());
+	const auto abilitySystemComponent = playerState->GetAbilitySystemComponent();
 	if(!abilitySystemComponent)
 	{
 		return false;
@@ -72,8 +71,8 @@ void UAttributeSetHealth::PostGameplayEffectExecute(const FGameplayEffectModCall
 			return;
 		}
 		
-		const auto character = Cast<IICharacter>(GetOwningActor());
-		const auto abilitySystemComponent = character->GetAbilitySystemComponent()->GetAbilitySystemComponent();
+		const auto playerState = Cast<APlayerStateBase>(GetOwningActor());
+		const auto abilitySystemComponent = playerState->GetAbilitySystemComponent();
 		if(!abilitySystemComponent)
 		{
 			return;

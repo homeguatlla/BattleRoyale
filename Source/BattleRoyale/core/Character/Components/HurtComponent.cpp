@@ -4,13 +4,11 @@
 #include "HurtComponent.h"
 
 #include <functional>
-#include <vcruntime_startup.h>
-
 #include "AbilitySystemInterface.h"
 #include "GameplayEffectExtension.h"
-#include "BattleRoyale/core/Abilities/GameplayTagsList.h"
 #include "BattleRoyale/core/Character/AttributeSetHealth.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
+#include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "Net/UnrealNetwork.h"
 
@@ -33,12 +31,24 @@ void UHurtComponent::Initialize()
 	{
 		return;
 	}
+
+	const auto owner = Cast<ACharacterBase>(GetOwner());
+	const auto owner2 = owner->GetPlayerState();
+	mHealthAttributes = NewObject<UAttributeSetHealth>(owner2);
 	
-	mHealthAttributes = NewObject<UAttributeSetHealth>(GetOwner());
 	abilitySystemComponentInterface->AddAttributeSet(mHealthAttributes);
+	//const auto character = Cast<ACharacterBase>(GetOwner());
+	//auto attributeHealth = character->GetAbilitySystemComponent()->GetAbilitySystemComponent()->GetSet<UAttributeSetHealth>();
+
+	//TODO en este punto parece que el mHealthAttributes y el attributeHealth tienen la misma dirección de memoria
+	//pero cuando hacemos el GetCurrentHealth no y por eso no funciona.
+	//hay que revisar si el attribute set lo tiene tanto cliente como servidor (que es lo que parece)
+	//y si el addattributeSet lo tienen que hacer ambos también, que supongo es lo correcto.
+	//Revisar el código del GASShooter o el GASDocumentation uno de estos proyectos utiliza en c++ los atributos y se puede ver bien
+	//que les funciona. Igual hay que hacer una prueba poniendo el attribute set dentro del playerstate
 	
 	//Play a gameplay effect to add the ability
-	if(InitializeHurtEffect)
+	if(InitializeHurtEffect && GetOwner()->HasAuthority())
 	{
 		abilitySystemComponentInterface->ApplyGameplayEffectToSelf(InitializeHurtEffect);
 	}
@@ -63,21 +73,20 @@ void UHurtComponent::SetInvulnerableServer(bool isInvulnerable)
 	ServerSetInvulnerable(isInvulnerable);
 }
 
-void UHurtComponent::TakeDamageServer(float damage, APlayerController* instigator, APlayerController* hurt)
+float UHurtComponent::GetCurrentHealth() const
 {
-	/*UE_LOG(LogCharacter, Warning, TEXT("ACharacterBase::TakeDamage Server"));
-	const auto newHealth = mGameplayAbilityAttributes->GetHealth() - actualDamage;
-	mDamageCauser.health = FMath::Clamp(newHealth, 0.0f, MaxHealth);
-	mDamageCauser.damage = actualDamage;
-	mDamageCauser.playerCauser = EventInstigator->GetCharacter();
-	//the replication is not received by server so, we need to update it here
-	UpdateHealth(mDamageCauser);
-
-	//This is ok here because only server can increase the number of kills.
-	if(!mGameplayAbilityAttributes->IsAlive())
+	const auto character = Cast<ACharacterBase>(GetOwner());
+	if(!character)
 	{
-		gameMode->OnNewKill(killer,	victim);
-	}*/
+		return 0.0f;
+	}
+	const auto healthAttribute = character->GetAbilitySystemComponent()->GetAbilitySystemComponent()->GetSet<UAttributeSetHealth>();
+	const auto h1 = healthAttribute->GetHealth();
+	const auto h2 = mHealthAttributes->GetHealth();
+
+	UE_LOG(LogTemp, Display, TEXT("character = %s h1 = %f, h2 = %f"), *character->GetName(), h1, h2);
+	
+	return healthAttribute->GetHealth();
 }
 
 IIAbilitySystemInterfaceBase* UHurtComponent::GetAbilitySystemComponent() const

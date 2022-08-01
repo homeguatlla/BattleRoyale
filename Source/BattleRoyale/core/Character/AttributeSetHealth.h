@@ -40,7 +40,7 @@ private:
 	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 	IIGameMode* GetGameModeServer() const;
-	bool IsAlive() const { return Health.GetCurrentValue() > 0.0f;}
+	bool IsAlive() const { return GetHealth() > 0.0f;}
 
 	UFUNCTION()
 	void OnRepHealth(const FGameplayAttributeData& OldHealth);

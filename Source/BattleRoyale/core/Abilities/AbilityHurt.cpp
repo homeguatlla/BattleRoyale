@@ -6,6 +6,7 @@
 #include "AbilitySystemInterface.h"
 #include "GameplayEffectExtension.h"
 #include "GameplayTagsList.h"
+#include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/Character/Components/HurtComponent.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
@@ -63,12 +64,16 @@ void UAbilityHurt::OnHealthChanged(const FOnAttributeChangeData& data) const
 
 	const auto victim = Cast<IICharacter>(CurrentActorInfo->AvatarActor);
 	const auto attributeSetHealth = victim->GetAbilitySystemComponent()->GetAbilitySystemComponent()->GetSet<UAttributeSetHealth>();
+	const auto currentHealth = attributeSetHealth->GetHealth();
+		
 	if(victim)
 	{
-		const auto currentHealth = attributeSetHealth->GetHealth();
 		victim->NotifyRefreshHealth(currentHealth);
 	}
 
-	//TODO aquí queda por poner la muerte
-	//const auto instigator = data.GEModData->EffectSpec.GetEffectContext().GetInstigator();
+	const auto causerPlayerState = Cast<APlayerStateBase>(data.GEModData->EffectSpec.GetEffectContext().GetInstigator());
+	//const auto causer = causerPlayerState->GetCharacter();
+
+	//TODO aquí lo suyo sería pasar el IICharacter pero choca con que el propio IICharacter tenga una definición de él mismo
+	victim->NotifyTakeDamage(data.OldValue-data.NewValue, causerPlayerState->GetPawn(), currentHealth);
 }

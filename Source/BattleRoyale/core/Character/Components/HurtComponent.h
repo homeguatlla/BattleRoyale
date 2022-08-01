@@ -22,9 +22,8 @@ public:
 	void Initialize();
 	bool RegisterToHealthAttributeDelegate(std::function<void(const FOnAttributeChangeData& data)> callback) const;
 	void SetInvulnerableServer(bool isInvulnerable);
-	
-	//TODO remove it
-	void TakeDamageServer(float damage, APlayerController* instigator, APlayerController* hurt);
+	bool IsAlive() const { return GetCurrentHealth() > 0.0f; }
+	float GetCurrentHealth() const;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Hurt")
 	TSubclassOf<UGameplayEffect> InitializeHurtEffect;
