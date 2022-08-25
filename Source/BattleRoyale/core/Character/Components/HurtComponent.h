@@ -19,24 +19,22 @@ public:
 	// Sets default values for this component's properties
 	UHurtComponent();
 
-	void Initialize();
+	void InitializeServer();
 	bool RegisterToHealthAttributeDelegate(std::function<void(const FOnAttributeChangeData& data)> callback) const;
 	void SetInvulnerableServer(bool isInvulnerable);
 	bool IsAlive() const { return GetCurrentHealth() > 0.0f; }
 	float GetCurrentHealth() const;
+	bool IsReady() const;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Hurt")
 	TSubclassOf<UGameplayEffect> InitializeHurtEffect;
-
+	
 private:
 	// Implement IAbilitySystemInterface
 	virtual class IIAbilitySystemInterfaceBase* GetAbilitySystemComponent() const;
 
 	UFUNCTION(Server, Reliable)
 	void ServerSetInvulnerable(bool isInvulnerable);
-	
-	UPROPERTY()
-	UAttributeSetHealth* mHealthAttributes;
 	
 	FActiveGameplayEffectHandle mVulnerableEffectHandle;
 

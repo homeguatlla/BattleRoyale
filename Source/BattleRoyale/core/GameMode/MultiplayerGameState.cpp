@@ -84,7 +84,7 @@ bool AMultiplayerGameState::AreAllPlayersReplicated() const
 	PerformActionForEachPlayerState(
 		[&AreAllPlayerStatesWithPawn](const IIPlayerState* playerState)
 		{
-			AreAllPlayerStatesWithPawn &= playerState->IsPawnReplicated();
+			AreAllPlayerStatesWithPawn &= playerState->IsPlayerReplicated();
 			return false;
 		});
 

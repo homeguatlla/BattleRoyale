@@ -51,7 +51,7 @@ ACharacterBase::ACharacterBase()
 
 	//Create hurtComponent
 	HurtComponent = CreateDefaultSubobject<UHurtComponent>(TEXT("HurtComponent"));
-	//HurtComponent->SetIsReplicated(true);
+	HurtComponent->SetIsReplicated(true);
 }
 
 void ACharacterBase::BeginPlay()
@@ -98,14 +98,16 @@ void ACharacterBase::InitializeGAS()
 	if (playerState)
 	{
 		playerState->GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
+		//HurtComponent = NewObject<UHurtComponent>(this, TEXT("HurtComponent"));
 		InitializeAttributes();
 	}
 }
 
 void ACharacterBase::InitializeAttributes() const
 {
-	HurtComponent->Initialize();
-		
+	HurtComponent->InitializeServer();
+	//ForceNetUpdate();
+	
 	const IIPlayerState* playerState = GetPlayerStateInterface();
 	if (playerState)
 	{
@@ -141,6 +143,11 @@ IIPlayerState* ACharacterBase::GetPlayerStateInterface() const
 TScriptInterface<IIWeapon> ACharacterBase::GetEquippedWeapon() const
 {
 	return mEquipedWeapon;
+}
+
+bool ACharacterBase::IsCharacterValid() const
+{
+	return IsValid(this) && HurtComponent->IsReady();
 }
 
 FVector ACharacterBase::GetCurrentMeshSpaceVelocity() const
@@ -414,8 +421,8 @@ void ACharacterBase::OnResetVR()
 
 void ACharacterBase::OnSetInvulnerable()
 {
-	m_IsInvulnerable = !m_IsInvulnerable;
-	HurtComponent->SetInvulnerableServer(m_IsInvulnerable);
+	mIsInvulnerable = !mIsInvulnerable;
+	HurtComponent->SetInvulnerableServer(mIsInvulnerable);
 }
 
 void ACharacterBase::MoveForward(float Value)

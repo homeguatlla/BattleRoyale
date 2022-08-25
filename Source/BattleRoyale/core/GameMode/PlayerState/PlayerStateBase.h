@@ -33,7 +33,7 @@ public:
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentInterface() const override { return Cast<IIAbilitySystemInterfaceBase>(mAbilitySystemComponent); }
 	virtual bool IsAlive() const override;
 	
-	virtual bool IsPawnReplicated() const override { return GetPawn() != nullptr; }
+	virtual bool IsPlayerReplicated() const override;
 	virtual void SetTeamId(int teamId) override { mTeamId = teamId; }
 	virtual int GetTeamId() const override { return mTeamId; }
 	virtual FString GetPlayerNickName() const override { return GetPlayerName(); }

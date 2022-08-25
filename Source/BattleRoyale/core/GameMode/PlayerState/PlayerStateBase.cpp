@@ -9,6 +9,7 @@
 #include "BattleRoyale/core/GameMode/GameModeCommon.h"
 #include "BattleRoyale/core/GameMode/MultiplayerGameMode.h"
 #include "BattleRoyale/core/Utils/FSM/StatesMachineFactory.h"
+#include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -20,6 +21,8 @@ mPlayerInteraction("")
 {
 	mAbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponentBase>(TEXT("AbilitySystemComponent"));
 	mAbilitySystemComponent->SetIsReplicated(true);
+	//mAbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+	
 	PrimaryActorTick.bCanEverTick = true;
 	SetActorTickEnabled(false);
 }
@@ -43,6 +46,16 @@ bool APlayerStateBase::IsAlive() const
 		return character->IsAlive();
 	}
 	
+	return false;
+}
+
+bool APlayerStateBase::IsPlayerReplicated() const
+{
+	if(const auto character = GetCharacter())
+	{
+		return character->IsCharacterValid();
+	}
+
 	return false;
 }
 

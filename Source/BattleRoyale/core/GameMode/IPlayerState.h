@@ -29,7 +29,7 @@ public:
 	
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentInterface() const = 0;
 	virtual bool IsAlive() const = 0;
-	virtual bool IsPawnReplicated() const = 0;
+	virtual bool IsPlayerReplicated() const = 0;
 	
 	virtual void SetTeamId(int teamId) = 0;
 	virtual int GetTeamId() const = 0;

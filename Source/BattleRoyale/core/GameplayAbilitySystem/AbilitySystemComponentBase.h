@@ -7,6 +7,7 @@
 #include "IAbilitySystemInterfaceBase.h"
 #include "AbilitySystemComponentBase.generated.h"
 
+class UAttributeSetHealth;
 /**
  * 
  */
@@ -24,7 +25,8 @@ public:
 
 	//Add an attribute set to the gameplay ability component. It is used when attribute sets are in a different class than the gameplayabilitycompoent.
 	virtual void AddAttributeSet(UAttributeSet* attributeSet) override;
-
+	virtual const UAttributeSetHealth* GetAttributeSetHealth() const override;
+	
 	virtual FOnGameplayAttributeValueChange& GetAttributeValueChangeDelegate(FGameplayAttribute attribute) override;
 	virtual bool HasGameplayTag(FGameplayTag tag) const override;
 

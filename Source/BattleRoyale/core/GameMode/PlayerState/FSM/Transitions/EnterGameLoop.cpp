@@ -1,6 +1,8 @@
 
 #include "EnterGameLoop.h"
 
+#include "BattleRoyale/core/Character/ICharacter.h"
+#include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/PlayerStateContext.h"
 
 namespace BRPlayerStateFSM
@@ -17,6 +19,6 @@ namespace BRPlayerStateFSM
 
 	bool EnterGameLoop::CanPerformTransition() const
 	{
-		return true;// mPlayerState->DidGameStarted();
+		return mPlayerState->GetCharacter()->IsCharacterValid();
 	}	
 };

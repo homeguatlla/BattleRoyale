@@ -20,7 +20,6 @@ UAbilityHurt::UAbilityHurt()
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerOnly;
 	//and will be activated when granted(added)
 	ActivateAbilityOnGranted = true;
-	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_HURT));
 }
 
@@ -36,6 +35,7 @@ void UAbilityHurt::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
+	//CurrentActorInfo->AbilitySystemComponent->SetLooseGameplayTagCount(FGameplayTag::RequestGameplayTag(TAG_STATE_CAN_BE_HURT), 1);
 	//Only make sense subscribe to the attribute change if server
 	if(const auto hurtComponent = character->GetHurtComponent())
 	{

@@ -4,6 +4,7 @@
 #include "AbilitySystemComponentBase.h"
 #include "AbilitySystemInterface.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
+#include "BattleRoyale/core/Character/AttributeSetHealth.h"
 
 void UAbilitySystemComponentBase::SetSimulatedMontage(UAnimMontage* montage)
 {
@@ -46,6 +47,11 @@ bool UAbilitySystemComponentBase::RemoveGameplayEffect(FActiveGameplayEffectHand
 void UAbilitySystemComponentBase::AddAttributeSet(UAttributeSet* attributeSet)
 {
 	AddAttributeSetSubobject(attributeSet);
+}
+
+const UAttributeSetHealth* UAbilitySystemComponentBase::GetAttributeSetHealth() const
+{
+	return GetSet<UAttributeSetHealth>();
 }
 
 FOnGameplayAttributeValueChange& UAbilitySystemComponentBase::GetAttributeValueChangeDelegate(FGameplayAttribute attribute)

@@ -78,8 +78,8 @@ class ACharacterBase : public ACharacter, public IICharacter
 	UPROPERTY(ReplicatedUsing=OnRep_TakeDamageData)
 	FTakeDamageData mDamageCauser;
 
-	bool m_IsInvulnerable = true;
-
+	bool mIsInvulnerable = true;
+	
 public:
 	ACharacterBase();
 	
@@ -93,7 +93,7 @@ public:
 	virtual TScriptInterface<IIWeapon> GetEquippedWeapon() const override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual bool IsCharacterValid() const override { return IsValid(this); }
+	virtual bool IsCharacterValid() const override;
 
 	UFUNCTION(BlueprintCallable)
 	virtual FVector GetCurrentVelocity() const override { return GetVelocity(); }
@@ -108,7 +108,7 @@ public:
 	virtual FRotator GetCurrentControlRotation() const override { return mControlRotation; }
 
 	UFUNCTION(BlueprintCallable)
-	virtual float GetCurrentHealth() const override;// { return GetPlayerStateInterface()->GetCurrentHealth();}//return mGameplayAbilityAttributes->GetHealth(); }
+	virtual float GetCurrentHealth() const override;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void SetInvulnerableServer(bool isInvulnerable) override;
