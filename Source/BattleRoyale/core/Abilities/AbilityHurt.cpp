@@ -41,6 +41,7 @@ void UAbilityHurt::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		hurtComponent->RegisterToHealthAttributeDelegate(std::bind(&UAbilityHurt::OnHealthChanged, this, std::placeholders::_1));
 	}
+	//ActorInfo->AbilitySystemComponent->AddLooseGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_CAN_BE_HURT));
 }
 
 void UAbilityHurt::OnAvatarSet(const FGameplayAbilityActorInfo * ActorInfo, const FGameplayAbilitySpec & Spec)

@@ -8,7 +8,7 @@ const FName TAG_ABILITY_SPRINT("Ability.Sprint");
 const FName TAG_ABILITY_SHOOT("Ability.Shoot");
 const FName TAG_ABILITY_SHOOT_PROJECTILE("Ability.Shoot.Projectile");
 
-const FName TAG_STATE_CAN_BE_HURT = FName("State.CanBeHurt");
+const FName TAG_STATE_INVULNERABLE = FName("State.Invulnerable");
 
 
 const FName TAG_GAMEPLAYCUE_JUMP("GameplayCue.Jump");

@@ -78,7 +78,7 @@ class ACharacterBase : public ACharacter, public IICharacter
 	UPROPERTY(ReplicatedUsing=OnRep_TakeDamageData)
 	FTakeDamageData mDamageCauser;
 
-	bool mIsInvulnerable = true;
+	bool mIsInvulnerable = false;
 	
 public:
 	ACharacterBase();

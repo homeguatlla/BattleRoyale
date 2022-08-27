@@ -110,12 +110,12 @@ void UHurtComponent::ServerSetInvulnerable_Implementation(bool isInvulnerable)
 	{
 		return;
 	}
-	if(isInvulnerable && mVulnerableEffectHandle.IsValid())
+	if(!isInvulnerable && mInvulnerableEffectHandle.IsValid())
 	{
-		abilitySystemComponentInterface->RemoveGameplayEffect(mVulnerableEffectHandle);
+		abilitySystemComponentInterface->RemoveGameplayEffect(mInvulnerableEffectHandle);
 	}
-	else if(!isInvulnerable)
+	else if(isInvulnerable)
 	{
-		mVulnerableEffectHandle = abilitySystemComponentInterface->ApplyGameplayEffectToSelf(VulnerableEffect);
+		mInvulnerableEffectHandle = abilitySystemComponentInterface->ApplyGameplayEffectToSelf(InvulnerableEffect);
 	}
 }

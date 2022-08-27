@@ -36,8 +36,8 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerSetInvulnerable(bool isInvulnerable);
 	
-	FActiveGameplayEffectHandle mVulnerableEffectHandle;
+	FActiveGameplayEffectHandle mInvulnerableEffectHandle;
 
 	UPROPERTY(EditAnywhere, Category = "Hurt")
-	TSubclassOf<UGameplayEffect> VulnerableEffect;
+	TSubclassOf<UGameplayEffect> InvulnerableEffect;
 };
