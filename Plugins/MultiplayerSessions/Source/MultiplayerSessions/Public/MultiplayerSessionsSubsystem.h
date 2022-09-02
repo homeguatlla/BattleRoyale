@@ -9,6 +9,10 @@
 
 #include "MultiplayerSessionsSubsystem.generated.h"
 
+//Declaring our own custom delegates for the Menu class to bind callbacks to
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnCreateSessionComplete, bool, wasSuccessful);
+
+
 /**
  * 
  */
@@ -27,6 +31,9 @@ public:
 	void DestroySession();
 	void StartSession();
 
+	//Our own custom delegates for the Menu class to bind callbacks to
+	FMultiplayerOnCreateSessionComplete MultiplayerOnCreateSessionComplete;
+	
 protected:
 	//Internal callbacks for the delegates we'll add to the Online Session Interface delegate list.
 	//These don't need to be called this class.
@@ -38,6 +45,7 @@ protected:
 	
 private:
 	IOnlineSessionPtr mSessionInterface;
+	TSharedPtr<FOnlineSessionSettings> mLastSessionSettings;
 
 	//To add to the Online Session Interface delegate list.
 	//We'll bind our MultiplayerSessionsSubsystem interal callbacks to these.

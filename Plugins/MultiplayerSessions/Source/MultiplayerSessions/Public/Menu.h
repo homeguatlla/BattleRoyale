@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "Menu.generated.h"
 
+const FString MATCH_TYPE_FREE_FOR_ALL(TEXT("FreeForAll"));
+
 /**
  * 
  */
@@ -16,19 +18,26 @@ class MULTIPLAYERSESSIONS_API UMenu : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void MenuSetup();
+	void Setup(int numberPublicConnections = 4, const FString& matchType = FString(TEXT("FreeForAll")));
 
 protected:
 	virtual bool Initialize() override;
+	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
 	
 private:
 	void SetInputMode();
 	void SaveMultiplayerSessionsSubsystem();
+	void TearDown();
+	void SubscribeToMultiplayerSessionDelegates();
 	
 	UFUNCTION()
 	void HostButtonClicked();
 	UFUNCTION()
 	void JoinButtonClicked();
+
+	// Callbacks for the custom delegates on the MultiplayerSessionsSubsystem
+	UFUNCTION()
+	void OnCreateSession(bool wasSuccessful);
 	
 	UPROPERTY(meta = (BindWidget))
 	class UButton* HostButton; //the exact same name than the button name in the widget
@@ -37,4 +46,7 @@ private:
 
 	//The subsystem designed to handle all online session functionality
 	class UMultiplayerSessionsSubsystem* mMultiplayerSessionsSubsystem;
+
+	int mNumPublicConnections {4};
+	FString mMatchType{MATCH_TYPE_FREE_FOR_ALL};
 };
