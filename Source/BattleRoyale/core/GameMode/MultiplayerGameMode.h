@@ -28,6 +28,7 @@ public:
 	
 	//TODO this could be part of an interface
 	void NotifyPlayerProperlySync(const FString& name);
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void Logout(AController* Exiting) override;
 	
 	UFUNCTION(BlueprintCallable, Category="GameSession")

@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Interfaces/OnlineSessionInterface.h"
+#include "OnlineSessionSettings.h"
 #include "Menu.generated.h"
 
 const FString MATCH_TYPE_FREE_FOR_ALL(TEXT("FreeForAll"));
@@ -18,7 +20,10 @@ class MULTIPLAYERSESSIONS_API UMenu : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void Setup(int numberPublicConnections = 4, const FString& matchType = FString(TEXT("FreeForAll")));
+	void Setup(
+		int numberPublicConnections = 4,
+		const FString& matchType = FString(TEXT("FreeForAll")),
+		const FString& lobbyPath = FString(TEXT("/Game/Maps/TestMultiplayerSessions/TestMultiplayerSessionsLobby")));
 
 protected:
 	virtual bool Initialize() override;
@@ -38,6 +43,12 @@ private:
 	// Callbacks for the custom delegates on the MultiplayerSessionsSubsystem
 	UFUNCTION()
 	void OnCreateSession(bool wasSuccessful);
+	void OnFindSessions(const TArray<FOnlineSessionSearchResult>& sessionsResults, bool wasSucccessful);
+	void OnJoinSession(EOnJoinSessionCompleteResult::Type result);
+	UFUNCTION()
+	void OnDestroySession(bool wasSuccessful);
+	UFUNCTION()
+	void OnStartSession(bool wasSuccessful);
 	
 	UPROPERTY(meta = (BindWidget))
 	class UButton* HostButton; //the exact same name than the button name in the widget
@@ -49,4 +60,5 @@ private:
 
 	int mNumPublicConnections {4};
 	FString mMatchType{MATCH_TYPE_FREE_FOR_ALL};
+	FString mPathToLobby;
 };

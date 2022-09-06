@@ -10,8 +10,15 @@
 #include "MultiplayerSessionsSubsystem.generated.h"
 
 //Declaring our own custom delegates for the Menu class to bind callbacks to
+//DYNAMIC_MULTICAST_DELEGATE can be used from blueprints
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnCreateSessionComplete, bool, wasSuccessful);
-
+//In this case, as FOnlineSessionsSearchResult is not a blueprintable type (not uclass, ustruct), we need to change the delegate type and
+//using MULTICAST_DELEGATE will not be possible to call it from blueprints. The way to fix this is creating a struct and
+//pass the information into it.
+DECLARE_MULTICAST_DELEGATE_TwoParams(FMultiplayerOnFindSessionsComplete, const TArray<FOnlineSessionSearchResult>& sessionsResults, bool wasSuccessful);
+DECLARE_MULTICAST_DELEGATE_OneParam(FMultiplayerOnJoinSessionComplete, EOnJoinSessionCompleteResult::Type result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnDestroySessionComplete, bool, wasSuccessful);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnStartSessionComplete, bool, wasSuccessful);
 
 /**
  * 
@@ -33,6 +40,10 @@ public:
 
 	//Our own custom delegates for the Menu class to bind callbacks to
 	FMultiplayerOnCreateSessionComplete MultiplayerOnCreateSessionComplete;
+	FMultiplayerOnFindSessionsComplete MultiplayerOnFindSessionsComplete;
+	FMultiplayerOnJoinSessionComplete MultiplayerOnJoinSessionComplete;
+	FMultiplayerOnDestroySessionComplete MultiplayerOnDestroySessionComplete;
+	FMultiplayerOnStartSessionComplete MultiplayerOnStartSessionComplete;
 	
 protected:
 	//Internal callbacks for the delegates we'll add to the Online Session Interface delegate list.
@@ -46,6 +57,7 @@ protected:
 private:
 	IOnlineSessionPtr mSessionInterface;
 	TSharedPtr<FOnlineSessionSettings> mLastSessionSettings;
+	TSharedPtr<FOnlineSessionSearch> mLastSessionSearch;
 
 	//To add to the Online Session Interface delegate list.
 	//We'll bind our MultiplayerSessionsSubsystem interal callbacks to these.
@@ -56,7 +68,7 @@ private:
 	FDelegateHandle mFindSessionCompleteDelegateHandle;
 	
 	FOnJoinSessionCompleteDelegate JoinSessionCompleteDelegate;
-	FDelegateHandle mJoinSessionCompleteDelegateHanlde;
+	FDelegateHandle mJoinSessionCompleteDelegateHandle;
 	
 	FOnDestroySessionCompleteDelegate DestroySessionCompleteDelegate;
 	FDelegateHandle mDestroySessionCompleteDelegateHandle;

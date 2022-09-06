@@ -4,6 +4,7 @@
 #include "OnlineSessionSettings.h"
 #include "BattleRoyale/core/GameMode/GameSession/MultiplayerGameSession.h"
 #include "Configuration/GameModeConfigurationInfo.h"
+#include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerState.h"
 
 AMultiplayerGameMode::AMultiplayerGameMode() : m_PlayerStartIndex{0}, m_PlayersAlreadySync {0}
@@ -24,18 +25,66 @@ void AMultiplayerGameMode::NotifyPlayerProperlySync(const FString& name)
 	NotifyAllSyncReady();
 }
 
+void AMultiplayerGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	if(GameState)
+	{
+		if(!GEngine)
+		{
+			return;
+		}
+		const auto numberOfPlayers = GameState->PlayerArray.Num();
+		
+		GEngine->AddOnScreenDebugMessage(
+			1,
+			60.0f,
+			FColor::Yellow,
+			FString::Printf(TEXT("Players in game %d"), numberOfPlayers));
+
+		const auto playerState = NewPlayer->GetPlayerState<APlayerState>();
+		if(!playerState)
+		{
+			return;
+		}
+		const auto playerName = playerState->GetPlayerName();
+		GEngine->AddOnScreenDebugMessage(
+			-1,
+			60.0f,
+			FColor::Cyan,
+			FString::Printf(TEXT("%s has joined the game!"), *playerName));
+	}
+}
+
 void AMultiplayerGameMode::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
-	
-	//UE_LOG(LogTemp, Display, TEXT("%s"), __FUNCTION__);
-	 
-	/*const  auto playerState = Exiting->GetPlayerState<AGothicPlayerState>(); 
-	if(playerState)
+
+	if(!GEngine)
 	{
-		GOTHIC_LOG_INFO(Network, "{0} Player {1}", __FUNCTION__, *playerState->GetPlayerName());
-	}*/
+		return;
+	}
+	const auto numberOfPlayers = GameState->PlayerArray.Num();
+		
+	GEngine->AddOnScreenDebugMessage(
+		1,
+		60.0f,
+		FColor::Yellow,
+		FString::Printf(TEXT("Players in game %d"), numberOfPlayers - 1));
 	
+	const auto playerState = Exiting->GetPlayerState<APlayerState>();
+	if(!playerState)
+	{
+		return;
+	}
+	const auto playerName = playerState->GetPlayerName();
+	GEngine->AddOnScreenDebugMessage(
+		-1,
+		60.0f,
+		FColor::Cyan,
+		FString::Printf(TEXT("%s has exited the game!"), *playerName));
+
 	CheckIfNotifyAllSync(Exiting);
 }
 
