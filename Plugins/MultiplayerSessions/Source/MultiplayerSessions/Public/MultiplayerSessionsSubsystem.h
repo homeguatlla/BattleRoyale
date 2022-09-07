@@ -58,6 +58,9 @@ private:
 	IOnlineSessionPtr mSessionInterface;
 	TSharedPtr<FOnlineSessionSettings> mLastSessionSettings;
 	TSharedPtr<FOnlineSessionSearch> mLastSessionSearch;
+	bool mShouldCreateSessionOnDestroy{false};
+	int mLastNumPublicConnections;
+	FString mLastMatchType;
 
 	//To add to the Online Session Interface delegate list.
 	//We'll bind our MultiplayerSessionsSubsystem interal callbacks to these.

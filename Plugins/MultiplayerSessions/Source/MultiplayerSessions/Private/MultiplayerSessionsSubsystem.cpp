@@ -29,7 +29,13 @@ void UMultiplayerSessionsSubsystem::CreateSession(int numPublicConnections, cons
 	const auto existingSession = mSessionInterface->GetNamedSession(NAME_GameSession);
 	if(existingSession != nullptr)
 	{
-		mSessionInterface->DestroySession(NAME_GameSession);
+		//if a session already exists we will destroy it. But destruction takes time so we can not
+		//create the session immediately we need to wait the OnDestroySessionComplete delegate and
+		//that is the reason we need to save the numPublicConnections and the matchType to variables.
+		mShouldCreateSessionOnDestroy = true;
+		mLastNumPublicConnections = numPublicConnections;
+		mLastMatchType = matchType;
+		DestroySession();
 	}
 	//store the delegate in a FDelegateHandle so we ccan later remove it from the delegate list
 	mCreateSessionCompleteDelegateHandle = mSessionInterface->AddOnCreateSessionCompleteDelegate_Handle(CreateSessionCompleteDelegate);
@@ -100,6 +106,17 @@ void UMultiplayerSessionsSubsystem::JoinSession(const FOnlineSessionSearchResult
 
 void UMultiplayerSessionsSubsystem::DestroySession()
 {
+	if(!mSessionInterface.IsValid())
+	{
+		MultiplayerOnDestroySessionComplete.Broadcast(false);
+		return;
+	}
+	mDestroySessionCompleteDelegateHandle = mSessionInterface->AddOnDestroySessionCompleteDelegate_Handle(DestroySessionCompleteDelegate);
+	if(!mSessionInterface->DestroySession(NAME_GameSession))
+	{
+		mSessionInterface->ClearOnDestroySessionCompleteDelegate_Handle(mDestroySessionCompleteDelegateHandle);
+		MultiplayerOnDestroySessionComplete.Broadcast(false);
+	}
 }
 
 void UMultiplayerSessionsSubsystem::StartSession()
@@ -112,7 +129,11 @@ void UMultiplayerSessionsSubsystem::StartSession()
 	}
 
 	mStartSessionCompleteDelegateHandle = mSessionInterface->AddOnStartSessionCompleteDelegate_Handle(StartSessionCompleteDelegate);
-	mSessionInterface->StartSession(NAME_GameSession);
+	if(!mSessionInterface->StartSession(NAME_GameSession))
+	{
+		mSessionInterface->ClearOnStartSessionCompleteDelegate_Handle(mStartSessionCompleteDelegateHandle);
+		MultiplayerOnStartSessionComplete.Broadcast(false);
+	}
 }
 
 void UMultiplayerSessionsSubsystem::OnCreateSessionComplete(FName sessionName, bool wasSuccessful)
@@ -157,6 +178,19 @@ void UMultiplayerSessionsSubsystem::OnJoinSessionComplete(FName sessionName, EOn
 
 void UMultiplayerSessionsSubsystem::OnDestroySessionComplete(FName sessionName, bool wasSuccessful)
 {
+	if(!mSessionInterface)
+	{
+		return;
+	}
+
+	mSessionInterface->ClearOnDestroySessionCompleteDelegate_Handle(mDestroySessionCompleteDelegateHandle);
+	//In case a previous session was created and we destroy it, we can create the new session
+	if(wasSuccessful && mShouldCreateSessionOnDestroy)
+	{
+		mShouldCreateSessionOnDestroy = false;
+		CreateSession(mLastNumPublicConnections, mLastMatchType);
+	}
+	MultiplayerOnDestroySessionComplete.Broadcast(wasSuccessful);
 }
 
 void UMultiplayerSessionsSubsystem::OnStartOnlineGameComplete(FName sessionName, bool wasSuccessful)

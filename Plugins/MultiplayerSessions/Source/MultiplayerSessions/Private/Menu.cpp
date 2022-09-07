@@ -52,6 +52,8 @@ void UMenu::OnCreateSession(bool wasSuccessful)
 {
 	if(!wasSuccessful)
 	{
+		HostButton->SetIsEnabled(true);
+		
 		GEngine->AddOnScreenDebugMessage(
 			-1,
 			15.0f,
@@ -86,10 +88,20 @@ void UMenu::OnFindSessions(const TArray<FOnlineSessionSearchResult>& sessionsRes
 			return;
 		}
 	}
+	
+	if(!wasSucccessful || sessionsResults.Num() == 0)
+	{
+		JoinButton->SetIsEnabled(true);
+	}
 }
 
 void UMenu::OnJoinSession(EOnJoinSessionCompleteResult::Type result)
 {
+	if(result != EOnJoinSessionCompleteResult::Success)
+	{
+		JoinButton->SetIsEnabled(true);
+	}
+	
 	const auto onlineSubsystem = IOnlineSubsystem::Get();
 	if(!onlineSubsystem)
 	{
@@ -117,11 +129,12 @@ void UMenu::OnDestroySession(bool wasSuccessful)
 
 void UMenu::OnStartSession(bool wasSuccessful)
 {
-	
+	//TODO hay código pendiente aquí.
 }
 
 void UMenu::HostButtonClicked()
 {
+	HostButton->SetIsEnabled(false);
 	if(!mMultiplayerSessionsSubsystem)
 	{
 		return;
@@ -132,10 +145,10 @@ void UMenu::HostButtonClicked()
 
 void UMenu::JoinButtonClicked()
 {
+	JoinButton->SetIsEnabled(false);
 	if(mMultiplayerSessionsSubsystem)
 	{
-		mMultiplayerSessionsSubsystem->FindSessions(10000);
-		
+		mMultiplayerSessionsSubsystem->FindSessions(10000);		
 	}
 }
 
