@@ -48,6 +48,7 @@ void UMultiplayerSessionsSubsystem::CreateSession(int numPublicConnections, cons
 	mLastSessionSettings->bShouldAdvertise = true;
 	mLastSessionSettings->bUsesPresence = true;
 	mLastSessionSettings->BuildUniqueId = 1;
+	mLastSessionSettings->bUseLobbiesIfAvailable = true;
 	mLastSessionSettings->Set(
 		FName("MatchType"),
 		matchType,
