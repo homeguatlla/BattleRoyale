@@ -25,7 +25,8 @@ public class BattleRoyale : ModuleRules
 			"GameplayTags",
 			"GameplayTasks",
 			//HUD
-			"UMG"
+			"UMG",
+			"MultiplayerSessions"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]

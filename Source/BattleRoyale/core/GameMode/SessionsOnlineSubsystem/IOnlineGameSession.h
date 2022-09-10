@@ -49,7 +49,7 @@ public:
 	virtual void StartSession() = 0;
 	virtual void EndSession() = 0;
 	virtual void FindSessions() = 0;
-	virtual bool JoinSession(const FString& sessionId) = 0;
+	//virtual bool JoinSession(const FString& sessionId) = 0;
 	virtual void DestroySessionAndLeaveGame() = 0;
 	virtual TArray<FOnlineSessionFindResult> GetAvailableSessions() const = 0;
 	virtual bool HasCurrentSession() const = 0;

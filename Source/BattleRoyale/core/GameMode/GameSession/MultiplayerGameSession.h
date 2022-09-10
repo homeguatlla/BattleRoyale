@@ -25,13 +25,13 @@ public:
 	void Initialize(const UMultiplayerConfigurationInfo* configuration);
 	void CreateSession(bool isLan, uint8 maxNumPlayers, const FString& defaultPlayerName);
 	void FindSessions();
-	bool JoinSession(const FString& sessionId);
+	//bool JoinSession(const FString& sessionId);
 	void DestroySessionAndLeaveGame();
 	FNamedOnlineSession* GetCurrentSession() const;
 	EOnlineAsyncTaskState::Type GetFindSessionsStatus() const;
 	
 	void StartGame();
-	TSharedPtr<class FOnlineSessionSearch> GetAvailableSessions() const { return m_Sessions; }
+	//TSharedPtr<class FOnlineSessionSearch> GetAvailableSessions() const { return m_Sessions; }
 
 	ULocalPlayer* GetLocalPlayer() const;
 	
@@ -41,18 +41,21 @@ public:
 	
 private:
 	void InitializeOnlineSubsystem();
-	void UnregisterOnlineSubsystemDelegates() const;
+	//void UnregisterOnlineSubsystemDelegates() const;
 	bool IsLAN() const;
 	APlayerController* GetPlayerControllerFromUserId(const FUniqueNetId& userId) const;
 
 	AMultiplayerGameMode* GetGameMode() const;
-	
-	void OnCreateSessionComplete(FName sessionName, bool wasSuccessful) const;
-	void OnDestroySessionComplete(FName sessionName, bool wasSuccessful) const;
-	void OnStartSessionComplete(FName sessionName, bool wasSuccessful) override;
-	void OnEndSessionComplete(FName sessionName, bool wasSuccessful) override;
-	void OnFindSessionsComplete(TSharedPtr<class FOnlineSessionSearch> sessions, bool wasSuccessful);
-	void OnJoinSessionComplete(const FString& travelURL, EOnJoinSessionCompleteResult::Type result);
+
+	UFUNCTION()
+	void OnCreateSessionComplete(bool wasSuccessful);
+	UFUNCTION()
+	void OnDestroySessionComplete(bool wasSuccessful);
+	UFUNCTION()
+	void OnStartSessionComplete(bool wasSuccessful);
+	void OnEndSessionComplete(bool wasSuccessful);
+	void OnFindSessionsComplete(const TArray<FOnlineSessionSearchResult>& sessionsResults, bool wasSuccessful);
+	void OnJoinSessionComplete(EOnJoinSessionCompleteResult::Type result);
 	
 	FDelegateHandle OnCreateSessionCompleteDelegateHandle;
 	FDelegateHandle OnDestroySessionCompleteDelegateHandle;
@@ -61,10 +64,12 @@ private:
 	FDelegateHandle OnFindSessionsCompleteDelegateHandle;
 	FDelegateHandle OnJoinSessionCompleteDelegateHandle;
 	
-	TSharedPtr<SessionsOnlineSubsystem> m_OnlineSubsystem;
-	TSharedPtr<class FOnlineSessionSearch> m_Sessions;
+	//TSharedPtr<SessionsOnlineSubsystem> m_OnlineSubsystem;
+	UPROPERTY()
+	class UMultiplayerSessionsSubsystem* mMultiplayerSessionsSubsystem;
 	bool m_IsLAN;
 	FString m_DefaultPlayerName;
+	FString mMatchType{"FreeToPlay"};
 	
 	UPROPERTY()
 	const UMultiplayerConfigurationInfo* mConfigurationInfo;

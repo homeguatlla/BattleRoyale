@@ -41,8 +41,8 @@ public:
     void EndSession() override;
 	UFUNCTION(BlueprintCallable, Category="GameSession")
     void FindSessions() override;
-	UFUNCTION(BlueprintCallable, Category="GameSession")
-    bool JoinSession(const FString& sessionId) override;
+	//UFUNCTION(BlueprintCallable, Category="GameSession")
+    //bool JoinSession(const FString& sessionId) override;
 	UFUNCTION(BlueprintCallable, Category="GameSession")
     void DestroySessionAndLeaveGame() override;
 	UFUNCTION(BlueprintCallable, Category="GameSession")

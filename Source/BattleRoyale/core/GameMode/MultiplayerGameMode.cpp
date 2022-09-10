@@ -105,7 +105,11 @@ TArray<FOnlineSessionFindResult> AMultiplayerGameMode::GetAvailableSessions() co
 {
 	TArray<FOnlineSessionFindResult> result;
 
-	auto sessions = GetGameSession()->GetAvailableSessions();
+	//TODO no sé hasta que punto este método haría falta realmente. El player no tiene que ver las sessiones
+	//disponibles sino que tiene que haber un matchmaking que decida, que ahora mismo está en multiplayersessions
+	//y que más adelante en el curso de udemy se resolverá.
+	
+	/*auto sessions = GetGameSession()->GetAvailableSessions();
 	//UE_LOG(LogTemp, Display, TEXT("%s"), __FUNCTION__);
    		
 	if(sessions.IsValid())
@@ -122,7 +126,7 @@ TArray<FOnlineSessionFindResult> AMultiplayerGameMode::GetAvailableSessions() co
 				availableSession.Session.NumOpenPublicConnections,
 				availableSession.PingInMs));
 		}
-	}
+	}*/
 	return result;
 }
 
@@ -213,10 +217,11 @@ void AMultiplayerGameMode::FindSessions()
 	GetGameSession()->FindSessions();
 }
 
+/*
 bool AMultiplayerGameMode::JoinSession(const FString& sessionId)
 {
 	return GetGameSession()->JoinSession(sessionId);
-}
+}*/
 
 AMultiplayerGameSession* AMultiplayerGameMode::GetGameSession() const
 {
