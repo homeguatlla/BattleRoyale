@@ -270,8 +270,9 @@ ULocalPlayer* AMultiplayerGameSession::GetLocalPlayer() const
 	return gameInstance->GetFirstGamePlayer(); //GetWorld()->GetFirstPlayerController()->GetLocalPlayer();
 }
 
-APlayerController* AMultiplayerGameSession::GetPlayerControllerFromUserId(const FUniqueNetId& userId) const
+APlayerController* AMultiplayerGameSession::GetPlayerControllerFromUserId(const FUniqueNetIdRepl& userId) const
 {
+	
 	auto player = GetPlayerControllerFromNetId(GetWorld(), userId);
 	if(!player)
 	{

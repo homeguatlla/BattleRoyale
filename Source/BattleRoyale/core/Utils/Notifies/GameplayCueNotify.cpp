@@ -6,9 +6,9 @@
 #include "GameplayCueManager.h"
 
 void UGameplayCueNotify::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
-                                     float TotalDuration)
+                                     float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
-	Super::NotifyBegin(MeshComp, Animation, TotalDuration);
+	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 
 	UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
 				MeshComp->GetOwner(),
@@ -22,9 +22,9 @@ void UGameplayCueNotify::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequ
 				FGameplayCueParameters());
 }
 
-void UGameplayCueNotify::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
+void UGameplayCueNotify::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
-	Super::NotifyEnd(MeshComp, Animation);
+	Super::NotifyEnd(MeshComp, Animation, EventReference);
 
 	UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
 				MeshComp->GetOwner(),

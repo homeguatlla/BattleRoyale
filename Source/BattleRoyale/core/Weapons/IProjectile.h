@@ -7,7 +7,7 @@
 #include "IProjectile.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(Blueprintable, meta = (CannotImplementInterfaceInBlueprint))
+UINTERFACE(NotBlueprintable, meta = (CannotImplementInterfaceInBlueprint))
 class UIProjectile : public UInterface
 {
 	GENERATED_BODY()

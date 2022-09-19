@@ -14,7 +14,7 @@ class UHurtComponent;
 class IICharacter;
 
 // This class does not need to be modified.
-UINTERFACE(Blueprintable, meta = (CannotImplementInterfaceInBlueprint))
+UINTERFACE(NotBlueprintable, meta = (CannotImplementInterfaceInBlueprint))
 class UICharacter : public UInterface
 {
 	GENERATED_BODY()

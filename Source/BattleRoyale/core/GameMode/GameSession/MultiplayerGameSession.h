@@ -43,7 +43,7 @@ private:
 	void InitializeOnlineSubsystem();
 	//void UnregisterOnlineSubsystemDelegates() const;
 	bool IsLAN() const;
-	APlayerController* GetPlayerControllerFromUserId(const FUniqueNetId& userId) const;
+	APlayerController* GetPlayerControllerFromUserId(const FUniqueNetIdRepl& userId) const;
 
 	AMultiplayerGameMode* GetGameMode() const;
 
@@ -51,8 +51,12 @@ private:
 	void OnCreateSessionComplete(bool wasSuccessful);
 	UFUNCTION()
 	void OnDestroySessionComplete(bool wasSuccessful);
+
+	using AGameSession::OnStartSessionComplete;//To disable a warning because there is a parent method with the same name but different parameters
+	
 	UFUNCTION()
 	void OnStartSessionComplete(bool wasSuccessful);
+	using AGameSession::OnEndSessionComplete;//To disable a warning because there is a parent method with the same name but different parameters
 	void OnEndSessionComplete(bool wasSuccessful);
 	void OnFindSessionsComplete(const TArray<FOnlineSessionSearchResult>& sessionsResults, bool wasSuccessful);
 	void OnJoinSessionComplete(EOnJoinSessionCompleteResult::Type result);

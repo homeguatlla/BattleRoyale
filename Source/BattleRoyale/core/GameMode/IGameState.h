@@ -15,7 +15,7 @@ class UGameModeConfigurationInfo;
 class UGameRules;
 
 // This class does not need to be modified.
-UINTERFACE(Blueprintable, meta = (CannotImplementInterfaceInBlueprint))
+UINTERFACE(NotBlueprintable, meta = (CannotImplementInterfaceInBlueprint))
 class UIGameState : public UInterface
 {
 	GENERATED_BODY()

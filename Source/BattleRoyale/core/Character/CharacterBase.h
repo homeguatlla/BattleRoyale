@@ -69,7 +69,7 @@ class ACharacterBase : public ACharacter, public IICharacter
 	
 	/** Replicated control rotation in order to update remotes pitch */
 	UPROPERTY(Transient, Replicated)
-	struct FRotator mControlRotation;
+	FRotator mControlRotation;
 	TScriptInterface<IIWeapon> mEquipedWeapon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
