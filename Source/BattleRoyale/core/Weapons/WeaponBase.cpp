@@ -17,12 +17,10 @@ AWeaponBase::AWeaponBase()
 
 	// Create a gun mesh component
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Gun"));
+	Mesh->SetupAttachment(RootComponent);
 	Mesh->SetOnlyOwnerSee(false);			// otherwise won't be visible in the multiplayer
 	Mesh->bCastDynamicShadow = false;
 	Mesh->CastShadow = false;
-
-	//Set to avoid a warning
-	SetRootComponent(Mesh);
 }
 
 void AWeaponBase::Tick( float DeltaSeconds )
@@ -37,8 +35,7 @@ void AWeaponBase::Tick( float DeltaSeconds )
 
 FVector AWeaponBase::GetMuzzleLocation() const
 {
-	const auto weaponMuzzleSocket = Mesh->GetSocketByName(MuzzleSocketName);
-	if(weaponMuzzleSocket)
+	if(const auto weaponMuzzleSocket = Mesh->GetSocketByName(MuzzleSocketName))
 	{
 		return weaponMuzzleSocket->GetSocketLocation(Mesh);
 	}
@@ -50,8 +47,7 @@ FVector AWeaponBase::GetMuzzleLocation() const
 
 FRotator AWeaponBase::GetMuzzleRotation() const
 {
-	const auto weaponMuzzleSocket = Mesh->GetSocketByName(MuzzleSocketName);
-	if(weaponMuzzleSocket)
+	if(const auto weaponMuzzleSocket = Mesh->GetSocketByName(MuzzleSocketName))
 	{
 		return weaponMuzzleSocket->GetSocketTransform(Mesh).GetRotation().Rotator();
 	}
@@ -82,8 +78,7 @@ void AWeaponBase::SpawnProjectile(const FVector& muzzleLocation, const FRotator&
 			DrawDebugLine(GetWorld(), location, GetProjectileSpawnLocation(muzzleLocation, muzzleRotation, 500), FColor::Red, false, 60);
 			DrawDebugSphere(GetWorld(), muzzleLocation, 5, 10, FColor::Blue, true, -1, 0, 3);*/
 			// spawn the projectile at the muzzle
-			const auto projectile = World->SpawnActor<AProjectileBase>(ProjectileClass, location, muzzleRotation, ActorSpawnParams);
-			if(projectile)
+			if(const auto projectile = World->SpawnActor<AProjectileBase>(ProjectileClass, location, muzzleRotation, ActorSpawnParams))
 			{
 				const auto owner = GetOwner();
 				UE_LOG(LogTemp, Warning, TEXT("WeaponBase::SpawnProjectile %d"), owner->GetLocalRole());

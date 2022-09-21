@@ -14,7 +14,7 @@ class BATTLEROYALE_API AWeaponBase : public AActor, public IIWeapon
 	GENERATED_BODY()
 
 	/** Weapon mesh */
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	USkeletalMeshComponent* Mesh;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")

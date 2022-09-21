@@ -37,7 +37,8 @@ public:
 	void JoinSession(const FOnlineSessionSearchResult& sessionsResult);
 	void DestroySession();
 	void StartSession();
-
+	EOnlineAsyncTaskState::Type GetFindSessionsStatus() const;
+	
 	//Our own custom delegates for the Menu class to bind callbacks to
 	FMultiplayerOnCreateSessionComplete MultiplayerOnCreateSessionComplete;
 	FMultiplayerOnFindSessionsComplete MultiplayerOnFindSessionsComplete;

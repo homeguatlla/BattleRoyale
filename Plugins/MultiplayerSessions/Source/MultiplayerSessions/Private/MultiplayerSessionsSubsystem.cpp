@@ -137,6 +137,16 @@ void UMultiplayerSessionsSubsystem::StartSession()
 	}
 }
 
+EOnlineAsyncTaskState::Type UMultiplayerSessionsSubsystem::GetFindSessionsStatus() const
+{
+	if(mLastSessionSearch)
+	{
+		return mLastSessionSearch->SearchState;
+	}
+	
+	return EOnlineAsyncTaskState::NotStarted;
+}
+
 void UMultiplayerSessionsSubsystem::OnCreateSessionComplete(FName sessionName, bool wasSuccessful)
 {
 	if(mSessionInterface)

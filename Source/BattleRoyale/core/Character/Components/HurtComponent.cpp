@@ -87,8 +87,11 @@ float UHurtComponent::GetCurrentHealth() const
 
 bool UHurtComponent::IsReady() const
 {
-	auto abilitySystem = GetAbilitySystemComponent();
-
+	const auto abilitySystem = GetAbilitySystemComponent();
+	if(!abilitySystem)
+	{
+		return false;
+	}
 	return abilitySystem->GetAttributeSetHealth() != nullptr;
 }
 

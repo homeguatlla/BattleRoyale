@@ -5,7 +5,6 @@
 #include "../../../../../Plugins/MultiplayerSessions/Source/MultiplayerSessions/Public/MultiplayerSessionsSubsystem.h"
 #include "BattleRoyale/core/GameMode/MultiplayerGameMode.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
-#include "Engine/LocalPlayer.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -51,9 +50,6 @@ void AMultiplayerGameSession::CreateSession(bool isLan, uint8 maxNumPlayers, con
 
 void AMultiplayerGameSession::DestroySessionAndLeaveGame()
 {
-	//const FString sessionName(LexToString(GameSessionName));
-	//m_OnlineSubsystem->DestroySession(GameSessionName);
-	
 	mMultiplayerSessionsSubsystem->DestroySession();
 }
 
@@ -65,8 +61,7 @@ FNamedOnlineSession* AMultiplayerGameSession::GetCurrentSession() const
 
 EOnlineAsyncTaskState::Type AMultiplayerGameSession::GetFindSessionsStatus() const
 {
-	//return m_OnlineSubsystem->GetFindSessionsStatus();
-	return EOnlineAsyncTaskState::Done;
+	return mMultiplayerSessionsSubsystem->GetFindSessionsStatus();
 }
 
 void AMultiplayerGameSession::StartGame()
@@ -84,11 +79,6 @@ void AMultiplayerGameSession::StartGame()
 
 void AMultiplayerGameSession::FindSessions()
 {
-	/*ULocalPlayer* const player = GetLocalPlayer();
-
-	const bool isPresence = true;
-	m_OnlineSubsystem->FindSessions(player->GetPreferredUniqueNetId().GetUniqueNetId(), IsLAN(), isPresence);
-*/
 	mMultiplayerSessionsSubsystem->FindSessions(1000);
 }
 
@@ -112,7 +102,6 @@ bool AMultiplayerGameSession::JoinSession(const FString& sessionId)
 
 void AMultiplayerGameSession::StartSession()
 {
-	//m_OnlineSubsystem->StartSession(GameSessionName);
 	mMultiplayerSessionsSubsystem->StartSession();
 }
 
@@ -171,25 +160,6 @@ void AMultiplayerGameSession::OnFindSessionsComplete(const TArray<FOnlineSession
 			return;
 		}
 	}
-	/*
-	if(wasSuccessful)
-	{
-		FString playerName(m_DefaultPlayerName);
-		
-		for(auto&& session : sessionsResults)
-		{
-			const auto player = GetPlayerControllerFromUserId(*session.Session.OwningUserId);
-			if(player)
-			{
-				playerName = player->GetPlayerState<APlayerState>()->GetPlayerName();
-			}
-		}
-		m_Sessions = sessions;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AMultiplayerGameSession::OnFindSessionsComplete not successful"));
-	}*/
 }
 
 void AMultiplayerGameSession::OnJoinSessionComplete(EOnJoinSessionCompleteResult::Type result)
@@ -229,15 +199,15 @@ void AMultiplayerGameSession::OnJoinSessionComplete(EOnJoinSessionCompleteResult
 //This both methods are overriden and the StartSession is being called
 //automatically after game match started, just after ServerTravel, and
 //all clients have the map server gone loaded.
-void AMultiplayerGameSession::OnStartSessionComplete(bool wasSuccessful)
+void AMultiplayerGameSession::OnStartSessionGameComplete(bool wasSuccessful)
 {
 	if (!wasSuccessful)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AMultiplayerGameSession::OnDestroySessionComplete not successful"));
+		UE_LOG(LogTemp, Warning, TEXT("AMultiplayerGameSession::OnStartSessionGameComplete not successful"));
 	}
 }
 
-void AMultiplayerGameSession::OnEndSessionComplete(bool wasSuccessful)
+void AMultiplayerGameSession::OnEndSessionGameComplete(bool wasSuccessful)
 {
 	if (wasSuccessful)
 	{
@@ -248,7 +218,7 @@ void AMultiplayerGameSession::OnEndSessionComplete(bool wasSuccessful)
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AMultiplayerGameSession::OnDestroySessionComplete not successful"));
+		UE_LOG(LogTemp, Warning, TEXT("AMultiplayerGameSession::OnEndSessionGameComplete not successful"));
 	}
 }
 //end only test purposes
@@ -291,20 +261,10 @@ void AMultiplayerGameSession::InitializeOnlineSubsystem()
 		return;
 	}
 	mMultiplayerSessionsSubsystem = gameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
-	
-	//m_OnlineSubsystem =  MakeShareable(new SessionsOnlineSubsystem(GetWorld()));
-	
-	/*OnCreateSessionCompleteDelegateHandle = m_OnlineSubsystem->OnCreateSessionCompleteDelegate().AddUObject(this, &AMultiplayerGameSession::OnCreateSessionComplete);
-	OnDestroySessionCompleteDelegateHandle = m_OnlineSubsystem->OnDestroySessionCompleteDelegate().AddUObject(this, &AMultiplayerGameSession::OnDestroySessionComplete);
-	OnStartSessionCompleteDelegateHandle = m_OnlineSubsystem->OnStartSessionCompleteDelegate().AddUObject(this, &AMultiplayerGameSession::OnStartSessionComplete);
-	OnEndSessionCompleteDelegateHandle = m_OnlineSubsystem->OnEndSessionCompleteDelegate().AddUObject(this, &AMultiplayerGameSession::OnEndSessionComplete);
-	OnFindSessionsCompleteDelegateHandle = m_OnlineSubsystem->OnFindSessionsCompleteDelegate().AddUObject(this, &AMultiplayerGameSession::OnFindSessionsComplete);
-	OnJoinSessionCompleteDelegateHandle = m_OnlineSubsystem->OnJoinSessionCompleteDelegate().AddUObject(this, &AMultiplayerGameSession::OnJoinSessionComplete);
-	*/
 	mMultiplayerSessionsSubsystem->MultiplayerOnCreateSessionComplete.AddDynamic(this, &ThisClass::OnCreateSessionComplete);
 	mMultiplayerSessionsSubsystem->MultiplayerOnFindSessionsComplete.AddUObject(this, &ThisClass::OnFindSessionsComplete);
 	mMultiplayerSessionsSubsystem->MultiplayerOnJoinSessionComplete.AddUObject(this, &ThisClass::OnJoinSessionComplete);
-	mMultiplayerSessionsSubsystem->MultiplayerOnStartSessionComplete.AddDynamic(this, &ThisClass::OnStartSessionComplete);
+	mMultiplayerSessionsSubsystem->MultiplayerOnStartSessionComplete.AddDynamic(this, &ThisClass::OnStartSessionGameComplete);
 	mMultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.AddDynamic(this, &ThisClass::OnDestroySessionComplete);
 }
 /*

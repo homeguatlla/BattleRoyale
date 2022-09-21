@@ -15,7 +15,7 @@ class BATTLEROYALE_API UGameplayTagEventNotify : public UAnimNotify
 {
 	GENERATED_BODY()
 public:
-	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
+	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 	virtual FString GetNotifyName_Implementation() const override { return EventTag.GetTagName().ToString(); }
 	
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category="Gameplay")

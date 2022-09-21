@@ -394,7 +394,11 @@ IAbilitySystemInterface* ACharacterBase::GetAbilitySystemComponent() const
 
 IIAbilitySystemInterfaceBase* ACharacterBase::GetAbilitySystemComponentBase() const
 {
-	return GetPlayerStateInterface()->GetAbilitySystemComponentInterface();
+	if(!GetPlayerStateInterface())
+	{
+		return nullptr;
+	}
+	return GetPlayerStateInterface()->GetAbilitySystemComponentInterface();		
 }
 
 IIGameMode* ACharacterBase::GetGameModeServer() const

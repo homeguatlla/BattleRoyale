@@ -51,13 +51,10 @@ private:
 	void OnCreateSessionComplete(bool wasSuccessful);
 	UFUNCTION()
 	void OnDestroySessionComplete(bool wasSuccessful);
-
-	using AGameSession::OnStartSessionComplete;//To disable a warning because there is a parent method with the same name but different parameters
 	
 	UFUNCTION()
-	void OnStartSessionComplete(bool wasSuccessful);
-	using AGameSession::OnEndSessionComplete;//To disable a warning because there is a parent method with the same name but different parameters
-	void OnEndSessionComplete(bool wasSuccessful);
+	void OnStartSessionGameComplete(bool wasSuccessful);
+	void OnEndSessionGameComplete(bool wasSuccessful);
 	void OnFindSessionsComplete(const TArray<FOnlineSessionSearchResult>& sessionsResults, bool wasSuccessful);
 	void OnJoinSessionComplete(EOnJoinSessionCompleteResult::Type result);
 	
