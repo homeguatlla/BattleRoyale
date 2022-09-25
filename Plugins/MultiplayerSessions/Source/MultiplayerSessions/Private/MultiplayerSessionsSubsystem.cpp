@@ -199,7 +199,6 @@ void UMultiplayerSessionsSubsystem::OnDestroySessionComplete(FName sessionName, 
 	if(wasSuccessful && mShouldCreateSessionOnDestroy)
 	{
 		mShouldCreateSessionOnDestroy = false;
-		CreateSession(mLastNumPublicConnections, mLastMatchType);
 	}
 	MultiplayerOnDestroySessionComplete.Broadcast(wasSuccessful);
 }
