@@ -42,8 +42,8 @@ class ACharacterBase : public ACharacter, public IICharacter
 	TSubclassOf<class AWeaponBase> WeaponClass;
 	
 	/** AnimMontage to play each time we fire first person */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* FireAnimation1P;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
+	//UAnimMontage* FireAnimation1P;
 
 	/** AnimMontage to play each time we fire third person */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))

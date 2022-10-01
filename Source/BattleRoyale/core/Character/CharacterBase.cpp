@@ -367,6 +367,8 @@ void ACharacterBase::Shoot()
 
 UAnimMontage* ACharacterBase::GetShootingMontage() const
 {
+	return FireAnimation3P;
+	/*
 	if(IsLocallyControlled())
 	{
 		return FireAnimation1P;
@@ -374,7 +376,7 @@ UAnimMontage* ACharacterBase::GetShootingMontage() const
 	else
 	{
 		return FireAnimation3P;
-	}
+	}*/
 }
 
 UAnimMontage* ACharacterBase::GetSimulatedShootingMontage() const
