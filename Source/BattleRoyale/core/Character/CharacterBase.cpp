@@ -198,7 +198,7 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(ACharacterBase, mControlRotation, COND_SimulatedOnly);
+	DOREPLIFETIME(ACharacterBase, mControlRotation);
 	DOREPLIFETIME(ACharacterBase, mDamageCauser);
 }
 
@@ -456,6 +456,7 @@ void ACharacterBase::AddControllerPitchInput(float Rate)
 	if(IsLocallyControlled())
 	{
 		//const auto rotation = mWeaponMesh->GetComponentRotation();
+		GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Green, FString::Printf(TEXT("Rotation %s"), *GetControlRotation().ToString()));
 		ServerSetCharacterControlRotation(GetControlRotation());
 	}	
 }
@@ -613,6 +614,7 @@ void ACharacterBase::OnRep_TakeDamageData()
 void ACharacterBase::ServerSetCharacterControlRotation_Implementation(const FRotator& rotation)
 {
 	mControlRotation = rotation;
+	ForceNetUpdate();
 }
 
 bool ACharacterBase::ServerSetCharacterControlRotation_Validate(const FRotator& rotation)
