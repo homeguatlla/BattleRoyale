@@ -121,8 +121,7 @@ void ACharacterBase::InitializeAttributes() const
 			const FGameplayEffectSpecHandle SpecHandle = abilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffect, 1, EffectContext);
 
 			if(SpecHandle.IsValid())
-			{
-				
+			{				
 				//This apply works although the handle it returns is not valid
 				abilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 			}
@@ -456,7 +455,6 @@ void ACharacterBase::AddControllerPitchInput(float Rate)
 	if(IsLocallyControlled())
 	{
 		//const auto rotation = mWeaponMesh->GetComponentRotation();
-		GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Green, FString::Printf(TEXT("Rotation %s"), *GetControlRotation().ToString()));
 		ServerSetCharacterControlRotation(GetControlRotation());
 	}	
 }

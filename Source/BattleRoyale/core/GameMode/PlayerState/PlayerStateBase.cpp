@@ -5,12 +5,14 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
+#include "BattleRoyale/core/Character/AttributeSetHealth.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/GameMode/GameModeCommon.h"
 #include "BattleRoyale/core/GameMode/MultiplayerGameMode.h"
 #include "BattleRoyale/core/Utils/FSM/StatesMachineFactory.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 
 APlayerStateBase::APlayerStateBase() :
@@ -144,10 +146,17 @@ void APlayerStateBase::ShowDeathScreen() const
 	}
 }
 
-void APlayerStateBase::OnGameStarted()
+void APlayerStateBase::OnGameStartedServer()
 {
 	CreateStatesMachine();
 	SetActorTickEnabled(true);
+	
+	//Notify refresh health and is client rpc, so clients will refresh live ui
+	const auto attributeSet = mAbilitySystemComponent->GetAttributeSetHealth();
+	if(ensure(attributeSet))
+	{
+		NotifyRefreshHealth(mAbilitySystemComponent->GetAttributeSetHealth()->GetHealth());	
+	}
 }
 
 void APlayerStateBase::ClientNotifyGameOver_Implementation(bool isWinner)

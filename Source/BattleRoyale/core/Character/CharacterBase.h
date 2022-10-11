@@ -264,7 +264,7 @@ private:
 	
 	UFUNCTION(Unreliable, Server, WithValidation)
 	void ServerSetCharacterControlRotation(const FRotator& rotation);
-	
+
 	UFUNCTION()
 	void OnRep_TakeDamageData();
 };

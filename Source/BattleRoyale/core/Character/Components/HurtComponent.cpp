@@ -92,6 +92,7 @@ bool UHurtComponent::IsReady() const
 	{
 		return false;
 	}
+	
 	return abilitySystem->GetAttributeSetHealth() != nullptr;
 }
 

@@ -94,7 +94,16 @@ bool AMultiplayerGameState::AreAllPlayersReplicated() const
 void AMultiplayerGameState::StartGameServer()
 {
 	mWinnerTeamId = -1;
+
 	MulticastGameStarted();
+
+	//For all players execute the gameStarted
+	PerformActionForEachPlayerState(
+		[](IIPlayerState* playerState) -> bool
+		{
+			playerState->OnGameStartedServer();
+			return false;
+		});
 	NotifyNumTeamsAndPlayersAlive();
 }
 
@@ -207,14 +216,4 @@ void AMultiplayerGameState::MulticastGameStarted_Implementation()
 	//To notify HUD
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 	gameInstance->GetEventDispatcher()->OnGameStarted.Broadcast();
-	
-	//To notify all playerStates about gameStarted
-	//This way we give the opportunity to the player state to initiate
-	//once the server pawn is already spawned.
-	PerformActionForEachPlayerState(
-		[](IIPlayerState* playerState) -> bool
-		{
-			playerState->OnGameStarted();
-			return false;
-		});
 }

@@ -39,7 +39,7 @@ public:
 	virtual void AddKill() = 0;
 	virtual int GetNumKills() const = 0;
 
-	virtual void OnGameStarted() = 0;
+	virtual void OnGameStartedServer() = 0;
 
 	virtual void ShowStatsScreen() const = 0;
 	virtual void HideStatsScreen() const = 0;

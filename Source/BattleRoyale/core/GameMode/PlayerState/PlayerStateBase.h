@@ -27,13 +27,14 @@ public:
 	
 	APlayerStateBase();
 	virtual void Tick(float DeltaSeconds) override;
-
+	
 	virtual void Initialize(const UGameModeConfigurationInfo* gameModeConfiguration) override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return mAbilitySystemComponent; }
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentInterface() const override { return Cast<IIAbilitySystemInterfaceBase>(mAbilitySystemComponent); }
 	virtual bool IsAlive() const override;
 	
 	virtual bool IsPlayerReplicated() const override;
+	
 	virtual void SetTeamId(int teamId) override { mTeamId = teamId; }
 	virtual int GetTeamId() const override { return mTeamId; }
 	virtual FString GetPlayerNickName() const override { return GetPlayerName(); }
@@ -55,7 +56,7 @@ public:
 	virtual void NotifyGameOverServer(bool hasMatchEnded, bool isWinner) override;
 	virtual void NotifyNumTeamsAndPlayersAlive(uint8 numTeams, uint8 numPlayers) override;
 	
-	virtual void OnGameStarted() override;
+	virtual void OnGameStartedServer() override;
 	virtual void ShowStatsScreen() const override;
 	virtual void HideStatsScreen() const override;
 
@@ -101,7 +102,7 @@ private:
 	int mTeamId;
 	int mNumKills;
 	bool mDidWin;
-
+	
 	//States machine to control the player state
 	StatesMachineController<BRPlayerStateFSM::PlayerStateState, BRPlayerStateFSM::PlayerStateContext> mStatesMachineController;
 	std::shared_ptr<BRPlayerStateFSM::PlayerStateContext> mPlayerStateFSMContext;
