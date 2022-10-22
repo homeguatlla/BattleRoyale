@@ -3,10 +3,18 @@
 
 #include "WeaponBase.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "BlueprintGameplayTagLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "ProjectileBase.h"
 #include "BattleRoyale/BattleRoyale.h"
+#include "BattleRoyale/core/Abilities/GameplayTagsList.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
+#include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
+#include "BattleRoyale/core/Utils/UtilsLibrary.h"
+#include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupIndicator.h"
+#include "Components/SphereComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 
 // Sets default values
@@ -14,13 +22,86 @@ AWeaponBase::AWeaponBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	bReplicates = true;
+	
 	// Create a gun mesh component
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Gun"));
 	Mesh->SetupAttachment(RootComponent);
 	Mesh->SetOnlyOwnerSee(false);			// otherwise won't be visible in the multiplayer
 	Mesh->bCastDynamicShadow = false;
 	Mesh->CastShadow = false;
+
+	SetRootComponent(Mesh);
+	
+	Mesh->SetCollisionResponseToChannels(ECollisionResponse::ECR_Block);
+	//Ignoring the collision with pawn, so characters can walk over.
+	Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	//Not collision from construction
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	//Area sphere is used to detect overlaps with characters to show something and be able to pick up
+	//Disabled for now. We only want to be enabled on server
+	AreaSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AreaSphere"));
+	AreaSphere->SetupAttachment(RootComponent);
+	AreaSphere->SetCollisionResponseToChannels(ECollisionResponse::ECR_Ignore);
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AWeaponBase::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	if(HasAuthority())
+	{
+		//Enable the Area Sphere 
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		AreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
+		AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnSphereOverlapServer);
+		AreaSphere->OnComponentEndOverlap.AddDynamic(this, &ThisClass::AWeaponBase::OnSphereEndOverlapServer);
+	}
+}
+
+void AWeaponBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if(const auto character = Cast<ACharacterBase>(OtherActor))
+	{
+		const auto playerState = Cast<APlayerStateBase>(character->GetPlayerState());
+		if(!playerState)
+		{
+			return;
+		}
+		
+		utils::UtilsLibrary::SendGameplayEventWithTargetData<FTargetDataPickupIndicator>(
+			character,
+			FGameplayTag::RequestGameplayTag(TAG_EVENT_PICKUP_INDICATOR),
+			new FTargetDataPickupIndicator(GetPickupWidgetLocation()));
+
+		//Si enviamos un efecto también funciona, incluso podemos dejar la habilidad como Local Only,
+		//pero no podemos pasar parámetros
+		//mPickupIndicatorEffectHandle = playerState->GetAbilitySystemComponentInterface()->ApplyGameplayEffectToSelf(PickupIndicatorEffect);
+	}
+}
+
+void AWeaponBase::OnSphereEndOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if(const auto character = Cast<ACharacterBase>(OtherActor))
+	{
+		const auto playerState = Cast<APlayerStateBase>(character->GetPlayerState());
+		if(!playerState)
+		{
+			return;
+		}
+		//Remove the ability with tag pickup indicator
+		FGameplayTagContainer cancelTags;
+		UBlueprintGameplayTagLibrary::AddGameplayTag(cancelTags, FGameplayTag::RequestGameplayTag(TAG_ABILITY_PICKUP_INDICATOR));
+		playerState->GetAbilitySystemComponent()->CancelAbilities(&cancelTags);
+
+		//En caso que enviemos effecto hay que quitarlo
+		//playerState->GetAbilitySystemComponentInterface()->RemoveGameplayEffect(mPickupIndicatorEffectHandle);
+	}
 }
 
 void AWeaponBase::Tick( float DeltaSeconds )
@@ -129,6 +210,15 @@ bool AWeaponBase::CanBeFired() const
 void AWeaponBase::FireClient(bool isFirstPerson)
 {
 	OnFire(isFirstPerson);
+}
+
+FVector AWeaponBase::GetPickupWidgetLocation() const
+{
+	check(Mesh);
+	const auto bounds = Mesh->GetLocalBounds();
+	const auto height = bounds.BoxExtent.Z * 2.0f;
+	const auto origin = bounds.Origin;
+	return GetActorLocation() + origin + FVector(0.0f, 0.0f, height);
 }
 
 void AWeaponBase::SetCharacterOwner(ACharacterBase* character)

@@ -1,4 +1,6 @@
 #pragma once
+#include "Abilities/GameplayAbilityTypes.h"
+#include "BattleRoyale/core/Character/ICharacter.h"
 
 namespace utils
 {
@@ -133,5 +135,58 @@ class BATTLEROYALE_API UtilsLibrary
 	
 			return mapName;
 		}
+
+	template<typename TargetDataClass, typename = typename TEnableIf<TIsDerivedFrom<TargetDataClass, FGameplayAbilityTargetData>::IsDerived>::Type>
+	static bool RetrieveGameplayEventTargetData(const FGameplayEventData* Payload, TargetDataClass& data)
+	{
+		if(Payload->TargetData.Num() <= 0)
+		{
+			UE_LOG(LogTemp, Display, TEXT("[%s] RetrieveGameplayEventTargetData targetdata num <= 0"), __FUNCTION__);
+			return false;
+		}
+	
+		FGameplayAbilityTargetData* targetData = Payload->TargetData.Data[0].Get();
+
+		if(targetData == nullptr)
+		{
+			UE_LOG(LogTemp, Display, TEXT("[%s] RetrieveGameplayEventTargetData targetdata null"), __FUNCTION__);
+			return false;
+		}
+
+		const auto currentTargetStruct = targetData->GetScriptStruct();
+		const auto desiredTargetStruct = TargetDataClass::StaticStruct();
+
+		if( currentTargetStruct->GetStructCPPName() != desiredTargetStruct->GetStructCPPName() )
+		{
+			UE_LOG(LogTemp, Display, TEXT("[%s] RetrieveGameplayEventTargetData targetdata different type"), __FUNCTION__);
+			return false;
+		}
+	
+		currentTargetStruct->InitializeStruct(&data);
+		currentTargetStruct->CopyScriptStruct(&data, targetData);
+
+		return true;
+	}
+
+	template<typename TargetDataClass, typename = typename TEnableIf<TIsDerivedFrom<TargetDataClass, FGameplayAbilityTargetData>::IsDerived>::Type>
+	static void SendGameplayEventWithTargetData(const IICharacter* target, FGameplayTag eventTag, TargetDataClass* targetData, const AActor* instigator = nullptr, float eventMagnitude = 0.0f)
+	{
+		if(!target)
+		{
+			return;
+		}
+		if(!target->GetAbilitySystemComponentBase())
+		{
+			return;
+		}
+			
+		FGameplayEventData data;
+		data.EventTag = eventTag;
+		data.Instigator = instigator;
+		data.EventMagnitude = eventMagnitude;
+		data.TargetData.Add(targetData);
+
+		target->GetAbilitySystemComponentBase()->SendGameplayEvent(eventTag, data);
+	}
 };
 }

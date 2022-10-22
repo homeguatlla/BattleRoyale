@@ -3,6 +3,7 @@
 
 #include "GameModeCommon.h"
 
+#include "AbilitySystemGlobals.h"
 #include "IGameState.h"
 #include "OnlineSubsystem.h"
 #include "BattleRoyale/core/PlayerController/IPlayerController.h"
@@ -25,6 +26,8 @@ void AGameModeCommon::InitGame(const FString& MapName, const FString& Options, F
 	Super::InitGame(MapName, Options, ErrorMessage);
 	
 	DoInitGame();
+	//This line is important to make ability system target data works.
+	UAbilitySystemGlobals::Get().InitGlobalData();
 }
 
 //Este método solo se ejecuta cuando un jugador se incorpora a una partida ya empezada

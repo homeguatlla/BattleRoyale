@@ -19,6 +19,7 @@ class BATTLEROYALE_API UAbilitySystemComponentBase : public UAbilitySystemCompon
 public:
 
 	virtual void SetSimulatedMontage(UAnimMontage* montage) override;
+
 	virtual FActiveGameplayEffectHandle ApplyGameplayEffectToTarget(const TSubclassOf<UGameplayEffect>& effect, const IICharacter* target) override;
 	virtual FActiveGameplayEffectHandle ApplyGameplayEffectToSelf(const TSubclassOf<UGameplayEffect>& effectClass) override;
 	virtual bool RemoveGameplayEffect(FActiveGameplayEffectHandle handle) override;
@@ -26,9 +27,11 @@ public:
 	//Add an attribute set to the gameplay ability component. It is used when attribute sets are in a different class than the gameplayabilitycompoent.
 	virtual void AddAttributeSet(UAttributeSet* attributeSet) override;
 	virtual const UAttributeSetHealth* GetAttributeSetHealth() const override;
-	
 	virtual FOnGameplayAttributeValueChange& GetAttributeValueChangeDelegate(FGameplayAttribute attribute) override;
-	virtual bool HasGameplayTag(FGameplayTag tag) const override;
+
+	virtual bool HasGameplayTag(const FGameplayTag& tag) const override;
+
+	virtual void SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad) override;
 
 	/*virtual float PlayMontage(UGameplayAbility* AnimatingAbility, FGameplayAbilityActivationInfo ActivationInfo, UAnimMontage* Montage, float InPlayRate, FName StartSectionName = NAME_None, float StartTimeSeconds = 0.0f) override;
 	virtual float PlayMontageSimulated(UAnimMontage* Montage, float InPlayRate, FName StartSectionName = NAME_None) override;*/

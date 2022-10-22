@@ -70,8 +70,9 @@ class ACharacterBase : public ACharacter, public IICharacter
 	/** Replicated control rotation in order to update remotes pitch */
 	UPROPERTY(Transient, Replicated)
 	FRotator mControlRotation;
+	
 	TScriptInterface<IIWeapon> mEquipedWeapon;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UHurtComponent* HurtComponent;
 	
@@ -239,7 +240,7 @@ private:
 	
 	void SpawnWeapon();
 	
-	void EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptInterface<IIWeapon> weapon);
+	void EquipWeapon(TScriptInterface<IIWeapon> weapon);
 	void UnEquipWeapon() const;
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
 	void UpdateHealth(const FTakeDamageData& damage);

@@ -87,7 +87,7 @@ void ACharacterBase::OnRep_PlayerState()
 
 void ACharacterBase::Initialize(bool isLocallyControlled)
 {
-	EquipWeapon(GetCurrentMesh(isLocallyControlled), mEquipedWeapon);
+	//EquipWeapon(mEquipedWeapon);
 	
 	DoInitialize(isLocallyControlled);
 }
@@ -486,7 +486,7 @@ bool ACharacterBase::ServerSpawnProjectile_Validate(const FVector& muzzleLocatio
 	return true;
 }
 
-void ACharacterBase::EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptInterface<IIWeapon> weapon)
+void ACharacterBase::EquipWeapon(TScriptInterface<IIWeapon> weapon)
 {
 	if(weapon.GetObject() == nullptr)
 	{
@@ -495,7 +495,7 @@ void ACharacterBase::EquipWeapon(USkeletalMeshComponent* characterMesh, TScriptI
 	}
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	const auto isAttached = weapon->AttachToComponent(
-		characterMesh,
+		GetMesh(),
 		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		RightHandSocketName);
 	

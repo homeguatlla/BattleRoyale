@@ -35,7 +35,7 @@ FActiveGameplayEffectHandle UAbilitySystemComponentBase::ApplyGameplayEffectToSe
 	auto effectContext = MakeEffectContext();
 	auto owner = GetOwnerActor();
 	effectContext.AddSourceObject(GetOwnerActor());
-
+	
 	return UAbilitySystemComponent::ApplyGameplayEffectToSelf(effectClass->GetDefaultObject<UGameplayEffect>(), 1, effectContext);
 }
 
@@ -59,9 +59,14 @@ FOnGameplayAttributeValueChange& UAbilitySystemComponentBase::GetAttributeValueC
 	return Super::GetGameplayAttributeValueChangeDelegate(attribute);
 }
 
-bool UAbilitySystemComponentBase::HasGameplayTag(FGameplayTag tag) const
+bool UAbilitySystemComponentBase::HasGameplayTag(const FGameplayTag& tag) const
 {
 	return HasMatchingGameplayTag(tag);
+}
+
+void UAbilitySystemComponentBase::SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad)
+{
+	HandleGameplayEvent(tag, &payLoad);
 }
 
 /*

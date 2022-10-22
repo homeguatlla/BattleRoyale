@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "GameplayEffect.h"
+#include "Abilities/GameplayAbilityTypes.h"
 #include "IAbilitySystemInterfaceBase.generated.h"
 
 class UAbilitySystemComponentBase;
@@ -27,6 +28,7 @@ class BATTLEROYALE_API IIAbilitySystemInterfaceBase
 
 public:
 	virtual void SetSimulatedMontage(UAnimMontage* montage) = 0;
+
 	virtual FActiveGameplayEffectHandle ApplyGameplayEffectToTarget(const TSubclassOf<UGameplayEffect>& effect, const IICharacter* target) = 0;
 	virtual FActiveGameplayEffectHandle ApplyGameplayEffectToSelf(const TSubclassOf<UGameplayEffect>& effectClass) = 0;
 	virtual bool RemoveGameplayEffect(FActiveGameplayEffectHandle handle) = 0;
@@ -35,5 +37,7 @@ public:
 	virtual const UAttributeSetHealth* GetAttributeSetHealth() const = 0;
 	virtual FOnGameplayAttributeValueChange& GetAttributeValueChangeDelegate(FGameplayAttribute Attribute) = 0;
 	
-	virtual bool HasGameplayTag(FGameplayTag tag) const  = 0;
+	virtual bool HasGameplayTag(const FGameplayTag& tag) const  = 0;
+
+	virtual void SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad) = 0;
 };

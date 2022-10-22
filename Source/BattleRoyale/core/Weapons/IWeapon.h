@@ -59,5 +59,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual UParticleSystem* GetMuzzleEffect() const = 0;
 
+	//Si hay que añadir más cosas relacionadas con el pick up igual mejor ponerlo en otra interface
+	virtual FVector GetPickupWidgetLocation() const = 0;
+	
 	virtual void SetCharacterOwner(ACharacterBase* character) = 0;
 };

@@ -3,10 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffectTypes.h"
 #include "IWeapon.h"
+#include "WeaponTypes.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "WeaponBase.generated.h"
 
+class UGameplayEffect;
 class IICharacter;
 UCLASS(Blueprintable)
 class BATTLEROYALE_API AWeaponBase : public AActor, public IIWeapon
@@ -16,6 +20,10 @@ class BATTLEROYALE_API AWeaponBase : public AActor, public IIWeapon
 	/** Weapon mesh */
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	USkeletalMeshComponent* Mesh;
+
+	/** Collision*/
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	class USphereComponent* AreaSphere;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName MuzzleSocketName;
@@ -42,14 +50,36 @@ class BATTLEROYALE_API AWeaponBase : public AActor, public IIWeapon
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FGameplayTagContainer CooldownTags;
+
+	//UPROPERTY(EditAnywhere, Category = "Weapon")
+	//TSubclassOf<UGameplayEffect> PickupIndicatorEffect;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	bool IsDebugEnabled { false };
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	EWeaponState WeaponState = EWeaponState::Initial;
 	
 public:	
 	AWeaponBase();
 	
 	virtual void Tick( float DeltaSeconds ) override;
+	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void OnSphereOverlapServer(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnSphereEndOverlapServer(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex);
 	
 	//virtual USkeletalMeshComponent* GetMesh() const override { return Mesh; }
 
@@ -68,8 +98,9 @@ public:
 	virtual USoundBase* GetFireSound() const override { return FireSound; }
 	virtual UParticleSystem* GetMuzzleEffect() const override { return MuzzleEffect; }
 
+	virtual FVector GetPickupWidgetLocation() const override;
 	virtual void SetCharacterOwner(ACharacterBase* character) override;
-	
+
 	virtual UTexture2D* GetCrossHairTexture() const override { return CrossHair; }
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Weapon")
@@ -78,6 +109,8 @@ public:
 private:
 	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
 	FVector GetProjectileSpawnLocation(const FVector& location, const FRotator& rotation, float distanceFromMuzzleLocation) const;
+	
+	//FActiveGameplayEffectHandle mPickupIndicatorEffectHandle;
 	
 	void DebugDrawAiming() const;
 };
