@@ -12,6 +12,9 @@
 UAbilityPickupIndicator::UAbilityPickupIndicator()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	//We want server initiated because we initiate from server (when a collision is detected)
+	//and we want server replicates the activation with parameters to the client through a gameplay event.
+	//otherwise, (serverOnly) the ability won't be activated on client to show the pickup indicator
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerInitiated;
 
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_PICKUP_INDICATOR));

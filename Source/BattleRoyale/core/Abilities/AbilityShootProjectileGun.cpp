@@ -18,11 +18,11 @@ UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 	//cuando se trata de un cliente porque tiene que ser la autoridad.
 	//Lo he puesto en LocalPredicted, y parece que funciona todo bien. Pero hay que revisar
 	//que no se esté haciendo algo mal.
-	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
+	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerOnly;
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SHOOT_PROJECTILE));
 
-	CooldownGameplayEffectClass = UCooldownGameplayEffect::StaticClass();
+	//CooldownGameplayEffectClass = UCooldownGameplayEffect::StaticClass();
 }
 
 void UAbilityShootProjectileGun::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -145,6 +145,7 @@ void UAbilityShootProjectileGun::OnMontageCancelled()
 
 void UAbilityShootProjectileGun::OnEventMontageShootReceived(const FGameplayEventData Payload)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Green, FString("AbilityShootProjectileGun::OnEventMontageShootReceived"));
 	if(mCharacter != nullptr)
 	{
 		//mCharacter->ServerShoot();
@@ -203,6 +204,8 @@ void UAbilityShootProjectileGun::CreateTaskPlayMontageShooting(const IICharacter
 	//abilitySystemInterface->SetSimulatedMontage(character->GetSimulatedShootingMontage());
 
 	//Ejecutamos el play montage solo en local.
+	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Orange, FString("AbilityShootProjectileGun::CreateTaskPlayMontageShooting"));
+	
 	animInstance->Montage_Play(character->GetShootingMontage(), 1.0);
 
 	//Si hacemos un task, este se replica y entonces no funciona bien porque ejecuta un montage en primera persona
