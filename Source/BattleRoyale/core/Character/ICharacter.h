@@ -32,6 +32,12 @@ public:
 	virtual TScriptInterface<IIWeapon> GetEquippedWeapon() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual void EquipWeapon(TScriptInterface<IIWeapon> weapon) = 0;
+	
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual void UnEquipWeapon() const = 0;
+	
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool IsCharacterValid() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")

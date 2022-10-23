@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "WeaponTypes.h"
 #include "UObject/Interface.h"
 #include "IWeapon.generated.h"
 
@@ -26,6 +27,8 @@ public:
 	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) = 0;
 	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) = 0;
 	virtual void Destroy() = 0;
+
+	virtual void SetWeaponState(EWeaponState state) = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual FVector GetMuzzleLocation() const = 0;

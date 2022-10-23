@@ -11,5 +11,6 @@ enum class EAbilityInputID : uint8
 	Cancel,
 	Sprint,
 	Jump,
-	Fire
+	Fire,
+	Equip
 };

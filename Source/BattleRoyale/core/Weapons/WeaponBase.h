@@ -83,6 +83,8 @@ public:
 	
 	//virtual USkeletalMeshComponent* GetMesh() const override { return Mesh; }
 
+	virtual void SetWeaponState(EWeaponState state) override { WeaponState = state; }
+	
 	virtual FVector GetMuzzleLocation() const override;
 	virtual FRotator GetMuzzleRotation() const override;
 	virtual float GetCooldownTime() const override { return CooldownTime; }

@@ -22,6 +22,7 @@
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
+#include "Components/CombatComponent.h"
 #include "Components/HurtComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
@@ -52,6 +53,10 @@ ACharacterBase::ACharacterBase()
 	//Create hurtComponent
 	HurtComponent = CreateDefaultSubobject<UHurtComponent>(TEXT("HurtComponent"));
 	HurtComponent->SetIsReplicated(true);
+
+	//Create CombatComponent
+	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
+	CombatComponent->SetIsReplicated(true);
 }
 
 void ACharacterBase::BeginPlay()
@@ -71,7 +76,7 @@ void ACharacterBase::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 	UE_LOG(LogCharacter, Log, TEXT("ACharacterBase::PossessedBy"));
 	//Only Server
-	MulticastSpawnWeapon();
+	//MulticastSpawnWeapon();
 	InitializeGAS();
 	GiveAbilitiesServer();
 }
@@ -141,7 +146,7 @@ IIPlayerState* ACharacterBase::GetPlayerStateInterface() const
 
 TScriptInterface<IIWeapon> ACharacterBase::GetEquippedWeapon() const
 {
-	return mEquipedWeapon;
+	return CombatComponent->GetEquippedWeapon();
 }
 
 bool ACharacterBase::IsCharacterValid() const
@@ -198,7 +203,7 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ACharacterBase, mControlRotation);
-	DOREPLIFETIME(ACharacterBase, mDamageCauser);
+	//DOREPLIFETIME(ACharacterBase, mDamageCauser);
 }
 
 void ACharacterBase::BindAbilityActivationToInputComponent() const
@@ -488,37 +493,19 @@ bool ACharacterBase::ServerSpawnProjectile_Validate(const FVector& muzzleLocatio
 
 void ACharacterBase::EquipWeapon(TScriptInterface<IIWeapon> weapon)
 {
-	if(weapon.GetObject() == nullptr)
+	if(CombatComponent->EquipWeapon(weapon, RightHandSocketName))
 	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::EquipWeapon] weapon is null"), *GetName());
-		return;
-	}
-	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
-	const auto isAttached = weapon->AttachToComponent(
-		GetMesh(),
-		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
-		RightHandSocketName);
-	
-	if(!isAttached)
-	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::EquipWeapon] weapon not attached to the character"), *GetName());
-		return;
-	}
-	
-	weapon->SetCharacterOwner(this);
-
-	if(IsLocallyControlled())
-	{
-		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-		gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(weapon);
+		if(IsLocallyControlled())
+		{
+			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+			gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(GetEquippedWeapon());
+		}
 	}
 }
 
 void ACharacterBase::UnEquipWeapon() const
 {
-	mEquipedWeapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
-	mEquipedWeapon->Destroy();
-
+	CombatComponent->UnEquipWeapon();
 	if(IsLocallyControlled())
 	{
 		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
@@ -603,11 +590,11 @@ void ACharacterBase::MulticastTakeDamage_Implementation(float damage, const AAct
 		}
 	}
 }
-
+/*
 void ACharacterBase::OnRep_TakeDamageData()
 {
 	UpdateHealth(mDamageCauser);
-}
+}*/
 
 void ACharacterBase::ServerSetCharacterControlRotation_Implementation(const FRotator& rotation)
 {
@@ -648,9 +635,9 @@ void ACharacterBase::MulticastOnFire_Implementation()
 //Entonces, habrá que hacer el spawn en Server, hacer que el weapon
 //esté replicada y notificar a los clientes autonomos para que
 //vuelvan a inicializar.
-void ACharacterBase::MulticastSpawnWeapon_Implementation()
+/*void ACharacterBase::MulticastSpawnWeapon_Implementation()
 {
-	SpawnWeapon();
+	//SpawnWeapon();
 	Initialize(IsLocallyControlled());
 }
 
@@ -674,4 +661,4 @@ void ACharacterBase::SpawnWeapon()
 	{
 		UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::SpawnWeapon] weapon not implementing IIWeapon"));
 	}
-}
+}*/

@@ -38,8 +38,8 @@ class ACharacterBase : public ACharacter, public IICharacter
 	UPROPERTY(EditDefaultsOnly, Category = Character)
 	FName RightHandSocketName;
 
-	UPROPERTY(EditDefaultsOnly, Category = EquipedWeapon)
-	TSubclassOf<class AWeaponBase> WeaponClass;
+	//UPROPERTY(EditDefaultsOnly, Category = EquipedWeapon)
+	//TSubclassOf<class AWeaponBase> WeaponClass;
 	
 	/** AnimMontage to play each time we fire first person */
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
@@ -71,13 +71,14 @@ class ACharacterBase : public ACharacter, public IICharacter
 	UPROPERTY(Transient, Replicated)
 	FRotator mControlRotation;
 	
-	TScriptInterface<IIWeapon> mEquipedWeapon;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UHurtComponent* HurtComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	class UCombatComponent* CombatComponent;
 	
-	UPROPERTY(ReplicatedUsing=OnRep_TakeDamageData)
-	FTakeDamageData mDamageCauser;
+	//UPROPERTY(ReplicatedUsing=OnRep_TakeDamageData)
+	//FTakeDamageData mDamageCauser;
 
 	bool mIsInvulnerable = false;
 	
@@ -93,6 +94,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual TScriptInterface<IIWeapon> GetEquippedWeapon() const override;
 
+	UFUNCTION(BlueprintCallable)
+	virtual void EquipWeapon(TScriptInterface<IIWeapon> weapon) override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void UnEquipWeapon() const override;
+	
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsCharacterValid() const override;
 
@@ -238,10 +245,8 @@ private:
 
 	IIPlayerState* GetPlayerStateInterface() const;
 	
-	void SpawnWeapon();
+	//void SpawnWeapon();
 	
-	void EquipWeapon(TScriptInterface<IIWeapon> weapon);
-	void UnEquipWeapon() const;
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
 	void UpdateHealth(const FTakeDamageData& damage);
 	
@@ -257,8 +262,8 @@ private:
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastOnFire();
 
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastSpawnWeapon();
+	//UFUNCTION(NetMulticast, Unreliable)
+	//void MulticastSpawnWeapon();
 
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastTakeDamage(float damage, const AActor* causer, float currentHealth);
@@ -266,7 +271,7 @@ private:
 	UFUNCTION(Unreliable, Server, WithValidation)
 	void ServerSetCharacterControlRotation(const FRotator& rotation);
 
-	UFUNCTION()
-	void OnRep_TakeDamageData();
+	//UFUNCTION()
+	//void OnRep_TakeDamageData();
 };
 
