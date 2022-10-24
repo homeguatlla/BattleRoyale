@@ -4,7 +4,7 @@
 #include "BattleRoyale/core/Utils/Stats/PlayerStatsData.h"
 #include "EventDispatcher.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquippedWeapon, TScriptInterface<IIWeapon>, weapon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquippedWeapon, TScriptInterface<IWeapon>, weapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnEquippedWeapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshHealth, float, health);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshNumKills, int, numKills);

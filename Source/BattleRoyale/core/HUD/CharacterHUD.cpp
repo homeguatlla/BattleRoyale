@@ -50,7 +50,7 @@ void ACharacterHUD::BindToDelegate()
 	}
 }
 
-void ACharacterHUD::OnEquippedWeapon(TScriptInterface<IIWeapon> weapon)
+void ACharacterHUD::OnEquippedWeapon(TScriptInterface<IWeapon> weapon)
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UWeaponHUD::StaticClass()))
 	{

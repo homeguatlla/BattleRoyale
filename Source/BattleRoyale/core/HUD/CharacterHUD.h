@@ -24,7 +24,7 @@ public:
 private:
 	void BindToDelegate();
 	UFUNCTION()
-	void OnEquippedWeapon(TScriptInterface<IIWeapon> weapon);
+	void OnEquippedWeapon(TScriptInterface<IWeapon> weapon);
 	UFUNCTION()
 	void OnUnEquippedWeapon();
 	UFUNCTION()

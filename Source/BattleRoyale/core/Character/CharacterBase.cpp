@@ -144,7 +144,7 @@ IIPlayerState* ACharacterBase::GetPlayerStateInterface() const
 	return nullptr;
 }
 
-TScriptInterface<IIWeapon> ACharacterBase::GetEquippedWeapon() const
+TScriptInterface<IWeapon> ACharacterBase::GetEquippedWeapon() const
 {
 	return CombatComponent->GetEquippedWeapon();
 }

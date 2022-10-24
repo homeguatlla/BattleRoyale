@@ -13,7 +13,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CharacterBase.generated.h"
 
-class IIWeapon;
+class IWeapon;
 class IIPlayerState;
 class UInputComponent;
 class USkeletalMeshComponent;
@@ -92,7 +92,7 @@ public:
 	virtual FVector GetLocation() const override { return GetActorLocation(); }
 	
 	UFUNCTION(BlueprintCallable)
-	virtual TScriptInterface<IIWeapon> GetEquippedWeapon() const override;
+	virtual TScriptInterface<IWeapon> GetEquippedWeapon() const override;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void EquipWeapon(TScriptInterface<IPickupObject> pickableObject) override;

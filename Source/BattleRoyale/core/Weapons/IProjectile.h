@@ -8,12 +8,12 @@
 
 // This class does not need to be modified.
 UINTERFACE(NotBlueprintable, meta = (CannotImplementInterfaceInBlueprint))
-class UIProjectile : public UInterface
+class UProjectile : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class BATTLEROYALE_API IIProjectile
+class BATTLEROYALE_API IProjectile
 {
 	GENERATED_BODY()
 

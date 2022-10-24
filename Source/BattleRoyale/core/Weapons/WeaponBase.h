@@ -12,7 +12,7 @@
 class UGameplayEffect;
 class IICharacter;
 UCLASS(Blueprintable)
-class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IIWeapon
+class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 {
 	GENERATED_BODY()
 	

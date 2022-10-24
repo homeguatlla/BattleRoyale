@@ -1,7 +1,5 @@
 #pragma once
 
-#include "BattleRoyale/core/Weapons/IWeapon.h"
-#include "UObject/ScriptInterface.h"
 #include "IWeaponHUD.generated.h"
 
 UINTERFACE(Blueprintable)

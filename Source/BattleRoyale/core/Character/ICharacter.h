@@ -9,7 +9,7 @@
 class UCameraComponent;
 class IIAbilitySystemInterfaceBase;
 class IAbilitySystemInterface;
-class IIWeapon;
+class IWeapon;
 class UHurtComponent;
 class IICharacter;
 
@@ -29,7 +29,7 @@ public:
 	virtual FVector GetLocation() const = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual TScriptInterface<IIWeapon> GetEquippedWeapon() const = 0;
+	virtual TScriptInterface<IWeapon> GetEquippedWeapon() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual void EquipWeapon(TScriptInterface<IPickupObject> pickableObject) = 0;

@@ -3,7 +3,6 @@
 
 #include "CombatComponent.h"
 #include "BattleRoyale/BattleRoyale.h"
-#include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/Weapons/IWeapon.h"
 
@@ -42,7 +41,7 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IPickupObject> pickableObjec
 		return false;
 	}
 	
-	mEquipedWeapon = TScriptInterface<IIWeapon>(pickableObject.GetObject());
+	mEquipedWeapon = TScriptInterface<IWeapon>(pickableObject.GetObject());
 	mEquipedWeapon->SetWeaponState(EWeaponState::Equipped);	
 	mEquipedWeapon->SetCharacterOwner(character);
 	
@@ -57,7 +56,7 @@ bool UCombatComponent::UnEquipWeapon() const
 	return true;
 }
 
-TScriptInterface<IIWeapon> UCombatComponent::GetEquippedWeapon() const
+TScriptInterface<IWeapon> UCombatComponent::GetEquippedWeapon() const
 {
 	return mEquipedWeapon;
 }

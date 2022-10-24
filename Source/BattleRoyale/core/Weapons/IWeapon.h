@@ -11,12 +11,12 @@
 class ACharacterBase;
 // This class does not need to be modified.
 UINTERFACE(NotBlueprintable, meta = (CannotImplementInterfaceInBlueprint))
-class UIWeapon : public UInterface
+class UWeapon : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class BATTLEROYALE_API IIWeapon
+class BATTLEROYALE_API IWeapon
 {
 	GENERATED_BODY()
 

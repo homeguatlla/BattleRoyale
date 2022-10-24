@@ -12,7 +12,7 @@ class USphereComponent;
 class UProjectileMovementComponent;
 
 UCLASS(config=Game)
-class AProjectileBase : public AActor, public IIProjectile
+class AProjectileBase : public AActor, public IProjectile
 {
 	GENERATED_BODY()
 

@@ -8,13 +8,13 @@
 
 
 class IPickupObject;
-class IIWeapon;
+class IWeapon;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BATTLEROYALE_API UCombatComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-	TScriptInterface<IIWeapon> mEquipedWeapon;
+	TScriptInterface<IWeapon> mEquipedWeapon;
 	
 public:	
 	// Sets default values for this component's properties
@@ -22,7 +22,7 @@ public:
 
 	bool EquipWeapon(TScriptInterface<IPickupObject> pickableObject, const FName& socketName);
 	bool UnEquipWeapon() const;
-	TScriptInterface<IIWeapon> GetEquippedWeapon() const;
+	TScriptInterface<IWeapon> GetEquippedWeapon() const;
 	
 protected:
 	// Called when the game starts
