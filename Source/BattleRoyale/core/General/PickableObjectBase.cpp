@@ -10,6 +10,7 @@
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupIndicator.h"
 #include "BattleRoyale/BattleRoyale.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 APickableObjectBase::APickableObjectBase()

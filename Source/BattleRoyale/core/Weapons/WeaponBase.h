@@ -7,8 +7,6 @@
 #include "IWeapon.h"
 #include "WeaponTypes.h"
 #include "BattleRoyale/core/General/PickableObjectBase.h"
-#include "Components/SphereComponent.h"
-#include "GameFramework/Actor.h"
 #include "WeaponBase.generated.h"
 
 class UGameplayEffect;
