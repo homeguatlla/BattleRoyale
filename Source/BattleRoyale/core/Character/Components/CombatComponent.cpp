@@ -20,7 +20,7 @@ void UCombatComponent::BeginPlay()
 
 }
 
-bool UCombatComponent::EquipWeapon(TScriptInterface<IPickableObject> pickableObject, const FName& socketName)
+bool UCombatComponent::EquipWeapon(TScriptInterface<IPickupObject> pickableObject, const FName& socketName)
 {
 	if(pickableObject.GetObject() == nullptr)
 	{
@@ -51,7 +51,7 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IPickableObject> pickableObj
 
 bool UCombatComponent::UnEquipWeapon() const
 {
-	TScriptInterface<IPickableObject>(mEquipedWeapon.GetObject())->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	TScriptInterface<IPickupObject>(mEquipedWeapon.GetObject())->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	mEquipedWeapon->Destroy();
 
 	return true;

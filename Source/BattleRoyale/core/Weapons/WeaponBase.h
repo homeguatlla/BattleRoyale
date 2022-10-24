@@ -6,13 +6,13 @@
 #include "GameplayEffectTypes.h"
 #include "IWeapon.h"
 #include "WeaponTypes.h"
-#include "BattleRoyale/core/General/PickableObjectBase.h"
+#include "BattleRoyale/core/General/PickupObjectBase.h"
 #include "WeaponBase.generated.h"
 
 class UGameplayEffect;
 class IICharacter;
 UCLASS(Blueprintable)
-class BATTLEROYALE_API AWeaponBase : public APickableObjectBase, public IIWeapon
+class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IIWeapon
 {
 	GENERATED_BODY()
 	

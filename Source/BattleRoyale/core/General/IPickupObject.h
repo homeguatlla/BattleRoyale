@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "IPickableObject.generated.h"
+#include "IPickupObject.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(NotBlueprintable, meta = (CannotImplementInterfaceInBlueprint))
-class UPickableObject : public UInterface
+class UPickupObject : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class BATTLEROYALE_API IPickableObject
+class BATTLEROYALE_API IPickupObject
 {
 	GENERATED_BODY()
 

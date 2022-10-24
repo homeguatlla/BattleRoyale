@@ -491,7 +491,7 @@ bool ACharacterBase::ServerSpawnProjectile_Validate(const FVector& muzzleLocatio
 	return true;
 }
 
-void ACharacterBase::EquipWeapon(TScriptInterface<IPickableObject> pickableObject)
+void ACharacterBase::EquipWeapon(TScriptInterface<IPickupObject> pickableObject)
 {
 	if(CombatComponent->EquipWeapon(pickableObject, RightHandSocketName))
 	{

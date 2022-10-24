@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "IPickableObject.h"
+#include "IPickupObject.h"
 #include "GameFramework/Actor.h"
-#include "PickableObjectBase.generated.h"
+#include "PickupObjectBase.generated.h"
 
 UCLASS()
-class BATTLEROYALE_API APickableObjectBase : public AActor, public IPickableObject
+class BATTLEROYALE_API APickupObjectBase : public AActor, public IPickupObject
 {
 	GENERATED_BODY()
 
@@ -21,7 +21,7 @@ class BATTLEROYALE_API APickableObjectBase : public AActor, public IPickableObje
 	
 public:	
 	// Sets default values for this actor's properties
-	APickableObjectBase();
+	APickupObjectBase();
 	
 	virtual FVector GetPickupWidgetLocation(const FBoxSphereBounds& bounds) const override;
 	virtual USkeletalMeshComponent* GetMesh() const { return Mesh; }

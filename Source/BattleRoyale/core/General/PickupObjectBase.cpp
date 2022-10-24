@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PickableObjectBase.h"
+#include "PickupObjectBase.h"
 
 #include "BlueprintGameplayTagLibrary.h"
 #include "BattleRoyale/core/Abilities/GameplayTagsList.h"
@@ -13,7 +13,7 @@
 #include "Components/SphereComponent.h"
 
 // Sets default values
-APickableObjectBase::APickableObjectBase()
+APickupObjectBase::APickupObjectBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -42,7 +42,7 @@ APickableObjectBase::APickableObjectBase()
 }
 
 // Called when the game starts or when spawned
-void APickableObjectBase::BeginPlay()
+void APickupObjectBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
@@ -57,7 +57,7 @@ void APickableObjectBase::BeginPlay()
 	}
 }
 
-FVector APickableObjectBase::GetPickupWidgetLocation(const FBoxSphereBounds& bounds) const
+FVector APickupObjectBase::GetPickupWidgetLocation(const FBoxSphereBounds& bounds) const
 {
 	const auto height = bounds.BoxExtent.Z * 2.0f; //Extend is half size side
 	const auto objectLocation = GetActorLocation();
@@ -66,7 +66,7 @@ FVector APickableObjectBase::GetPickupWidgetLocation(const FBoxSphereBounds& bou
 	return bounds.Origin + GetActorLocation() + FVector(0.0f, 0.0f, height);
 }
 
-void APickableObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+void APickupObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                             UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(const auto character = Cast<ACharacterBase>(OtherActor))
@@ -89,7 +89,7 @@ void APickableObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedC
 	}
 }
 
-void APickableObjectBase::OnSphereEndOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+void APickupObjectBase::OnSphereEndOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if(const auto character = Cast<ACharacterBase>(OtherActor))
@@ -109,7 +109,7 @@ void APickableObjectBase::OnSphereEndOverlapServer(UPrimitiveComponent* Overlapp
 	}
 }
 
-bool APickableObjectBase::AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName)
+bool APickupObjectBase::AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName)
 {
 	if(Mesh == nullptr)
 	{
@@ -120,7 +120,7 @@ bool APickableObjectBase::AttachToComponent(USkeletalMeshComponent* meshComponen
 	return Mesh->AttachToComponent(meshComponent, attachmentRules, socketName);
 }
 
-void APickableObjectBase::DetachFromComponent(const FDetachmentTransformRules& rules)
+void APickupObjectBase::DetachFromComponent(const FDetachmentTransformRules& rules)
 {
 	if(Mesh == nullptr)
 	{
