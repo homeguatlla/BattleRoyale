@@ -7,6 +7,7 @@
 #include "CombatComponent.generated.h"
 
 
+class IPickableObject;
 class IIWeapon;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BATTLEROYALE_API UCombatComponent : public UActorComponent
@@ -19,7 +20,7 @@ public:
 	// Sets default values for this component's properties
 	UCombatComponent();
 
-	bool EquipWeapon(TScriptInterface<IIWeapon> weapon, const FName& socketName);
+	bool EquipWeapon(TScriptInterface<IPickableObject> pickableObject, const FName& socketName);
 	bool UnEquipWeapon() const;
 	TScriptInterface<IIWeapon> GetEquippedWeapon() const;
 	

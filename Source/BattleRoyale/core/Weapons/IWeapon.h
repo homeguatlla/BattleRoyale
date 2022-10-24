@@ -24,8 +24,6 @@ public:
 	//UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	//virtual USkeletalMeshComponent* GetMesh() const = 0;
 
-	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) = 0;
-	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) = 0;
 	virtual void Destroy() = 0;
 
 	virtual void SetWeaponState(EWeaponState state) = 0;
@@ -61,9 +59,6 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual UParticleSystem* GetMuzzleEffect() const = 0;
-
-	//Si hay que añadir más cosas relacionadas con el pick up igual mejor ponerlo en otra interface
-	virtual FVector GetPickupWidgetLocation() const = 0;
 	
 	virtual void SetCharacterOwner(ACharacterBase* character) = 0;
 };

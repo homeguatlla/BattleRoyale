@@ -6,6 +6,7 @@
 #include "GameplayEffectTypes.h"
 #include "IWeapon.h"
 #include "WeaponTypes.h"
+#include "BattleRoyale/core/General/PickableObjectBase.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "WeaponBase.generated.h"
@@ -13,17 +14,9 @@
 class UGameplayEffect;
 class IICharacter;
 UCLASS(Blueprintable)
-class BATTLEROYALE_API AWeaponBase : public AActor, public IIWeapon
+class BATTLEROYALE_API AWeaponBase : public APickableObjectBase, public IIWeapon
 {
 	GENERATED_BODY()
-
-	/** Weapon mesh */
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	USkeletalMeshComponent* Mesh;
-
-	/** Collision*/
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	class USphereComponent* AreaSphere;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName MuzzleSocketName;
@@ -64,22 +57,6 @@ public:
 	AWeaponBase();
 	
 	virtual void Tick( float DeltaSeconds ) override;
-	virtual void BeginPlay() override;
-
-	UFUNCTION()
-	void OnSphereOverlapServer(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult& SweepResult);
-	UFUNCTION()
-	void OnSphereEndOverlapServer(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex);
 	
 	//virtual USkeletalMeshComponent* GetMesh() const override { return Mesh; }
 
@@ -89,9 +66,6 @@ public:
 	virtual FRotator GetMuzzleRotation() const override;
 	virtual float GetCooldownTime() const override { return CooldownTime; }
 	virtual FGameplayTagContainer GetCooldownTags() const override { return CooldownTags; }
-	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules,
-	                               const FName& socketName) override;
-	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) override;
 	virtual void Destroy() override;
 	virtual bool CanBeFired() const override;
 	virtual void Fire(const FVector& muzzleLocation, const FRotator& muzzleRotation) const override;
@@ -99,8 +73,7 @@ public:
 
 	virtual USoundBase* GetFireSound() const override { return FireSound; }
 	virtual UParticleSystem* GetMuzzleEffect() const override { return MuzzleEffect; }
-
-	virtual FVector GetPickupWidgetLocation() const override;
+	
 	virtual void SetCharacterOwner(ACharacterBase* character) override;
 
 	virtual UTexture2D* GetCrossHairTexture() const override { return CrossHair; }

@@ -95,7 +95,7 @@ public:
 	virtual TScriptInterface<IIWeapon> GetEquippedWeapon() const override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void EquipWeapon(TScriptInterface<IIWeapon> weapon) override;
+	virtual void EquipWeapon(TScriptInterface<IPickableObject> pickableObject) override;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void UnEquipWeapon() const override;

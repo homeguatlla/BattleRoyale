@@ -491,9 +491,9 @@ bool ACharacterBase::ServerSpawnProjectile_Validate(const FVector& muzzleLocatio
 	return true;
 }
 
-void ACharacterBase::EquipWeapon(TScriptInterface<IIWeapon> weapon)
+void ACharacterBase::EquipWeapon(TScriptInterface<IPickableObject> pickableObject)
 {
-	if(CombatComponent->EquipWeapon(weapon, RightHandSocketName))
+	if(CombatComponent->EquipWeapon(pickableObject, RightHandSocketName))
 	{
 		if(IsLocallyControlled())
 		{

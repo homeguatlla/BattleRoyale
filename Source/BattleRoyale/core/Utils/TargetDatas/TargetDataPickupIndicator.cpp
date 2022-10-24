@@ -3,7 +3,8 @@
 
 bool FTargetDataPickupIndicator::NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess)
 {
-	Ar << Location;
+	Ar << mLocation;
+	Ar << mPickableObject;
 
 	bOutSuccess = true;
 	return true;
@@ -11,5 +12,5 @@ bool FTargetDataPickupIndicator::NetSerialize(FArchive& Ar, class UPackageMap* M
 
 FString FTargetDataPickupIndicator::ToString() const
 {
-	return FString::Printf(TEXT("Pickup Location %s"), *Location.ToString());
+	return FString::Printf(TEXT("Pickup Location %s, Object %s"), *mLocation.ToString(), *mPickableObject->GetName());
 }

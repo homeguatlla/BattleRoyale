@@ -54,7 +54,7 @@ void UAbilityPickupIndicator::ActivateAbility(const FGameplayAbilitySpecHandle H
 
 	if(IsLocallyControlled())
 	{
-		OnShowPickupIndicator(pickupIndicatorData.Location);
+		OnShowPickupIndicator(pickupIndicatorData.GetLocation());
 	}
 }
 
