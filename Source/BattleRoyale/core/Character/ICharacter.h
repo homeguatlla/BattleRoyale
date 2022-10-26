@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "ICharacter.generated.h"
 
+class IPickupObject;
 class UCameraComponent;
 class IIAbilitySystemInterfaceBase;
 class IAbilitySystemInterface;
@@ -32,10 +33,10 @@ public:
 	virtual TScriptInterface<IWeapon> GetEquippedWeapon() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual void EquipWeapon(TScriptInterface<IPickupObject> pickableObject) = 0;
+	virtual void Equip(TScriptInterface<IPickupObject> pickableObject) = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual void UnEquipWeapon() const = 0;
+	virtual void UnEquip() const = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool IsCharacterValid() const = 0;
@@ -123,5 +124,8 @@ public:
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const = 0;
 
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const = 0;
+
+	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) = 0;
+	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) = 0;
 };
  

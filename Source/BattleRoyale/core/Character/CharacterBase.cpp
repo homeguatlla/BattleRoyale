@@ -253,6 +253,28 @@ void ACharacterBase::SetCurrentHealthTest(float health)
 	//mGameplayAbilityAttributes->SetHealth(health);
 }
 
+bool ACharacterBase::AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName)
+{
+	if(GetMesh() == nullptr)
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::AttachToComponent] character has no mesh"), *GetName());
+		return false;
+	}
+	
+	return GetMesh()->AttachToComponent(meshComponent, attachmentRules, socketName);
+}
+
+void ACharacterBase::DetachFromComponent(const FDetachmentTransformRules& rules)
+{
+	if(GetMesh() == nullptr)
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::DeattachToComponent] character has no mesh"), *GetName());
+		return;
+	}
+	
+	GetMesh()->DetachFromComponent(rules);
+}
+
 bool ACharacterBase::CanSprint() const
 {
 	//We are not checking if the Velocity > 0 to sprint because
@@ -491,19 +513,29 @@ bool ACharacterBase::ServerSpawnProjectile_Validate(const FVector& muzzleLocatio
 	return true;
 }
 
-void ACharacterBase::EquipWeapon(TScriptInterface<IPickupObject> pickableObject)
+void ACharacterBase::Equip(TScriptInterface<IPickupObject> pickableObject)
 {
-	if(CombatComponent->EquipWeapon(pickableObject, RightHandSocketName))
+	if(pickableObject.GetObject()->Implements<UWeapon>())
 	{
-		if(IsLocallyControlled())
+		const TScriptInterface<IWeapon> weapon =pickableObject.GetObject();
+		//TODO el equip weapon ahora hace el attach que lo podría hacer el character porque tiene más sentido
+		//el character es el que coje el objeto. Y así, és más genérico. Cuando cojamos otro objeto,
+		//alguien tendrá que hacer el attach posiblemente también. Por ejemplo un cargardor de vida.
+		if(CombatComponent->EquipWeapon(weapon, RightHandSocketName))
 		{
-			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-			gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(GetEquippedWeapon());
+			//TODO creo que este código se puede generalizar a cualquier tipo de objeto y
+			//así dejarlo aquí pero fuera del if, si se equipa cualquier cosa se envía a la ui
+			//y la ui decide si es un weapon mostrar lo que quiera
+			if(IsLocallyControlled())
+			{
+				const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+				gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(GetEquippedWeapon());
+			}
 		}
 	}
 }
 
-void ACharacterBase::UnEquipWeapon() const
+void ACharacterBase::UnEquip() const
 {
 	CombatComponent->UnEquipWeapon();
 	if(IsLocallyControlled())
@@ -545,7 +577,7 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 
 void ACharacterBase::DieClient()
 {
-	UnEquipWeapon();
+	UnEquip();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 	

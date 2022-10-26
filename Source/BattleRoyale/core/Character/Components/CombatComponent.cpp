@@ -19,9 +19,9 @@ void UCombatComponent::BeginPlay()
 
 }
 
-bool UCombatComponent::EquipWeapon(TScriptInterface<IPickupObject> pickableObject, const FName& socketName)
+bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName)
 {
-	if(pickableObject.GetObject() == nullptr)
+	if(weapon == nullptr)
 	{
 		UE_LOG(LogCharacter, Error, TEXT("[%s][UCombatComponent::EquipWeapon] weapon is null"), *GetName());
 		return false;
@@ -29,8 +29,8 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IPickupObject> pickableObjec
 	const auto character = Cast<ACharacterBase>(GetOwner());
 	check(character);
 	
-	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
-	const auto isAttached = pickableObject->AttachToComponent(
+	//Attach mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
+	const auto isAttached = character->AttachToComponent(
 		character->GetMesh(),
 		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		socketName);
@@ -41,7 +41,7 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IPickupObject> pickableObjec
 		return false;
 	}
 	
-	mEquipedWeapon = TScriptInterface<IWeapon>(pickableObject.GetObject());
+	mEquipedWeapon = weapon;
 	mEquipedWeapon->SetWeaponState(EWeaponState::Equipped);	
 	mEquipedWeapon->SetCharacterOwner(character);
 	
@@ -50,7 +50,9 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IPickupObject> pickableObjec
 
 bool UCombatComponent::UnEquipWeapon() const
 {
-	TScriptInterface<IPickupObject>(mEquipedWeapon.GetObject())->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	const auto character = Cast<ACharacterBase>(GetOwner());
+	check(character);
+	character->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	mEquipedWeapon->Destroy();
 
 	return true;

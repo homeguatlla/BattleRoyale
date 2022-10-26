@@ -3,12 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BattleRoyale/core/Weapons/IWeapon.h"
 #include "Components/ActorComponent.h"
 #include "CombatComponent.generated.h"
 
 
-class IPickupObject;
-class IWeapon;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BATTLEROYALE_API UCombatComponent : public UActorComponent
 {
@@ -20,7 +19,7 @@ public:
 	// Sets default values for this component's properties
 	UCombatComponent();
 
-	bool EquipWeapon(TScriptInterface<IPickupObject> pickableObject, const FName& socketName);
+	bool EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName);
 	bool UnEquipWeapon() const;
 	TScriptInterface<IWeapon> GetEquippedWeapon() const;
 	

@@ -25,9 +25,6 @@ public:
 	
 	virtual FVector GetPickupWidgetLocation(const FBoxSphereBounds& bounds) const override;
 	virtual USkeletalMeshComponent* GetMesh() const { return Mesh; }
-	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules,
-							   const FName& socketName) override;
-	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) override;
 
 protected:
 	// Called when the game starts or when spawned

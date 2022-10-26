@@ -95,10 +95,10 @@ public:
 	virtual TScriptInterface<IWeapon> GetEquippedWeapon() const override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void EquipWeapon(TScriptInterface<IPickupObject> pickableObject) override;
+	virtual void Equip(TScriptInterface<IPickupObject> pickableObject) override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void UnEquipWeapon() const override;
+	virtual void UnEquip() const override;
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsCharacterValid() const override;
@@ -189,6 +189,9 @@ public:
 	
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const override;
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const override;
+
+	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) override;
+	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) override;
 	
 	//virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	//                         AActor* DamageCauser) override;

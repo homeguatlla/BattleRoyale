@@ -108,25 +108,3 @@ void APickupObjectBase::OnSphereEndOverlapServer(UPrimitiveComponent* Overlapped
 		//playerState->GetAbilitySystemComponentInterface()->RemoveGameplayEffect(mPickupIndicatorEffectHandle);
 	}
 }
-
-bool APickupObjectBase::AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName)
-{
-	if(Mesh == nullptr)
-	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::AttachToComponent] weapon has no mesh"), *GetName());
-		return false;
-	}
-	
-	return Mesh->AttachToComponent(meshComponent, attachmentRules, socketName);
-}
-
-void APickupObjectBase::DetachFromComponent(const FDetachmentTransformRules& rules)
-{
-	if(Mesh == nullptr)
-	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::DeattachToComponent] weapon has no mesh"), *GetName());
-		return;
-	}
-	
-	Mesh->DetachFromComponent(rules);
-}
