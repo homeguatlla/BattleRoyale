@@ -10,7 +10,7 @@
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
-#include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupIndicator.h"
+#include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 

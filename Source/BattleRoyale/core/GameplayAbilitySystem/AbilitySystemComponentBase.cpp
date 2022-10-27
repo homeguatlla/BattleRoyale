@@ -69,6 +69,11 @@ void UAbilitySystemComponentBase::SendGameplayEvent(const FGameplayTag& tag, con
 	HandleGameplayEvent(tag, &payLoad);
 }
 
+void UAbilitySystemComponentBase::CancelAbilitiesWithTags(const FGameplayTagContainer& tags)
+{
+	CancelAbilities(&tags);
+}
+
 /*
 static int kk = 0;
 float UAbilitySystemComponentBase::PlayMontage(UGameplayAbility* AnimatingAbility,

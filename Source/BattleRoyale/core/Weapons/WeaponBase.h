@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameplayEffectTypes.h"
 #include "IWeapon.h"
-#include "WeaponTypes.h"
 #include "BattleRoyale/core/General/PickupObjectBase.h"
 #include "WeaponBase.generated.h"
 
@@ -48,17 +47,12 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	bool IsDebugEnabled { false };
 
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	EWeaponState WeaponState = EWeaponState::Initial;
-	
 public:	
 	AWeaponBase();
 	
 	virtual void Tick( float DeltaSeconds ) override;
 	
 	//virtual USkeletalMeshComponent* GetMesh() const override { return Mesh; }
-
-	virtual void SetWeaponState(EWeaponState state) override { WeaponState = state; }
 	
 	virtual FVector GetMuzzleLocation() const override;
 	virtual FRotator GetMuzzleRotation() const override;

@@ -40,4 +40,6 @@ public:
 	virtual bool HasGameplayTag(const FGameplayTag& tag) const  = 0;
 
 	virtual void SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad) = 0;
+
+	virtual void CancelAbilitiesWithTags(const FGameplayTagContainer& tags) = 0;
 };

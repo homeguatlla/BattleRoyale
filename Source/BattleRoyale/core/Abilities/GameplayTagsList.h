@@ -18,3 +18,4 @@ const FName TAG_GAMEPLAYCUE_SPRINT("GameplayCue.Sprint");
 
 const FName TAG_EVENT_MONTAGE_SHOOT("Event.Montage.Shoot");
 const FName TAG_EVENT_PICKUP_INDICATOR("Event.PickupIndicator");
+const FName TAG_EVENT_EQUIP("Event.Equip");

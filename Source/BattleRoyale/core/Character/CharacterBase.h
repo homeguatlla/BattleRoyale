@@ -38,13 +38,6 @@ class ACharacterBase : public ACharacter, public IICharacter
 	UPROPERTY(EditDefaultsOnly, Category = Character)
 	FName RightHandSocketName;
 
-	//UPROPERTY(EditDefaultsOnly, Category = EquipedWeapon)
-	//TSubclassOf<class AWeaponBase> WeaponClass;
-	
-	/** AnimMontage to play each time we fire first person */
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
-	//UAnimMontage* FireAnimation1P;
-
 	/** AnimMontage to play each time we fire third person */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* FireAnimation3P;
@@ -76,10 +69,10 @@ class ACharacterBase : public ACharacter, public IICharacter
 
 	UPROPERTY(VisibleAnywhere)
 	class UCombatComponent* CombatComponent;
-	
-	//UPROPERTY(ReplicatedUsing=OnRep_TakeDamageData)
-	//FTakeDamageData mDamageCauser;
 
+	UPROPERTY(VisibleAnywhere)
+	class UPickupComponent* PickupComponent;
+	
 	bool mIsInvulnerable = false;
 	
 public:
@@ -95,10 +88,10 @@ public:
 	virtual TScriptInterface<IWeapon> GetEquippedWeapon() const override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void Equip(TScriptInterface<IPickupObject> pickableObject) override;
+	virtual bool Equip(TScriptInterface<IPickupObject> pickableObject) override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void UnEquip() const override;
+	virtual bool UnEquip() const override;
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsCharacterValid() const override;
@@ -189,9 +182,9 @@ public:
 	
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const override;
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const override;
-
-	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) override;
-	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) override;
+	
+	virtual void SetPickupObject(TScriptInterface<IPickupObject> object) override;
+	virtual TScriptInterface<IPickupObject> GetPickupObject() const override;
 	
 	//virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	//                         AActor* DamageCauser) override;
@@ -258,6 +251,8 @@ private:
 	virtual void DoDieClient() {}
 	
 	virtual USkeletalMeshComponent* GetCurrentMesh(bool isLocallyControlled) const { return GetMesh(); }
+
+	bool EquipWeapon(TScriptInterface<IPickupObject> pickableObject) const;
 	
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerSpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation);

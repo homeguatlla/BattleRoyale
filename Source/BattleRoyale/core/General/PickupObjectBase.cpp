@@ -8,7 +8,7 @@
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
-#include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupIndicator.h"
+#include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
 #include "BattleRoyale/BattleRoyale.h"
 #include "Components/SphereComponent.h"
 
@@ -41,6 +41,7 @@ APickupObjectBase::APickupObjectBase()
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+
 // Called when the game starts or when spawned
 void APickupObjectBase::BeginPlay()
 {
@@ -57,6 +58,29 @@ void APickupObjectBase::BeginPlay()
 	}
 }
 
+bool APickupObjectBase::AttachToComponent(USkeletalMeshComponent* meshComponent,
+	const FAttachmentTransformRules& attachmentRules, const FName& socketName)
+{
+	if(GetMesh() == nullptr)
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[%s][APickupObjectBase::AttachToComponent] pickup object has no mesh"), *GetName());
+		return false;
+	}
+	
+	return GetMesh()->AttachToComponent(meshComponent, attachmentRules, socketName);
+}
+
+void APickupObjectBase::DetachFromComponent(const FDetachmentTransformRules& rules)
+{
+	if(GetMesh() == nullptr)
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[%s][APickupObjectBase::DeattachToComponent] pickup object has no mesh"), *GetName());
+		return;
+	}
+	
+	GetMesh()->DetachFromComponent(rules);
+}
+
 FVector APickupObjectBase::GetPickupWidgetLocation(const FBoxSphereBounds& bounds) const
 {
 	const auto height = bounds.BoxExtent.Z * 2.0f; //Extend is half size side
@@ -69,6 +93,11 @@ FVector APickupObjectBase::GetPickupWidgetLocation(const FBoxSphereBounds& bound
 void APickupObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                             UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if(IsEquipped())
+	{
+		return;
+	}
+	
 	if(const auto character = Cast<ACharacterBase>(OtherActor))
 	{
 		const auto playerState = Cast<APlayerStateBase>(character->GetPlayerState());
@@ -78,10 +107,10 @@ void APickupObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedCom
 		}
 
 		check(character->GetMesh());
-		utils::UtilsLibrary::SendGameplayEventWithTargetData<FTargetDataPickupIndicator>(
+		utils::UtilsLibrary::SendGameplayEventWithTargetData<FTargetDataPickupObject>(
 			character,
 			FGameplayTag::RequestGameplayTag(TAG_EVENT_PICKUP_INDICATOR),
-			new FTargetDataPickupIndicator(GetPickupWidgetLocation(Mesh->GetLocalBounds()), this));
+			new FTargetDataPickupObject(GetPickupWidgetLocation(Mesh->GetLocalBounds()), this));
 
 		//Si enviamos un efecto también funciona, incluso podemos dejar la habilidad como Local Only,
 		//pero no podemos pasar parámetros
@@ -92,6 +121,11 @@ void APickupObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedCom
 void APickupObjectBase::OnSphereEndOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if(IsEquipped())
+	{
+		return;
+	}
+	
 	if(const auto character = Cast<ACharacterBase>(OtherActor))
 	{
 		const auto playerState = Cast<APlayerStateBase>(character->GetPlayerState());

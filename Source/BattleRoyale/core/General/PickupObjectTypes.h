@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 UENUM(BlueprintType)
-enum class EWeaponState : uint8
+enum class EPickupObjectState : uint8
 {
 	Initial UMETA(DisplayName = "Initial State"),
 	Equipped UMETA(DisplayName = "Equipped State"),

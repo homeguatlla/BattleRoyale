@@ -6,7 +6,7 @@
 #include "GameplayAbilityBase.h"
 #include "AbilityPickupIndicator.generated.h"
 
-struct FTargetDataPickupIndicator;
+struct FTargetDataPickupObject;
 /**
  * 
  */
@@ -28,5 +28,5 @@ public:
 	void OnHidePickupIndicator();
 	
 private:
-	bool FillWithGameplayEventData(const FGameplayEventData* TriggerEventData, FTargetDataPickupIndicator& pickupIndicatorData) const;
+	bool FillWithGameplayEventData(const FGameplayEventData* TriggerEventData, FTargetDataPickupObject& pickupIndicatorData) const;
 };

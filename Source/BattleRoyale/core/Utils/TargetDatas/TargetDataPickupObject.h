@@ -3,16 +3,16 @@
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbilityTargetTypes.h"
 #include "BattleRoyale/core/General/PickupObjectBase.h"
-#include "TargetDataPickupIndicator.generated.h"
+#include "TargetDataPickupObject.generated.h"
 
 USTRUCT(BlueprintType)
-struct BATTLEROYALE_API FTargetDataPickupIndicator : public FGameplayAbilityTargetData
+struct BATTLEROYALE_API FTargetDataPickupObject : public FGameplayAbilityTargetData
 {
 	GENERATED_USTRUCT_BODY()
 	
-	FTargetDataPickupIndicator() = default;
+	FTargetDataPickupObject() = default;
 	
-	FTargetDataPickupIndicator(const FVector& location, APickupObjectBase* pickableObject)
+	FTargetDataPickupObject(const FVector& location, APickupObjectBase* pickableObject)
 	{
 		mLocation = location;		
 		mPickableObject = pickableObject;
@@ -22,7 +22,7 @@ struct BATTLEROYALE_API FTargetDataPickupIndicator : public FGameplayAbilityTarg
 	TScriptInterface<IPickupObject> GetPickableObject() const { return mPickableObject; }
 	virtual UScriptStruct* GetScriptStruct() const override
 	{
-		return FTargetDataPickupIndicator::StaticStruct();
+		return FTargetDataPickupObject::StaticStruct();
 	}
 
 	virtual FString ToString() const override;
@@ -36,7 +36,7 @@ struct BATTLEROYALE_API FTargetDataPickupIndicator : public FGameplayAbilityTarg
 };
 
 template<>
-struct TStructOpsTypeTraits<FTargetDataPickupIndicator> : public TStructOpsTypeTraitsBase2<FTargetDataPickupIndicator>
+struct TStructOpsTypeTraits<FTargetDataPickupObject> : public TStructOpsTypeTraitsBase2<FTargetDataPickupObject>
 {
 	enum
 	{

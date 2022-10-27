@@ -26,23 +26,11 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName
 		UE_LOG(LogCharacter, Error, TEXT("[%s][UCombatComponent::EquipWeapon] weapon is null"), *GetName());
 		return false;
 	}
+	
 	const auto character = Cast<ACharacterBase>(GetOwner());
 	check(character);
 	
-	//Attach mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
-	const auto isAttached = character->AttachToComponent(
-		character->GetMesh(),
-		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
-		socketName);
-	
-	if(!isAttached)
-	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][UCombatComponent::EquipWeapon] weapon not attached to the character"), *GetName());
-		return false;
-	}
-	
 	mEquipedWeapon = weapon;
-	mEquipedWeapon->SetWeaponState(EWeaponState::Equipped);	
 	mEquipedWeapon->SetCharacterOwner(character);
 	
 	return true;
@@ -50,10 +38,7 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName
 
 bool UCombatComponent::UnEquipWeapon() const
 {
-	const auto character = Cast<ACharacterBase>(GetOwner());
-	check(character);
-	character->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
-	mEquipedWeapon->Destroy();
+	mEquipedWeapon->Destroy(); //TODO esto está mal creo debería dejarla tal cual y hacerle un dropped en el character
 
 	return true;
 }

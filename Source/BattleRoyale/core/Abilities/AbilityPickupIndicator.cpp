@@ -6,7 +6,7 @@
 #include "GameplayTagsList.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
-#include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupIndicator.h"
+#include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
 #include "Components/WidgetComponent.h"
 
 UAbilityPickupIndicator::UAbilityPickupIndicator()
@@ -44,7 +44,7 @@ void UAbilityPickupIndicator::ActivateAbility(const FGameplayAbilitySpecHandle H
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
-	FTargetDataPickupIndicator pickupIndicatorData;
+	FTargetDataPickupObject pickupIndicatorData;
 	
 	if (!FillWithGameplayEventData(TriggerEventData, pickupIndicatorData))
 	{
@@ -52,9 +52,39 @@ void UAbilityPickupIndicator::ActivateAbility(const FGameplayAbilitySpecHandle H
 		return;
 	}
 
+	if(pickupIndicatorData.mPickableObject->IsEquipped())
+	{
+		OnHidePickupIndicator();
+		K2_EndAbility();
+		return;
+	}	
+
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Orange, FString("Indicator ON"));
+	
+	if(ActorInfo->IsNetAuthority())
+	{
+		if(const auto character = Cast<IICharacter>(ActorInfo->AvatarActor))
+		{
+			character->SetPickupObject(pickupIndicatorData.mPickableObject);
+		}
+	}
+	
 	if(IsLocallyControlled())
 	{
 		OnShowPickupIndicator(pickupIndicatorData.GetLocation());
+		
+		//character->GetAbilitySystemComponentBase()->GiveAbility();
+
+		//TODO La tercera opción es que esta habilidad guarde el objeto detectado en el character, pickupComponent por ejemplo
+		//de manera que el equip lo pueda tener. Pero entonces no necesitamos enviar tantas cosas, lo podemos guardar directamente
+		//en el weapon base cuando detectamos el weapon en overlap? no, porque estaríamos poniendo lógica en el weapon overlap
+		//mejor poner la lógica aquí.
+		//Si es un objeto válido, etc... lo guardo en el pickupComponent. Hace falta el componente? o con una variable en el
+		//character nos vale? 
+		/*utils::UtilsLibrary::SendGameplayEventWithTargetData<FTargetDataPickupObject>(
+			Cast<IICharacter>(character),
+			FGameplayTag::RequestGameplayTag(TAG_EVENT_EQUIP),
+			new FTargetDataPickupObject(FVector::Zero(), pickupIndicatorData.mPickableObject));*/
 	}
 }
 
@@ -62,6 +92,16 @@ void UAbilityPickupIndicator::EndAbility(const FGameplayAbilitySpecHandle Handle
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	bool bReplicateEndAbility, bool bWasCancelled)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Orange, FString("Indicator OFF"));
+	
+	if(ActorInfo->IsNetAuthority())
+	{
+		if(const auto character = Cast<IICharacter>(ActorInfo->AvatarActor))
+		{
+			character->SetPickupObject(nullptr);
+		}
+	}
+	
 	if(IsLocallyControlled())
 	{
 		OnHidePickupIndicator();
@@ -69,12 +109,12 @@ void UAbilityPickupIndicator::EndAbility(const FGameplayAbilitySpecHandle Handle
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-bool UAbilityPickupIndicator::FillWithGameplayEventData(const FGameplayEventData* TriggerEventData, FTargetDataPickupIndicator& pickupIndicatorData) const
+bool UAbilityPickupIndicator::FillWithGameplayEventData(const FGameplayEventData* TriggerEventData, FTargetDataPickupObject& pickupIndicatorData) const
 {
 	if(TriggerEventData && TriggerEventData->TargetData.Num() > 0)
 	{
 		const FGameplayAbilityTargetData* targetData = TriggerEventData->TargetData.Data[0].Get();
-		utils::UtilsLibrary::RetrieveGameplayEventTargetData<FTargetDataPickupIndicator>(TriggerEventData, pickupIndicatorData);
+		utils::UtilsLibrary::RetrieveGameplayEventTargetData<FTargetDataPickupObject>(TriggerEventData, pickupIndicatorData);
 		return true;
 	}
 	return false;

@@ -33,10 +33,10 @@ public:
 	virtual TScriptInterface<IWeapon> GetEquippedWeapon() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual void Equip(TScriptInterface<IPickupObject> pickableObject) = 0;
+	virtual bool Equip(TScriptInterface<IPickupObject> pickableObject) = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual void UnEquip() const = 0;
+	virtual bool UnEquip() const = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool IsCharacterValid() const = 0;
@@ -124,8 +124,8 @@ public:
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const = 0;
 
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const = 0;
-
-	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) = 0;
-	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) = 0;
+	
+	virtual void SetPickupObject(TScriptInterface<IPickupObject> object) = 0;
+	virtual TScriptInterface<IPickupObject> GetPickupObject() const = 0;
 };
  

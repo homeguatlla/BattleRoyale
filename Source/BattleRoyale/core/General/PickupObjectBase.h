@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "IPickupObject.h"
+#include "PickupObjectTypes.h"
 #include "GameFramework/Actor.h"
 #include "PickupObjectBase.generated.h"
 
@@ -18,6 +19,9 @@ class BATTLEROYALE_API APickupObjectBase : public AActor, public IPickupObject
 	/** Collision*/
 	UPROPERTY(EditDefaultsOnly, Category = "PickableObject")
 	class USphereComponent* AreaSphere;
+
+	UPROPERTY(VisibleAnywhere, Category = "PickableObject")
+	EPickupObjectState State = EPickupObjectState::Initial;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -25,6 +29,11 @@ public:
 	
 	virtual FVector GetPickupWidgetLocation(const FBoxSphereBounds& bounds) const override;
 	virtual USkeletalMeshComponent* GetMesh() const { return Mesh; }
+	virtual EPickupObjectState GetState() const override { return State; }
+	virtual void SetState(EPickupObjectState state) override { State = state; }
+	virtual bool IsEquipped() const override { return State == EPickupObjectState::Equipped; }
+	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) override;
+	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) override;
 
 protected:
 	// Called when the game starts or when spawned

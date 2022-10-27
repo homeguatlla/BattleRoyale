@@ -3,23 +3,18 @@
 
 #include "AbilityEquip.h"
 
+#include "BlueprintGameplayTagLibrary.h"
 #include "GameplayTagsList.h"
+#include "BattleRoyale/core/Character/ICharacter.h"
+#include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 
 UAbilityEquip::UAbilityEquip()
 {
 	AbilityInputID = EAbilityInputID::Equip;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
-	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerInitiated;
+	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerOnly;
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_EQUIP));
-
-	//TODO
-	//Esta habilidad se tendría que activar cuando el pickup indicator lo indique, esté activo por ejemplo
-	//y puede activar esta mediante el mismo sistema y pasándole el arma a activar
-	//Para ello, tendríamos que enivar también el arma al pickup indicator.
-	//Probar de pasarle el arma al pickup indicator y luego si funciona, entonces crear un objeto base o una interfaz
-	//de objeto pickeable para que sea genérico. Creo que mejor una interfaz aunque luego habrá código repetido en los overlap
-	//de todos los objetos. Darle unas vueltas a ver.
 }
 
 bool UAbilityEquip::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -35,17 +30,35 @@ bool UAbilityEquip::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 }
 
 void UAbilityEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+                                    const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, FString("AbilityEquip Activate"));
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, FString("AbilityEquip ON"));
+
+	if(const auto character = Cast<IICharacter>(ActorInfo->AvatarActor))
+	{
+		if(const auto pickupObject = character->GetPickupObject())
+		{
+			if(character->Equip(pickupObject))
+			{
+				CancelPickupIndicatorAbility(character);
+			}
+		}
+	}
+	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }
 
 void UAbilityEquip::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, FString("AbilityEquip End"));
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, FString("AbilityEquip OFF"));
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
+void UAbilityEquip::CancelPickupIndicatorAbility(IICharacter* const character) const
+{
+	FGameplayTagContainer cancelTags;
+	UBlueprintGameplayTagLibrary::AddGameplayTag(cancelTags, FGameplayTag::RequestGameplayTag(TAG_ABILITY_PICKUP_INDICATOR));
+	character->GetAbilitySystemComponentBase()->CancelAbilitiesWithTags(cancelTags);
+}

@@ -24,6 +24,7 @@
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
 #include "Components/CombatComponent.h"
 #include "Components/HurtComponent.h"
+#include "Components/PickupComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 
@@ -57,6 +58,9 @@ ACharacterBase::ACharacterBase()
 	//Create CombatComponent
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	CombatComponent->SetIsReplicated(true);
+
+	//Create PickupComponent
+	PickupComponent = CreateDefaultSubobject<UPickupComponent>(TEXT("PickupComponent"));
 }
 
 void ACharacterBase::BeginPlay()
@@ -253,28 +257,6 @@ void ACharacterBase::SetCurrentHealthTest(float health)
 	//mGameplayAbilityAttributes->SetHealth(health);
 }
 
-bool ACharacterBase::AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName)
-{
-	if(GetMesh() == nullptr)
-	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::AttachToComponent] character has no mesh"), *GetName());
-		return false;
-	}
-	
-	return GetMesh()->AttachToComponent(meshComponent, attachmentRules, socketName);
-}
-
-void ACharacterBase::DetachFromComponent(const FDetachmentTransformRules& rules)
-{
-	if(GetMesh() == nullptr)
-	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::DeattachToComponent] character has no mesh"), *GetName());
-		return;
-	}
-	
-	GetMesh()->DetachFromComponent(rules);
-}
-
 bool ACharacterBase::CanSprint() const
 {
 	//We are not checking if the Velocity > 0 to sprint because
@@ -394,15 +376,6 @@ void ACharacterBase::Shoot()
 UAnimMontage* ACharacterBase::GetShootingMontage() const
 {
 	return FireAnimation3P;
-	/*
-	if(IsLocallyControlled())
-	{
-		return FireAnimation1P;
-	}
-	else
-	{
-		return FireAnimation3P;
-	}*/
 }
 
 UAnimMontage* ACharacterBase::GetSimulatedShootingMontage() const
@@ -513,36 +486,91 @@ bool ACharacterBase::ServerSpawnProjectile_Validate(const FVector& muzzleLocatio
 	return true;
 }
 
-void ACharacterBase::Equip(TScriptInterface<IPickupObject> pickableObject)
+bool ACharacterBase::Equip(TScriptInterface<IPickupObject> pickableObject)
 {
+	check(pickableObject);
+	if(pickableObject->IsEquipped())
+	{
+		return false;
+	}
+
 	if(pickableObject.GetObject()->Implements<UWeapon>())
 	{
-		const TScriptInterface<IWeapon> weapon =pickableObject.GetObject();
-		//TODO el equip weapon ahora hace el attach que lo podría hacer el character porque tiene más sentido
-		//el character es el que coje el objeto. Y así, és más genérico. Cuando cojamos otro objeto,
-		//alguien tendrá que hacer el attach posiblemente también. Por ejemplo un cargardor de vida.
-		if(CombatComponent->EquipWeapon(weapon, RightHandSocketName))
-		{
-			//TODO creo que este código se puede generalizar a cualquier tipo de objeto y
-			//así dejarlo aquí pero fuera del if, si se equipa cualquier cosa se envía a la ui
-			//y la ui decide si es un weapon mostrar lo que quiera
-			if(IsLocallyControlled())
-			{
-				const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-				gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(GetEquippedWeapon());
-			}
-		}
+		return EquipWeapon(pickableObject);
 	}
+	else
+	{
+		//TODO guardar en el inventario
+	}
+	return false;
 }
 
-void ACharacterBase::UnEquip() const
+bool ACharacterBase::UnEquip() const
 {
-	CombatComponent->UnEquipWeapon();
-	if(IsLocallyControlled())
+	const TScriptInterface<IPickupObject> pickupObject = GetEquippedWeapon().GetObject();
+	check(pickupObject);
+	
+	pickupObject->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	
+	//TODO se tiene que cambiar el estado del objeto y hacer un drop
+	check(CombatComponent);
+	if(CombatComponent->UnEquipWeapon())
 	{
-		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-		gameInstance->GetEventDispatcher()->OnUnEquippedWeapon.Broadcast();
+		if(IsLocallyControlled())
+		{
+			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+			gameInstance->GetEventDispatcher()->OnUnEquippedWeapon.Broadcast();
+		}
+		return true;
 	}
+	return false;
+}
+
+void ACharacterBase::SetPickupObject(TScriptInterface<IPickupObject> object)
+{
+	check(PickupComponent);
+	PickupComponent->SetPickupObject(object);
+}
+
+TScriptInterface<IPickupObject> ACharacterBase::GetPickupObject() const
+{
+	check(PickupComponent);
+	return PickupComponent->GetPickupObject();
+}
+
+
+bool ACharacterBase::EquipWeapon(TScriptInterface<IPickupObject> pickableObject) const
+{
+	//TODO si ya tengo un arma hacer un unequip primero
+	//equipar arma.
+	
+	const auto isAttached = pickableObject->AttachToComponent(
+				GetMesh(),
+				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+				RightHandSocketName);
+	if(!isAttached)
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::Equip] pickup object not attached to the character"), *GetName());
+		return false;
+	}
+
+	const TScriptInterface<IWeapon> weapon =pickableObject.GetObject();
+	check(CombatComponent);
+	if(CombatComponent->EquipWeapon(weapon, RightHandSocketName))
+	{
+		pickableObject->SetState(EPickupObjectState::Equipped);
+		//TODO creo que este código se puede generalizar a cualquier tipo de objeto y
+		//así dejarlo aquí pero fuera del if, si se equipa cualquier cosa se envía a la ui
+		//y la ui decide si es un weapon mostrar lo que quiera
+		//No está mal dejar ambos eventos uno específico para armas otro para los demás objetos
+		if(IsLocallyControlled())
+		{
+			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+			gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(GetEquippedWeapon());
+		}
+		return true;
+	}
+	return false;
 }
 
 void ACharacterBase::PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const
