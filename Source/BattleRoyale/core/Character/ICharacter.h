@@ -33,10 +33,10 @@ public:
 	virtual TScriptInterface<IWeapon> GetEquippedWeapon() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual bool Equip(TScriptInterface<IPickupObject> pickableObject) = 0;
+	virtual bool EquipServer(TScriptInterface<IPickupObject> pickableObject) = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual bool UnEquip() const = 0;
+	virtual bool UnEquipServer() const = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool IsCharacterValid() const = 0;

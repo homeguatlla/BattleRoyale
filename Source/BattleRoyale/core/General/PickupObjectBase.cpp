@@ -37,10 +37,11 @@ APickupObjectBase::APickupObjectBase()
 	//Disabled for now. We only want to be enabled on server
 	AreaSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AreaSphere"));
 	AreaSphere->SetupAttachment(RootComponent);
-	AreaSphere->SetCollisionResponseToChannels(ECollisionResponse::ECR_Ignore);
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-}
 
+	DisableDetectionArea();
+	//AreaSphere->SetCollisionResponseToChannels(ECollisionResponse::ECR_Ignore);
+	//AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
 
 // Called when the game starts or when spawned
 void APickupObjectBase::BeginPlay()
@@ -49,17 +50,35 @@ void APickupObjectBase::BeginPlay()
 	
 	if(HasAuthority())
 	{
-		//Enable the Area Sphere 
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		AreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+		EnableDetectionArea();
+	}
+}
 
-		AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnSphereOverlapServer);
-		AreaSphere->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnSphereEndOverlapServer);
+void APickupObjectBase::ChangeStateServer(EPickupObjectState state)
+{
+	if(!HasAuthority())
+	{
+		return;
+	}
+	
+	State = state;
+	switch (State)
+	{
+	case EPickupObjectState::Equipped:
+		DisableDetectionArea();
+		break;
+	case EPickupObjectState::Dropped:
+		EnableDetectionArea();
+		break;
+	case EPickupObjectState::Initial:
+		break;
+	default:
+		break;
 	}
 }
 
 bool APickupObjectBase::AttachToComponent(USkeletalMeshComponent* meshComponent,
-	const FAttachmentTransformRules& attachmentRules, const FName& socketName)
+                                          const FAttachmentTransformRules& attachmentRules, const FName& socketName)
 {
 	if(GetMesh() == nullptr)
 	{
@@ -88,6 +107,23 @@ FVector APickupObjectBase::GetPickupWidgetLocation(const FBoxSphereBounds& bound
 	//DrawDebugBox(GetWorld(), bounds.Origin + GetActorLocation() , bounds.BoxExtent,FColor::Green, false, 20);
 	//DrawDebugSphere(GetWorld(), bounds.Origin + GetActorLocation() + FVector(0.0f, 0.0f, height), 10, 30, FColor::Red, false, 20);
 	return bounds.Origin + GetActorLocation() + FVector(0.0f, 0.0f, height);
+}
+
+void APickupObjectBase::EnableDetectionArea() const
+{
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	AreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
+	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnSphereOverlapServer);
+	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnSphereEndOverlapServer);
+}
+
+void APickupObjectBase::DisableDetectionArea() const
+{
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AreaSphere->SetCollisionResponseToChannels(ECollisionResponse::ECR_Ignore);
+	
+	AreaSphere->OnComponentBeginOverlap.RemoveAll(this);
 }
 
 void APickupObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

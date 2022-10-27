@@ -88,10 +88,10 @@ public:
 	virtual TScriptInterface<IWeapon> GetEquippedWeapon() const override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual bool Equip(TScriptInterface<IPickupObject> pickableObject) override;
+	virtual bool EquipServer(TScriptInterface<IPickupObject> pickableObject) override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual bool UnEquip() const override;
+	virtual bool UnEquipServer() const override;
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsCharacterValid() const override;
@@ -252,7 +252,7 @@ private:
 	
 	virtual USkeletalMeshComponent* GetCurrentMesh(bool isLocallyControlled) const { return GetMesh(); }
 
-	bool EquipWeapon(TScriptInterface<IPickupObject> pickableObject) const;
+	bool EquipWeaponServer(TScriptInterface<IPickupObject> pickableObject) const;
 	
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerSpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation);

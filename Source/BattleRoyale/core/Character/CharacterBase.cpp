@@ -486,8 +486,13 @@ bool ACharacterBase::ServerSpawnProjectile_Validate(const FVector& muzzleLocatio
 	return true;
 }
 
-bool ACharacterBase::Equip(TScriptInterface<IPickupObject> pickableObject)
+bool ACharacterBase::EquipServer(TScriptInterface<IPickupObject> pickableObject)
 {
+	if(!HasAuthority())
+	{
+		return false;
+	}
+	
 	check(pickableObject);
 	if(pickableObject->IsEquipped())
 	{
@@ -496,7 +501,7 @@ bool ACharacterBase::Equip(TScriptInterface<IPickupObject> pickableObject)
 
 	if(pickableObject.GetObject()->Implements<UWeapon>())
 	{
-		return EquipWeapon(pickableObject);
+		return EquipWeaponServer(pickableObject);
 	}
 	else
 	{
@@ -505,8 +510,13 @@ bool ACharacterBase::Equip(TScriptInterface<IPickupObject> pickableObject)
 	return false;
 }
 
-bool ACharacterBase::UnEquip() const
+bool ACharacterBase::UnEquipServer() const
 {
+	if(!HasAuthority())
+	{
+		return false;
+	}
+	
 	const TScriptInterface<IPickupObject> pickupObject = GetEquippedWeapon().GetObject();
 	check(pickupObject);
 	
@@ -539,7 +549,7 @@ TScriptInterface<IPickupObject> ACharacterBase::GetPickupObject() const
 }
 
 
-bool ACharacterBase::EquipWeapon(TScriptInterface<IPickupObject> pickableObject) const
+bool ACharacterBase::EquipWeaponServer(TScriptInterface<IPickupObject> pickableObject) const
 {
 	//TODO si ya tengo un arma hacer un unequip primero
 	//equipar arma.
@@ -558,7 +568,8 @@ bool ACharacterBase::EquipWeapon(TScriptInterface<IPickupObject> pickableObject)
 	check(CombatComponent);
 	if(CombatComponent->EquipWeapon(weapon, RightHandSocketName))
 	{
-		pickableObject->SetState(EPickupObjectState::Equipped);
+		pickableObject->ChangeStateServer(EPickupObjectState::Equipped);
+		
 		//TODO creo que este código se puede generalizar a cualquier tipo de objeto y
 		//así dejarlo aquí pero fuera del if, si se equipa cualquier cosa se envía a la ui
 		//y la ui decide si es un weapon mostrar lo que quiera
@@ -605,7 +616,7 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 
 void ACharacterBase::DieClient()
 {
-	UnEquip();
+	UnEquipServer();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 	
