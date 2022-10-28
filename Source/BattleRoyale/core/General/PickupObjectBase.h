@@ -29,7 +29,6 @@ public:
 	
 	virtual FVector GetPickupWidgetLocation(const FBoxSphereBounds& bounds) const override;
 	virtual USkeletalMeshComponent* GetMesh() const { return Mesh; }
-	virtual EPickupObjectState GetState() const override { return State; }
 	virtual void ChangeStateServer(EPickupObjectState state) override;
 	virtual bool IsEquipped() const override { return State == EPickupObjectState::Equipped; }
 	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) override;
@@ -54,6 +53,7 @@ protected:
 		int32 OtherBodyIndex);
 	
 private:
+	virtual EPickupObjectState GetState() const override { return State; }
 	void EnableDetectionArea() const;
 	void DisableDetectionArea() const;
 };

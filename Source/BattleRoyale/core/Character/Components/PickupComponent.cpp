@@ -9,10 +9,3 @@ UPickupComponent::UPickupComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
-/*
-void UPickupComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(UPickupComponent, mPickupObject);
-}*/

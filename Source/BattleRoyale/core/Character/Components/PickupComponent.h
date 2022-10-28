@@ -18,8 +18,6 @@ public:
 	UPickupComponent();
 	void SetPickupObject(TScriptInterface<IPickupObject> object) { mPickupObject = object; }
 	TScriptInterface<IPickupObject> GetPickupObject() const { return mPickupObject; }
-
-	//virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 private:
 	TScriptInterface<IPickupObject> mPickupObject;

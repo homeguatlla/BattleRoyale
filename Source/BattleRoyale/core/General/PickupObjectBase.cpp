@@ -157,10 +157,9 @@ void APickupObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedCom
 void APickupObjectBase::OnSphereEndOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if(IsEquipped())
-	{
-		return;
-	}
+	//No matter the state of the weapon if end overlap, remove pickup indicator.
+	//imagin situation where player 1 is seeing its player indicator, and a player 2 equips the
+	//object the player 1 is seeing, we want the indicator be disabled in both.
 	
 	if(const auto character = Cast<ACharacterBase>(OtherActor))
 	{
