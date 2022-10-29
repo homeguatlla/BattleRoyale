@@ -166,6 +166,18 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void StopJumping_() override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual bool CanCrouch_() const override;
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void StartCrouching() override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void StopCrouching() override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual bool IsCrouching() const override { return bIsCrouched; }
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool CanShoot() const override;

@@ -335,6 +335,21 @@ void ACharacterBase::StopJumping_()
 	Super::StopJumping();
 }
 
+bool ACharacterBase::CanCrouch_() const
+{
+	return Super::CanCrouch();
+}
+
+void ACharacterBase::StartCrouching()
+{
+	Crouch();
+}
+
+void ACharacterBase::StopCrouching()
+{
+	UnCrouch();
+}
+
 bool ACharacterBase::CanShoot() const
 {
 	const auto equippedWeapon = GetEquippedWeapon();

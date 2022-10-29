@@ -91,6 +91,18 @@ public:
 	/* StopJumping is already defined in the Character.h so, we added _*/
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual void StopJumping_() = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual bool CanCrouch_() const  = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual void StartCrouching() = 0;
+	
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual void StopCrouching() = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual bool IsCrouching() const = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool CanShoot() const = 0;
