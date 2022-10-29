@@ -2,6 +2,8 @@
 
 
 #include "CombatComponent.h"
+
+#include "Net/UnrealNetwork.h"
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/Weapons/IWeapon.h"
@@ -17,6 +19,13 @@ void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+}
+
+void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UCombatComponent, mEquipedWeapon);
 }
 
 bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName)

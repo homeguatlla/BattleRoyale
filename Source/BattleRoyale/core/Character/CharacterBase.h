@@ -88,6 +88,9 @@ public:
 	virtual TScriptInterface<IWeapon> GetEquippedWeapon() const override;
 
 	UFUNCTION(BlueprintCallable)
+	virtual bool HasWeaponEquipped() const override { return GetEquippedWeapon() != nullptr; }
+	
+	UFUNCTION(BlueprintCallable)
 	virtual bool EquipServer(TScriptInterface<IPickupObject> pickableObject) override;
 
 	UFUNCTION(BlueprintCallable)

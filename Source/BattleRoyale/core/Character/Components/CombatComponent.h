@@ -13,6 +13,7 @@ class BATTLEROYALE_API UCombatComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+	UPROPERTY(Replicated)
 	TScriptInterface<IWeapon> mEquipedWeapon;
 	
 public:	
@@ -22,11 +23,12 @@ public:
 	bool EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName);
 	bool UnEquipWeapon() const;
 	TScriptInterface<IWeapon> GetEquippedWeapon() const;
+
 	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	
+private:
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
