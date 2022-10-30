@@ -15,6 +15,9 @@ class BATTLEROYALE_API UCombatComponent : public UActorComponent
 
 	UPROPERTY(Replicated)
 	TScriptInterface<IWeapon> mEquipedWeapon;
+
+	UPROPERTY(Replicated)
+	bool mIsAiming;
 	
 public:	
 	// Sets default values for this component's properties
@@ -23,7 +26,12 @@ public:
 	bool EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName);
 	bool UnEquipWeapon() const;
 	TScriptInterface<IWeapon> GetEquippedWeapon() const;
-
+	bool HasWeaponEquipped() const { return GetEquippedWeapon() != nullptr; }
+	
+	bool IsAiming() const { return mIsAiming; }
+	void StartAiming();
+	void StopAiming();
+	bool CanAim() const;
 	
 protected:
 	// Called when the game starts

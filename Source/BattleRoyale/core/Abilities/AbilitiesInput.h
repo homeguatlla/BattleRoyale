@@ -13,5 +13,6 @@ enum class EAbilityInputID : uint8
 	Jump,
 	Crouch,
 	Fire,
-	Equip
+	Equip,
+	Aim
 };

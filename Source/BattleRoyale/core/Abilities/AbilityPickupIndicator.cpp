@@ -58,8 +58,6 @@ void UAbilityPickupIndicator::ActivateAbility(const FGameplayAbilitySpecHandle H
 		K2_EndAbility();
 		return;
 	}	
-
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Orange, FString("Indicator ON"));
 	
 	if(ActorInfo->IsNetAuthority())
 	{
@@ -92,8 +90,6 @@ void UAbilityPickupIndicator::EndAbility(const FGameplayAbilitySpecHandle Handle
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	bool bReplicateEndAbility, bool bWasCancelled)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Orange, FString("Indicator OFF"));
-	
 	if(ActorInfo->IsNetAuthority())
 	{
 		if(const auto character = Cast<IICharacter>(ActorInfo->AvatarActor))

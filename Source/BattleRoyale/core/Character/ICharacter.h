@@ -103,6 +103,18 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool IsCrouching() const = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual bool CanAim() const  = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual void StartAiming() = 0;
+	
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual void StopAiming() = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual bool IsAiming() const = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool CanShoot() const = 0;
@@ -131,9 +143,7 @@ public:
 	virtual void Shoot() = 0;
 	
 	virtual UAnimMontage* GetShootingMontage() const = 0;
-
-	virtual UAnimMontage* GetSimulatedShootingMontage() const = 0;
-
+	
 	virtual UAnimInstance* GetAnimationInstance() const = 0;
 
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const = 0;

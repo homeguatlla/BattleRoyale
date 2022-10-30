@@ -1,21 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AbilityCrouch.h"
+#include "AbilityAim.h"
 
-#include "AbilityJump.h"
 #include "GameplayTagsList.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 
-UAbilityCrouch::UAbilityCrouch()
+UAbilityAim::UAbilityAim()
 {
-	AbilityInputID = EAbilityInputID::Crouch;
+	AbilityInputID = EAbilityInputID::Aim;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
 
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_CROUCH));
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_AIM));
 }
 
-bool UAbilityCrouch::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+bool UAbilityAim::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 										const FGameplayAbilityActorInfo* ActorInfo,
 										const FGameplayTagContainer* SourceTags,
 										const FGameplayTagContainer* TargetTags,
@@ -27,10 +26,10 @@ bool UAbilityCrouch::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	}
 	const auto character = GetCharacter(ActorInfo);
 
-	return character != nullptr && character->CanCrouch_();
+	return character != nullptr && character->CanAim();
 }
 
-void UAbilityCrouch::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+void UAbilityAim::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                      const FGameplayAbilityActorInfo* ActorInfo,
                                      const FGameplayAbilityActivationInfo ActivationInfo,
                                      const FGameplayEventData* TriggerEventData)
@@ -45,12 +44,12 @@ void UAbilityCrouch::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		const auto character = GetCharacter(ActorInfo);
 		if (character != nullptr)
 		{
-			character->StartCrouching();
+			character->StartAiming();
 		}
 	}
 }
 
-void UAbilityCrouch::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+void UAbilityAim::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                    const FGameplayAbilityActivationInfo ActivationInfo)
 {
 	if (ActorInfo != NULL && ActorInfo->AvatarActor != NULL)
@@ -66,12 +65,12 @@ void UAbilityCrouch::InputReleased(const FGameplayAbilitySpecHandle Handle, cons
  *	Montage that *it* played was still playing, and if so, to cancel it. If this is something we need to support, we may need some
  *	light weight data structure to represent 'non intanced abilities in action' with a way to cancel/end them.
  */
-void UAbilityCrouch::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+void UAbilityAim::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                    const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)
 {
 	if (ScopeLockCount > 0)
 	{
-		WaitingToExecute.Add(FPostLockDelegate::CreateUObject(this, &UAbilityCrouch::CancelAbility, Handle, ActorInfo,
+		WaitingToExecute.Add(FPostLockDelegate::CreateUObject(this, &UAbilityAim::CancelAbility, Handle, ActorInfo,
 		                                                      ActivationInfo, bReplicateCancelAbility));
 		return;
 	}
@@ -81,6 +80,6 @@ void UAbilityCrouch::CancelAbility(const FGameplayAbilitySpecHandle Handle, cons
 	const auto character = GetCharacter(ActorInfo);
 	if (character != nullptr)
 	{
-		character->StopCrouching();
+		character->StopAiming();
 	}
 }

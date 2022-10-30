@@ -26,7 +26,7 @@ public:
 	
 private:
 	void DoInitialize(bool isLocallyControlled);
-	void HideFirstPersonMesh() const;
+	void HideMesh() const;
 	virtual USkeletalMeshComponent* GetCurrentMesh(bool isLocallyControlled) const;
 	virtual void DoDieClient();
 	

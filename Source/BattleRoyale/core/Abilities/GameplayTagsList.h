@@ -8,6 +8,7 @@ const FName TAG_ABILITY_SPRINT("Ability.Sprint");
 const FName TAG_ABILITY_CROUCH("Ability.Crouch");
 const FName TAG_ABILITY_SHOOT("Ability.Shoot");
 const FName TAG_ABILITY_EQUIP("Ability.Equip");
+const FName TAG_ABILITY_AIM("Ability.Aim");
 const FName TAG_ABILITY_SHOOT_PROJECTILE("Ability.Shoot.Projectile");
 const FName TAG_ABILITY_PICKUP_INDICATOR("Ability.PickupIndicator");
 

@@ -83,6 +83,7 @@ void ACharacterBase::PossessedBy(AController* NewController)
 	//MulticastSpawnWeapon();
 	InitializeGAS();
 	GiveAbilitiesServer();
+	Initialize(IsLocallyControlled());
 }
 
 void ACharacterBase::OnRep_PlayerState()
@@ -92,6 +93,7 @@ void ACharacterBase::OnRep_PlayerState()
 	//only for clients
 	InitializeGAS();
 	BindAbilityActivationToInputComponent();
+	Initialize(IsLocallyControlled());
 }
 
 void ACharacterBase::Initialize(bool isLocallyControlled)
@@ -153,6 +155,11 @@ TScriptInterface<IWeapon> ACharacterBase::GetEquippedWeapon() const
 	return CombatComponent->GetEquippedWeapon();
 }
 
+bool ACharacterBase::HasWeaponEquipped() const
+{
+	return CombatComponent->HasWeaponEquipped();
+}
+
 bool ACharacterBase::IsCharacterValid() const
 {
 	return IsValid(this) && HurtComponent->IsReady();
@@ -207,7 +214,6 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ACharacterBase, mControlRotation);
-	//DOREPLIFETIME(ACharacterBase, mDamageCauser);
 }
 
 void ACharacterBase::BindAbilityActivationToInputComponent() const
@@ -350,6 +356,26 @@ void ACharacterBase::StopCrouching()
 	UnCrouch();
 }
 
+bool ACharacterBase::CanAim() const
+{
+	return CombatComponent->CanAim();
+}
+
+void ACharacterBase::StartAiming()
+{
+	CombatComponent->StartAiming();
+}
+
+void ACharacterBase::StopAiming()
+{
+	CombatComponent->StopAiming();
+}
+
+bool ACharacterBase::IsAiming() const
+{
+	return CombatComponent->IsAiming();
+}
+
 bool ACharacterBase::CanShoot() const
 {
 	const auto equippedWeapon = GetEquippedWeapon();
@@ -389,11 +415,6 @@ void ACharacterBase::Shoot()
 }
 
 UAnimMontage* ACharacterBase::GetShootingMontage() const
-{
-	return FireAnimation3P;
-}
-
-UAnimMontage* ACharacterBase::GetSimulatedShootingMontage() const
 {
 	return FireAnimation3P;
 }

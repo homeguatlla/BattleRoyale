@@ -88,7 +88,7 @@ public:
 	virtual TScriptInterface<IWeapon> GetEquippedWeapon() const override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual bool HasWeaponEquipped() const override { return GetEquippedWeapon() != nullptr; }
+	virtual bool HasWeaponEquipped() const override;
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool EquipServer(TScriptInterface<IPickupObject> pickableObject) override;
@@ -167,17 +167,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void StopJumping_() override;
 
-	UFUNCTION(BlueprintCallable)
 	virtual bool CanCrouch_() const override;
-	
-	UFUNCTION(BlueprintCallable)
 	virtual void StartCrouching() override;
-
-	UFUNCTION(BlueprintCallable)
 	virtual void StopCrouching() override;
-
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsCrouching() const override { return bIsCrouched; }
+
+	virtual bool CanAim() const override;
+	virtual void StartAiming() override;
+	virtual void StopAiming() override;
+	UFUNCTION(BlueprintCallable)
+	virtual bool IsAiming() const override;
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool CanShoot() const override;
@@ -191,7 +191,6 @@ public:
 	virtual void NotifyTakeDamage(float damage, const AActor* causer, float currentHealth) override;
 	
 	virtual UAnimMontage* GetShootingMontage() const override;
-	virtual UAnimMontage* GetSimulatedShootingMontage() const override;
 	
 	virtual UAnimInstance* GetAnimationInstance() const override;
 	

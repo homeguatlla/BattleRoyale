@@ -26,24 +26,16 @@ AFirstPersonCharacter::AFirstPersonCharacter()
 UAnimInstance* AFirstPersonCharacter::GetAnimationInstance() const
 {
 	return GetMesh()->GetAnimInstance();
-	/*if(IsLocallyControlled())
-	{
-		return mCharacterMesh1P->GetAnimInstance();
-	}
-	else
-	{
-		return GetMesh()->GetAnimInstance();
-	}*/
 }
 
-void AFirstPersonCharacter::HideFirstPersonMesh() const
+void AFirstPersonCharacter::HideMesh() const
 {
 	if(!IsLocallyControlled())
 	{
 		return;
 	}
 
-	//mCharacterMesh1P->SetHiddenInGame(true, true);
+	GetMesh()->SetHiddenInGame(true, true);
 }
 
 void AFirstPersonCharacter::ConvertIntoMesh1P() const
@@ -69,19 +61,19 @@ void AFirstPersonCharacter::ChangeCharacterMesh1PColor(const FColor& color)
 
 void AFirstPersonCharacter::DoInitialize(bool isLocallyControlled)
 {
-	//mCharacterMesh1P->SetHiddenInGame(!isLocallyControlled, true);
 	if(IsLocallyControlled())
 	{
+		//HideMesh();
 		ConvertIntoMesh1P();
 	}
 }
 
 USkeletalMeshComponent* AFirstPersonCharacter::GetCurrentMesh(bool isLocallyControlled) const
 {
-	return GetMesh();//isLocallyControlled ? mCharacterMesh1P: GetMesh();
+	return GetMesh();
 }
 
 void AFirstPersonCharacter::DoDieClient()
 {
-	HideFirstPersonMesh();
+	HideMesh();
 }
