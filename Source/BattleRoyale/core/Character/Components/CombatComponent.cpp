@@ -58,6 +58,11 @@ TScriptInterface<IWeapon> UCombatComponent::GetEquippedWeapon() const
 	return mEquipedWeapon;
 }
 
+bool UCombatComponent::CanShoot() const
+{
+	return mEquipedWeapon && mEquipedWeapon->CanBeFired();
+}
+
 void UCombatComponent::StartAiming()
 {
 	mIsAiming = true;

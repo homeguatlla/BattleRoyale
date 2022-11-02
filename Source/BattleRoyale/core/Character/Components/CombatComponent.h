@@ -27,6 +27,8 @@ public:
 	bool UnEquipWeapon() const;
 	TScriptInterface<IWeapon> GetEquippedWeapon() const;
 	bool HasWeaponEquipped() const { return GetEquippedWeapon() != nullptr; }
+
+	bool CanShoot() const;
 	
 	bool IsAiming() const { return mIsAiming; }
 	void StartAiming();

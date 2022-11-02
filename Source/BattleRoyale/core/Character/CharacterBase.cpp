@@ -378,9 +378,7 @@ bool ACharacterBase::IsAiming() const
 
 bool ACharacterBase::CanShoot() const
 {
-	const auto equippedWeapon = GetEquippedWeapon();
-
-	return IsAlive() && equippedWeapon && equippedWeapon->CanBeFired();
+	return IsAlive() && CombatComponent->CanShoot();
 }
 
 void ACharacterBase::ServerShoot()
