@@ -31,6 +31,7 @@ public class BattleRoyale : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
+			"AnimGraphRuntime"
 			//Automation tests (in order to include AutomationEditorCommon.h)
 			//"UnrealEd",
 			//"FunctionalTesting"
