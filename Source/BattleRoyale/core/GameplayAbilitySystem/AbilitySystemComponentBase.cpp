@@ -64,6 +64,16 @@ bool UAbilitySystemComponentBase::HasGameplayTag(const FGameplayTag& tag) const
 	return HasMatchingGameplayTag(tag);
 }
 
+void UAbilitySystemComponentBase::AddGameplayTag(const FGameplayTag& tag)
+{
+	AddLooseGameplayTag(tag);
+}
+
+void UAbilitySystemComponentBase::RemoveGameplayTag(const FGameplayTag& tag)
+{
+	RemoveLooseGameplayTag(tag);
+}
+
 void UAbilitySystemComponentBase::SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad)
 {
 	HandleGameplayEvent(tag, &payLoad);

@@ -38,7 +38,9 @@ public:
 	virtual FOnGameplayAttributeValueChange& GetAttributeValueChangeDelegate(FGameplayAttribute Attribute) = 0;
 	
 	virtual bool HasGameplayTag(const FGameplayTag& tag) const  = 0;
-
+	virtual void AddGameplayTag(const FGameplayTag& tag)  = 0;
+	virtual void RemoveGameplayTag(const FGameplayTag& tag)  = 0;
+	
 	virtual void SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad) = 0;
 
 	virtual void CancelAbilitiesWithTags(const FGameplayTagContainer& tags) = 0;

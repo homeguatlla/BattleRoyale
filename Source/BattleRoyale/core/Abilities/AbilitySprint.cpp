@@ -13,7 +13,10 @@ UAbilitySprint::UAbilitySprint()
 
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SPRINT));
 	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SHOOT));	
-	
+
+	//Prevents activate sprint ability if aiming.
+	//But if we are already sprinting, the ability is not cancelled.
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_STATE_AIMING));
 	//To enable sprint ability from a trigger
 	/*FAbilityTriggerData triggerData;
 	triggerData.TriggerTag = FGameplayTag::RequestGameplayTag(FName("Trigger.Sprint"));

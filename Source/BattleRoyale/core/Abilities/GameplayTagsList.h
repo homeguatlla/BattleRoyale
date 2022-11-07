@@ -13,7 +13,7 @@ const FName TAG_ABILITY_SHOOT_PROJECTILE("Ability.Shoot.Projectile");
 const FName TAG_ABILITY_PICKUP_INDICATOR("Ability.PickupIndicator");
 
 const FName TAG_STATE_INVULNERABLE = FName("State.Invulnerable");
-
+const FName TAG_STATE_AIMING = FName("State.Aiming");
 
 const FName TAG_GAMEPLAYCUE_JUMP("GameplayCue.Jump");
 const FName TAG_GAMEPLAYCUE_SPRINT("GameplayCue.Sprint");

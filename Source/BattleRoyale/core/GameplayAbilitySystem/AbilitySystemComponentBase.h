@@ -30,7 +30,9 @@ public:
 	virtual FOnGameplayAttributeValueChange& GetAttributeValueChangeDelegate(FGameplayAttribute attribute) override;
 
 	virtual bool HasGameplayTag(const FGameplayTag& tag) const override;
-
+	virtual void AddGameplayTag(const FGameplayTag& tag) override;
+	virtual void RemoveGameplayTag(const FGameplayTag& tag) override;
+	
 	virtual void SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad) override;
 
 	virtual void CancelAbilitiesWithTags(const FGameplayTagContainer& tags) override;

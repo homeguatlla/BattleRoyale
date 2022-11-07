@@ -5,7 +5,9 @@
 
 #include "Net/UnrealNetwork.h"
 #include "BattleRoyale/BattleRoyale.h"
+#include "BattleRoyale/core/Abilities/GameplayTagsList.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
+#include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "BattleRoyale/core/Weapons/IWeapon.h"
 
 // Sets default values for this component's properties
@@ -66,11 +68,18 @@ bool UCombatComponent::CanShoot() const
 void UCombatComponent::StartAiming()
 {
 	mIsAiming = true;
+	const auto character = Cast<ACharacterBase>(GetOwner());
+	check(character);
+	character->GetAbilitySystemComponentBase()->AddGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_AIMING));
+	character->GetAbilitySystemComponentBase()->CancelAbilitiesWithTags(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SPRINT)));
 }
 
 void UCombatComponent::StopAiming()
 {
 	mIsAiming = false;
+	const auto character = Cast<ACharacterBase>(GetOwner());
+	check(character);
+	character->GetAbilitySystemComponentBase()->RemoveGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_AIMING));
 }
 
 bool UCombatComponent::CanAim() const
