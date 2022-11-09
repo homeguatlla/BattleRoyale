@@ -14,7 +14,7 @@ class BATTLEROYALE_API UCombatComponent : public UActorComponent
 	GENERATED_BODY()
 
 	UPROPERTY(Replicated)
-	TScriptInterface<IWeapon> mEquipedWeapon;
+	TScriptInterface<IWeapon> mEquippedWeapon;
 
 	UPROPERTY(Replicated)
 	bool mIsAiming;
@@ -34,11 +34,8 @@ public:
 	void StartAiming();
 	void StopAiming();
 	bool CanAim() const;
-	
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
 
 private:
+	//void OnRep_EquippedWeapon();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

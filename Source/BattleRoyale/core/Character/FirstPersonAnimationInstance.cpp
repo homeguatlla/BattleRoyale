@@ -3,6 +3,7 @@
 
 #include "FirstPersonAnimationInstance.h"
 #include "KismetAnimationLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 
 void UFirstPersonAnimationInstance::NativeInitializeAnimation()
 {
@@ -19,7 +20,7 @@ void UFirstPersonAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		SetupCharacter();
 	}
-	if(!Character)
+	if(!Character || !Character->IsCharacterValid())
 	{
 		return;
 	}
@@ -39,7 +40,10 @@ void UFirstPersonAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)
 	IsInAir = CharacterInterface->IsFalling();
 	HasWeaponEquipped = CharacterInterface->HasWeaponEquipped();
 
-	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, FString::Printf(TEXT("Is Aiming = %d"), IsAiming));
+	//This two rotators are synchronized, server, autonomous and simulated.
+	const auto aimRotation = Character->GetBaseAimRotation();
+	const auto movementRotation = UKismetMathLibrary::MakeRotFromX(Character->GetVelocity());
+	YawOffset = UKismetMathLibrary::NormalizedDeltaRotator(movementRotation, aimRotation).Yaw;
 }
 
 void UFirstPersonAnimationInstance::SetupCharacter()

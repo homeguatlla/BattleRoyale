@@ -19,7 +19,7 @@ UHurtComponent::UHurtComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UHurtComponent::InitializeServer()
+void UHurtComponent::InitializeServer() const
 {
 	if(!GetOwner()->HasAuthority())
 	{
@@ -71,11 +71,9 @@ void UHurtComponent::SetInvulnerableServer(bool isInvulnerable)
 
 float UHurtComponent::GetCurrentHealth() const
 {
-	const auto abilitySystemComponentInterface = GetAbilitySystemComponent();
-	if(abilitySystemComponentInterface)
+	if(const auto abilitySystemComponentInterface = GetAbilitySystemComponent())
 	{
-		const auto attributeSetHealth = abilitySystemComponentInterface->GetAttributeSetHealth();
-		if(attributeSetHealth)
+		if(const auto attributeSetHealth = abilitySystemComponentInterface->GetAttributeSetHealth())
 		{
 			return attributeSetHealth->GetHealth();
 		}

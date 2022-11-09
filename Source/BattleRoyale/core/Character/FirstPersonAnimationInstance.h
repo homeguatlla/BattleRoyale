@@ -55,4 +55,7 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
 	bool HasWeaponEquipped;
+
+	UPROPERTY(BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = true))
+	float YawOffset;
 };

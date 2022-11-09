@@ -16,18 +16,11 @@ UCombatComponent::UCombatComponent()
 	
 }
 
-// Called when the game starts
-void UCombatComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-}
-
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UCombatComponent, mEquipedWeapon);
+	DOREPLIFETIME(UCombatComponent, mEquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, mIsAiming);
 }
 
@@ -42,27 +35,27 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName
 	const auto character = Cast<ACharacterBase>(GetOwner());
 	check(character);
 	
-	mEquipedWeapon = weapon;
-	mEquipedWeapon->SetCharacterOwner(character);
+	mEquippedWeapon = weapon;
+	mEquippedWeapon->SetCharacterOwner(character);
 	
 	return true;
 }
 
 bool UCombatComponent::UnEquipWeapon() const
 {
-	mEquipedWeapon->Destroy(); //TODO esto está mal creo debería dejarla tal cual y hacerle un dropped en el character
+	mEquippedWeapon->Destroy(); //TODO esto está mal creo debería dejarla tal cual y hacerle un dropped en el character
 
 	return true;
 }
 
 TScriptInterface<IWeapon> UCombatComponent::GetEquippedWeapon() const
 {
-	return mEquipedWeapon;
+	return mEquippedWeapon;
 }
 
 bool UCombatComponent::CanShoot() const
 {
-	return mEquipedWeapon && mEquipedWeapon->CanBeFired();
+	return mEquippedWeapon && mEquippedWeapon->CanBeFired();
 }
 
 void UCombatComponent::StartAiming()

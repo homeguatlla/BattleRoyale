@@ -19,7 +19,7 @@ public:
 	// Sets default values for this component's properties
 	UHurtComponent();
 
-	void InitializeServer();
+	void InitializeServer() const;
 	bool RegisterToHealthAttributeDelegate(std::function<void(const FOnAttributeChangeData& data)> callback) const;
 	void SetInvulnerableServer(bool isInvulnerable);
 	bool IsAlive() const { return GetCurrentHealth() > 0.0f; }
