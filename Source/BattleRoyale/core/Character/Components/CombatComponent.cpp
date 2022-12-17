@@ -63,6 +63,10 @@ void UCombatComponent::StartAiming()
 	mIsAiming = true;
 	const auto character = Cast<ACharacterBase>(GetOwner());
 	check(character);
+	
+	mDefaultWalkSpeed = character->GetCharacterMovement()->MaxWalkSpeed;
+	character->GetCharacterMovement()->MaxWalkSpeed = mAimWalkSpeed;
+	
 	character->GetAbilitySystemComponentBase()->AddGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_AIMING));
 	character->GetAbilitySystemComponentBase()->CancelAbilitiesWithTags(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SPRINT)));
 }
@@ -72,6 +76,7 @@ void UCombatComponent::StopAiming()
 	mIsAiming = false;
 	const auto character = Cast<ACharacterBase>(GetOwner());
 	check(character);
+	character->GetCharacterMovement()->MaxWalkSpeed = mDefaultWalkSpeed;
 	character->GetAbilitySystemComponentBase()->RemoveGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_AIMING));
 }
 

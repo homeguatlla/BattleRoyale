@@ -18,6 +18,10 @@ class BATTLEROYALE_API UCombatComponent : public UActorComponent
 
 	UPROPERTY(Replicated)
 	bool mIsAiming;
+
+	float mDefaultWalkSpeed = 450.0f;
+	UPROPERTY(EditAnywhere)
+	float mAimWalkSpeed = 150.0f;
 	
 public:	
 	// Sets default values for this component's properties
