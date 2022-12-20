@@ -43,10 +43,16 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 
 	//UPROPERTY(EditAnywhere, Category = "Weapon")
 	//TSubclassOf<UGameplayEffect> PickupIndicatorEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	FName LeftHandSocketName;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	bool IsDebugEnabled { false };
 
+	//This is where the left hand goes on the weapon.
+	FTransform mLeftHandSocketTransform;
+	
 public:	
 	AWeaponBase();
 	
@@ -58,6 +64,8 @@ public:
 	virtual FRotator GetMuzzleRotation() const override;
 	virtual float GetCooldownTime() const override { return CooldownTime; }
 	virtual FGameplayTagContainer GetCooldownTags() const override { return CooldownTags; }
+	virtual FTransform GetLeftHandSocketTransform() override;
+	virtual FTransform SaveLeftHandSocketTransform() override;
 	virtual void Destroy() override;
 	virtual bool CanBeFired() const override;
 	virtual void Fire(const FVector& muzzleLocation, const FRotator& muzzleRotation) const override;
@@ -67,7 +75,7 @@ public:
 	virtual UParticleSystem* GetMuzzleEffect() const override { return MuzzleEffect; }
 	
 	virtual void SetCharacterOwner(ACharacterBase* character) override;
-
+	virtual void SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation) override;
 	virtual UTexture2D* GetCrossHairTexture() const override { return CrossHair; }
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Weapon")
@@ -76,6 +84,7 @@ public:
 private:
 	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
 	FVector GetProjectileSpawnLocation(const FVector& location, const FRotator& rotation, float distanceFromMuzzleLocation) const;
+	
 	
 	//FActiveGameplayEffectHandle mPickupIndicatorEffectHandle;
 	

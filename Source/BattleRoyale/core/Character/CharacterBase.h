@@ -51,6 +51,14 @@ class ACharacterBase : public ACharacter, public IICharacter
 	/** The player's maximum health. This is the highest that their health can be, and the value that their health starts at when spawned.*/
 	UPROPERTY(EditDefaultsOnly, Category = "Character")
 	float MaxHealth{100.0};
+
+	/** The player's maximum walk speed.*/
+	UPROPERTY(EditDefaultsOnly, Category = "Character")
+	float MaxWalkSpeed{450.0};
+
+	/** The player's minimum walk speed (when aiming for instance).*/
+	UPROPERTY(EditDefaultsOnly, Category = "Character")
+	float MinWalkSpeed{150.0};
 	
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera, meta = (AllowPrivateAccess = "true"))
@@ -67,9 +75,10 @@ class ACharacterBase : public ACharacter, public IICharacter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UHurtComponent* HurtComponent;
 
+public:
 	UPROPERTY(VisibleAnywhere)
 	class UCombatComponent* CombatComponent;
-
+private:
 	UPROPERTY(VisibleAnywhere)
 	class UPickupComponent* PickupComponent;
 	
@@ -121,11 +130,20 @@ public:
 	virtual float GetMaxHealth() const override { return MaxHealth; }
 
 	UFUNCTION(BlueprintCallable)
+	virtual float GetMaxWalkSpeed() const override { return MaxWalkSpeed; }
+
+	UFUNCTION(BlueprintCallable)
+	virtual float GetMinWalkSpeed() const override { return MinWalkSpeed; }
+
+	UFUNCTION(BlueprintCallable)
 	virtual bool IsAlive() const override { return HurtComponent->IsAlive(); }
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsFalling() const override { return GetCharacterMovement()->IsFalling(); }
 
+	UFUNCTION(BlueprintCallable)
+	virtual FName GetRightHandSocketName() const { return RightHandSocketName; }
+	
 	UFUNCTION(BlueprintCallable)
 	virtual bool CanSprint() const override;
 
@@ -264,7 +282,7 @@ private:
 
 	virtual void DoDieClient() {}
 	
-	virtual USkeletalMeshComponent* GetCurrentMesh(bool isLocallyControlled) const { return GetMesh(); }
+	virtual USkeletalMeshComponent* GetCurrentMesh() const { return GetMesh(); }
 
 	bool EquipWeaponServer(TScriptInterface<IPickupObject> pickableObject) const;
 	

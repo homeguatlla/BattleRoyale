@@ -272,8 +272,8 @@ bool ACharacterBase::CanSprint() const
 
 void ACharacterBase::StartSprinting()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 450.f;
-	BP_OnStartSprinting(450.0f);
+	GetCharacterMovement()->MaxWalkSpeed = GetMaxWalkSpeed();
+	BP_OnStartSprinting(GetMaxWalkSpeed());
 }
 
 void ACharacterBase::SetEnableInput(bool enable, const FInputModeDataBase& inputMode)
@@ -293,8 +293,8 @@ void ACharacterBase::SetEnableInput(bool enable, const FInputModeDataBase& input
 
 void ACharacterBase::StopSprinting()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 150.f;
-	BP_OnStopSprinting(150.0f);
+	GetCharacterMovement()->MaxWalkSpeed = GetMinWalkSpeed();
+	BP_OnStopSprinting(GetMinWalkSpeed());
 }
 
 bool ACharacterBase::CanJump() const

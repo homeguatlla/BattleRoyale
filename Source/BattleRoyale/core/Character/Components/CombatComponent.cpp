@@ -13,7 +13,6 @@
 // Sets default values for this component's properties
 UCombatComponent::UCombatComponent()
 {
-	
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -22,6 +21,16 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(UCombatComponent, mEquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, mIsAiming);
+}
+
+void UCombatComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	const auto character = Cast<ACharacterBase>(GetOwner());
+	check(character);
+
+	mAimWalkSpeed = character->GetMinWalkSpeed();
 }
 
 bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName)
@@ -37,6 +46,7 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName
 	
 	mEquippedWeapon = weapon;
 	mEquippedWeapon->SetCharacterOwner(character);
+	SetupLeftHandSocketTransform(character);
 	
 	return true;
 }
@@ -63,8 +73,7 @@ void UCombatComponent::StartAiming()
 	mIsAiming = true;
 	const auto character = Cast<ACharacterBase>(GetOwner());
 	check(character);
-	
-	mDefaultWalkSpeed = character->GetCharacterMovement()->MaxWalkSpeed;
+
 	character->GetCharacterMovement()->MaxWalkSpeed = mAimWalkSpeed;
 	
 	character->GetAbilitySystemComponentBase()->AddGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_AIMING));
@@ -76,11 +85,29 @@ void UCombatComponent::StopAiming()
 	mIsAiming = false;
 	const auto character = Cast<ACharacterBase>(GetOwner());
 	check(character);
-	character->GetCharacterMovement()->MaxWalkSpeed = mDefaultWalkSpeed;
+	character->GetCharacterMovement()->MaxWalkSpeed = character->GetMaxWalkSpeed();
 	character->GetAbilitySystemComponentBase()->RemoveGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_AIMING));
 }
 
 bool UCombatComponent::CanAim() const
 {
 	return HasWeaponEquipped() && !mIsAiming;
+}
+
+void UCombatComponent::SetupLeftHandSocketTransform(const ACharacterBase* character) const
+{
+	if(!HasWeaponEquipped())
+		return;
+
+	const auto leftHandTransform = GetEquippedWeapon()->SaveLeftHandSocketTransform();
+	FVector newPosition;
+	FRotator newRotator;
+	character->GetMesh()->TransformToBoneSpace(
+		FName("hand_r"),
+		leftHandTransform.GetLocation(),
+		FRotator::ZeroRotator,
+		newPosition,
+		newRotator);
+
+	GetEquippedWeapon()->SetupLeftHandSocketTransform(newPosition, newRotator);
 }

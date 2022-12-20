@@ -3,15 +3,11 @@
 
 #include "WeaponBase.h"
 
-#include "AbilitySystemBlueprintLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "ProjectileBase.h"
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
-#include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
-#include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
-#include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 
 // Sets default values
@@ -91,6 +87,11 @@ void AWeaponBase::SpawnProjectile(const FVector& muzzleLocation, const FRotator&
 	}
 }
 
+FTransform AWeaponBase::GetLeftHandSocketTransform()
+{
+	return mLeftHandSocketTransform;
+}
+
 void AWeaponBase::Destroy()
 {
 	AActor::Destroy();
@@ -113,6 +114,12 @@ void AWeaponBase::SetCharacterOwner(ACharacterBase* character)
 	SetOwner(character);
 }
 
+void AWeaponBase::SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation)
+{
+	mLeftHandSocketTransform.SetLocation(newLocation);
+	mLeftHandSocketTransform.SetRotation(FQuat(newRotation));
+}
+
 void AWeaponBase::OnFire_Implementation(bool isFirstPerson)
 {
 }
@@ -131,6 +138,14 @@ FVector AWeaponBase::GetProjectileSpawnLocation(const FVector& location, const F
 	auto direction = rotation.RotateVector(FVector::ForwardVector);
 	direction.Normalize();
 	return location +  direction * distanceFromMuzzleLocation;
+}
+
+FTransform AWeaponBase::SaveLeftHandSocketTransform()
+{
+	check(!LeftHandSocketName.IsNone());
+	mLeftHandSocketTransform = GetMesh()->GetSocketTransform(LeftHandSocketName, RTS_World);
+	
+	return mLeftHandSocketTransform;
 }
 
 void AWeaponBase::DebugDrawAiming() const

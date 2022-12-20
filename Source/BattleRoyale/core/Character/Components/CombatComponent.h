@@ -18,10 +18,8 @@ class BATTLEROYALE_API UCombatComponent : public UActorComponent
 
 	UPROPERTY(Replicated)
 	bool mIsAiming;
-
-	float mDefaultWalkSpeed = 450.0f;
-	UPROPERTY(EditAnywhere)
-	float mAimWalkSpeed = 150.0f;
+	
+	float mAimWalkSpeed;
 	
 public:	
 	// Sets default values for this component's properties
@@ -39,7 +37,10 @@ public:
 	void StopAiming();
 	bool CanAim() const;
 
+	void SetupLeftHandSocketTransform(const ACharacterBase* character) const;
 private:
 	//void OnRep_EquippedWeapon();
+	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 };

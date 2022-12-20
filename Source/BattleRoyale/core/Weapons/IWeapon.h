@@ -56,6 +56,12 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual UParticleSystem* GetMuzzleEffect() const = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual FTransform GetLeftHandSocketTransform() = 0;
 	
 	virtual void SetCharacterOwner(ACharacterBase* character) = 0;
+
+	virtual FTransform SaveLeftHandSocketTransform() = 0;
+	virtual void SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation) = 0;
 };

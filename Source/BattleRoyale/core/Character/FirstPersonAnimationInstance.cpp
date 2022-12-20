@@ -3,6 +3,7 @@
 
 #include "FirstPersonAnimationInstance.h"
 #include "KismetAnimationLibrary.h"
+#include "Components/CombatComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 void UFirstPersonAnimationInstance::NativeInitializeAnimation()
@@ -44,6 +45,12 @@ void UFirstPersonAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)
 	const auto aimRotation = Character->GetBaseAimRotation();
 	const auto movementRotation = UKismetMathLibrary::MakeRotFromX(Character->GetVelocity());
 	YawOffset = UKismetMathLibrary::NormalizedDeltaRotator(movementRotation, aimRotation).Yaw;
+
+	if(Character->HasWeaponEquipped())
+	{
+		Character->CombatComponent->SetupLeftHandSocketTransform(Character);
+		LeftHandSocketTransform = Character->GetEquippedWeapon()->GetLeftHandSocketTransform();
+	}
 }
 
 void UFirstPersonAnimationInstance::SetupCharacter()

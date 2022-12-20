@@ -67,6 +67,12 @@ public:
 	virtual float GetMaxHealth() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual float GetMaxWalkSpeed() const = 0;
+
+	UFUNCTION(BlueprintCallable)
+	virtual float GetMinWalkSpeed() const = 0;
+	
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool IsAlive() const = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
@@ -138,6 +144,10 @@ public:
 	/**
 	 * Shoot is aim and try to hit something
 	 **/
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual FName GetRightHandSocketName() const = 0;
+	
 	virtual void ServerShoot() = 0;
 
 	virtual void Shoot() = 0;
