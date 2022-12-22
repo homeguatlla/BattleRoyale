@@ -29,7 +29,7 @@ class BATTLEROYALE_API UtilsLibrary
 				//https://answers.unrealengine.com/questions/810228/strange-behaviour-of-uuserwidgetcreatewidgetinstan.html?sort=oldest
 
 			const FString hudName = hudClass->GetName() + "_" + FString::FromInt(hudIndex) + "_" + name;
-			UUserWidget* widget = CreateWidget<UUserWidget, APlayerController>(playerController, hudClass, FName(*hudName));
+			UUserWidget* widget = CreateWidget<UUserWidget, APlayerController*>(playerController, hudClass, FName(*hudName));
 
 			if (autoAddToViewport)
 				widget->AddToViewport(zOrder == 0 ? hudIndex + 1 : zOrder);

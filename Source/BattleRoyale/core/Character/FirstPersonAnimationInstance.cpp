@@ -48,6 +48,7 @@ void UFirstPersonAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	if(Character->HasWeaponEquipped())
 	{
+		//This is to make left hand holds the weapon with IK 
 		Character->CombatComponent->SetupLeftHandSocketTransform(Character);
 		LeftHandSocketTransform = Character->GetEquippedWeapon()->GetLeftHandSocketTransform();
 	}

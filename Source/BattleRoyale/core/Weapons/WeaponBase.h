@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayEffectTypes.h"
 #include "IWeapon.h"
 #include "BattleRoyale/core/General/PickupObjectBase.h"
 #include "WeaponBase.generated.h"

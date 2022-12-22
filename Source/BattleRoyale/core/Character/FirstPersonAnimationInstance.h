@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CharacterBase.h"
+#include "CharacterTypes.h"
 #include "Animation/AnimInstance.h"
 #include "FirstPersonAnimationInstance.generated.h"
 
@@ -61,4 +62,7 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = true))
 	FTransform LeftHandSocketTransform;
+
+	UPROPERTY(BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = true))
+	ETurningInPlace TurningInPlace = ETurningInPlace::NotTurning;
 };
