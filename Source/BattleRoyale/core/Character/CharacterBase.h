@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AttributeSetHealth.h"
+#include "CharacterTypes.h"
 #include "ICharacter.h"
 #include "BattleRoyale/core/Data/TakeDamageData.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
@@ -74,7 +75,9 @@ class ACharacterBase : public ACharacter, public IICharacter
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UHurtComponent* HurtComponent;
-
+	
+	ETurningInPlace TurningInPlace = ETurningInPlace::NotTurning;
+	
 public:
 	UPROPERTY(VisibleAnywhere)
 	class UCombatComponent* CombatComponent;
@@ -156,6 +159,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual UHurtComponent* GetHurtComponent() const override { return HurtComponent; }
 	
+	ETurningInPlace GetTurnInPlace() const { return TurningInPlace; }
+	
 	virtual void SetEnableInput(bool enable, const FInputModeDataBase& inputMode = FInputModeGameAndUI()) override;
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnStartSprinting))
@@ -218,6 +223,8 @@ public:
 	virtual void SetPickupObject(TScriptInterface<IPickupObject> object) override;
 	virtual TScriptInterface<IPickupObject> GetPickupObject() const override;
 	
+	void CheckToEnableTurnInPlace();
+
 	//virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	//                         AActor* DamageCauser) override;
 	
@@ -301,6 +308,10 @@ private:
 	UFUNCTION(Unreliable, Server, WithValidation)
 	void ServerSetCharacterControlRotation(const FRotator& rotation);
 
+	UFUNCTION(Reliable, Server)
+	void ServerSetCharacterTurnInPlace(ETurningInPlace turnInPlace);
+	
+	
 	//UFUNCTION()
 	//void OnRep_TakeDamageData();
 };

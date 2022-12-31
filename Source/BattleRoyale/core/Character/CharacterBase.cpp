@@ -26,6 +26,7 @@
 #include "Components/PickupComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
+#include "Widgets/Text/ISlateEditableTextWidget.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -98,7 +99,7 @@ void ACharacterBase::OnRep_PlayerState()
 void ACharacterBase::Initialize(bool isLocallyControlled)
 {
 	//EquipWeapon(mEquipedWeapon);
-	
+	GetCharacterMovement()->MaxWalkSpeed = GetMinWalkSpeed();
 	DoInitialize(isLocallyControlled);
 }
 
@@ -581,6 +582,39 @@ TScriptInterface<IPickupObject> ACharacterBase::GetPickupObject() const
 	return PickupComponent->GetPickupObject();
 }
 
+void ACharacterBase::CheckToEnableTurnInPlace()
+{
+	const auto turning = GetInputAxisValue(FName("Turn"));
+	if(GetCurrentVelocity().Size() > 0.0f || IsFalling() || turning == 0.0f)
+	{
+		TurningInPlace = ETurningInPlace::NotTurning;
+		ServerSetCharacterTurnInPlace(TurningInPlace);
+		if(HasAuthority() && !IsLocallyControlled())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("STOP TURNING"));
+		}
+		return;
+	}
+	
+	if(turning < 0.0f && TurningInPlace != ETurningInPlace::TurnLeft)
+	{
+		TurningInPlace = ETurningInPlace::TurnLeft;
+		ServerSetCharacterTurnInPlace(TurningInPlace);
+		if(HasAuthority() && !IsLocallyControlled())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("TURNING LEFT"));
+		}
+	}
+	else if(turning > 0.0f && TurningInPlace != ETurningInPlace::TurnRight)
+	{
+		TurningInPlace = ETurningInPlace::TurnRight;
+		ServerSetCharacterTurnInPlace(TurningInPlace);
+		if(HasAuthority() && !IsLocallyControlled())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("TURNING RIGHT"));
+		}
+	}
+}
 
 bool ACharacterBase::EquipWeaponServer(TScriptInterface<IPickupObject> pickableObject) const
 {
@@ -615,6 +649,11 @@ bool ACharacterBase::EquipWeaponServer(TScriptInterface<IPickupObject> pickableO
 		return true;
 	}
 	return false;
+}
+
+void ACharacterBase::ServerSetCharacterTurnInPlace_Implementation(ETurningInPlace turnInPlace)
+{
+	TurningInPlace = turnInPlace;
 }
 
 void ACharacterBase::PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const

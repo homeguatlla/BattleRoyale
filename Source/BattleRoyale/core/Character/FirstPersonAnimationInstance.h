@@ -22,10 +22,12 @@ public:
 
 private:
 	void SetupCharacter();
-
+	void CheckEquippedToMakeLeftHandHoldsWeapon();
+	void CheckToEnableTurnInPlace(float DeltaSeconds);
+	
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
-	class ACharacterBase* Character;
+	class ACharacterBase* Character = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
 	TScriptInterface<class IICharacter> CharacterInterface;
@@ -65,4 +67,11 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = true))
 	ETurningInPlace TurningInPlace = ETurningInPlace::NotTurning;
+	
+	UPROPERTY(BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = true))
+	float InterpolatedTurnInPlaceDeltaYaw;
+
+	float mTurnInPlaceDeltaYaw;
+	float mTime;
+	FRotator mStartingYawRotator;
 };
