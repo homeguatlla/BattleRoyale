@@ -51,23 +51,7 @@ void UFirstPersonAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)
 	YawOffset = UKismetMathLibrary::NormalizedDeltaRotator(movementRotation, aimRotation).Yaw;
 
 	CheckEquippedToMakeLeftHandHoldsWeapon();
-	if(Character->IsLocallyControlled())
-	{
-		Character->CheckToEnableTurnInPlace();
-	}
-	TurningInPlace = Character->GetTurnInPlace();
-	
-	if(Character->HasAuthority() && !Character->IsLocallyControlled())
-	{
-		if(TurningInPlace == ETurningInPlace::TurnRight)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("TURNING RIGHT"));
-		}
-		else if(TurningInPlace == ETurningInPlace::TurnLeft)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("TURNING LEFT"));
-		}
-	}
+	CheckToEnableTurnInPlace();
 }
 
 void UFirstPersonAnimationInstance::SetupCharacter()
@@ -89,78 +73,36 @@ void UFirstPersonAnimationInstance::CheckEquippedToMakeLeftHandHoldsWeapon()
 	}
 }
 
-void UFirstPersonAnimationInstance::CheckToEnableTurnInPlace(float DeltaSeconds)
+void UFirstPersonAnimationInstance::CheckToEnableTurnInPlace()
 {
-	const auto turning = Character->GetInputAxisValue(FName("Turn"));
-	if(CharacterInterface->GetCurrentVelocity().Size() > 0.0f || CharacterInterface->IsFalling() || turning == 0.0f)
+	//const auto turning = GetInputAxisValue(FName("Turn"));
+	const auto currentYawRotator = FRotator(0.0f, Character->GetBaseAimRotation().Yaw ,0.0f);
+	
+	if(Character->GetCurrentVelocity().Size() > 0.0f || Character->IsFalling() || FMath::IsNearlyZero(FMath::Abs(mLastYawRotator.Yaw - currentYawRotator.Yaw)))
 	{
-		//Save the current yaw when moving or falling
-		mStartingYawRotator = FRotator(0.0f, Character->GetBaseAimRotation().Yaw ,0.0f);
-		mTurnInPlaceDeltaYaw = 0.0f;
-		//Character->bUseControllerRotationYaw = true;
-		InterpolatedTurnInPlaceDeltaYaw = 0.0f;
-		mTime = 0.0f;
 		TurningInPlace = ETurningInPlace::NotTurning;
-		if(!Character->HasAuthority() && Character->IsLocallyControlled())
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("STOP TURNING"));
-		}
+		mStartingYawRotator = FRotator(0.0f, Character->GetBaseAimRotation().Yaw ,0.0f);
+		mLastYawRotator = mStartingYawRotator;
+		//GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("STOP TURNING"));
+		
 		return;
 	}
-	//Turn in place when standing and not moving
-	const auto currentYawRotator = FRotator(0.0f, Character->GetBaseAimRotation().Yaw ,0.0f);
+
 	const auto deltaYaw = UKismetMathLibrary::NormalizedDeltaRotator(currentYawRotator, mStartingYawRotator).Yaw;
-	//Character->bUseControllerRotationYaw = false;
+
+	//GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, FString::Printf(TEXT("yaw rotation = %f control rotation = %f, aim rotation = %f"), Character->GetActorRotation().Yaw, Character->GetControlRotation().Yaw, Character->GetBaseAimRotation().Yaw));
 	
-	
-	if(/*deltaYaw < -1*/ turning < 0.0f && TurningInPlace != ETurningInPlace::TurnLeft)
+	if(deltaYaw < 0.0f && TurningInPlace != ETurningInPlace::TurnLeft)
 	{
 		TurningInPlace = ETurningInPlace::TurnLeft;
-		mTurnInPlaceDeltaYaw = deltaYaw;
-		mTime = 0.0f;
-		if(!Character->HasAuthority() && Character->IsLocallyControlled())
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("TURNING LEFT"));
-		}
+		//GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("TURNING LEFT"));
+		
 	}
-	else if(/*deltaYaw > 1*/ turning > 0.0f && TurningInPlace != ETurningInPlace::TurnRight)
+	else if(deltaYaw > 0.0f && TurningInPlace != ETurningInPlace::TurnRight)
 	{
 		TurningInPlace = ETurningInPlace::TurnRight;
-		mTurnInPlaceDeltaYaw = deltaYaw;
-		mTime = 0.0f;
-		if(!Character->HasAuthority() && Character->IsLocallyControlled())
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("TURNING RIGHT"));
-		}
-	}
-
-	if(!Character->HasAuthority() && Character->IsLocallyControlled())
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, FString::Printf(TEXT("turn: %f, turn in place: %d"),turning, TurningInPlace));
-	}
-	
-	if(TurningInPlace != ETurningInPlace::NotTurning)
-	{
-		//mInterpolatedTurnInPlaceDeltaYaw = FMath::FInterpTo(0.0f, mInterpolatedTurnInPlaceDeltaYaw, DeltaSeconds,  1.0f);
-		//InterpolatedTurnInPlaceDeltaYaw = mTurnInPlaceDeltaYaw * mTime;
-		//mTime += DeltaSeconds;
+		//GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, TEXT("TURNING RIGHT"));
 		
-		/*if(!Character->HasAuthority() && Character->IsLocallyControlled())
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Cyan, FString::Printf(TEXT("interpolated turn in place: %f, real yaw: %f time: %f"),
-				InterpolatedTurnInPlaceDeltaYaw,
-				Character->GetBaseAimRotation().Yaw,
-				mTime));
-		}*/
-		//if(FMath::Abs(InterpolatedTurnInPlaceDeltaYaw)  > 75.0f)
-		/*if(mTime > 1.f) //1.17f seconds is the turn 90 duration
-		{
-			TurningInPlace = ETurningInPlace::NotTurning;
-			mStartingYawRotator = FRotator(0.0f, Character->GetBaseAimRotation().Yaw ,0.0f);
-			mTurnInPlaceDeltaYaw = 0.0f;
-			InterpolatedTurnInPlaceDeltaYaw = 0.0f;
-			mTime = 0.0f;
-			//Character->bUseControllerRotationYaw = true;
-		}*/
 	}
+	mLastYawRotator = currentYawRotator;
 }

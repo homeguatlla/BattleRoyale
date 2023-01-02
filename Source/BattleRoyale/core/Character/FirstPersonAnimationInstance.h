@@ -23,7 +23,7 @@ public:
 private:
 	void SetupCharacter();
 	void CheckEquippedToMakeLeftHandHoldsWeapon();
-	void CheckToEnableTurnInPlace(float DeltaSeconds);
+	void CheckToEnableTurnInPlace();
 	
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
@@ -71,7 +71,6 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = true))
 	float InterpolatedTurnInPlaceDeltaYaw;
 
-	float mTurnInPlaceDeltaYaw;
-	float mTime;
 	FRotator mStartingYawRotator;
+	FRotator mLastYawRotator;
 };
