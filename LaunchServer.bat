@@ -1,1 +1,1 @@
-"C:\David\Proyectos\BattleRoyale\Build\Windows\BattleRoyale.exe" /Game/Maps/Sample?listen -log -game
+"C:\David\Proyectos\BattleRoyale\Saved\StagedBuilds\Windows\BattleRoyale.exe" /Game/Maps/MainMenuNew?listen -log -game
