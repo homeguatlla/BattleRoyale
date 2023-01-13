@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "AttributeSetHealth.h"
-#include "CharacterTypes.h"
 #include "ICharacter.h"
 #include "BattleRoyale/core/Data/TakeDamageData.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
@@ -42,7 +41,7 @@ class ACharacterBase : public ACharacter, public IICharacter
 	/** AnimMontage to play each time we fire third person */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* FireAnimation3P;
-
+	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Character", meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<class UGameplayAbilityBase>> mDefaultAbilities;
 
@@ -201,7 +200,6 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool CanShoot() const override;
-	virtual void ServerShoot() override;
 	virtual void Shoot() override;
 
 	virtual void DieServer() override;
@@ -288,6 +286,8 @@ private:
 	virtual USkeletalMeshComponent* GetCurrentMesh() const { return GetMesh(); }
 
 	bool EquipWeaponServer(TScriptInterface<IPickupObject> pickableObject) const;
+
+	void ShootServer();
 	
 	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerSpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation);

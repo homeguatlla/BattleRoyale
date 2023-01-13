@@ -49,7 +49,7 @@ bool UAttributeSetHealth::PreGameplayEffectExecute(FGameplayEffectModCallbackDat
 	if(instigatorPlayerState && receptorPlayerState)
 	{
 		const auto gameMode = GetGameModeServer();
-		if(!gameMode->CanPlayerCauseDamageTo(instigatorPlayerState, receptorPlayerState))
+		if(gameMode && !gameMode->CanPlayerCauseDamageTo(instigatorPlayerState, receptorPlayerState))
 		{
 			return false;
 		}

@@ -30,9 +30,9 @@ struct BATTLEROYALE_API FTargetDataPickupObject : public FGameplayAbilityTargetD
 	bool NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess);
 	
 	UPROPERTY()
-	FVector mLocation;
+	FVector mLocation = FVector::Zero();
 	UPROPERTY()
-	APickupObjectBase* mPickableObject;
+	APickupObjectBase* mPickableObject = nullptr;
 };
 
 template<>

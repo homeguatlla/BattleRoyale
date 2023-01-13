@@ -2,15 +2,12 @@
 
 
 #include "PlayerStateBase.h"
-#include "AbilitySystemComponent.h"
-#include "AbilitySystemGlobals.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Character/AttributeSetHealth.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/GameMode/GameModeCommon.h"
 #include "BattleRoyale/core/GameMode/MultiplayerGameMode.h"
 #include "BattleRoyale/core/Utils/FSM/StatesMachineFactory.h"
-#include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -22,7 +19,10 @@ mPlayerInteraction("")
 {
 	mAbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponentBase>(TEXT("AbilitySystemComponent"));
 	mAbilitySystemComponent->SetIsReplicated(true);
-	//mAbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+	mAbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+
+	// AbilitySystemComponent needs to be updated at a high frequency.
+	NetUpdateFrequency = 100.0f;
 	
 	PrimaryActorTick.bCanEverTick = true;
 	SetActorTickEnabled(false);

@@ -107,6 +107,10 @@ void ACharacterBase::InitializeGAS()
 	if (playerState)
 	{
 		playerState->GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(), this);
+		const auto serverOrClient = HasAuthority() ? FString("Server") : FString("Client");
+		const auto locallyControlled = IsLocallyControlled() ? FString("Player") : FString("Simulated");
+		UE_LOG(LogTemp, Display, TEXT("[%s][%s] Character name: %s"), *serverOrClient, *locallyControlled, *GetName());
+		
 		//HurtComponent = NewObject<UHurtComponent>(this, TEXT("HurtComponent"));
 		InitializeAttributes();
 	}
@@ -379,7 +383,7 @@ bool ACharacterBase::CanShoot() const
 	return IsAlive() && CombatComponent->CanShoot();
 }
 
-void ACharacterBase::ServerShoot()
+void ACharacterBase::ShootServer()
 {
 	const auto weapon = GetEquippedWeapon();
 	if(weapon.GetObject() == nullptr)
@@ -406,8 +410,7 @@ void ACharacterBase::Shoot()
 	}
 	BP_OnShoot();
 	weapon->FireClient(true);
-	//We must send the weapon information because the weapon the client and server are in different positions (3P, 1P)
-	ServerSpawnProjectile(weapon->GetMuzzleLocation(), weapon->GetMuzzleRotation());
+	ShootServer();
 }
 
 UAnimMontage* ACharacterBase::GetShootingMontage() const

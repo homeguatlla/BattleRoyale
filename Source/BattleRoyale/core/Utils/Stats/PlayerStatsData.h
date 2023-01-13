@@ -12,9 +12,9 @@ struct FPlayerStatsData
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int mNumKills;
+	int mNumKills = 0;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FString mPlayerName;
+	FString mPlayerName = "";
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int mTeamId;
+	int mTeamId = -1;
 };

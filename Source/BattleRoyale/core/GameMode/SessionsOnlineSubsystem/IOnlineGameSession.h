@@ -29,9 +29,9 @@ struct FOnlineSessionFindResult
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Online Session Find Result")
 	FString serverName;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Online Session Find Result")
-	int32 numOpenPublicConnections;
+	int32 numOpenPublicConnections = 0;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Online Session Find Result")
-	int32 pingInMs;
+	int32 pingInMs = 0;
 };
 
 UINTERFACE()

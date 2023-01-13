@@ -148,8 +148,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual FName GetRightHandSocketName() const = 0;
 	
-	virtual void ServerShoot() = 0;
-
 	virtual void Shoot() = 0;
 	
 	virtual UAnimMontage* GetShootingMontage() const = 0;

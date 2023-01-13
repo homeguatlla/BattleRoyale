@@ -14,9 +14,9 @@ struct BATTLEROYALE_API FTakeDamageData
 	GENERATED_BODY()
 
 	UPROPERTY()
-	float health;
+	float health = 0.0f;
 	UPROPERTY()
-	float damage;
+	float damage = 0.0f;
 	UPROPERTY()
 	ACharacter* playerCauser = nullptr;
 };

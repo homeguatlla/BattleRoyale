@@ -19,7 +19,7 @@ class BATTLEROYALE_API UFirstPersonAnimationInstance : public UAnimInstance
 public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-
+	
 private:
 	void SetupCharacter();
 	void CheckEquippedToMakeLeftHandHoldsWeapon();
