@@ -17,6 +17,7 @@ const FName TAG_STATE_AIMING = FName("State.Aiming");
 
 const FName TAG_GAMEPLAYCUE_JUMP("GameplayCue.Jump");
 const FName TAG_GAMEPLAYCUE_SPRINT("GameplayCue.Sprint");
+const FName TAG_GAMEPLAYCUE_SHOOT("GameplayCue.Shoot");
 
 const FName TAG_EVENT_MONTAGE_SHOOT("Event.Montage.Shoot");
 const FName TAG_EVENT_PICKUP_INDICATOR("Event.PickupIndicator");

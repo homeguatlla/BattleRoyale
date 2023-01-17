@@ -388,6 +388,7 @@ void ACharacterBase::Shoot()
 	check(CombatComponent && CombatComponent->HasWeaponEquipped());
 	
 	//Character OnShoot, for instance to make a camera shake
+	//We want the camera shake be only executed locally on the player who shot.
 	BP_OnShoot();
 	CombatComponent->Shoot();
 }

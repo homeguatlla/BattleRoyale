@@ -48,6 +48,9 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 
 	//This is where the left hand goes on the weapon.
 	FTransform mLeftHandSocketTransform;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TSubclassOf<UGameplayEffect> MuzzleGameplayEffect;
 	
 public:	
 	AWeaponBase();

@@ -7,6 +7,7 @@
 #include "ProjectileBase.h"
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
+#include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
 #include "Engine/SkeletalMeshSocket.h"
 
@@ -41,7 +42,7 @@ bool AWeaponBase::CanBeFired() const
 
 void AWeaponBase::Fire()
 {
-	BP_OnFire();
+	//BP_OnFire();
 	FireServer(GetMuzzleLocation(), GetMuzzleRotation());
 }
 
@@ -104,6 +105,14 @@ void AWeaponBase::FireServer(const FVector& muzzleLocation, const FRotator& muzz
 	//so, we need when shooting send to the server our weapon location and rotation
 	//because server will get wrong location and rotation for clients
 	SpawnProjectileServer(muzzleLocation, muzzleRotation);
+
+	if(const auto character = Cast<IICharacter>(GetOwner()))
+	{
+		if(MuzzleGameplayEffect)
+		{
+			character->GetAbilitySystemComponentBase()->ApplyGameplayEffectToSelf(MuzzleGameplayEffect);
+		}
+	}
 }
 
 void AWeaponBase::SpawnProjectileServer(const FVector& muzzleLocation, const FRotator& muzzleRotation) const
