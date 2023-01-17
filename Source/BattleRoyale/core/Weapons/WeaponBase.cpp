@@ -28,6 +28,34 @@ void AWeaponBase::Tick( float DeltaSeconds )
 	}
 }
 
+void AWeaponBase::Destroy()
+{
+	AActor::Destroy();
+}
+
+bool AWeaponBase::CanBeFired() const
+{
+	//TODO has bullets?
+	return true;
+}
+
+void AWeaponBase::Fire()
+{
+	BP_OnFire();
+	FireServer(GetMuzzleLocation(), GetMuzzleRotation());
+}
+
+void AWeaponBase::SetCharacterOwner(ACharacterBase* character)
+{
+	SetOwner(character);
+}
+
+void AWeaponBase::SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation)
+{
+	mLeftHandSocketTransform.SetLocation(newLocation);
+	mLeftHandSocketTransform.SetRotation(FQuat(newRotation));
+}
+
 FVector AWeaponBase::GetMuzzleLocation() const
 {
 	if(const auto weaponMuzzleSocket = GetMesh()->GetSocketByName(MuzzleSocketName))
@@ -53,7 +81,32 @@ FRotator AWeaponBase::GetMuzzleRotation() const
 	return FRotator::ZeroRotator;
 }
 
-void AWeaponBase::SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const
+FTransform AWeaponBase::GetLeftHandSocketTransform()
+{
+	return mLeftHandSocketTransform;
+}
+
+FVector AWeaponBase::GetProjectileSpawnLocation(const FVector& location, const FRotator& rotation, float distanceFromMuzzleLocation) const
+{
+	auto direction = rotation.RotateVector(FVector::ForwardVector);
+	direction.Normalize();
+	return location +  direction * distanceFromMuzzleLocation;
+}
+
+void AWeaponBase::FireServer(const FVector& muzzleLocation, const FRotator& muzzleRotation) const
+{
+	if(!HasAuthority())
+	{
+		return;
+	}
+	// try and fire a projectile:
+	//the server has the weapon in FP1, but for the clients it has the weapons as 3P
+	//so, we need when shooting send to the server our weapon location and rotation
+	//because server will get wrong location and rotation for clients
+	SpawnProjectileServer(muzzleLocation, muzzleRotation);
+}
+
+void AWeaponBase::SpawnProjectileServer(const FVector& muzzleLocation, const FRotator& muzzleRotation) const
 {
 	if (ProjectileClass != nullptr)
 	{
@@ -85,59 +138,6 @@ void AWeaponBase::SpawnProjectile(const FVector& muzzleLocation, const FRotator&
 			}
 		}
 	}
-}
-
-FTransform AWeaponBase::GetLeftHandSocketTransform()
-{
-	return mLeftHandSocketTransform;
-}
-
-void AWeaponBase::Destroy()
-{
-	AActor::Destroy();
-}
-
-bool AWeaponBase::CanBeFired() const
-{
-	//TODO has bullets?
-	return true;
-}
-
-void AWeaponBase::Fire()
-{
-	BP_OnFire();
-	FireServer(GetMuzzleLocation(), GetMuzzleRotation());
-}
-
-void AWeaponBase::SetCharacterOwner(ACharacterBase* character)
-{
-	SetOwner(character);
-}
-
-void AWeaponBase::SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation)
-{
-	mLeftHandSocketTransform.SetLocation(newLocation);
-	mLeftHandSocketTransform.SetRotation(FQuat(newRotation));
-}
-
-void AWeaponBase::FireServer(const FVector& muzzleLocation, const FRotator& muzzleRotation) const
-{
-	if(!HasAuthority())
-	{
-		return;
-	}
-	// try and fire a projectile:
-	//the server has the weapon in FP1, but for the clients it has the weapons as 3P
-	//so, we need when shooting send to the server our weapon location and rotation
-	//because server will get wrong location and rotation for clients
-	SpawnProjectile(muzzleLocation, muzzleRotation);
-}
-
-FVector AWeaponBase::GetProjectileSpawnLocation(const FVector& location, const FRotator& rotation, float distanceFromMuzzleLocation) const
-{
-	auto direction = rotation.RotateVector(FVector::ForwardVector);
-	direction.Normalize();
-	return location +  direction * distanceFromMuzzleLocation;
 }
 
 FTransform AWeaponBase::SaveLeftHandSocketTransform()

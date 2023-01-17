@@ -385,6 +385,8 @@ bool ACharacterBase::CanShoot() const
 
 void ACharacterBase::Shoot()
 {
+	check(CombatComponent && CombatComponent->HasWeaponEquipped());
+	
 	//Character OnShoot, for instance to make a camera shake
 	BP_OnShoot();
 	CombatComponent->Shoot();

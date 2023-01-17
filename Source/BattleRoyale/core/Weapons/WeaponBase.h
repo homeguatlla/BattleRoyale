@@ -39,10 +39,7 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FGameplayTagContainer CooldownTags;
-
-	//UPROPERTY(EditAnywhere, Category = "Weapon")
-	//TSubclassOf<UGameplayEffect> PickupIndicatorEffect;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName LeftHandSocketName;
 	
@@ -56,8 +53,6 @@ public:
 	AWeaponBase();
 	
 	virtual void Tick( float DeltaSeconds ) override;
-	
-	//virtual USkeletalMeshComponent* GetMesh() const override { return Mesh; }
 	
 	virtual FVector GetMuzzleLocation() const override;
 	virtual FRotator GetMuzzleRotation() const override;
@@ -82,11 +77,8 @@ public:
 private:
 	void FireServer(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
 	
-	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
+	void SpawnProjectileServer(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
 	FVector GetProjectileSpawnLocation(const FVector& location, const FRotator& rotation, float distanceFromMuzzleLocation) const;
-	
-	
-	//FActiveGameplayEffectHandle mPickupIndicatorEffectHandle;
 	
 	void DebugDrawAiming() const;
 };
