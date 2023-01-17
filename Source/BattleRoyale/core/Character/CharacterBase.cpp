@@ -383,34 +383,11 @@ bool ACharacterBase::CanShoot() const
 	return IsAlive() && CombatComponent->CanShoot();
 }
 
-void ACharacterBase::ShootServer()
-{
-	const auto weapon = GetEquippedWeapon();
-	if(weapon.GetObject() == nullptr)
-	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::FillWithWeaponMuzzleLocationAndRotation] weapon is null"), *GetName());
-		return;
-	}
-	
-	//TODO los efectos no se ven en los remotos. Entonces, quizá lo que hay que hacer es, dejar el disparo en server
-	//y hacer un multicast en el server para que se ejecute en los clientes y así añadir el tema efectos y sonido.
-	if(HasAuthority())
-	{
-		weapon->Fire(weapon->GetMuzzleLocation(), weapon->GetMuzzleRotation());
-	}
-}
-
 void ACharacterBase::Shoot()
 {
-	const auto weapon = GetEquippedWeapon();
-	if(weapon.GetObject() == nullptr)
-	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::FillWithWeaponMuzzleLocationAndRotation] weapon is null"), *GetName());
-		return;
-	}
+	//Character OnShoot, for instance to make a camera shake
 	BP_OnShoot();
-	weapon->FireClient(true);
-	ShootServer();
+	CombatComponent->Shoot();
 }
 
 UAnimMontage* ACharacterBase::GetShootingMontage() const
@@ -504,21 +481,6 @@ void ACharacterBase::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
-}
-
-void ACharacterBase::ServerSpawnProjectile_Implementation(const FVector& muzzleLocation, const FRotator& muzzleRotation)
-{
-	//SpawnProjectile(muzzleLocation, muzzleRotation);
-	const auto weapon = GetEquippedWeapon();
-	weapon->Fire(muzzleLocation, muzzleRotation);
-	//Notify all about a fire in order they can play the proper animation.
-	MulticastOnFire();
-}
-
-bool ACharacterBase::ServerSpawnProjectile_Validate(const FVector& muzzleLocation, const FRotator& muzzleRotation)
-{
-	//TODO validate there are bullets
-	return true;
 }
 
 bool ACharacterBase::EquipServer(TScriptInterface<IPickupObject> pickableObject)
@@ -695,11 +657,6 @@ void ACharacterBase::MulticastTakeDamage_Implementation(float damage, const AAct
 		}
 	}
 }
-/*
-void ACharacterBase::OnRep_TakeDamageData()
-{
-	UpdateHealth(mDamageCauser);
-}*/
 
 void ACharacterBase::ServerSetCharacterControlRotation_Implementation(const FRotator& rotation)
 {
@@ -711,59 +668,3 @@ bool ACharacterBase::ServerSetCharacterControlRotation_Validate(const FRotator& 
 {
 	return true;
 }
-
-void ACharacterBase::MulticastOnFire_Implementation()
-{
-	if(IsLocallyControlled())
-	{
-		return;
-	}
-
-	//only remotes need to play animation
-	PlayMontage(FireAnimation3P, GetMesh());
-	const auto weapon = GetEquippedWeapon();
-	if(weapon.GetObject() == nullptr)
-	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::FillWithWeaponMuzzleLocationAndRotation] weapon is null"), *GetName());
-		return;
-	}
-	weapon->FireClient(false);
-}
-
-//TODO en este punto vemos que las armas se están haciendo spawn en
-//cliente. Esto hace que no estén sincronizadas entre clientes pues
-//no existen en el servidor. Por ahora es aceptable.
-//No hay nada que le pueda pasar a un arma en local que se tenga
-//que ver en los remotos. Pero, en el momento que este arma la
-//pueda recojer otro jugador entonces sí va a tener que existir
-//una sola instancia en servidor pues solo la podrá tener un jugador.
-//Entonces, habrá que hacer el spawn en Server, hacer que el weapon
-//esté replicada y notificar a los clientes autonomos para que
-//vuelvan a inicializar.
-/*void ACharacterBase::MulticastSpawnWeapon_Implementation()
-{
-	//SpawnWeapon();
-	Initialize(IsLocallyControlled());
-}
-
-void ACharacterBase::SpawnWeapon()
-{
-	if(mEquipedWeapon != nullptr)
-	{
-		return;
-	}
-	if(WeaponClass == nullptr)
-	{
-		UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::SpawnWeapon] weapon class undefined"));
-		return;
-	}
-	const auto weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
-	if(weapon != nullptr && weapon->GetClass()->ImplementsInterface(UIWeapon::StaticClass()))
-	{
-		mEquipedWeapon = TScriptInterface<IIWeapon>(weapon);		
-	}
-	else
-	{
-		UE_LOG(LogCharacter, Error, TEXT("[ACharacterBase::SpawnWeapon] weapon not implementing IIWeapon"));
-	}
-}*/

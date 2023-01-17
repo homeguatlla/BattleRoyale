@@ -94,6 +94,17 @@ bool UCombatComponent::CanAim() const
 	return HasWeaponEquipped() && !mIsAiming;
 }
 
+void UCombatComponent::Shoot() const
+{
+	if(!HasWeaponEquipped())
+	{
+		UE_LOG(LogCharacter, Error, TEXT("[%s][UCombatComponent::Shoot] There is no weapon equipped"), *GetName());
+		return;
+	}
+	const auto weapon = GetEquippedWeapon();
+	weapon->Fire();
+}
+
 void UCombatComponent::SetupLeftHandSocketTransform(const ACharacterBase* character) const
 {
 	if(!HasWeaponEquipped())

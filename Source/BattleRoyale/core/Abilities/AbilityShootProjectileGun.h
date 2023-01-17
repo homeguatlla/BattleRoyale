@@ -46,4 +46,7 @@ private:
 
 	UPROPERTY(Transient)
 	FGameplayTagContainer CooldownTagContainer;
+
+	UPROPERTY()
+	class UAbilityTask_WaitGameplayEvent* waitGameplayEventTask;
 };

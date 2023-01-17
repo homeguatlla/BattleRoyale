@@ -16,8 +16,7 @@ UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 	
 	//Esto estaba pensado para que fuera LocalOnly. Pero si es LocalOnly, el cooldown no funciona
 	//cuando se trata de un cliente porque tiene que ser la autoridad.
-	//Lo he puesto en LocalPredicted, y parece que funciona todo bien. Pero hay que revisar
-	//que no se esté haciendo algo mal.
+	//Lo he puesto en LocalPredicted, y parece que funciona todo bien.
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SHOOT_PROJECTILE));
@@ -30,7 +29,9 @@ void UAbilityShootProjectileGun::ActivateAbility(const FGameplayAbilitySpecHandl
                                                  const FGameplayAbilityActivationInfo ActivationInfo,
                                                  const FGameplayEventData* TriggerEventData)
 {
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	//No hay que llamar al super porque ya hacemos el commit aquí.
+	//Sino estaríamos haciendo dos commits y dejaría de funcionar bien.
+	//El commit es necesario para que se evalue el cooldown y el cost
 	
 	//if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
 	{
@@ -39,6 +40,7 @@ void UAbilityShootProjectileGun::ActivateAbility(const FGameplayAbilitySpecHandl
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 		{
 			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+			return;
 		}
 
 		if (mCharacter != nullptr)
@@ -60,10 +62,8 @@ bool UAbilityShootProjectileGun::CanActivateAbility(const FGameplayAbilitySpecHa
 		return false;
 	}
 
-	return true;
-	/*const auto character = GetCharacter(ActorInfo);
-
-	return character != nullptr && character->CanShoot();*/
+	const auto character = GetCharacter(ActorInfo);
+	return character != nullptr && character->CanShoot();
 }
 
 const FGameplayTagContainer* UAbilityShootProjectileGun::GetCooldownTags() const
@@ -85,6 +85,8 @@ const FGameplayTagContainer* UAbilityShootProjectileGun::GetCooldownTags() const
 void UAbilityShootProjectileGun::ApplyCooldown(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
 {
+	//No es necesario llamar al super, que lo que hace es hacer el applygameplayeffectspectoowner pero del
+	//que pudiera tener definido en bp
 	const auto cooldownGameplayEffect = Cast<UCooldownGameplayEffect>(GetCooldownGameplayEffect());
 	if(cooldownGameplayEffect)
 	{
@@ -93,8 +95,6 @@ void UAbilityShootProjectileGun::ApplyCooldown(const FGameplayAbilitySpecHandle 
 		cooldownGameplayEffect->SetDuration(GetWeaponCooldownDuration());
 		ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, specHandle);
 	}
-
-	//Super::ApplyCooldown(Handle, ActorInfo, ActivationInfo);
 }
 
 FGameplayTagContainer UAbilityShootProjectileGun::GetWeaponCooldownGameplayTags() const
@@ -122,11 +122,18 @@ float UAbilityShootProjectileGun::GetWeaponCooldownDuration() const
 
 void UAbilityShootProjectileGun::SubscribeToEventMontageShoot(const IICharacter* character)
 {
-	UAbilityTask_WaitGameplayEvent* newTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
-			this, FGameplayTag::RequestGameplayTag(TAG_EVENT_MONTAGE_SHOOT), nullptr, true);
-	newTask->EventReceived.AddDynamic(this, &UAbilityShootProjectileGun::OnEventMontageShootReceived);
-	newTask->Activate();
-
+	if(waitGameplayEventTask)
+	{
+		waitGameplayEventTask->EndTask();
+	}
+	
+	waitGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+			this,
+			FGameplayTag::RequestGameplayTag(TAG_EVENT_MONTAGE_SHOOT),
+			nullptr,
+			true);
+	waitGameplayEventTask->EventReceived.AddDynamic(this, &UAbilityShootProjectileGun::OnEventMontageShootReceived);
+	waitGameplayEventTask->Activate();
 	
 	/* METHOD Another way to register to the event without using a task
 	if(!mEventMontageShootHandle.IsValid())
@@ -140,11 +147,6 @@ void UAbilityShootProjectileGun::SubscribeToEventMontageShoot(const IICharacter*
 
 void UAbilityShootProjectileGun::CreateTaskPlayMontageShooting(const IICharacter* character, const FGameplayAbilityActorInfo* ActorInfo)
 {
-/*
-	animInstance->Montage_Play(character->GetShootingMontage());
-	
-	animInstance->Montage_JumpToSection(sectionName);*/
-
 	const auto sectionName = character->IsAiming() ? FName("AimingFire") : FName("Fire");
 	const auto taskPlayMontage = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this,

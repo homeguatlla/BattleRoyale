@@ -36,6 +36,7 @@ public:
 	void StartAiming();
 	void StopAiming();
 	bool CanAim() const;
+	void Shoot() const;
 
 	void SetupLeftHandSocketTransform(const ACharacterBase* character) const;
 private:

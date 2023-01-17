@@ -286,15 +286,7 @@ private:
 	virtual USkeletalMeshComponent* GetCurrentMesh() const { return GetMesh(); }
 
 	bool EquipWeaponServer(TScriptInterface<IPickupObject> pickableObject) const;
-
-	void ShootServer();
 	
-	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerSpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation);
-	
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastOnFire();
-
 	//UFUNCTION(NetMulticast, Unreliable)
 	//void MulticastSpawnWeapon();
 

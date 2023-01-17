@@ -103,10 +103,10 @@ bool AWeaponBase::CanBeFired() const
 	return true;
 }
 
-
-void AWeaponBase::FireClient(bool isFirstPerson)
+void AWeaponBase::Fire()
 {
-	OnFire(isFirstPerson);
+	BP_OnFire();
+	FireServer(GetMuzzleLocation(), GetMuzzleRotation());
 }
 
 void AWeaponBase::SetCharacterOwner(ACharacterBase* character)
@@ -120,12 +120,12 @@ void AWeaponBase::SetupLeftHandSocketTransform(const FVector& newLocation, const
 	mLeftHandSocketTransform.SetRotation(FQuat(newRotation));
 }
 
-void AWeaponBase::OnFire_Implementation(bool isFirstPerson)
+void AWeaponBase::FireServer(const FVector& muzzleLocation, const FRotator& muzzleRotation) const
 {
-}
-
-void AWeaponBase::Fire(const FVector& muzzleLocation, const FRotator& muzzleRotation) const
-{
+	if(!HasAuthority())
+	{
+		return;
+	}
 	// try and fire a projectile:
 	//the server has the weapon in FP1, but for the clients it has the weapons as 3P
 	//so, we need when shooting send to the server our weapon location and rotation

@@ -67,9 +67,8 @@ public:
 	virtual FTransform SaveLeftHandSocketTransform() override;
 	virtual void Destroy() override;
 	virtual bool CanBeFired() const override;
-	virtual void Fire(const FVector& muzzleLocation, const FRotator& muzzleRotation) const override;
-	virtual void FireClient(bool isFirstPerson) override;
-
+	virtual void Fire() override;
+	
 	virtual USoundBase* GetFireSound() const override { return FireSound; }
 	virtual UParticleSystem* GetMuzzleEffect() const override { return MuzzleEffect; }
 	
@@ -77,10 +76,12 @@ public:
 	virtual void SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation) override;
 	virtual UTexture2D* GetCrossHairTexture() const override { return CrossHair; }
 	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Weapon")
-	void OnFire(bool isFirstPerson);
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon", meta = (DisplayName = OnFire))
+	void BP_OnFire();
 
 private:
+	void FireServer(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
+	
 	void SpawnProjectile(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
 	FVector GetProjectileSpawnLocation(const FVector& location, const FRotator& rotation, float distanceFromMuzzleLocation) const;
 	

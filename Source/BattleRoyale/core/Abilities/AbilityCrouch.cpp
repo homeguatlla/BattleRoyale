@@ -40,6 +40,7 @@ void UAbilityCrouch::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 		{
 			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+			return;
 		}
 
 		const auto character = GetCharacter(ActorInfo);
