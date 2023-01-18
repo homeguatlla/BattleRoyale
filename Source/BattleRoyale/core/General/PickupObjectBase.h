@@ -28,7 +28,10 @@ public:
 	APickupObjectBase();
 	
 	virtual FVector GetPickupWidgetLocation(const FBoxSphereBounds& bounds) const override;
+	
+	UFUNCTION(BlueprintCallable, Category="PickableObject")
 	virtual USkeletalMeshComponent* GetMesh() const { return Mesh; }
+
 	virtual void ChangeStateServer(EPickupObjectState state) override;
 	virtual bool IsEquipped() const override { return State == EPickupObjectState::Equipped; }
 	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) override;

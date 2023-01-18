@@ -20,14 +20,7 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<class AProjectileBase> ProjectileClass;
-
-	/** Sound to play each time we fire */
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	USoundBase* FireSound;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	UParticleSystem* MuzzleEffect;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	UTexture2D* CrossHair;
 	
@@ -66,9 +59,6 @@ public:
 	virtual void Destroy() override;
 	virtual bool CanBeFired() const override;
 	virtual void Fire() override;
-	
-	virtual USoundBase* GetFireSound() const override { return FireSound; }
-	virtual UParticleSystem* GetMuzzleEffect() const override { return MuzzleEffect; }
 	
 	virtual void SetCharacterOwner(ACharacterBase* character) override;
 	virtual void SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation) override;
