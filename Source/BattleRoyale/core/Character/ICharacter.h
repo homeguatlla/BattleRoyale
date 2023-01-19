@@ -7,11 +7,12 @@
 #include "ICharacter.generated.h"
 
 class IPickupObject;
-class UCameraComponent;
 class IIAbilitySystemInterfaceBase;
 class IAbilitySystemInterface;
 class IWeapon;
+class UCameraComponent;
 class UHurtComponent;
+class IGunComponent;
 class IICharacter;
 
 // This class does not need to be modified.
@@ -28,12 +29,6 @@ class BATTLEROYALE_API IICharacter
 public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual FVector GetLocation() const = 0;
-	
-	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual TScriptInterface<IWeapon> GetEquippedWeapon() const = 0;
-
-	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual bool HasWeaponEquipped() const = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool EquipServer(TScriptInterface<IPickupObject> pickableObject) = 0;
@@ -109,18 +104,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool IsCrouching() const = 0;
-
-	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual bool CanAim() const  = 0;
-
-	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual void StartAiming() = 0;
-	
-	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual void StopAiming() = 0;
-
-	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual bool IsAiming() const = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool CanShoot() const = 0;
@@ -150,10 +133,9 @@ public:
 	
 	virtual void Shoot() = 0;
 	
-	virtual UAnimMontage* GetShootingMontage() const = 0;
+	UFUNCTION(BlueprintCallable, Category = "ICharacter")
+	virtual TScriptInterface<IGunComponent> GetGunComponent() const = 0;
 	
-	virtual UAnimInstance* GetAnimationInstance() const = 0;
-
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const = 0;
 
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const = 0;

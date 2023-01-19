@@ -9,6 +9,8 @@
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/Weapons/WeaponBase.h"
 #include "Components/HurtComponent.h"
+#include "Components/IGunComponent.h"
+#include "Components/CombatComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CharacterBase.generated.h"
@@ -37,10 +39,6 @@ class ACharacterBase : public ACharacter, public IICharacter
 
 	UPROPERTY(EditDefaultsOnly, Category = Character)
 	FName RightHandSocketName;
-
-	/** AnimMontage to play each time we fire third person */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* FireAnimation3P;
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Character", meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<class UGameplayAbilityBase>> mDefaultAbilities;
@@ -77,7 +75,8 @@ class ACharacterBase : public ACharacter, public IICharacter
 	
 public:
 	UPROPERTY(VisibleAnywhere)
-	class UCombatComponent* CombatComponent;
+	UCombatComponent* CombatComponent;
+	
 private:
 	UPROPERTY(VisibleAnywhere)
 	class UPickupComponent* PickupComponent;
@@ -93,12 +92,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual FVector GetLocation() const override { return GetActorLocation(); }
-	
-	UFUNCTION(BlueprintCallable)
-	virtual TScriptInterface<IWeapon> GetEquippedWeapon() const override;
-
-	UFUNCTION(BlueprintCallable)
-	virtual bool HasWeaponEquipped() const override;
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool EquipServer(TScriptInterface<IPickupObject> pickableObject) override;
@@ -191,12 +184,6 @@ public:
 	virtual void StopCrouching() override;
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsCrouching() const override { return bIsCrouched; }
-
-	virtual bool CanAim() const override;
-	virtual void StartAiming() override;
-	virtual void StopAiming() override;
-	UFUNCTION(BlueprintCallable)
-	virtual bool IsAiming() const override;
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool CanShoot() const override;
@@ -207,10 +194,8 @@ public:
 	
 	virtual void NotifyRefreshHealth(float health) const override;
 	virtual void NotifyTakeDamage(float damage, const AActor* causer, float currentHealth) override;
-	
-	virtual UAnimMontage* GetShootingMontage() const override;
-	
-	virtual UAnimInstance* GetAnimationInstance() const override;
+
+	virtual TScriptInterface<IGunComponent> GetGunComponent() const override { return CombatComponent; }
 	
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const override;
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const override;

@@ -25,6 +25,11 @@ void UFirstPersonAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		SetupCharacter();
 	}
+	check(Character);
+	
+	const auto gunComponent = CharacterInterface->GetGunComponent();
+	check(gunComponent);
+	
 	if(!Character || !Character->IsCharacterValid())
 	{
 		return;
@@ -32,19 +37,17 @@ void UFirstPersonAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	const auto velocity = CharacterInterface->GetCurrentVelocity();
 	Speed = velocity.Length();
-
 	Direction = UKismetAnimationLibrary::CalculateDirection(velocity, CharacterInterface->GetCurrentRotation());
-
-	ControlRotation = CharacterInterface->GetCurrentControlRotation();
-	
+	ControlRotation = CharacterInterface->GetCurrentControlRotation();	
 	MeshSpaceVelocity = CharacterInterface->GetCurrentMeshSpaceVelocity();
-
-	IsAiming = CharacterInterface->IsAiming();
+	
+	HasWeaponEquipped = gunComponent->HasWeaponEquipped();
+	IsAiming = gunComponent->IsAiming();
+	
 	IsCrouching = CharacterInterface->IsCrouching();
 	IsDead = !CharacterInterface->IsAlive();
 	IsInAir = CharacterInterface->IsFalling();
-	HasWeaponEquipped = CharacterInterface->HasWeaponEquipped();
-
+	
 	//This two rotators are synchronized, server, autonomous and simulated.
 	const auto aimRotation = Character->GetBaseAimRotation();
 	const auto movementRotation = UKismetMathLibrary::MakeRotFromX(Character->GetVelocity());
@@ -65,11 +68,12 @@ void UFirstPersonAnimationInstance::SetupCharacter()
 
 void UFirstPersonAnimationInstance::CheckEquippedToMakeLeftHandHoldsWeapon()
 {
-	if(CharacterInterface->HasWeaponEquipped())
+	const auto gunComponent = CharacterInterface->GetGunComponent();
+	if(gunComponent->HasWeaponEquipped())
 	{
 		//This is to make left hand holds the weapon with IK 
 		Character->CombatComponent->SetupLeftHandSocketTransform(Character);
-		LeftHandSocketTransform = Character->GetEquippedWeapon()->GetLeftHandSocketTransform();
+		LeftHandSocketTransform = gunComponent->GetEquippedWeapon()->GetLeftHandSocketTransform();
 	}
 }
 

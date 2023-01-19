@@ -101,7 +101,8 @@ FGameplayTagContainer UAbilityShootProjectileGun::GetWeaponCooldownGameplayTags(
 {
 	if(mCharacter)
 	{
-		const auto weapon = mCharacter->GetEquippedWeapon();
+		const auto gunComponent = mCharacter->GetGunComponent();
+		const auto weapon = gunComponent->GetEquippedWeapon();
 		check(weapon);
 		return weapon->GetCooldownTags();
 	}
@@ -113,7 +114,8 @@ float UAbilityShootProjectileGun::GetWeaponCooldownDuration() const
 {
 	if(mCharacter)
 	{
-		const auto weapon = mCharacter->GetEquippedWeapon();
+		const auto gunComponent = mCharacter->GetGunComponent();
+		const auto weapon = gunComponent->GetEquippedWeapon();
 		check(weapon);
 		return weapon->GetCooldownTime();
 	}
@@ -147,11 +149,12 @@ void UAbilityShootProjectileGun::SubscribeToEventMontageShoot(const IICharacter*
 
 void UAbilityShootProjectileGun::CreateTaskPlayMontageShooting(const IICharacter* character, const FGameplayAbilityActorInfo* ActorInfo)
 {
-	const auto sectionName = character->IsAiming() ? FName("AimingFire") : FName("Fire");
+	const auto gunComponent = character->GetGunComponent();
+	const auto sectionName = gunComponent->IsAiming() ? FName("AimingFire") : FName("Fire");
 	const auto taskPlayMontage = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this,
 		NAME_None,
-		character->GetShootingMontage(),
+		gunComponent->GetShootingMontage(),
 		1.0,
 		sectionName,
 		true);

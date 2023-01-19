@@ -10,7 +10,6 @@ class AFirstPersonCharacter : public ACharacterBase
 public:
 	AFirstPersonCharacter();
 
-	virtual UAnimInstance* GetAnimationInstance() const override;
 	virtual UCameraComponent* GetCamera() const override { return mFirstPersonCameraComponent; }
 
 	/** Returns Mesh1P subobject **/
@@ -27,7 +26,6 @@ public:
 private:
 	void DoInitialize(bool isLocallyControlled);
 	void HideMesh() const;
-	virtual USkeletalMeshComponent* GetCurrentMesh(bool isLocallyControlled) const;
 	virtual void DoDieClient();
 	
 	UPROPERTY()

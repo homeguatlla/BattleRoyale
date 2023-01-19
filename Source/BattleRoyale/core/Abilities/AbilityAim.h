@@ -6,6 +6,8 @@
 #include "GameplayAbilityBase.h"
 #include "AbilityAim.generated.h"
 
+class IGunComponent;
+
 /**
  * 
  */
@@ -25,4 +27,6 @@ public:
 					   FGameplayAbilityActivationInfo ActivationInfo) override;
 	virtual void CancelAbility(FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 					   FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
+private:
+	TScriptInterface<IGunComponent> GetGunComponent(const FGameplayAbilityActorInfo* ActorInfo) const;
 };

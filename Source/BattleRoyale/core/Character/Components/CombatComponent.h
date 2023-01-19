@@ -3,19 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BattleRoyale/core/Weapons/IWeapon.h"
+#include "IGunComponent.h"
 #include "Components/ActorComponent.h"
 #include "CombatComponent.generated.h"
 
+class ACharacterBase;
+class IWeapon;
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class BATTLEROYALE_API UCombatComponent : public UActorComponent
+class BATTLEROYALE_API UCombatComponent : public UActorComponent, public IGunComponent
 {
+private:
 	GENERATED_BODY()
 
 	UPROPERTY(Replicated)
 	TScriptInterface<IWeapon> mEquippedWeapon;
 
+	/** AnimMontage to play each time we fire */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* ShootingAnimation;
+	
 	UPROPERTY(Replicated)
 	bool mIsAiming;
 	
@@ -25,19 +33,29 @@ public:
 	// Sets default values for this component's properties
 	UCombatComponent();
 
-	bool EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName);
-	bool UnEquipWeapon() const;
-	TScriptInterface<IWeapon> GetEquippedWeapon() const;
-	bool HasWeaponEquipped() const { return GetEquippedWeapon() != nullptr; }
+	virtual bool EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName) override;
+	virtual bool UnEquipWeapon() const override;
 
-	bool CanShoot() const;
+	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
+	virtual TScriptInterface<IWeapon> GetEquippedWeapon() const override;
+
+	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
+	virtual bool HasWeaponEquipped() const override { return GetEquippedWeapon() != nullptr; }
+
+	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
+	virtual bool CanShoot() const override;
+	virtual void Shoot() const override;
+	virtual UAnimMontage* GetShootingMontage() const override { return ShootingAnimation; }
 	
-	bool IsAiming() const { return mIsAiming; }
-	void StartAiming();
-	void StopAiming();
-	bool CanAim() const;
-	void Shoot() const;
-
+	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
+	virtual bool IsAiming() const override{ return mIsAiming; }
+	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
+	virtual void StartAiming() override;
+	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
+	virtual void StopAiming() override;
+	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
+	virtual bool CanAim() const override;
+	
 	void SetupLeftHandSocketTransform(const ACharacterBase* character) const;
 private:
 	//void OnRep_EquippedWeapon();

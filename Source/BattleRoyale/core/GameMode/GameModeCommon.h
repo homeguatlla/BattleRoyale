@@ -10,7 +10,6 @@
 
 class IIPlayerState;
 class IIPlayerController;
-class APlayerStateBase;
 class UMultiplayerConfigurationInfo;
 
 /**

@@ -152,16 +152,6 @@ IIPlayerState* ACharacterBase::GetPlayerStateInterface() const
 	return nullptr;
 }
 
-TScriptInterface<IWeapon> ACharacterBase::GetEquippedWeapon() const
-{
-	return CombatComponent->GetEquippedWeapon();
-}
-
-bool ACharacterBase::HasWeaponEquipped() const
-{
-	return CombatComponent->HasWeaponEquipped();
-}
-
 bool ACharacterBase::IsCharacterValid() const
 {
 	return IsValid(this) && HurtComponent->IsReady();
@@ -358,26 +348,6 @@ void ACharacterBase::StopCrouching()
 	UnCrouch();
 }
 
-bool ACharacterBase::CanAim() const
-{
-	return CombatComponent->CanAim();
-}
-
-void ACharacterBase::StartAiming()
-{
-	CombatComponent->StartAiming();
-}
-
-void ACharacterBase::StopAiming()
-{
-	CombatComponent->StopAiming();
-}
-
-bool ACharacterBase::IsAiming() const
-{
-	return CombatComponent->IsAiming();
-}
-
 bool ACharacterBase::CanShoot() const
 {
 	return IsAlive() && CombatComponent->CanShoot();
@@ -391,16 +361,6 @@ void ACharacterBase::Shoot()
 	//We want the camera shake be only executed locally on the player who shot.
 	BP_OnShoot();
 	CombatComponent->Shoot();
-}
-
-UAnimMontage* ACharacterBase::GetShootingMontage() const
-{
-	return FireAnimation3P;
-}
-
-UAnimInstance* ACharacterBase::GetAnimationInstance() const
-{
-	return GetMesh()->GetAnimInstance();
 }
 
 IAbilitySystemInterface* ACharacterBase::GetAbilitySystemComponent() const
@@ -517,7 +477,7 @@ bool ACharacterBase::UnEquipServer() const
 		return false;
 	}
 	
-	const TScriptInterface<IPickupObject> pickupObject = GetEquippedWeapon().GetObject();
+	const TScriptInterface<IPickupObject> pickupObject = CombatComponent->GetEquippedWeapon().GetObject();
 	check(pickupObject);
 	
 	pickupObject->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
@@ -576,7 +536,7 @@ bool ACharacterBase::EquipWeaponServer(TScriptInterface<IPickupObject> pickableO
 		if(IsLocallyControlled())
 		{
 			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-			gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(GetEquippedWeapon());
+			gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(CombatComponent->GetEquippedWeapon());
 		}
 		return true;
 	}

@@ -5,6 +5,7 @@
 
 #include "GameplayTagsList.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
+#include "BattleRoyale/core/Character/Components/IGunComponent.h"
 
 UAbilityAim::UAbilityAim()
 {
@@ -24,9 +25,14 @@ bool UAbilityAim::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		return false;
 	}
-	const auto character = GetCharacter(ActorInfo);
+	
+	const auto gunComponent = GetGunComponent(ActorInfo);
+	if(!gunComponent)
+	{
+		return false;
+	}
 
-	return character != nullptr && character->CanAim();
+	return gunComponent->CanAim();
 }
 
 void UAbilityAim::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -42,10 +48,9 @@ void UAbilityAim::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			return;
 		}
 
-		const auto character = GetCharacter(ActorInfo);
-		if (character != nullptr)
+		if(const auto gunComponent = GetGunComponent(ActorInfo))
 		{
-			character->StartAiming();
+			gunComponent->StartAiming();
 		}
 	}
 }
@@ -78,9 +83,19 @@ void UAbilityAim::CancelAbility(const FGameplayAbilitySpecHandle Handle, const F
 
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 
-	const auto character = GetCharacter(ActorInfo);
-	if (character != nullptr)
+	if(const auto gunComponent = GetGunComponent(ActorInfo))
 	{
-		character->StopAiming();
+		gunComponent->StopAiming();
 	}
+}
+
+TScriptInterface<IGunComponent> UAbilityAim::GetGunComponent(const FGameplayAbilityActorInfo* ActorInfo) const
+{
+	const auto character = GetCharacter(ActorInfo);
+	if(!character)
+	{
+		return nullptr;
+	}
+	
+	return character->GetGunComponent();
 }

@@ -22,12 +22,6 @@ AFirstPersonCharacter::AFirstPersonCharacter()
 	mCharacterMesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));*/
 }
 
-
-UAnimInstance* AFirstPersonCharacter::GetAnimationInstance() const
-{
-	return GetMesh()->GetAnimInstance();
-}
-
 void AFirstPersonCharacter::HideMesh() const
 {
 	if(!IsLocallyControlled())
@@ -66,11 +60,6 @@ void AFirstPersonCharacter::DoInitialize(bool isLocallyControlled)
 		//HideMesh();
 		ConvertIntoMesh1P();
 	}
-}
-
-USkeletalMeshComponent* AFirstPersonCharacter::GetCurrentMesh(bool isLocallyControlled) const
-{
-	return GetMesh();
 }
 
 void AFirstPersonCharacter::DoDieClient()

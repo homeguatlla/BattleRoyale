@@ -4,6 +4,8 @@
 #include "CoreMinimal.h"
 #include "GameplayAbilityBase.h"
 #include "Abilities/GameplayAbility.h"
+#include "BattleRoyale/core/Character/ICharacter.h"
+#include "BattleRoyale/core/Character/Components/IGunComponent.h"
 #include "AbilityShootProjectileGun.generated.h"
 
 /**
