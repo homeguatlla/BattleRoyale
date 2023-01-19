@@ -8,7 +8,7 @@ class AFirstPersonCharacter : public ACharacterBase
 	GENERATED_BODY()
 	
 public:
-	AFirstPersonCharacter();
+	AFirstPersonCharacter(const FObjectInitializer& ObjectInitializer);
 
 	virtual UCameraComponent* GetCamera() const override { return mFirstPersonCameraComponent; }
 

@@ -21,6 +21,7 @@
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
+#include "Components/CharacterMovementComponentBase.h"
 #include "Components/CombatComponent.h"
 #include "Components/HurtComponent.h"
 #include "Components/PickupComponent.h"
@@ -30,7 +31,8 @@
 //////////////////////////////////////////////////////////////////////////
 // ABattleRoyaleCharacter
 
-ACharacterBase::ACharacterBase()
+ACharacterBase::ACharacterBase(const FObjectInitializer& ObjectInitializer) :
+Super(ObjectInitializer.SetDefaultSubobjectClass<UCharacterMovementComponentBase>(ACharacter::CharacterMovementComponentName))
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
@@ -48,7 +50,7 @@ ACharacterBase::ACharacterBase()
 	R_MotionController->SetupAttachment(RootComponent);
 	L_MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("L_MotionController"));
 	L_MotionController->SetupAttachment(RootComponent);
-
+	
 	//Create hurtComponent
 	HurtComponent = CreateDefaultSubobject<UHurtComponent>(TEXT("HurtComponent"));
 	HurtComponent->SetIsReplicated(true);

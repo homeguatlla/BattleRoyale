@@ -4,7 +4,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 
-AFirstPersonCharacter::AFirstPersonCharacter()
+AFirstPersonCharacter::AFirstPersonCharacter(const FObjectInitializer& ObjectInitializer) : ACharacterBase(ObjectInitializer)
 {
 	// Create a CameraComponent	
 	mFirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));

@@ -84,8 +84,7 @@ private:
 	bool mIsInvulnerable = false;
 
 public:
-	
-	ACharacterBase();
+	ACharacterBase(const FObjectInitializer& ObjectInitializer);
 	
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;

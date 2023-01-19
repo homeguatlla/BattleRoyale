@@ -25,7 +25,7 @@ void UFirstPersonAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		SetupCharacter();
 	}
-	check(Character);
+	check(CharacterInterface);
 	
 	const auto gunComponent = CharacterInterface->GetGunComponent();
 	check(gunComponent);
