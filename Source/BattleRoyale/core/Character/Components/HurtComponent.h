@@ -25,7 +25,7 @@ public:
 	bool IsAlive() const { return GetCurrentHealth() > 0.0f; }
 	float GetCurrentHealth() const;
 	bool IsReady() const;
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Hurt")
 	TSubclassOf<UGameplayEffect> InitializeHurtEffect;
 	

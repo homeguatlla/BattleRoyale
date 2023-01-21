@@ -21,7 +21,7 @@ FActiveGameplayEffectHandle UAbilitySystemComponentBase::ApplyGameplayEffectToTa
 		auto effectContext = MakeEffectContext();
 		effectContext.AddSourceObject(GetOwnerActor());
 
-		const auto gameplayEffectHandle = MakeOutgoingSpec(effect, 1, effectContext);
+		const auto gameplayEffectHandle = MakeOutgoingSpec(effect, 0, effectContext);
 		if(gameplayEffectHandle.IsValid())
 		{
 			return ApplyGameplayEffectSpecToTarget(*gameplayEffectHandle.Data.Get(), targetAbilityComponent->GetAbilitySystemComponent());
@@ -36,7 +36,7 @@ FActiveGameplayEffectHandle UAbilitySystemComponentBase::ApplyGameplayEffectToSe
 	auto owner = GetOwnerActor();
 	effectContext.AddSourceObject(GetOwnerActor());
 	
-	return UAbilitySystemComponent::ApplyGameplayEffectToSelf(effectClass->GetDefaultObject<UGameplayEffect>(), 1, effectContext);
+	return UAbilitySystemComponent::ApplyGameplayEffectToSelf(effectClass->GetDefaultObject<UGameplayEffect>(), 0, effectContext);
 }
 
 bool UAbilitySystemComponentBase::RemoveGameplayEffect(FActiveGameplayEffectHandle handle)
