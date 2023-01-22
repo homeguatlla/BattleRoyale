@@ -127,13 +127,17 @@ void AWeaponBase::SpawnProjectileServer(const FVector& muzzleLocation, const FRo
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 			const auto location = GetProjectileSpawnLocation(muzzleLocation, muzzleRotation, DistanceFromMuzzleLocation);
-
+			
 			/*const FString Message = FString::Printf(TEXT("Location: %s, Rotation: %s"),*location.ToString(), *muzzleRotation.ToString());
 			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Black, Message);
 			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Black, Mesh->GetName());
 				
-			DrawDebugLine(GetWorld(), location, GetProjectileSpawnLocation(muzzleLocation, muzzleRotation, 500), FColor::Red, false, 60);
+			DrawDebugLine(GetWorld(), location, GetProjectileSpawnLocation(muzzleLocation, muzzleRotation, DistanceFromMuzzleLocation), FColor::Red, false, 60);
 			DrawDebugSphere(GetWorld(), muzzleLocation, 5, 10, FColor::Blue, true, -1, 0, 3);*/
+
+			//TODO Está pendiente añadir el código de la dirección de disparo que ahora mismo es el propio arma, y debería ser en dirección de la
+			//croshair y no el arma.
+			
 			// spawn the projectile at the muzzle
 			if(const auto projectile = World->SpawnActor<AProjectileBase>(ProjectileClass, location, muzzleRotation, ActorSpawnParams))
 			{

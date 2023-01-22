@@ -111,7 +111,6 @@ void ACharacterBase::InitializeGAS()
 		const auto locallyControlled = IsLocallyControlled() ? FString("Player") : FString("Simulated");
 		UE_LOG(LogTemp, Display, TEXT("[%s][%s] Character name: %s"), *serverOrClient, *locallyControlled, *GetName());
 		
-		//HurtComponent = NewObject<UHurtComponent>(this, TEXT("HurtComponent"));
 		InitializeAttributes();
 	}
 }
@@ -119,7 +118,6 @@ void ACharacterBase::InitializeGAS()
 void ACharacterBase::InitializeAttributes() const
 {
 	HurtComponent->InitializeServer();
-	//ForceNetUpdate();
 	
 	const IIPlayerState* playerState = GetPlayerStateInterface();
 	if (playerState)
@@ -252,7 +250,7 @@ void ACharacterBase::GiveAbilitiesServer()
 
 void ACharacterBase::SetCurrentHealthTest(float health)
 {
-	//mGameplayAbilityAttributes->SetHealth(health);
+	//Send effect to modify the health
 }
 
 bool ACharacterBase::CanSprint() const

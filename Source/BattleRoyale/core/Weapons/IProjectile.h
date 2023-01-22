@@ -23,4 +23,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "Projectile")
 	virtual USoundBase* GetExplosionSound() const = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "Projectile")
+	virtual UParticleSystem* GetTrailEffect() const = 0;
 };
