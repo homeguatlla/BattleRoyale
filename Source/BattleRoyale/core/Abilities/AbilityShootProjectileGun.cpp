@@ -16,7 +16,8 @@ UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 	
 	//Esto estaba pensado para que fuera LocalOnly. Pero si es LocalOnly, el cooldown no funciona
 	//cuando se trata de un cliente porque tiene que ser la autoridad.
-	//Lo he puesto en LocalPredicted, y parece que funciona todo bien.
+	//Lo he puesto en LocalPredicted. Pero ahora el que hace el shoot es el locallycontrolled,
+	//no queremos que el servidor dispare porque no puede calcular la dirección del disparo.
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SHOOT_PROJECTILE));
@@ -195,8 +196,10 @@ void UAbilityShootProjectileGun::OnEventMontageShootReceived(const FGameplayEven
 		FString::Printf(TEXT("AbilityShootProjectileGun::OnEventMontageShootReceived localRole %d, RemoteRole %d"),
 			localRole,
 			remoteRole ));*/
-	if(mCharacter != nullptr)
+	if(!mCharacter || !IsLocallyControlled())
 	{
-		mCharacter->Shoot();
+		return;
 	}
+	
+	mCharacter->Shoot();
 }

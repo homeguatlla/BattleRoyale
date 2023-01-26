@@ -43,7 +43,7 @@ public:
 	 * Fire is to activate the mechanism of the weapon. Pulling the trigger.
 	 **/
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
-	virtual void Fire() = 0;
+	virtual void Fire(const FVector& shootingDirection) = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual UTexture2D* GetCrossHairTexture() const = 0;

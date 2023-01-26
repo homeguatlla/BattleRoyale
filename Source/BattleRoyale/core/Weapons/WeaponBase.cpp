@@ -15,18 +15,8 @@
 AWeaponBase::AWeaponBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
-}
-
-void AWeaponBase::Tick( float DeltaSeconds )
-{
-	Super::Tick(DeltaSeconds);
-
-	if(IsDebugEnabled)
-	{
-		DebugDrawAiming();
-	}
 }
 
 void AWeaponBase::Destroy()
@@ -40,10 +30,11 @@ bool AWeaponBase::CanBeFired() const
 	return true;
 }
 
-void AWeaponBase::Fire()
+void AWeaponBase::Fire(const FVector& targetLocation)
 {
 	//BP_OnFire();
-	FireServer(GetMuzzleLocation(), GetMuzzleRotation());
+	//DrawDebugSphere(GetWorld(), targetLocation, 10, 10, FColor::Green, true);
+	ServerFire(GetMuzzleLocation(), targetLocation);
 }
 
 void AWeaponBase::SetCharacterOwner(ACharacterBase* character)
@@ -87,24 +78,23 @@ FTransform AWeaponBase::GetLeftHandSocketTransform()
 	return mLeftHandSocketTransform;
 }
 
-FVector AWeaponBase::GetProjectileSpawnLocation(const FVector& location, const FRotator& rotation, float distanceFromMuzzleLocation) const
+FVector AWeaponBase::GetProjectileSpawnLocation(const FVector& location, const FVector& direction, float distanceFromMuzzleLocation) const
 {
-	auto direction = rotation.RotateVector(FVector::ForwardVector);
-	direction.Normalize();
-	return location +  direction * distanceFromMuzzleLocation;
+	auto normalizedDirection= direction;
+	normalizedDirection.Normalize();
+	return location + normalizedDirection * distanceFromMuzzleLocation;
 }
 
-void AWeaponBase::FireServer(const FVector& muzzleLocation, const FRotator& muzzleRotation) const
+void AWeaponBase::ServerFire_Implementation(const FVector& muzzleLocation, const FVector& targetLocation) const
 {
 	if(!HasAuthority())
 	{
 		return;
 	}
-	// try and fire a projectile:
-	//the server has the weapon in FP1, but for the clients it has the weapons as 3P
-	//so, we need when shooting send to the server our weapon location and rotation
-	//because server will get wrong location and rotation for clients
-	SpawnProjectileServer(muzzleLocation, muzzleRotation);
+
+	//DrawDebugSphere(GetWorld(), targetLocation, 5, 10, FColor::Blue, true);
+	//DrawDebugLine(GetWorld(), muzzleLocation, targetLocation, FColor::Red, true);
+	SpawnProjectileServer(muzzleLocation, targetLocation - muzzleLocation);
 
 	if(const auto character = Cast<IICharacter>(GetOwner()))
 	{
@@ -115,7 +105,7 @@ void AWeaponBase::FireServer(const FVector& muzzleLocation, const FRotator& muzz
 	}
 }
 
-void AWeaponBase::SpawnProjectileServer(const FVector& muzzleLocation, const FRotator& muzzleRotation) const
+void AWeaponBase::SpawnProjectileServer(const FVector& muzzleLocation, const FVector& shootingDirection) const
 {
 	if (ProjectileClass != nullptr)
 	{
@@ -126,23 +116,14 @@ void AWeaponBase::SpawnProjectileServer(const FVector& muzzleLocation, const FRo
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-			const auto location = GetProjectileSpawnLocation(muzzleLocation, muzzleRotation, DistanceFromMuzzleLocation);
+			const auto location = GetProjectileSpawnLocation(muzzleLocation, shootingDirection, DistanceFromMuzzleLocation);
 			
-			/*const FString Message = FString::Printf(TEXT("Location: %s, Rotation: %s"),*location.ToString(), *muzzleRotation.ToString());
-			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Black, Message);
-			GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Black, Mesh->GetName());
-				
-			DrawDebugLine(GetWorld(), location, GetProjectileSpawnLocation(muzzleLocation, muzzleRotation, DistanceFromMuzzleLocation), FColor::Red, false, 60);
-			DrawDebugSphere(GetWorld(), muzzleLocation, 5, 10, FColor::Blue, true, -1, 0, 3);*/
-
-			//TODO Está pendiente añadir el código de la dirección de disparo que ahora mismo es el propio arma, y debería ser en dirección de la
-			//croshair y no el arma.
+			//DrawDebugSphere(GetWorld(), location, 5, 10, FColor::Blue, true);
 			
 			// spawn the projectile at the muzzle
-			if(const auto projectile = World->SpawnActor<AProjectileBase>(ProjectileClass, location, muzzleRotation, ActorSpawnParams))
+			if(const auto projectile = World->SpawnActor<AProjectileBase>(ProjectileClass, location, shootingDirection.Rotation(), ActorSpawnParams))
 			{
 				const auto owner = GetOwner();
-				UE_LOG(LogTemp, Warning, TEXT("WeaponBase::SpawnProjectile %d"), owner->GetLocalRole());
 				projectile->SetInstigator(Cast<APawn>(GetOwner()));
 			}
 			else
@@ -159,13 +140,4 @@ FTransform AWeaponBase::SaveLeftHandSocketTransform()
 	mLeftHandSocketTransform = GetMesh()->GetSocketTransform(LeftHandSocketName, RTS_World);
 	
 	return mLeftHandSocketTransform;
-}
-
-void AWeaponBase::DebugDrawAiming() const
-{
-	const auto muzzleLocation = GetProjectileSpawnLocation(GetMuzzleLocation(), GetMuzzleRotation(), DistanceFromMuzzleLocation);
-	
-	DrawDebugSphere(GetWorld(), GetMuzzleLocation(), 5, 12, FColor::White, false);
-	DrawDebugSphere(GetWorld(), muzzleLocation, 3, 12, FColor::Blue, false);
-	DrawDebugLine(GetWorld(), muzzleLocation, GetProjectileSpawnLocation(GetMuzzleLocation(), GetMuzzleRotation(), 500), FColor::Blue, false);
 }

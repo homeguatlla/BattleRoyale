@@ -36,9 +36,6 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName LeftHandSocketName;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	bool IsDebugEnabled { false };
-
 	//This is where the left hand goes on the weapon.
 	FTransform mLeftHandSocketTransform;
 
@@ -48,8 +45,6 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 public:	
 	AWeaponBase();
 	
-	virtual void Tick( float DeltaSeconds ) override;
-	
 	virtual FVector GetMuzzleLocation() const override;
 	virtual FRotator GetMuzzleRotation() const override;
 	virtual float GetCooldownTime() const override { return CooldownTime; }
@@ -58,7 +53,7 @@ public:
 	virtual FTransform SaveLeftHandSocketTransform() override;
 	virtual void Destroy() override;
 	virtual bool CanBeFired() const override;
-	virtual void Fire() override;
+	virtual void Fire(const FVector& targetLocation) override;
 	
 	virtual void SetCharacterOwner(ACharacterBase* character) override;
 	virtual void SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation) override;
@@ -68,10 +63,9 @@ public:
 	void BP_OnFire();
 
 private:
-	void FireServer(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
+	UFUNCTION(Server, Reliable)
+	void ServerFire(const FVector& muzzleLocation, const FVector& targetLocation) const;
 	
-	void SpawnProjectileServer(const FVector& muzzleLocation, const FRotator& muzzleRotation) const;
-	FVector GetProjectileSpawnLocation(const FVector& location, const FRotator& rotation, float distanceFromMuzzleLocation) const;
-	
-	void DebugDrawAiming() const;
+	void SpawnProjectileServer(const FVector& muzzleLocation, const FVector& shootingDirection) const;
+	FVector GetProjectileSpawnLocation(const FVector& location, const FVector& direction, float distanceFromMuzzleLocation) const;
 };

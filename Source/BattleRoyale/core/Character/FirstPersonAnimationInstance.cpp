@@ -25,16 +25,15 @@ void UFirstPersonAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		SetupCharacter();
 	}
-	check(Character);
-	
-	const auto gunComponent = CharacterInterface->GetGunComponent();
-	check(gunComponent);
 	
 	if(!Character || !Character->IsCharacterValid())
 	{
 		return;
 	}
-
+	
+	const auto gunComponent = CharacterInterface->GetGunComponent();
+	check(gunComponent);
+	
 	const auto velocity = CharacterInterface->GetCurrentVelocity();
 	Speed = velocity.Length();
 	Direction = UKismetAnimationLibrary::CalculateDirection(velocity, CharacterInterface->GetCurrentRotation());

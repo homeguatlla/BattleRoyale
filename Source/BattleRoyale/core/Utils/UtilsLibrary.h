@@ -1,6 +1,7 @@
 #pragma once
 #include "Abilities/GameplayAbilityTypes.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 namespace utils
 {
@@ -56,6 +57,8 @@ class BATTLEROYALE_API UtilsLibrary
 	        ECollisionChannel channel,
 	        const FCollisionQueryParams& params)
 		{
+			check(world);
+			
 			const auto shape = FCollisionShape::MakeSphere(radius);
 			return TraceSweepMultyByChannel(world, startLocation, endLocation, rotation, channel, shape, params);
 		}
@@ -69,6 +72,8 @@ class BATTLEROYALE_API UtilsLibrary
 			const FCollisionShape& shape,
 			const FCollisionQueryParams& params) 
 		{
+			check(world);
+			
 			TArray<FHitResult> outHits;
 
 			//auto result = world->SweepMultiByObjectType(outHits, startLocation, endLocation, rotation, CHANNELOUT_LEFTSURROUND, shape, params);
@@ -83,7 +88,44 @@ class BATTLEROYALE_API UtilsLibrary
 
 			return outHits;
 		}
+	
+	static FHitResult TraceLineSingleByChannelToCrossHairs(UWorld* world, APlayerController* playerController, float maxTraceDistance)
+		{
+			check(world);
+			check(world->GetGameViewport());
+			check(playerController);
+	
+			FVector2D viewportSize;
+			world->GetGameViewport()->GetViewportSize(viewportSize);
 
+			const auto crossHairsLocation = viewportSize * 0.5f;
+
+			FVector crossHairsWorldLocation, crossHairsWorldDirection;
+			const auto isDeprojected = UGameplayStatics::DeprojectScreenToWorld(
+				playerController,
+				crossHairsLocation,
+				crossHairsWorldLocation,
+				crossHairsWorldDirection);
+
+			if(!isDeprojected)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("[%s] TraceLineSingleByChannelToCrossHairs couldn't deproject Screen To World coordinates"), __FUNCTION__);
+				return FHitResult();
+			}
+			
+			const auto rayStart = crossHairsWorldLocation;
+			//crossHairsWorldDirectionn is already normalized
+			const auto rayEnd = rayStart + crossHairsWorldDirection * maxTraceDistance;
+
+			FHitResult hitResult;
+			world->LineTraceSingleByChannel(
+				hitResult,
+				rayStart,
+				rayEnd,
+				ECollisionChannel::ECC_Visibility);
+			
+			return hitResult;
+		}
 
 	static FQuat LookAt(const FVector& sourcePoint, const FVector& destPoint)
 		{

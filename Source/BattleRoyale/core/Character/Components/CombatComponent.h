@@ -20,10 +20,16 @@ private:
 	UPROPERTY(Replicated)
 	TScriptInterface<IWeapon> mEquippedWeapon;
 
-	/** AnimMontage to play each time we fire */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* ShootingAnimation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatComponent", meta = (AllowPrivateAccess = "true"))
+	float MaxShootingDistance = 100000.0f;
 	
+	/** AnimMontage to play each time we fire */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatComponent", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* ShootingAnimation;
+
+	UPROPERTY(EditDefaultsOnly, Category = "CombatComponent")
+	bool IsDebugEnabled { false };
+
 	UPROPERTY(Replicated)
 	bool mIsAiming;
 	
@@ -61,5 +67,8 @@ private:
 	//void OnRep_EquippedWeapon();
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
+	FVector CalculateShootingTarget() const;
+	void DebugDrawAiming() const;
 };

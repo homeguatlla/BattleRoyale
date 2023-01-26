@@ -8,11 +8,13 @@
 #include "BattleRoyale/core/Abilities/GameplayTagsList.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
+#include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "BattleRoyale/core/Weapons/IWeapon.h"
 
 // Sets default values for this component's properties
 UCombatComponent::UCombatComponent()
 {
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -21,6 +23,17 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(UCombatComponent, mEquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, mIsAiming);
+}
+
+void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if(IsDebugEnabled)
+	{
+		DebugDrawAiming();
+	}
 }
 
 void UCombatComponent::BeginPlay()
@@ -101,8 +114,10 @@ void UCombatComponent::Shoot() const
 		UE_LOG(LogCharacter, Error, TEXT("[%s][UCombatComponent::Shoot] There is no weapon equipped"), *GetName());
 		return;
 	}
+
+	const auto shootingTargetLocation = CalculateShootingTarget();
 	const auto weapon = GetEquippedWeapon();
-	weapon->Fire();
+	weapon->Fire(shootingTargetLocation);
 }
 
 void UCombatComponent::SetupLeftHandSocketTransform(const ACharacterBase* character) const
@@ -121,4 +136,30 @@ void UCombatComponent::SetupLeftHandSocketTransform(const ACharacterBase* charac
 		newRotator);
 
 	GetEquippedWeapon()->SetupLeftHandSocketTransform(newPosition, newRotator);
+}
+
+
+FVector UCombatComponent::CalculateShootingTarget() const
+{
+	const auto playerController = Cast<APlayerController>(GetOwner()->GetInstigatorController());
+	const auto hitResult = utils::UtilsLibrary::TraceLineSingleByChannelToCrossHairs(GetWorld(), playerController, MaxShootingDistance);
+
+	if(!hitResult.IsValidBlockingHit())
+	{
+		return hitResult.TraceEnd;
+	}
+	return hitResult.ImpactPoint;
+}
+
+void UCombatComponent::DebugDrawAiming() const
+{
+	if(!HasWeaponEquipped())
+	{
+		return;
+	}
+	const auto muzzleLocation = GetEquippedWeapon()->GetMuzzleLocation();
+	const auto shootingTargetLocation = CalculateShootingTarget();
+	DrawDebugSphere(GetWorld(), muzzleLocation, 5, 12, FColor::White, false);
+	DrawDebugSphere(GetWorld(), muzzleLocation, 3, 12, FColor::Blue, false);
+	DrawDebugLine(GetWorld(), muzzleLocation, shootingTargetLocation, FColor::Blue, false);
 }
