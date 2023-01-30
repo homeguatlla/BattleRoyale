@@ -476,7 +476,7 @@ bool ACharacterBase::UnEquipServer() const
 	}
 	
 	const TScriptInterface<IPickupObject> pickupObject = CombatComponent->GetEquippedWeapon().GetObject();
-	check(pickupObject);
+	check(pickupObject.GetObject());
 	
 	pickupObject->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	

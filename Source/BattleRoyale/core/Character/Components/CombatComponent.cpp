@@ -153,10 +153,12 @@ FVector UCombatComponent::CalculateShootingTarget() const
 
 void UCombatComponent::DebugDrawAiming() const
 {
-	if(!HasWeaponEquipped())
+	const auto character = Cast<ACharacterBase>(GetOwner());
+	
+	if(!character->IsLocallyControlled() || !HasWeaponEquipped())
 	{
 		return;
-	}
+	} 
 	const auto muzzleLocation = GetEquippedWeapon()->GetMuzzleLocation();
 	const auto shootingTargetLocation = CalculateShootingTarget();
 	DrawDebugSphere(GetWorld(), muzzleLocation, 5, 12, FColor::White, false);

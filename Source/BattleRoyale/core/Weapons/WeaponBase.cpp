@@ -3,6 +3,7 @@
 
 #include "WeaponBase.h"
 
+#include "BulletShell.h"
 #include "DrawDebugHelpers.h"
 #include "ProjectileBase.h"
 #include "BattleRoyale/BattleRoyale.h"
@@ -32,8 +33,11 @@ bool AWeaponBase::CanBeFired() const
 
 void AWeaponBase::Fire(const FVector& targetLocation)
 {
+	//Only local (to the weapon firing)
+	
 	//BP_OnFire();
 	//DrawDebugSphere(GetWorld(), targetLocation, 10, 10, FColor::Green, true);
+	
 	ServerFire(GetMuzzleLocation(), targetLocation);
 }
 
@@ -50,27 +54,12 @@ void AWeaponBase::SetupLeftHandSocketTransform(const FVector& newLocation, const
 
 FVector AWeaponBase::GetMuzzleLocation() const
 {
-	if(const auto weaponMuzzleSocket = GetMesh()->GetSocketByName(MuzzleSocketName))
-	{
-		return weaponMuzzleSocket->GetSocketLocation(GetMesh());
-	}
-
-	UE_LOG(LogWeapon, Error, TEXT("[%s][AWeaponBase::GetMuzzleLocation] muzzle socket not found"), *MuzzleSocketName.ToString());
-
-	return FVector::ZeroVector;
+	return GetSocketMeshTransformBySocketName(MuzzleSocketName).GetLocation();
 }
 
 FRotator AWeaponBase::GetMuzzleRotation() const
 {
-	if(const auto weaponMuzzleSocket = GetMesh()->GetSocketByName(MuzzleSocketName))
-	{
-		return weaponMuzzleSocket->GetSocketTransform(GetMesh()).GetRotation().Rotator();
-	}
-	else
-	{
-		UE_LOG(LogWeapon, Error, TEXT("[%s][AWeaponBase::GetMuzzleRotation] muzzle socket not found"), *MuzzleSocketName.ToString());
-	}
-	return FRotator::ZeroRotator;
+	return GetSocketMeshTransformBySocketName(MuzzleSocketName).GetRotation().Rotator();
 }
 
 FTransform AWeaponBase::GetLeftHandSocketTransform()
@@ -98,11 +87,17 @@ void AWeaponBase::ServerFire_Implementation(const FVector& muzzleLocation, const
 
 	if(const auto character = Cast<IICharacter>(GetOwner()))
 	{
-		if(MuzzleGameplayEffect)
+		if(MuzzleGameplayEffectClass)
 		{
-			character->GetAbilitySystemComponentBase()->ApplyGameplayEffectToSelf(MuzzleGameplayEffect);
+			character->GetAbilitySystemComponentBase()->ApplyGameplayEffectToSelf(MuzzleGameplayEffectClass);
 		}
 	}
+}
+
+//This method will be called from Blueprint (Gameplay cue shoot that makes the visual effects of the weapon when firing)
+void AWeaponBase::OnFire()
+{
+	SpawnBulletShell();
 }
 
 void AWeaponBase::SpawnProjectileServer(const FVector& muzzleLocation, const FVector& shootingDirection) const
@@ -140,4 +135,30 @@ FTransform AWeaponBase::SaveLeftHandSocketTransform()
 	mLeftHandSocketTransform = GetMesh()->GetSocketTransform(LeftHandSocketName, RTS_World);
 	
 	return mLeftHandSocketTransform;
+}
+
+void AWeaponBase::SpawnBulletShell() const
+{
+	if(!BulletShellClass)
+	{
+		return;
+	}
+
+	const auto socketTransform = GetSocketMeshTransformBySocketName(ShellSocketName);
+	GetWorld()->SpawnActor<ABulletShell>(
+		BulletShellClass,
+		socketTransform.GetLocation(),
+		socketTransform.GetRotation().Rotator());	
+}
+
+FTransform AWeaponBase::GetSocketMeshTransformBySocketName(const FName& socketName) const
+{
+	if(const auto weaponMuzzleSocket = GetMesh()->GetSocketByName(socketName))
+	{
+		return weaponMuzzleSocket->GetSocketTransform(GetMesh());
+	}
+
+	UE_LOG(LogWeapon, Error, TEXT("[AWeaponBase::GetSocketMeshTransformBySocketName] socket with name %s not found"), *socketName.ToString());
+
+	return FTransform::Identity;
 }

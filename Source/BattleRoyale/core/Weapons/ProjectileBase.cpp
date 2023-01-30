@@ -63,6 +63,7 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 		// Only add impulse and destroy projectile if we hit a physics
 		if(OtherComp->IsSimulatingPhysics())
 		{
+			//TODO cambiar el valor del impulso por una UPROPERTY como hemos hecho en el BulletShell
 			OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 		}
 		

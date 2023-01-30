@@ -44,6 +44,10 @@ public:
 	 **/
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual void Fire(const FVector& shootingDirection) = 0;
+
+	//This method will be called from Blueprint (Gameplay cue shoot that makes the visual effects of the weapon when firing)
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	virtual void OnFire() = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual UTexture2D* GetCrossHairTexture() const = 0;

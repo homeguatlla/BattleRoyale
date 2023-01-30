@@ -9,6 +9,7 @@
 
 class UGameplayEffect;
 class IICharacter;
+
 UCLASS(Blueprintable)
 class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 {
@@ -17,9 +18,18 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName MuzzleSocketName;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	FName ShellSocketName;
+	
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<class AProjectileBase> ProjectileClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TSubclassOf<class ABulletShell> BulletShellClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TSubclassOf<UGameplayEffect> MuzzleGameplayEffectClass;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	UTexture2D* CrossHair;
@@ -39,9 +49,6 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 	//This is where the left hand goes on the weapon.
 	FTransform mLeftHandSocketTransform;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	TSubclassOf<UGameplayEffect> MuzzleGameplayEffect;
-	
 public:	
 	AWeaponBase();
 	
@@ -54,6 +61,7 @@ public:
 	virtual void Destroy() override;
 	virtual bool CanBeFired() const override;
 	virtual void Fire(const FVector& targetLocation) override;
+	virtual void OnFire() override;//This method will be called from Blueprint (Gameplay cue shoot that makes the visual effects of the weapon when firing)
 	
 	virtual void SetCharacterOwner(ACharacterBase* character) override;
 	virtual void SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation) override;
@@ -62,10 +70,14 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon", meta = (DisplayName = OnFire))
 	void BP_OnFire();
 
+	
 private:
 	UFUNCTION(Server, Reliable)
 	void ServerFire(const FVector& muzzleLocation, const FVector& targetLocation) const;
 	
 	void SpawnProjectileServer(const FVector& muzzleLocation, const FVector& shootingDirection) const;
 	FVector GetProjectileSpawnLocation(const FVector& location, const FVector& direction, float distanceFromMuzzleLocation) const;
+
+	FTransform GetSocketMeshTransformBySocketName(const FName& socketName) const;
+	void SpawnBulletShell() const;
 };
