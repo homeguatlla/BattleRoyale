@@ -1,6 +1,9 @@
 
 #include "BulletShell.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
+
 ABulletShell::ABulletShell()
 {
  	PrimaryActorTick.bCanEverTick = false;
@@ -25,5 +28,24 @@ void ABulletShell::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrim
 	FVector NormalImpulse, const FHitResult& Hit)
 {
 	BP_OnHit();
+	if(ShellSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ShellSound, GetActorLocation());
+	}
+	Mesh->OnComponentHit.RemoveAll(this);
+	if(LifeTime <= 0.0f)
+	{
+		Destroy();
+	}
+	else if(!mLifeTimerHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().SetTimer(mLifeTimerHandle, this, &ThisClass::OnLifeOver, LifeTime, false);
+	}
+}
+
+void ABulletShell::OnLifeOver()
+{
+	GetWorld()->GetTimerManager().ClearTimer(mLifeTimerHandle);
+	Destroy();
 }
 
