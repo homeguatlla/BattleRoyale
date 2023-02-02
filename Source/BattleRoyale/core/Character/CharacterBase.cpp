@@ -526,11 +526,8 @@ bool ACharacterBase::EquipWeaponServer(TScriptInterface<IPickupObject> pickableO
 	if(CombatComponent->EquipWeapon(weapon, RightHandSocketName))
 	{
 		pickableObject->ChangeStateServer(EPickupObjectState::Equipped);
-		
-		//TODO creo que este código se puede generalizar a cualquier tipo de objeto y
-		//así dejarlo aquí pero fuera del if, si se equipa cualquier cosa se envía a la ui
-		//y la ui decide si es un weapon mostrar lo que quiera
-		//No está mal dejar ambos eventos uno específico para armas otro para los demás objetos
+
+		//If server equips a weapon, enable crosshair. OnRepNotify (on the equipedWeapon) is not called on Server.
 		if(IsLocallyControlled())
 		{
 			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
