@@ -54,7 +54,7 @@ void ACharacterHUD::OnEquippedWeapon(TScriptInterface<IWeapon> weapon)
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UWeaponHUD::StaticClass()))
 	{
-		IWeaponHUD::Execute_OnEquippedWeapon(mHUDWidget, weapon->GetCrossHairTexture());
+		IWeaponHUD::Execute_OnEquippedWeapon(mHUDWidget, weapon->GetCrossHairsTexture());
 	}
 }
 
