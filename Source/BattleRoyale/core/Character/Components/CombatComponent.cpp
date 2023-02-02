@@ -5,6 +5,7 @@
 
 #include "Net/UnrealNetwork.h"
 #include "BattleRoyale/BattleRoyale.h"
+#include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Abilities/GameplayTagsList.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
@@ -34,6 +35,19 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		DebugDrawAiming();
 	}
+}
+
+void UCombatComponent::OnRep_EquippedWeapon() const
+{
+	//This rep notify is to inform the clients when the client just equipped a weapon,
+	//and then show the crosshairs.
+	const auto character = Cast<ACharacterBase>(GetOwner());
+	if(!character || !character->IsLocallyControlled())
+	{
+		return;
+	}
+	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(character->GetGameInstance());
+	gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(GetEquippedWeapon());
 }
 
 void UCombatComponent::BeginPlay()

@@ -17,7 +17,7 @@ class BATTLEROYALE_API UCombatComponent : public UActorComponent, public IGunCom
 private:
 	GENERATED_BODY()
 
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing=OnRep_EquippedWeapon)
 	TScriptInterface<IWeapon> mEquippedWeapon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatComponent", meta = (AllowPrivateAccess = "true"))
@@ -68,7 +68,8 @@ private:
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+	UFUNCTION()
+	void OnRep_EquippedWeapon() const;
 	FVector CalculateShootingTarget() const;
 	void DebugDrawAiming() const;
 };
