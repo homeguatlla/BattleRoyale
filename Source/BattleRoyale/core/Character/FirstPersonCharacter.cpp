@@ -34,9 +34,14 @@ void AFirstPersonCharacter::HideMesh() const
 
 void AFirstPersonCharacter::ConvertIntoMesh1P() const
 {
-	GetMesh()->HideBoneByName(FName("LeftUpLeg"), EPhysBodyOp::PBO_None);
-	GetMesh()->HideBoneByName(FName("RightUpLeg"), EPhysBodyOp::PBO_None);
-	GetMesh()->HideBoneByName(FName("Neck"), EPhysBodyOp::PBO_None);
+	GetMesh()->HideBoneByName(ThinghRightBoneName, EPhysBodyOp::PBO_None);
+	GetMesh()->HideBoneByName(ThinghLeftBoneName, EPhysBodyOp::PBO_None);
+	GetMesh()->HideBoneByName(NeckBoneName, EPhysBodyOp::PBO_None);
+	
+	/*GetMesh()->HideBoneByName(FName("thigh_r"), EPhysBodyOp::PBO_None);
+	GetMesh()->HideBoneByName(FName("thigh_l"), EPhysBodyOp::PBO_None);
+	GetMesh()->HideBoneByName(FName("neck_01"), EPhysBodyOp::PBO_None);
+	*/
 	//GetMesh()->HideBoneByName(FName("Hips"), EPhysBodyOp::PBO_None);
 	//GetMesh()->UnHideBoneByName("LeftShoulder");
 	//GetMesh()->UnHideBoneByName("RightShoulder");

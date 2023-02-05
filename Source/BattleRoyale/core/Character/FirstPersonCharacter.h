@@ -27,6 +27,13 @@ private:
 	void DoInitialize(bool isLocallyControlled);
 	void HideMesh() const;
 	virtual void DoDieClient();
+
+	UPROPERTY(EditDefaultsOnly)
+	FName ThinghLeftBoneName;
+	UPROPERTY(EditDefaultsOnly)
+	FName ThinghRightBoneName;
+	UPROPERTY(EditDefaultsOnly)
+	FName NeckBoneName;
 	
 	UPROPERTY()
 	UMaterialInstanceDynamic* mCharacterMesh1PMaterial = nullptr;
