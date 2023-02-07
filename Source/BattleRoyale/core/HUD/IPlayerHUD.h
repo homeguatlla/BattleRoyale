@@ -17,4 +17,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Player HUD")
 	void OnRefreshNumKills(int numKills);
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Player HUD")
+	void OnRefreshCrosshair(float spread);
 };

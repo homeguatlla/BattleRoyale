@@ -38,15 +38,16 @@ void ACharacterHUD::BindToDelegate()
 	{
 		const auto eventDispatcher = gameInstance->GetEventDispatcher();
 
-		eventDispatcher->OnEquippedWeapon.AddDynamic(this, &ACharacterHUD::OnEquippedWeapon);
+		eventDispatcher->OnEquippedWeapon.AddDynamic(this, &ThisClass::OnEquippedWeapon);
 
-		eventDispatcher->OnUnEquippedWeapon.AddDynamic(this, &ACharacterHUD::OnUnEquippedWeapon);
-		eventDispatcher->OnRefreshHealth.AddDynamic(this, &ACharacterHUD::OnRefreshHealthReceived);
+		eventDispatcher->OnUnEquippedWeapon.AddDynamic(this, &ThisClass::OnUnEquippedWeapon);
+		eventDispatcher->OnRefreshCrosshair.AddDynamic(this, &ThisClass::OnRefreshCrosshair);
+		eventDispatcher->OnRefreshHealth.AddDynamic(this, &ThisClass::OnRefreshHealthReceived);
 		
-		eventDispatcher->OnPlayerDead.AddDynamic(this, &ACharacterHUD::OnPlayerDead);
-		eventDispatcher->OnRefreshNumKills.AddDynamic(this, &ACharacterHUD::OnRefreshNumKills);
+		eventDispatcher->OnPlayerDead.AddDynamic(this, &ThisClass::OnPlayerDead);
+		eventDispatcher->OnRefreshNumKills.AddDynamic(this, &ThisClass::OnRefreshNumKills);
 
-		eventDispatcher->OnGameStarted.AddDynamic(this, &ACharacterHUD::OnGameStarted);
+		eventDispatcher->OnGameStarted.AddDynamic(this, &ThisClass::OnGameStarted);
 	}
 }
 
@@ -54,7 +55,7 @@ void ACharacterHUD::OnEquippedWeapon(TScriptInterface<IWeapon> weapon)
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UWeaponHUD::StaticClass()))
 	{
-		IWeaponHUD::Execute_OnEquippedWeapon(mHUDWidget, weapon->GetCrossHairsTexture());
+		IWeaponHUD::Execute_OnEquippedWeapon(mHUDWidget, weapon->GetCrosshairWidget());
 	}
 }
 
@@ -63,6 +64,14 @@ void ACharacterHUD::OnUnEquippedWeapon()
 	if (mHUDWidget->GetClass()->ImplementsInterface(UWeaponHUD::StaticClass()))
 	{
 		IWeaponHUD::Execute_OnUnEquippedWeapon(mHUDWidget);
+	}
+}
+
+void ACharacterHUD::OnRefreshCrosshair(float spread)
+{
+	if (mHUDWidget->GetClass()->ImplementsInterface(UPlayerHUD::StaticClass()))
+	{
+		IPlayerHUD::Execute_OnRefreshCrosshair(mHUDWidget, spread);
 	}
 }
 

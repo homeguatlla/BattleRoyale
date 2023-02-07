@@ -89,7 +89,7 @@ class BATTLEROYALE_API UtilsLibrary
 			return outHits;
 		}
 	
-	static FHitResult TraceLineSingleByChannelToCrossHairs(UWorld* world, APlayerController* playerController, float maxTraceDistance)
+	static FHitResult TraceLineSingleByChannelToCrosshair(UWorld* world, APlayerController* playerController, float maxTraceDistance)
 		{
 			check(world);
 			check(world->GetGameViewport());
@@ -98,12 +98,12 @@ class BATTLEROYALE_API UtilsLibrary
 			FVector2D viewportSize;
 			world->GetGameViewport()->GetViewportSize(viewportSize);
 
-			const auto crossHairsLocation = viewportSize * 0.5f;
+			const auto crosshairLocation = viewportSize * 0.5f;
 
 			FVector crossHairsWorldLocation, crossHairsWorldDirection;
 			const auto isDeprojected = UGameplayStatics::DeprojectScreenToWorld(
 				playerController,
-				crossHairsLocation,
+				crosshairLocation,
 				crossHairsWorldLocation,
 				crossHairsWorldDirection);
 

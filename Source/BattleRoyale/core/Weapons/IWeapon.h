@@ -50,7 +50,7 @@ public:
 	virtual void OnFire() = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
-	virtual UTexture2D* GetCrossHairsTexture() const = 0;
+	virtual UUserWidget* GetCrosshairWidget() const = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual FTransform GetLeftHandSocketTransform() = 0;

@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "AttributeSetHealth.h"
 #include "ICharacter.h"
-#include "BattleRoyale/core/Data/TakeDamageData.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/Weapons/WeaponBase.h"
 #include "Components/HurtComponent.h"
@@ -262,7 +261,7 @@ private:
 	//void SpawnWeapon();
 	
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
-	void UpdateHealth(const FTakeDamageData& damage);
+	//void UpdateHealth(const FTakeDamageData& damage);
 	
 	IIGameMode* GetGameModeServer() const;
 

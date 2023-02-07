@@ -2,10 +2,13 @@
 #include "CoreMinimal.h"
 #include "BattleRoyale/core/Weapons/IWeapon.h"
 #include "BattleRoyale/core/Utils/Stats/PlayerStatsData.h"
+#include "Delegates/DelegateCombinations.h"
+#include "Delegates/DelegateCombinations.h"
 #include "EventDispatcher.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquippedWeapon, TScriptInterface<IWeapon>, weapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnEquippedWeapon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRefreshCrosshair, float, spread);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshHealth, float, health);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshNumKills, int, numKills);
 
@@ -41,6 +44,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="Character Weapon")
 	FOnUnEquippedWeapon OnUnEquippedWeapon;
 
+	UPROPERTY(BlueprintAssignable, Category="Character Weapon")
+	FOnRefreshCrosshair OnRefreshCrosshair;
+	
 	UPROPERTY(BlueprintAssignable, Category="Character Stats")
 	FRefreshNumKills OnRefreshNumKills;
 	

@@ -36,14 +36,14 @@ void AMenuHUD::BindToDelegate()
 	if (gameInstance)
 	{
 		const auto eventDispatcher = gameInstance->GetEventDispatcher();
-		eventDispatcher->OnGameStarted.AddDynamic(this, &AMenuHUD::OnGameStarted);
-		eventDispatcher->OnGameOver.AddDynamic(this, &AMenuHUD::OnGameOver);
+		eventDispatcher->OnGameStarted.AddDynamic(this, &ThisClass::OnGameStarted);
+		eventDispatcher->OnGameOver.AddDynamic(this, &ThisClass::OnGameOver);
 		
-		eventDispatcher->OnRefreshCountDown.AddDynamic(this, &AMenuHUD::OnRefreshCountDown);
-		eventDispatcher->OnFinishCountDown.AddDynamic(this, &AMenuHUD::OnFinishCountDown);
+		eventDispatcher->OnRefreshCountDown.AddDynamic(this, &ThisClass::OnRefreshCountDown);
+		eventDispatcher->OnFinishCountDown.AddDynamic(this, &ThisClass::OnFinishCountDown);
 
-		eventDispatcher->OnShowStatsScreen.AddDynamic(this, &AMenuHUD::OnShowStatsScreen);
-		eventDispatcher->OnHideStatsScreen.AddDynamic(this, &AMenuHUD::OnHideStatsScreen);
+		eventDispatcher->OnShowStatsScreen.AddDynamic(this, &ThisClass::OnShowStatsScreen);
+		eventDispatcher->OnHideStatsScreen.AddDynamic(this, &ThisClass::OnHideStatsScreen);
 	}
 }
 

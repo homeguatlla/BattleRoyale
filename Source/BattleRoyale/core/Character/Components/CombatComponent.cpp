@@ -16,6 +16,15 @@
 UCombatComponent::UCombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	bWantsInitializeComponent = true;
+}
+
+void UCombatComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	mCharacter = Cast<ACharacterBase>(GetOwner());
+	check(mCharacter);
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -30,7 +39,12 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	
+	if(mCharacter && mCharacter->IsLocallyControlled() && HasWeaponEquipped())
+	{
+		const auto spread = CalculateCrosshairSpread();
+		GetGameInstance()->GetEventDispatcher()->OnRefreshCrosshair.Broadcast(spread);
+	}
 	if(IsDebugEnabled)
 	{
 		DebugDrawAiming();
@@ -41,23 +55,18 @@ void UCombatComponent::OnRep_EquippedWeapon() const
 {
 	//This rep notify is to inform the clients when the client just equipped a weapon,
 	//and then show the crosshairs.
-	const auto character = Cast<ACharacterBase>(GetOwner());
-	if(!character || !character->IsLocallyControlled())
+	if(!mCharacter || !mCharacter->IsLocallyControlled())
 	{
 		return;
 	}
-	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(character->GetGameInstance());
-	gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(GetEquippedWeapon());
+	GetGameInstance()->GetEventDispatcher()->OnEquippedWeapon.Broadcast(GetEquippedWeapon());
 }
 
 void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	const auto character = Cast<ACharacterBase>(GetOwner());
-	check(character);
-
-	mAimWalkSpeed = character->GetMinWalkSpeed();
+	
+	mAimWalkSpeed = mCharacter->GetMinWalkSpeed();
 }
 
 bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName)
@@ -68,12 +77,9 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName
 		return false;
 	}
 	
-	const auto character = Cast<ACharacterBase>(GetOwner());
-	check(character);
-	
 	mEquippedWeapon = weapon;
-	mEquippedWeapon->SetCharacterOwner(character);
-	SetupLeftHandSocketTransform(character);
+	mEquippedWeapon->SetCharacterOwner(mCharacter);
+	SetupLeftHandSocketTransform(mCharacter);
 	
 	return true;
 }
@@ -98,22 +104,18 @@ bool UCombatComponent::CanShoot() const
 void UCombatComponent::StartAiming()
 {
 	mIsAiming = true;
-	const auto character = Cast<ACharacterBase>(GetOwner());
-	check(character);
-
-	character->GetCharacterMovement()->MaxWalkSpeed = mAimWalkSpeed;
 	
-	character->GetAbilitySystemComponentBase()->AddGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_AIMING));
-	character->GetAbilitySystemComponentBase()->CancelAbilitiesWithTags(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SPRINT)));
+	mCharacter->GetCharacterMovement()->MaxWalkSpeed = mAimWalkSpeed;
+	
+	mCharacter->GetAbilitySystemComponentBase()->AddGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_AIMING));
+	mCharacter->GetAbilitySystemComponentBase()->CancelAbilitiesWithTags(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SPRINT)));
 }
 
 void UCombatComponent::StopAiming()
 {
 	mIsAiming = false;
-	const auto character = Cast<ACharacterBase>(GetOwner());
-	check(character);
-	character->GetCharacterMovement()->MaxWalkSpeed = character->GetMaxWalkSpeed();
-	character->GetAbilitySystemComponentBase()->RemoveGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_AIMING));
+	mCharacter->GetCharacterMovement()->MaxWalkSpeed = mCharacter->GetMaxWalkSpeed();
+	mCharacter->GetAbilitySystemComponentBase()->RemoveGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_AIMING));
 }
 
 bool UCombatComponent::CanAim() const
@@ -156,7 +158,7 @@ void UCombatComponent::SetupLeftHandSocketTransform(const ACharacterBase* charac
 FVector UCombatComponent::CalculateShootingTarget() const
 {
 	const auto playerController = Cast<APlayerController>(GetOwner()->GetInstigatorController());
-	const auto hitResult = utils::UtilsLibrary::TraceLineSingleByChannelToCrossHairs(GetWorld(), playerController, MaxShootingDistance);
+	const auto hitResult = utils::UtilsLibrary::TraceLineSingleByChannelToCrosshair(GetWorld(), playerController, MaxShootingDistance);
 
 	if(!hitResult.IsValidBlockingHit())
 	{
@@ -165,11 +167,28 @@ FVector UCombatComponent::CalculateShootingTarget() const
 	return hitResult.ImpactPoint;
 }
 
+float UCombatComponent::CalculateCrosshairSpread() const
+{
+	if(const auto characterInterface = Cast<IICharacter>(GetOwner()))
+	{
+		auto velocity = characterInterface->GetCurrentVelocity();
+		//velocity.Z = 0.0f;
+		const auto maxWalkSpeed = characterInterface->GetMaxWalkSpeed();
+
+		//From velocity [0, maxWalkSpeed] to [0, 1] depending on the velocity
+		return FMath::GetMappedRangeValueClamped(FVector2D(0, maxWalkSpeed), FVector2D(0.0f, 1.0f), velocity.Size());
+	}
+	return 0.0f;
+}
+
+UBattleRoyaleGameInstance* UCombatComponent::GetGameInstance() const
+{
+	return Cast<UBattleRoyaleGameInstance>(mCharacter->GetGameInstance());
+}
+
 void UCombatComponent::DebugDrawAiming() const
 {
-	const auto character = Cast<ACharacterBase>(GetOwner());
-	
-	if(!character->IsLocallyControlled() || !HasWeaponEquipped())
+	if(!mCharacter->IsLocallyControlled() || !HasWeaponEquipped())
 	{
 		return;
 	} 

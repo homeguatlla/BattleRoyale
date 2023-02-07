@@ -14,7 +14,7 @@ class IWeaponHUD
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Weapon HUD")
-	void OnEquippedWeapon(UTexture2D* crosshair);
+	void OnEquippedWeapon(UUserWidget* crosshair);
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Weapon HUD")
 	void OnUnEquippedWeapon();
 };

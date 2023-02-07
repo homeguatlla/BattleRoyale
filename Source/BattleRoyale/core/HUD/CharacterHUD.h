@@ -28,6 +28,8 @@ private:
 	UFUNCTION()
 	void OnUnEquippedWeapon();
 	UFUNCTION()
+	void OnRefreshCrosshair(float spread);
+	UFUNCTION()
 	void OnRefreshHealthReceived(float health);
 	UFUNCTION()
 	void OnPlayerDead();

@@ -549,10 +549,10 @@ void ACharacterBase::PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* 
 		}
 	}
 }
-
+/*
 void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 {
-	/*if (mCurrentHealth <= 0)
+	if (mCurrentHealth <= 0)
 	{
 		UnEquipWeapon();
 		HideFirstPersonMesh();
@@ -565,8 +565,8 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 			gameInstance->GetEventDispatcher()->OnPlayerDead.Broadcast();
 		}		
-	}*/
-}
+	}
+}*/
 
 void ACharacterBase::DieClient()
 {

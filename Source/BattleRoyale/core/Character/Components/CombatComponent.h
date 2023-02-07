@@ -7,6 +7,7 @@
 #include "Components/ActorComponent.h"
 #include "CombatComponent.generated.h"
 
+class UBattleRoyaleGameInstance;
 class ACharacterBase;
 class IWeapon;
 
@@ -29,9 +30,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "CombatComponent")
 	bool IsDebugEnabled { false };
-
+	
 	UPROPERTY(Replicated)
 	bool mIsAiming;
+
+	UPROPERTY()
+	ACharacterBase* mCharacter;
 	
 	float mAimWalkSpeed;
 	
@@ -39,6 +43,8 @@ public:
 	// Sets default values for this component's properties
 	UCombatComponent();
 
+	virtual void InitializeComponent() override;
+	
 	virtual bool EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName) override;
 	virtual bool UnEquipWeapon() const override;
 
@@ -68,8 +74,13 @@ private:
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	UFUNCTION()
 	void OnRep_EquippedWeapon() const;
 	FVector CalculateShootingTarget() const;
+	float CalculateCrosshairSpread() const;
+
+	UBattleRoyaleGameInstance* GetGameInstance() const;
+	
 	void DebugDrawAiming() const;
 };

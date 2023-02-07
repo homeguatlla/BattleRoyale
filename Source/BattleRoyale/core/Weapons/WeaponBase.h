@@ -32,7 +32,7 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 	TSubclassOf<UGameplayEffect> MuzzleGameplayEffectClass;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	UTexture2D* CrossHairs;
+	UUserWidget* Crosshair;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	float DistanceFromMuzzleLocation = { 20.0f};
@@ -65,7 +65,7 @@ public:
 	
 	virtual void SetCharacterOwner(ACharacterBase* character) override;
 	virtual void SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation) override;
-	virtual UTexture2D* GetCrossHairsTexture() const override { return CrossHairs; }
+	virtual UUserWidget* GetCrosshairWidget() const override { return Crosshair; }
 	
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon", meta = (DisplayName = OnFire))
 	void BP_OnFire();

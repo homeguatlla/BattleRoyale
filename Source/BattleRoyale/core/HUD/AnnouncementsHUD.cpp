@@ -34,9 +34,9 @@ void AAnnouncementsHUD::BindToDelegate()
 	{
 		const auto eventDispatcher = gameInstance->GetEventDispatcher();
 
-		eventDispatcher->OnAnnounceNewDeath.AddUniqueDynamic(this, &AAnnouncementsHUD::OnAnnounceNewDeath);
-		eventDispatcher->OnAnnouncePlayerWon.AddUniqueDynamic(this, &AAnnouncementsHUD::OnAnnouncePlayerWon);
-		eventDispatcher->OnAnnounceTeamsAndPlayersAlive.AddUniqueDynamic(this, &AAnnouncementsHUD::OnAnnounceTeamsAndPlayersAlive);
+		eventDispatcher->OnAnnounceNewDeath.AddUniqueDynamic(this, &ThisClass::OnAnnounceNewDeath);
+		eventDispatcher->OnAnnouncePlayerWon.AddUniqueDynamic(this, &ThisClass::OnAnnouncePlayerWon);
+		eventDispatcher->OnAnnounceTeamsAndPlayersAlive.AddUniqueDynamic(this, &ThisClass::OnAnnounceTeamsAndPlayersAlive);
 	}
 }
 
