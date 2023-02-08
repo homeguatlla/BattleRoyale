@@ -7,6 +7,7 @@
 #include "BattleRoyale/core/General/PickupObjectBase.h"
 #include "WeaponBase.generated.h"
 
+class ICrosshair;
 class UGameplayEffect;
 class IICharacter;
 
@@ -32,7 +33,7 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 	TSubclassOf<UGameplayEffect> MuzzleGameplayEffectClass;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	UUserWidget* Crosshair;
+	TScriptInterface<ICrosshair> Crosshair;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	float DistanceFromMuzzleLocation = { 20.0f};
@@ -65,7 +66,7 @@ public:
 	
 	virtual void SetCharacterOwner(ACharacterBase* character) override;
 	virtual void SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation) override;
-	virtual UUserWidget* GetCrosshairWidget() const override { return Crosshair; }
+	virtual TScriptInterface<ICrosshair> GetCrosshairWidget() const override { return Crosshair; }
 	
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon", meta = (DisplayName = OnFire))
 	void BP_OnFire();
