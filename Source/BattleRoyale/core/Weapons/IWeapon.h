@@ -55,6 +55,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual FTransform GetLeftHandSocketTransform() = 0;
 	
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual FTransform GetMuzzleSocketTransform() = 0;
+	
 	virtual void SetCharacterOwner(ACharacterBase* character) = 0;
 
 	virtual FTransform SaveLeftHandSocketTransform() = 0;

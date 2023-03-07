@@ -123,6 +123,11 @@ bool UCombatComponent::CanAim() const
 	return HasWeaponEquipped() && !mIsAiming;
 }
 
+FVector UCombatComponent::GetShootingTargetLocation() const
+{
+	return CalculateShootingTargetLocation();
+}
+
 void UCombatComponent::Shoot() const
 {
 	if(!HasWeaponEquipped())
@@ -131,7 +136,7 @@ void UCombatComponent::Shoot() const
 		return;
 	}
 
-	const auto shootingTargetLocation = CalculateShootingTarget();
+	const auto shootingTargetLocation = CalculateShootingTargetLocation();
 	const auto weapon = GetEquippedWeapon();
 	weapon->Fire(shootingTargetLocation);
 }
@@ -155,7 +160,7 @@ void UCombatComponent::SetupLeftHandSocketTransform(const ACharacterBase* charac
 }
 
 
-FVector UCombatComponent::CalculateShootingTarget() const
+FVector UCombatComponent::CalculateShootingTargetLocation() const
 {
 	const auto playerController = Cast<APlayerController>(GetOwner()->GetInstigatorController());
 	const auto hitResult = utils::UtilsLibrary::TraceLineSingleByChannelToCrosshair(GetWorld(), playerController, MaxShootingDistance);
@@ -193,7 +198,7 @@ void UCombatComponent::DebugDrawAiming() const
 		return;
 	} 
 	const auto muzzleLocation = GetEquippedWeapon()->GetMuzzleLocation();
-	const auto shootingTargetLocation = CalculateShootingTarget();
+	const auto shootingTargetLocation = CalculateShootingTargetLocation();
 	DrawDebugSphere(GetWorld(), muzzleLocation, 5, 12, FColor::White, false);
 	DrawDebugSphere(GetWorld(), muzzleLocation, 3, 12, FColor::Blue, false);
 	DrawDebugLine(GetWorld(), muzzleLocation, shootingTargetLocation, FColor::Blue, false);

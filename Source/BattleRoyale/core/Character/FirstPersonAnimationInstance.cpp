@@ -2,7 +2,11 @@
 
 
 #include "FirstPersonAnimationInstance.h"
+
+#include "DetailLayoutBuilder.h"
 #include "KismetAnimationLibrary.h"
+#include "SAdvancedTransformInputBox.h"
+#include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "Components/CombatComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -53,6 +57,7 @@ void UFirstPersonAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)
 	YawOffset = UKismetMathLibrary::NormalizedDeltaRotator(movementRotation, aimRotation).Yaw;
 
 	CheckEquippedToMakeLeftHandHoldsWeapon();
+	CheckEquippedToMakeWeaponPointsToCrosshair();
 	CheckToEnableTurnInPlace();
 }
 
@@ -73,6 +78,43 @@ void UFirstPersonAnimationInstance::CheckEquippedToMakeLeftHandHoldsWeapon()
 		//This is to make left hand holds the weapon with IK 
 		Character->CombatComponent->SetupLeftHandSocketTransform(Character);
 		LeftHandSocketTransform = gunComponent->GetEquippedWeapon()->GetLeftHandSocketTransform();
+	}
+}
+
+void UFirstPersonAnimationInstance::CheckEquippedToMakeWeaponPointsToCrosshair()
+{
+	if(!Character->IsLocallyControlled())
+	{
+		return;
+	}
+
+	IsLocallyControlled = true;
+	
+	const auto gunComponent = CharacterInterface->GetGunComponent();
+	if(gunComponent->HasWeaponEquipped())
+	{
+		const auto rightHandSocketTransform = CharacterInterface->GetRightHandSocketTransform();
+		const auto shootingTarget = gunComponent->GetShootingTargetLocation();
+
+		//En este punto queremos que el arma apunte en la dirección de la retícula.
+		//Para ello tenemos que el eje que queremos mover es el eje Y del arma. Hay que usar el MakeRotFromY pasando el nuevo vector a donde queremos calcular la rotación para posicionarlo
+		//el vector es el vector que va desde la mano, hasta el shootingTarget (el punto en el espacio de la reticula)
+		//vector = shootingTarget - rightHandSocketTransform.GetLocation()
+		//Como el vector Y está apuntando no hacia la dirección donde apunta el arma sino hacia el lado opuesto, calculamos la posición del target como si estuviera en la dirección opuesta.
+		//newTargetLocation = rhst.GetLocation() + rhst.GetLocation-shootingTarget y luego el vector
+		//newTargetLocation - rhst.GetLocation()
+		const auto newShootingTargetLocation = (rightHandSocketTransform.GetLocation() + rightHandSocketTransform.GetLocation() - shootingTarget);
+		RightHandRotation = UKismetMathLibrary::MakeRotFromY( newShootingTargetLocation - rightHandSocketTransform.GetLocation());
+	
+		//Weapon axis
+		DrawDebugLine(GetWorld(), rightHandSocketTransform.GetLocation(), rightHandSocketTransform.GetLocation() +  rightHandSocketTransform.GetRotation().GetForwardVector() * 100.0f, FColor::Red);
+		DrawDebugLine(GetWorld(), rightHandSocketTransform.GetLocation(), rightHandSocketTransform.GetLocation() +  rightHandSocketTransform.GetRotation().GetAxisY() * 100.0f, FColor::Green);//, false, -1, 0, 2);
+		DrawDebugLine(GetWorld(), rightHandSocketTransform.GetLocation(), rightHandSocketTransform.GetLocation() +  rightHandSocketTransform.GetRotation().GetUpVector() * 100.0f, FColor::Blue);
+		
+		const auto weapon = gunComponent->GetEquippedWeapon();
+		const auto muzzleSocketTransform = weapon->GetMuzzleSocketTransform();
+		DrawDebugLine(GetWorld(), muzzleSocketTransform.GetLocation(), muzzleSocketTransform.GetLocation() +  muzzleSocketTransform.GetRotation().GetForwardVector() * 10000.0f, FColor::Yellow);
+		DrawDebugLine(GetWorld(), muzzleSocketTransform.GetLocation(), shootingTarget, FColor::Cyan);
 	}
 }
 

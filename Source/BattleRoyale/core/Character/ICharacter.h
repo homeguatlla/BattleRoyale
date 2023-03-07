@@ -130,6 +130,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual FName GetRightHandSocketName() const = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual FTransform GetRightHandSocketTransform() const = 0;
 	
 	virtual void Shoot() = 0;
 	

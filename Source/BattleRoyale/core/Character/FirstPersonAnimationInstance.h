@@ -23,8 +23,8 @@ public:
 private:
 	void SetupCharacter();
 	void CheckEquippedToMakeLeftHandHoldsWeapon();
+	void CheckEquippedToMakeWeaponPointsToCrosshair();
 	void CheckToEnableTurnInPlace();
-	
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
 	class ACharacterBase* Character = nullptr;
@@ -71,6 +71,12 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = true))
 	float InterpolatedTurnInPlaceDeltaYaw;
 
+	UPROPERTY(BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = true))
+	FRotator RightHandRotation;
+
+	UPROPERTY(BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = true))
+	bool IsLocallyControlled = false;
+	
 	FRotator mStartingYawRotator;
 	FRotator mLastYawRotator;
 };

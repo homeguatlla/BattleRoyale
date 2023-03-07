@@ -136,6 +136,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual FName GetRightHandSocketName() const { return RightHandSocketName; }
+
+	UFUNCTION(BlueprintCallable)
+	virtual FTransform GetRightHandSocketTransform() const override;
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool CanSprint() const override;

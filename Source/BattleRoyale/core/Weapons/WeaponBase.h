@@ -59,6 +59,8 @@ public:
 	virtual FGameplayTagContainer GetCooldownTags() const override { return CooldownTags; }
 	virtual FTransform GetLeftHandSocketTransform() override;
 	virtual FTransform SaveLeftHandSocketTransform() override;
+	virtual FTransform GetMuzzleSocketTransform() override;
+	
 	virtual void Destroy() override;
 	virtual bool CanBeFired() const override;
 	virtual void Fire(const FVector& targetLocation) override;

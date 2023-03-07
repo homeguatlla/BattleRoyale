@@ -253,6 +253,12 @@ void ACharacterBase::SetCurrentHealthTest(float health)
 	//Send effect to modify the health
 }
 
+FTransform ACharacterBase::GetRightHandSocketTransform() const
+{
+	check(!RightHandSocketName.IsNone());
+	return GetMesh()->GetSocketTransform("hand_r", RTS_World);
+}
+
 bool ACharacterBase::CanSprint() const
 {
 	//We are not checking if the Velocity > 0 to sprint because

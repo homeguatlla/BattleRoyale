@@ -137,6 +137,12 @@ FTransform AWeaponBase::SaveLeftHandSocketTransform()
 	return mLeftHandSocketTransform;
 }
 
+FTransform AWeaponBase::GetMuzzleSocketTransform()
+{
+	check(!MuzzleSocketName.IsNone());
+	return GetMesh()->GetSocketTransform(MuzzleSocketName, RTS_World);
+}
+
 void AWeaponBase::SpawnBulletShell() const
 {
 	if(!BulletShellClass)

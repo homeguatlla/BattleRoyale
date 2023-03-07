@@ -67,6 +67,8 @@ public:
 	virtual void StopAiming() override;
 	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
 	virtual bool CanAim() const override;
+	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
+	virtual FVector GetShootingTargetLocation() const override;
 	
 	void SetupLeftHandSocketTransform(const ACharacterBase* character) const;
 private:
@@ -77,7 +79,7 @@ private:
 
 	UFUNCTION()
 	void OnRep_EquippedWeapon() const;
-	FVector CalculateShootingTarget() const;
+	FVector CalculateShootingTargetLocation() const;
 	float CalculateCrosshairSpread() const;
 
 	UBattleRoyaleGameInstance* GetGameInstance() const;
