@@ -19,6 +19,7 @@ public:
 	
 	void StartCountdownServer(int duration);	
 	virtual bool IsGameReadyToStart() const override;
+	bool CanStartCountDown(uint8 numTeamsToStartCountDown) const;
 	
 private:
 	

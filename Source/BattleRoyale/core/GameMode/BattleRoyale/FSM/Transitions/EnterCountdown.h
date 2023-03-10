@@ -1,7 +1,8 @@
 #pragma once
-#include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/BattleRoyaleStates.h"
 #include "BattleRoyale/core/Utils/FSM/fsm/BaseTransition.h"
+
+class ABattleRoyaleGameState;
 
 namespace BRModeFSM
 {
@@ -17,6 +18,6 @@ namespace BRModeFSM
 		bool CanPerformTransition() const override;
 
 	private:
-		const IIGameState* mGameState;
+		const ABattleRoyaleGameState* mGameState;
 	};
 };

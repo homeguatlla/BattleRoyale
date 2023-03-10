@@ -36,6 +36,11 @@ bool ABattleRoyaleGameState::IsGameReadyToStart() const
 	return DidCountdownStart() && DidCountdownFinish();
 }
 
+bool ABattleRoyaleGameState::CanStartCountDown(uint8 numTeamsToStartCountDown) const
+{
+	return !DidCountdownStart() && GetNumTeams() >= numTeamsToStartCountDown;
+}
+
 
 void ABattleRoyaleGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -72,7 +77,8 @@ void ABattleRoyaleGameState::AddStatesMachineServer(
 		GetWorld(),
 		gameMode,
 		this,
-		gameMode->GetCountdownTimeToStartGame());
+		gameMode->GetCountdownTimeToStartGame(),
+		gameMode->GetNumTeamsToStartCountDown());
 	
 	BattleRoyale::StatesMachineFactory factory;
 	

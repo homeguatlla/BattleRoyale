@@ -92,7 +92,7 @@ void AMultiplayerGameMode::CreateSession(bool isLAN)
 {
 	GetGameSession()->CreateSession(
 		isLAN,
-		mConfigurationInfo->GetMaxNumPlayers(),
+		MultiplayerConfigurationInfo->GetMaxNumPlayers(),
 		DefaultPlayerName.ToString());
 }
 
@@ -156,7 +156,7 @@ uint8 AMultiplayerGameMode::GetFindSessionsStatus() const
 
 bool AMultiplayerGameMode::HasLobbyMap() const
 {
-	return !mConfigurationInfo->GetLobbyMapName().IsNone();
+	return !MultiplayerConfigurationInfo->GetLobbyMapName().IsNone();
 }
 
 void AMultiplayerGameMode::StartGame()
@@ -168,9 +168,9 @@ void AMultiplayerGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if(mConfigurationInfo)
+	if(MultiplayerConfigurationInfo)
 	{
-		GetGameSession()->Initialize(mConfigurationInfo);
+		GetGameSession()->Initialize(MultiplayerConfigurationInfo);
 	}
 }
 

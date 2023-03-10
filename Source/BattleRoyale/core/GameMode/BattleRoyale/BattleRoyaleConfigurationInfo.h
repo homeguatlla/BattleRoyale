@@ -11,6 +11,7 @@ public:
 	float GetOnceMatchEndedTimeToResetSessionTime() const { return OnceMatchEndedTimeToResetSessionTime; }
 	uint8 GetNumPlayersPerTeam() const { return NumPlayersPerTeam; }
 	float GetCountdownTimeToStartGame() const { return CountdownTimeToStartGame; }
+	uint8 GetNumTeamsToStartCountDown() const { return NumTeamsToStartCountDown; }
 	
 private:
 	UPROPERTY(EditAnywhere, Category=BattleRoyale)
@@ -21,4 +22,7 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category=BattleRoyale)
 	float CountdownTimeToStartGame = 15.f;
+
+	UPROPERTY(EditAnywhere, Category=BattleRoyale)
+	uint8 NumTeamsToStartCountDown = 2;
 };

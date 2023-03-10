@@ -24,7 +24,8 @@ public:
 	float GetOnceMatchEndedTimeToResetSessionTime() const;
 	uint8 GetNumPlayersPerTeam() const;
 	float GetCountdownTimeToStartGame() const;
-	
+	uint8 GetNumTeamsToStartCountDown() const;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=BattleRoyale)
 	TSubclassOf<APawn> CharacterClass;
 

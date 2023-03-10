@@ -43,6 +43,11 @@ float ABattleRoyaleGameMode::GetCountdownTimeToStartGame() const
 	return GetConfigurationInfo()->GetCountdownTimeToStartGame();
 }
 
+uint8 ABattleRoyaleGameMode::GetNumTeamsToStartCountDown() const
+{
+	return GetConfigurationInfo()->GetNumTeamsToStartCountDown();
+}
+
 void ABattleRoyaleGameMode::ApplyTeamSelectionStrategy(const AController* controller) const
 {
 	if(mTeamSelectionStrategy != nullptr)
@@ -60,6 +65,7 @@ void ABattleRoyaleGameMode::ApplyTeamSelectionStrategy(const AController* contro
 
 UBattleRoyaleConfigurationInfo* ABattleRoyaleGameMode::GetConfigurationInfo() const
 {
+	check(ConfigurationInfo);
 	return Cast<UBattleRoyaleConfigurationInfo>(ConfigurationInfo);
 }
 

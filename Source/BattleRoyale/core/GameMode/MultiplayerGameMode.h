@@ -61,7 +61,7 @@ public:
     void StartGame() override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UMultiplayerConfigurationInfo* mConfigurationInfo;
+	UMultiplayerConfigurationInfo* MultiplayerConfigurationInfo;
 
 protected:
 	virtual void BeginPlay() override;

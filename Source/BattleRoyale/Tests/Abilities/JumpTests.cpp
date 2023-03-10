@@ -1,4 +1,4 @@
-﻿/*#include "CoreMinimal.h"
+﻿#include "CoreMinimal.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 
@@ -18,6 +18,7 @@
 #include "Tests/AutomationEditorCommon.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
+
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FJumpTest_WhenSpawningANewCharacter_CanJump,
                                  "Project.Abilities.JumpAbility.When_SpawningNewCharacter_Then_CanJump",
@@ -75,13 +76,32 @@ bool FJumpTest_WhenCharacterIsFalling_CanNotJump::RunTest(const FString& Paramet
 	return true;
 }
 
+
+DEFINE_LATENT_AUTOMATION_COMMAND_ONE_PARAMETER(FMyCommand, IIGameState*, GameState);
+bool FMyCommand::Update() {
+	
+	if(GameState->IsGameReadyToStart())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FJumpTest_WhenAbilityJumpIsTriggered_And_CanJump_CharacterIsJumping,
 								 "Project.Abilities.JumpAbility.When_AbilityJumpIsTriggered_And_CanJump_Then_CharacterIsJumping",
 								 EAutomationTestFlags::ApplicationContextMask  | EAutomationTestFlags::ProductFilter)
 PRAGMA_DISABLE_OPTIMIZATION_ACTUAL
 bool FJumpTest_WhenAbilityJumpIsTriggered_And_CanJump_CharacterIsJumping::RunTest(const FString& Parameters)
 {
-	const FString mapName = TEXT("/Game/Maps/SampleTest.SampleTest");
+
+	
+	ADD_LATENT_AUTOMATION_COMMAND(FEditorAutomationLogCommand("Hola test"));
+	ADD_LATENT_AUTOMATION_COMMAND(FWaitLatentCommand(5.0));
+	
+/*	const FString mapName = TEXT("/Game/Maps/SampleTest.SampleTest");
 	if (!AutomationOpenMap(mapName))
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to load world"));
@@ -96,9 +116,12 @@ bool FJumpTest_WhenAbilityJumpIsTriggered_And_CanJump_CharacterIsJumping::RunTes
 	}
 
 	const auto gameState = Cast<IIGameState>(world->GetGameState());
+*/
+	//ADD_LATENT_AUTOMATION_COMMAND(FMyCommand(gameState));
+	//ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(5.0f));
+	//while(!gameState->IsGameReadyToStart()){};
 	
-	while(!gameState->DidCountdownFinish()){};
-	
+	/*
 	const auto playerController = world->GetFirstPlayerController();
 	const auto character = UGameplayStatics::GetPlayerCharacter(world, 0);
 	if(!character)
@@ -126,9 +149,9 @@ bool FJumpTest_WhenAbilityJumpIsTriggered_And_CanJump_CharacterIsJumping::RunTes
 	TestTrue(TEXT("When Character is jumping Z is increased"), newVelocityZ > originalVelocityZ);
 	
 	world->DestroyWorld(true);
-	
+	*/
 	return true;
 }
 PRAGMA_ENABLE_OPTIMIZATION_ACTUAL
 #endif
-#endif*/
+#endif

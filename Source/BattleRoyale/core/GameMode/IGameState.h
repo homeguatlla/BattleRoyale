@@ -32,7 +32,7 @@ public:
 	virtual bool HasGameStarted() const = 0;
 	virtual bool IsGameReadyToStart() const = 0;
 	virtual bool HasMatchEnded() const = 0;
-	
+
 	virtual int GetNumPlayers() const = 0;
 	virtual int GetNumTeams() const = 0 ;
 	virtual void PerformActionForEachPlayerState(std::function<bool(IIPlayerState* playerState)> action) const = 0;

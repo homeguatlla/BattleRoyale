@@ -31,15 +31,15 @@ public class BattleRoyale : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
-			"AnimGraphRuntime"
+			"AnimGraphRuntime",
 			//Automation tests (in order to include AutomationEditorCommon.h)
-			//"UnrealEd",
-			//"FunctionalTesting"
+			"UnrealEd",
+			"FunctionalTesting"
 		});
 
 		DynamicallyLoadedModuleNames.AddRange(new string[]
 		{
-			//"OnlineSubsystemNull"
+			"OnlineSubsystemNull"
 		});
 	}
 }
