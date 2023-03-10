@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "EngineUtils.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
 
 //#include "YourGameModeBase.h"
 //#include "MyEssentialActor.h"
