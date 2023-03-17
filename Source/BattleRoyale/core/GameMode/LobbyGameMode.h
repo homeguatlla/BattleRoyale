@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "IGameState.h"
 #include "GameFramework/GameMode.h"
 #include "LobbyGameMode.generated.h"
 
 
+class IIMultiplayerGameState;
 UCLASS()
 class BATTLEROYALE_API ALobbyGameMode : public AGameMode
 {
@@ -23,5 +23,5 @@ public:
 	int mNumPlayers;
 	
 private:
-	IIGameState* GetGameState() const;
+	IIMultiplayerGameState* GetGameState() const;
 };

@@ -214,7 +214,7 @@ void ACharacterBase::BindAbilityActivationToInputComponent() const
 		const FGameplayAbilityInputBinds Binds(
 			"Confirm",
 			"Cancel",
-			"EAbilityInputID",
+			"/Script/BattleRoyale.EAbilityInputID",
 			static_cast<int32>(EAbilityInputID::Confirm),
 			static_cast<int32>(EAbilityInputID::Cancel)
 		);

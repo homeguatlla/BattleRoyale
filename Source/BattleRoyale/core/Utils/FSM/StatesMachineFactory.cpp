@@ -35,11 +35,16 @@
 #include "BattleRoyale/core/GameMode/PlayerState/FSM/Transitions/Server/ServerEnterGameOver.h"
 
 #include "StatesMachineBuilder.h"
+#include "BattleRoyale/core/GameMode/SinglePlayer/FSM/States/GameFinish.h"
+#include "BattleRoyale/core/GameMode/SinglePlayer/FSM/States/GameLoopSP.h"
+#include "BattleRoyale/core/GameMode/SinglePlayer/FSM/States/StartGame.h"
+#include "BattleRoyale/core/GameMode/SinglePlayer/FSM/Transitions/EnterGameFinish.h"
+#include "BattleRoyale/core/GameMode/SinglePlayer/FSM/Transitions/EnterGameLoopSP.h"
 
 
 namespace BattleRoyale
 {
-	std::unique_ptr<StatesMachineFactory::GameModeFSM> StatesMachineFactory::CreateModeFSM(
+	std::unique_ptr<StatesMachineFactory::GameModeFSMBattleRoyale> StatesMachineFactory::CreateModeFSMBattleRoyale(
 		FSMType type, 
 		std::shared_ptr<BRModeFSM::BattleRoyaleContext> context)
 	{
@@ -61,7 +66,7 @@ namespace BattleRoyale
 								  .WithState(synchronize)
 								  .WithState(gameLoop)
 								  .WithState(matchEnd)
-								  .WithState(reset)
+								  .WithState(reset)					
 	                              .WithTransition(std::make_unique<BRModeFSM::EnterCountdown>(init, countdown))
 	                              .WithTransition(std::make_unique<BRModeFSM::EnterSynchronize>(countdown, synchronize))
 	                              .WithTransition(std::make_unique<BRModeFSM::EnterGameLoop>(synchronize, gameLoop))
@@ -76,6 +81,36 @@ namespace BattleRoyale
 				return {};
 		}	
 	}
+
+	std::unique_ptr<StatesMachineFactory::GameModeFSMSinglePlayer> StatesMachineFactory::CreateModeFSMSinglePlayer(
+		FSMType type, 
+		std::shared_ptr<BRModeFSM::SinglePlayerContext> context)
+	{
+		StatesMachineBuilder<BRModeFSM::SinglePlayerState, BRModeFSM::SinglePlayerContext> builder;
+
+		switch(type)
+		{
+		case FSMType::SINGLEPLAYER_GAMEMODE:
+			{
+				const auto startGame = std::make_shared<BRModeFSM::StartGame>();
+				const auto gameLoop = std::make_shared<BRModeFSM::GameLoopSP>();
+				const auto gameFinish = std::make_shared<BRModeFSM::GameFinish>();
+
+				return builder.WithState(startGame)
+							  .WithState(gameLoop)
+							  .WithState(gameFinish)
+							  .WithTransition(std::make_unique<BRModeFSM::EnterGameLoopSP>(startGame, gameLoop))
+							  .WithTransition(std::make_unique<BRModeFSM::EnterGameFinish>(gameLoop, gameFinish))
+							  .WithInitialState(startGame->GetID())
+							  .Build(context);
+			}
+			
+		default:
+			checkf(false, TEXT("States Machine type %d not defined"), type);
+			return {};
+		}	
+	}
+	
 	std::unique_ptr<StatesMachineFactory::PlayerStateFSM> StatesMachineFactory::CreatePlayerStateFSM(
 			FSMType type, 
 			std::shared_ptr<BRPlayerStateFSM::PlayerStateContext> context)

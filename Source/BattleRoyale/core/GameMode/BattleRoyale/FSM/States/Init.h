@@ -1,20 +1,19 @@
 #pragma once
 #include "BattleRoyaleStates.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/FSM/BattleRoyaleContext.h"
 #include "BattleRoyale/core/Utils/FSM/fsm/BaseState.h"
 
 
 namespace BRModeFSM
 {
-	class BattleRoyaleContext;
-
 	class Init : public core::utils::FSM::BaseState<BattleRoyaleState, BattleRoyaleContext>
 	{
 	public:
 		Init();
-		virtual ~Init() = default;
+		virtual ~Init() override = default;
 
-		BattleRoyaleState GetID() const override { return BattleRoyaleState::STATE_INIT; }
+		virtual BattleRoyaleState GetID() const override { return BattleRoyaleState::STATE_INIT; }
 		
-		void OnInit() override;
+		virtual void OnInit() override;
 	};
 };

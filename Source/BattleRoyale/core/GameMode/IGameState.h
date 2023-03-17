@@ -27,20 +27,14 @@ class BATTLEROYALE_API IIGameState
 	GENERATED_BODY()
 
 public:
-	virtual bool AreAllPlayersReplicated() const = 0;
 	virtual void StartGameServer() = 0;
 	virtual bool HasGameStarted() const = 0;
 	virtual bool IsGameReadyToStart() const = 0;
 	virtual bool HasMatchEnded() const = 0;
 
-	virtual int GetNumPlayers() const = 0;
-	virtual int GetNumTeams() const = 0 ;
-	virtual void PerformActionForEachPlayerState(std::function<bool(IIPlayerState* playerState)> action) const = 0;
+	//virtual void PerformActionForEachPlayerState(std::function<bool(IIPlayerState* playerState)> action) const = 0;
 
-	virtual void SetWinnerTeam(int teamId) = 0;
-	virtual int GetWinnerTeam() const = 0;
 	virtual void MatchEndServer() = 0;
-	virtual void CloseAllPlayersGameSessionServer() const = 0;
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void PlayerInteraction(const APlayerController* playerController, const FString& action) = 0;

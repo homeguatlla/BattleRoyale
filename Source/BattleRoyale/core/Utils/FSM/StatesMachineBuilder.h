@@ -5,7 +5,8 @@
 
 namespace BattleRoyale
 {
-	template<typename TStateID, class TContext>
+	
+ template<typename TStateID, class TContext>
  class StatesMachineBuilder
 	{
 	public:

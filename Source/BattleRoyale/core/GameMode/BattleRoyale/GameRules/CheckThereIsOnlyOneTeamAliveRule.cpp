@@ -6,6 +6,7 @@
 #include "EndOfGameRule.h"
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
+#include "BattleRoyale/core/GameMode/IMultiplayerGameState.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 
 void CheckThereIsOnlyOneTeamAliveRule::Initialize(UWorld* world, IIGameState* gameState)
@@ -16,12 +17,14 @@ void CheckThereIsOnlyOneTeamAliveRule::Initialize(UWorld* world, IIGameState* ga
 
 bool CheckThereIsOnlyOneTeamAliveRule::Evaluate()
 {
-	if(mGameState->GetNumPlayers() <= 0)
+	const auto multiplayerGameState = Cast<IIMultiplayerGameState>(mGameState);
+	
+	if(multiplayerGameState->GetNumPlayers() <= 0)
 	{
 		return false;
 	}
 
-	if(!mGameState->AreAllPlayersReplicated())
+	if(!multiplayerGameState->AreAllPlayersReplicated())
 	{
 		return false;
 	}
@@ -29,7 +32,7 @@ bool CheckThereIsOnlyOneTeamAliveRule::Evaluate()
 	bool thereIsOnlyOneTeamAlive = true;
 	mTeamIdAlive = -1;
 	
-	mGameState->PerformActionForEachPlayerState(
+	multiplayerGameState->PerformActionForEachPlayerState(
 		[this, &thereIsOnlyOneTeamAlive](const IIPlayerState* playerState)
 		{
 			if(playerState->IsAlive())
@@ -58,7 +61,9 @@ bool CheckThereIsOnlyOneTeamAliveRule::Execute(std::vector<std::shared_ptr<IGame
 	//igual lo podría hacer todo el mismo. Aunque luego, la regla igual perdería sentido pues
 	//no podría hacer muchas cosas operando con el gamestate?
 	//Set data
-	mGameState->SetWinnerTeam(mTeamIdAlive);
+	const auto multiplayerGameState = Cast<IIMultiplayerGameState>(mGameState);
+	
+	multiplayerGameState->SetWinnerTeam(mTeamIdAlive);
 
 	//remove rules not needed
 	/*TScriptInterface<IIGameRule> thisRule;

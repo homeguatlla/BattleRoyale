@@ -1,5 +1,7 @@
 
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/Transitions/EnterGameLoop.h"
+
+#include "BattleRoyale/core/GameMode/IMultiplayerGameState.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/BattleRoyaleContext.h"
 
 namespace BRModeFSM
@@ -11,7 +13,7 @@ namespace BRModeFSM
 
 	void EnterGameLoop::OnInit()
 	{
-		mGameState = GetContext()->GetGameState();
+		mGameState = Cast<IIMultiplayerGameState>(GetContext()->GetGameState());
 	}
 
 	bool EnterGameLoop::CanPerformTransition() const

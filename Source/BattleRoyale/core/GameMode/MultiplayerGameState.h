@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "IMultiplayerGameState.h"
 #include "GameFramework/GameState.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/Utils/FSM/StatesMachineController.h"
@@ -13,7 +14,7 @@
 
 
 UCLASS()
-class BATTLEROYALE_API AMultiplayerGameState : public AGameState, public IIGameState
+class BATTLEROYALE_API AMultiplayerGameState : public AGameState, public IIGameState, public IIMultiplayerGameState
 {
 	GENERATED_BODY()
 public:

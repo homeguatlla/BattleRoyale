@@ -7,12 +7,12 @@
 #include "BattleRoyale/core/GameMode/GameRules/IGameRule.h"
 
 
-class BATTLEROYALE_API EndOfGameRule: public IGameRule
+class BATTLEROYALE_API GameFinishedRule: public IGameRule
 {
 
 public:
-	EndOfGameRule() = default;
-	virtual ~EndOfGameRule() override = default;
+	GameFinishedRule() = default;
+	virtual ~GameFinishedRule() override = default;
 	
 	virtual void Initialize(UWorld* world, IIGameState* gameState) override;
 	virtual bool Evaluate() override;

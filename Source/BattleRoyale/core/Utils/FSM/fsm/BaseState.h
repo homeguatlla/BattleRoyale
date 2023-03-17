@@ -11,7 +11,7 @@ namespace core {
 			public:
 				using ContextPtr = std::shared_ptr<TContext>;
 					
-				void Init(ContextPtr contextRef) override final
+				virtual void Init(ContextPtr contextRef) override final
 				{
 					context = contextRef;
 					OnInit();
@@ -24,7 +24,7 @@ namespace core {
 				virtual void OnUpdate(float /*deltaTime*/) override {}
 
 			protected:
-				ContextPtr GetContext() const override final
+				virtual ContextPtr GetContext() const override final
 				{
 					return context;
 				}

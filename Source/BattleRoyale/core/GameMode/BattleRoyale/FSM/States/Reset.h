@@ -3,6 +3,7 @@
 #include "BattleRoyale/core/Utils/FSM/fsm/BaseState.h"
 
 
+class IIMultiplayerGameState;
 class IIGameState;
 
 namespace BRModeFSM
@@ -22,6 +23,6 @@ namespace BRModeFSM
 		virtual void OnEnter(float deltaTime) override;
 
 	private:
-		const IIGameState* mGameState;
+		const IIMultiplayerGameState* mGameState;
 	};
 };

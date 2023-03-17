@@ -3,6 +3,8 @@
 #include "BattleRoyale/core/GameMode/BattleRoyale/FSM/States/BattleRoyaleStates.h"
 #include "BattleRoyale/core/Utils/FSM/fsm/BaseTransition.h"
 
+class IIMultiplayerGameState;
+
 namespace BRModeFSM
 {
 	class BattleRoyaleContext;
@@ -17,6 +19,6 @@ namespace BRModeFSM
 		bool CanPerformTransition() const override;
 		
 	private:
-		IIGameState* mGameState;
+		IIMultiplayerGameState* mGameState;
 	};
 };

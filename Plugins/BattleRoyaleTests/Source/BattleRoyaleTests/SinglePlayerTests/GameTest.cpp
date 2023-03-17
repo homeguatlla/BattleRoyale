@@ -1,11 +1,8 @@
-#include "BattleRoyaleTests.h"
+#include "BattleRoyaleTests/BattleRoyaleTests.h"
 
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
-#include "Engine.h"
-#include "EngineUtils.h"
-#include "BattleRoyale/core/Character/CharacterBase.h"
-#include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
+#include "BattleRoyale/core/GameMode/SinglePlayer/SinglePlayerGameMode.h"
 
 //#include "YourGameModeBase.h"
 //#include "MyEssentialActor.h"
@@ -24,29 +21,23 @@ UWorld* GetTestWorld() {
     return nullptr;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGameTest, "BattleRoyale.Game",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGameTest, "BattleRoyale.SinglePlayer.Game.LoadMapAndCharacterSpawned",
     EAutomationTestFlags::EditorContext |
     EAutomationTestFlags::ProductFilter)
 
 bool FGameTest::RunTest(const FString& Parameters)
 {
-    //TODO conseguir que el juego arranque con un solo jugador cambiando el game mode para que soporte un jugador
-    //porque parece que sino, se queda esperando... forever Seguramente esperando otro jugador para empezar la partida.
-    //Pensar esto bien, porque igual tiene más dificultad que añadir una variable.
-    //Es decir, igual hay que crear un nuevo game mode, singleplayer, con su máquina de estados etc. que no pasa por
-    //el countdown ni nada por el estilo. Tiene sentido, más que intentar modificar el battleroyale game mode.
-    
 	const FString mapName = TEXT("/Game/Maps/SampleTest.SampleTest");
     AutomationOpenMap(mapName);
 
     UWorld* world = GetTestWorld();
 
     const auto gameMode = world->GetAuthGameMode();
-    TestTrue("GameMode class is set correctly",world->GetAuthGameMode()->IsA<ABattleRoyaleGameMode>());
+    TestTrue("GameMode class is set correctly",world->GetAuthGameMode()->IsA<ASinglePlayerGameMode>());
 
     const auto controller = world->GetFirstPlayerController();
     const auto character = controller->GetPawn();
-    //TestTrue(TEXT("Character is spawned"), character != nullptr);
+    TestTrue(TEXT("Character is spawned"), character != nullptr);
 
     return true;
 }

@@ -4,6 +4,7 @@
 #include "LobbyGameMode.h"
 
 #include "IGameState.h"
+#include "IMultiplayerGameState.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "Configuration/MultiplayerConfigurationInfo.h"
 #include "GameFramework/GameStateBase.h"
@@ -31,11 +32,11 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 }
 
-IIGameState* ALobbyGameMode::GetGameState() const
+IIMultiplayerGameState* ALobbyGameMode::GetGameState() const
 {
 	if(GameState != nullptr && GameState->Implements<UIGameState>())
 	{
-		return Cast<IIGameState>(GameState);
+		return Cast<IIMultiplayerGameState>(GameState);
 	}
 	return nullptr;
 }
