@@ -38,6 +38,17 @@ private:
 	ACharacterBase* mCharacter;
 	
 	float mAimWalkSpeed;
+
+	/**
+	 * Aiming and FOV
+	 */
+	float mDefaultFOV;
+	float mCurrentFOV;
+	
+	UPROPERTY(EditAnywhere, Category = "CombatComponent")
+	float ZoomedFOV = 30.0f;
+	UPROPERTY(EditAnywhere, Category = "CombatComponent")
+	float ZoomInterpolationFOV = 20.0f;
 	
 public:	
 	// Sets default values for this component's properties
@@ -71,6 +82,7 @@ public:
 	virtual FVector GetShootingTargetLocation() const override;
 	
 	void SetupLeftHandSocketTransform(const ACharacterBase* character) const;
+	
 private:
 	//void OnRep_EquippedWeapon();
 	virtual void BeginPlay() override;
@@ -81,8 +93,10 @@ private:
 	void OnRep_EquippedWeapon() const;
 	FVector CalculateShootingTargetLocation() const;
 	float CalculateCrosshairSpread() const;
+	void CalculateInterpolatedFOV(float DeltaTime);
 
 	UBattleRoyaleGameInstance* GetGameInstance() const;
+	void SetCameraFOV(float fov);
 	
 	void DebugDrawAiming() const;
 };

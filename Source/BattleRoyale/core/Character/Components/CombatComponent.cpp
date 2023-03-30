@@ -11,6 +11,7 @@
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "BattleRoyale/core/Weapons/IWeapon.h"
+#include "Camera/CameraComponent.h"
 
 // Sets default values for this component's properties
 UCombatComponent::UCombatComponent()
@@ -35,6 +36,14 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UCombatComponent, mIsAiming);
 }
 
+void UCombatComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	mAimWalkSpeed = mCharacter->GetMinWalkSpeed();
+	SetCameraFOV(mCharacter->GetCamera()->FieldOfView);
+}
+
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	FActorComponentTickFunction* ThisTickFunction)
 {
@@ -44,6 +53,8 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		const auto spread = CalculateCrosshairSpread();
 		GetGameInstance()->GetEventDispatcher()->OnRefreshCrosshair.Broadcast(spread);
+
+		CalculateInterpolatedFOV(DeltaTime);
 	}
 	if(IsDebugEnabled)
 	{
@@ -60,13 +71,6 @@ void UCombatComponent::OnRep_EquippedWeapon() const
 		return;
 	}
 	GetGameInstance()->GetEventDispatcher()->OnEquippedWeapon.Broadcast(GetEquippedWeapon());
-}
-
-void UCombatComponent::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	mAimWalkSpeed = mCharacter->GetMinWalkSpeed();
 }
 
 bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName)
@@ -174,6 +178,10 @@ FVector UCombatComponent::CalculateShootingTargetLocation() const
 
 float UCombatComponent::CalculateCrosshairSpread() const
 {
+	//TODO el spread ahora mismo depende de la velocidad.
+	//en el curso depende también de si estás aiming, se estrecha,
+	//si disparas lo setea a un valor fijo y luego interpola a cero ese factor.
+	//siempre está interpolando con DeltaTime.
 	if(const auto characterInterface = Cast<IICharacter>(GetOwner()))
 	{
 		auto velocity = characterInterface->GetCurrentVelocity();
@@ -186,9 +194,36 @@ float UCombatComponent::CalculateCrosshairSpread() const
 	return 0.0f;
 }
 
+void UCombatComponent::CalculateInterpolatedFOV(float DeltaTime)
+{
+	//If zoom is very large and we see things blured, there are two parameters in the camera we can modify in order
+	//to make image sharper and without blur. DepthOfField/FocalDistance (10000)
+	//and Camera/Aperture(F-stop) for instance with a value of 32
+	//look at 87-Zoom While Aiming of the Multiplayer shooter course.
+	check(mCharacter->GetCamera());
+	
+	const auto weapon = GetEquippedWeapon();
+	if(mIsAiming)
+	{
+		mCurrentFOV = FMath::FInterpTo(mCurrentFOV, weapon->GetZoomedFOV(), DeltaTime, weapon->GetZoomInterpolationSpeed());
+	}
+	else
+	{
+		mCurrentFOV = FMath::FInterpTo(mCurrentFOV, mDefaultFOV, DeltaTime, ZoomInterpolationFOV);
+	}
+
+	mCharacter->GetCamera()->SetFieldOfView(mCurrentFOV);
+}
+
 UBattleRoyaleGameInstance* UCombatComponent::GetGameInstance() const
 {
 	return Cast<UBattleRoyaleGameInstance>(mCharacter->GetGameInstance());
+}
+
+void UCombatComponent::SetCameraFOV(float fov)
+{
+	mDefaultFOV = fov;
+	mCurrentFOV = fov;
 }
 
 void UCombatComponent::DebugDrawAiming() const

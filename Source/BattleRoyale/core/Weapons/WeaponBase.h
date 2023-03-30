@@ -50,6 +50,12 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 	//This is where the left hand goes on the weapon.
 	FTransform mLeftHandSocketTransform;
 
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	float ZoomedFOV = 30.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	float ZoomInterpolationSpeed = 20.0f;
+	
 public:	
 	AWeaponBase();
 	
@@ -69,6 +75,9 @@ public:
 	virtual void SetCharacterOwner(ACharacterBase* character) override;
 	virtual void SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation) override;
 	virtual TScriptInterface<ICrosshair> GetCrosshairWidget() const override { return Crosshair; }
+
+	virtual float GetZoomedFOV() const override { return ZoomedFOV; }
+	virtual float GetZoomInterpolationSpeed() const override { return ZoomInterpolationSpeed; }
 	
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon", meta = (DisplayName = OnFire))
 	void BP_OnFire();

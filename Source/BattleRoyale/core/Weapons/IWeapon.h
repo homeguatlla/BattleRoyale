@@ -62,4 +62,11 @@ public:
 
 	virtual FTransform SaveLeftHandSocketTransform() = 0;
 	virtual void SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation) = 0;
+
+	/**
+	 * Aiming and FOV 
+	 */
+
+	virtual float GetZoomedFOV() const = 0;
+	virtual float GetZoomInterpolationSpeed() const = 0;
 };
