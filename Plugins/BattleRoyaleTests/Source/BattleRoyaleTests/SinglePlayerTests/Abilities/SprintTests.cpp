@@ -1,5 +1,4 @@
-﻿/*#include "CoreMinimal.h"
-#include "AbilitySystemBlueprintLibrary.h"
+﻿#include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 
 #include "BattleRoyale/core/Abilities/AbilitiesInput.h"
@@ -7,9 +6,7 @@
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 
-#include "BattleRoyale/Tests/TestUtils.h"
-
-#include "GameFramework/GameStateBase.h"
+#include "BattleRoyaleTests/TestUtils.h"
 #include "Kismet/GameplayStatics.h"
 
 #if WITH_EDITOR
@@ -20,7 +17,7 @@
 #if WITH_DEV_AUTOMATION_TESTS
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSprintTest_WhenSpawningANewCharacter_CanNotSprint,
-                                 "Project.Abilities.SprintAbility.When_SpawningNewCharacter_Then_CanNotSprint",
+                                 "BattleRoyale.SinglePlayer.Abilities.SprintAbility.When_SpawningNewCharacter_Then_CanNotSprint",
                                  EAutomationTestFlags::ApplicationContextMask  | EAutomationTestFlags::ProductFilter)
 
 bool FSprintTest_WhenSpawningANewCharacter_CanNotSprint::RunTest(const FString& Parameters)
@@ -45,7 +42,7 @@ bool FSprintTest_WhenSpawningANewCharacter_CanNotSprint::RunTest(const FString& 
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSprintTest_WhenCharacterWalkingAndSpeedGreaterThanZero_CanSprint,
-								 "Project.Abilities.SprintAbility.When_CharacterWalkingAndSpeedGreaterThanZero_Then_CanSprint",
+								 "BattleRoyale.SinglePlayer.Abilities.SprintAbility.When_CharacterWalkingAndSpeedGreaterThanZero_Then_CanSprint",
 								 EAutomationTestFlags::ApplicationContextMask  | EAutomationTestFlags::ProductFilter)
 
 bool FSprintTest_WhenCharacterWalkingAndSpeedGreaterThanZero_CanSprint::RunTest(const FString& Parameters)
@@ -73,7 +70,7 @@ bool FSprintTest_WhenCharacterWalkingAndSpeedGreaterThanZero_CanSprint::RunTest(
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSprintTest_WhenAbilitySprintIsTriggered_And_CanSprint_CharacterIsSprinting,
-								 "Project.Abilities.SprintAbility.When_AbilitySprintIsTriggered_And_CanSprint_Then_CharacterIsSprinting",
+								 "BattleRoyale.SinglePlayer.Abilities.SprintAbility.When_AbilitySprintIsTriggered_And_CanSprint_Then_CharacterIsSprinting",
 								 EAutomationTestFlags::ApplicationContextMask  | EAutomationTestFlags::ProductFilter)
 
 bool FSprintTest_WhenAbilitySprintIsTriggered_And_CanSprint_CharacterIsSprinting::RunTest(const FString& Parameters)
@@ -92,9 +89,9 @@ bool FSprintTest_WhenAbilitySprintIsTriggered_And_CanSprint_CharacterIsSprinting
 		return false;
 	}
 
-	const auto gameState = Cast<IIGameState>(world->GetGameState());
+	//const auto gameState = Cast<IIGameState>(world->GetGameState());
 	
-	while(!gameState->DidCountdownFinish()){};
+	//while(!gameState->DidCountdownFinish()){};
 	
 	const auto playerController = world->GetFirstPlayerController();
 	const auto character = UGameplayStatics::GetPlayerCharacter(world, 0);
@@ -120,9 +117,9 @@ bool FSprintTest_WhenAbilitySprintIsTriggered_And_CanSprint_CharacterIsSprinting
 	gas->AbilityLocalInputPressed(static_cast<uint8>(EAbilityInputID::Sprint));
 	TestTrue(TEXT("When Character is sprinting SPRINT max walk speed increased"),characterMovementComponent->MaxWalkSpeed > maxWalkSpeedBeforeSprint);
 
-	world->DestroyWorld(true);
+	//world->DestroyWorld(true);
 	
 	return true;
 }
 #endif
-#endif*/
+#endif

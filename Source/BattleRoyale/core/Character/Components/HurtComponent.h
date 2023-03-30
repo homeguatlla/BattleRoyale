@@ -22,7 +22,7 @@ public:
 	void InitializeServer() const;
 	bool RegisterToHealthAttributeDelegate(std::function<void(const FOnAttributeChangeData& data)> callback) const;
 	void SetInvulnerableServer(bool isInvulnerable);
-	bool IsAlive() const { return GetCurrentHealth() > 0.0f; }
+	virtual bool IsAlive() const { return GetCurrentHealth() > 0.0f; }
 	float GetCurrentHealth() const;
 	bool IsReady() const;
 

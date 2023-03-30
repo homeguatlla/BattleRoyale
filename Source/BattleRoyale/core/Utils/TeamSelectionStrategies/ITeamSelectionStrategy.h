@@ -8,7 +8,7 @@
 
 // This class does not need to be modified.
 UINTERFACE(Blueprintable, meta = (CannotImplementInterfaceInBlueprint))
-class UTeamSelectionStrategy : public UInterface
+class BATTLEROYALE_API UTeamSelectionStrategy : public UInterface
 {
 	GENERATED_BODY()
 };

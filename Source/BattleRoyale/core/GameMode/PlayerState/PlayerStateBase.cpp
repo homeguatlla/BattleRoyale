@@ -19,7 +19,7 @@ mPlayerInteraction("")
 {
 	mAbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponentBase>(TEXT("AbilitySystemComponent"));
 	mAbilitySystemComponent->SetIsReplicated(true);
-	mAbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+	//mAbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 	// AbilitySystemComponent needs to be updated at a high frequency.
 	NetUpdateFrequency = 100.0f;

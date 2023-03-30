@@ -3,8 +3,8 @@
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/GameRules/CheckThereIsOnlyOneTeamAliveRule.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/GameRules/EndOfGameRule.h"
-#include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
-#include "BattleRoyale/Tests/GameRules/MockClasses.h"
+#include "BattleRoyaleTests/MultiplayerTests/GameRules/GameStateMock.h"
+#include "BattleRoyaleTests/MultiplayerTests/GameRules/MockClasses.h"
 
 #if WITH_EDITOR
 #include "Misc/AutomationTest.h"
@@ -13,13 +13,13 @@
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_NoPlayers_Then_EvaluatesFalse,
-	"Project.GameRules.Rule.CheckThereIsOnlyOneTeamAlive.When_NoPlayers_Then_EvaluatesFalse",
+	"BattleRoyale.Multiplayer.GameRules.Rule.CheckThereIsOnlyOneTeamAlive.When_NoPlayers_Then_EvaluatesFalse",
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_NoPlayers_Then_EvaluatesFalse::RunTest(
 	const FString& Parameters)
 {
-	const auto gameState = NewObject<GameStateMock>();
+	const auto gameState = NewObject<AGameStateMock>();
 	
 	auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
 	rule->Initialize(nullptr, gameState);
@@ -32,15 +32,17 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_NoPlayers_Then_EvaluatesFa
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_ThereIsOnePlayer_Then_EvaluatesTrue,
-	"Project.GameRules.Rule.CheckThereIsOnlyOneTeamAlive.When_ThereIsOnePlayer_Then_EvaluatesTrue",
+	"BattleRoyale.Multiplayer.GameRules.Rule.CheckThereIsOnlyOneTeamAlive.When_ThereIsOnePlayer_Then_EvaluatesTrue",
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_ThereIsOnePlayer_Then_EvaluatesTrue::RunTest(
 	const FString& Parameters)
 {
-	const auto gameState = NewObject<GameStateMock>();
+	const auto gameState = NewObject<AGameStateMock>();
 
 	gameState->Initialize(1, 1);
+
+	//TODO hay que esperar hasta que el servidor esté ready
 	
 	auto rule = std::make_shared<CheckThereIsOnlyOneTeamAliveRule>();
 	rule->Initialize(nullptr, gameState);
@@ -53,13 +55,13 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_ThereIsOnePlayer_Then_Eval
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_SomeoneDieAndIsTheLastOne_Then_EvaluatesTrue,
-	"Project.GameRules.Rule.CheckThereIsOnlyOneTeamAlive.When_SomeoneDieAndIsTheLastOne_Then_EvaluatesTrue",
+	"BattleRoyale.Multiplayer.GameRules.Rule.CheckThereIsOnlyOneTeamAlive.When_SomeoneDieAndIsTheLastOne_Then_EvaluatesTrue",
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_SomeoneDieAndIsTheLastOne_Then_EvaluatesTrue::RunTest(
 	const FString& Parameters)
 {
-	const auto gameState = NewObject<GameStateMock>();
+	const auto gameState = NewObject<AGameStateMock>();
 
 	gameState->Initialize(3, 3);
 
@@ -80,13 +82,13 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_SomeoneDieAndIsTheLastOne_
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_SomeoneDieAndIsNotTheLastOne_Then_EvaluatesFalse,
-	"Project.GameRules.Rule.CheckThereIsOnlyOneTeamAlive.When_SomeoneDieAndIsNotTheLastOne_Then_EvaluatesFalse",
+	"BattleRoyale.Multiplayer.GameRules.Rule.CheckThereIsOnlyOneTeamAlive.When_SomeoneDieAndIsNotTheLastOne_Then_EvaluatesFalse",
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_SomeoneDieAndIsNotTheLastOne_Then_EvaluatesFalse::RunTest(
 	const FString& Parameters)
 {
-	const auto gameState = NewObject<GameStateMock>();
+	const auto gameState = NewObject<AGameStateMock>();
 
 	gameState->Initialize(3, 3);
 
@@ -105,13 +107,13 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_SomeoneDieAndIsNotTheLastO
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_Executed_Then_EndOfGameRule_IsAdded,
-	"Project.GameRules.Rule.CheckThereIsOnlyOneTeamAlive.When_Executed_Then_EndOfGameRule_IsAdded",
+	"BattleRoyale.Multiplayer.GameRules.Rule.CheckThereIsOnlyOneTeamAlive.When_Executed_Then_EndOfGameRule_IsAdded",
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_Executed_Then_EndOfGameRule_IsAdded::RunTest(
 	const FString& Parameters)
 {
-	const auto gameState = NewObject<GameStateMock>();
+	const auto gameState = NewObject<AGameStateMock>();
 
 	gameState->Initialize(3, 3);
 
@@ -127,7 +129,7 @@ bool FGameRulesTest_CheckThereIsOnlyOneTeamAlive_When_Executed_Then_EndOfGameRul
 
 	auto s1 = typeid(*rules[0]).name();
 	auto s2 = typeid(EndOfGameRule).name();
-	const auto isEndOfGameRule = typeid(*rules[0]).name() == typeid(EndOfGameRule).name();
+	const auto isEndOfGameRule = strcmp(s1, s2) == 0;
 	TestTrue(TEXT("When executed EndOfGameRule is added."), isEndOfGameRule);
 
 	return true;

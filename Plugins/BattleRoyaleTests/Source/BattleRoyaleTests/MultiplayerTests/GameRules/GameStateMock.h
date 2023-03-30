@@ -3,42 +3,18 @@
 #include <functional>
 
 #include "CoreMinimal.h"
+#include "CharacterMock.h"
+#include "MockClasses.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameState.h"
-#include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
+#include "GameStateMock.generated.h"
 
-#if WITH_EDITOR
-#include "Misc/AutomationTest.h"
-
-#if WITH_DEV_AUTOMATION_TESTS
-
-
-class ACharacterMock : public ACharacterBase
+UCLASS()
+class AGameStateMock : public ABattleRoyaleGameState
 {
+	GENERATED_BODY()
 public:
-	ACharacterMock() = default;
-
-	void Initialize(float health)
-	{
-		SetCurrentHealthTest(health);
-	}
-};
-
-class APlayerStateMock : public APlayerStateBase
-{
-public:
-	APlayerStateMock() = default;
-
-	void Initialize(int teamId)
-	{
-		SetTeamId(teamId);
-	}
-};
-
-class GameStateMock : public ABattleRoyaleGameState
-{
-public:
-	GameStateMock()
+	AGameStateMock()
 	{
 	}
 
@@ -52,7 +28,8 @@ public:
 			playerState->Initialize(teamId);
 
 			const auto character = NewObject<ACharacterMock>();
-			character->Initialize(100);
+			
+			character->SetCurrentHealthTest(100);
 
 			character->SetPlayerState(playerState);
 			
@@ -60,15 +37,20 @@ public:
 			teamId = (teamId + 1) % numTeams;
 		}
 	}
+	virtual bool AreAllPlayersReplicated() const override
+	{
+		return true;
+	}
 
 	IICharacter* GetCharacter(int index)
 	{
-		auto playerState = Cast<APlayerStateMock>(PlayerArray[index]);
-		IICharacter* character = Cast<IICharacter>(playerState->GetPawn());
+		const auto playerState = Cast<APlayerStateMock>(PlayerArray[index]);
+		const auto character = Cast<IICharacter>(playerState->GetPawn());
 
 		return character;
+		return nullptr;
 	}
-
+/*
 	virtual void
 	PerformActionForEachPlayerState(std::function<bool(IIPlayerState* playerState)> action) const override
 	{
@@ -77,8 +59,5 @@ public:
 		//Aquí deberíamos definir un array de player states y ejecutar las acciones
 		//si es posible rellenar le propio player state??
 		ABattleRoyaleGameState::PerformActionForEachPlayerState(action);
-	}
+	}*/
 };
-
-#endif
-#endif

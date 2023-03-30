@@ -18,7 +18,7 @@ class IICharacter;
 
 // This class does not need to be modified.
 UINTERFACE(NotBlueprintable, meta = (CannotImplementInterfaceInBlueprint))
-class UICharacter : public UInterface
+class BATTLEROYALE_API UICharacter : public UInterface
 {
 	GENERATED_BODY()
 };

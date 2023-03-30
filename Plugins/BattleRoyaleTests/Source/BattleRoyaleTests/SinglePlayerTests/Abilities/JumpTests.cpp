@@ -7,7 +7,7 @@
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 
-#include "BattleRoyale/Tests/TestUtils.h"
+#include "BattleRoyaleTests/TestUtils.h"
 
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
@@ -21,7 +21,7 @@
 
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FJumpTest_WhenSpawningANewCharacter_CanJump,
-                                 "Project.Abilities.JumpAbility.When_SpawningNewCharacter_Then_CanJump",
+                                 "BattleRoyale.SinglePlayer.Abilities.JumpAbility.When_SpawningNewCharacter_Then_CanJump",
                                  EAutomationTestFlags::ApplicationContextMask  | EAutomationTestFlags::ProductFilter)
 
 bool FJumpTest_WhenSpawningANewCharacter_CanJump::RunTest(const FString& Parameters)
@@ -48,12 +48,11 @@ bool FJumpTest_WhenSpawningANewCharacter_CanJump::RunTest(const FString& Paramet
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FJumpTest_WhenCharacterIsFalling_CanNotJump,
-								 "Project.Abilities.JumpAbility.When_CharacterIsFalling_Then_CanNotJump",
+								 "BattleRoyale.SinglePlayer.Abilities.JumpAbility.When_CharacterIsFalling_Then_CanNotJump",
 								 EAutomationTestFlags::ApplicationContextMask  | EAutomationTestFlags::ProductFilter)
 
 bool FJumpTest_WhenCharacterIsFalling_CanNotJump::RunTest(const FString& Parameters)
 {
-
 	UWorld* world = FAutomationEditorCommonUtils::CreateNewMap(); 
 	if (!world)
 	{
@@ -91,17 +90,15 @@ bool FMyCommand::Update() {
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FJumpTest_WhenAbilityJumpIsTriggered_And_CanJump_CharacterIsJumping,
-								 "Project.Abilities.JumpAbility.When_AbilityJumpIsTriggered_And_CanJump_Then_CharacterIsJumping",
+								 "BattleRoyale.SinglePlayer.Abilities.JumpAbility.When_AbilityJumpIsTriggered_And_CanJump_Then_CharacterIsJumping",
 								 EAutomationTestFlags::ApplicationContextMask  | EAutomationTestFlags::ProductFilter)
 PRAGMA_DISABLE_OPTIMIZATION_ACTUAL
 bool FJumpTest_WhenAbilityJumpIsTriggered_And_CanJump_CharacterIsJumping::RunTest(const FString& Parameters)
 {
-
-	
-	ADD_LATENT_AUTOMATION_COMMAND(FEditorAutomationLogCommand("Hola test"));
+	/*ADD_LATENT_AUTOMATION_COMMAND(FEditorAutomationLogCommand("Hola test"));
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitLatentCommand(5.0));
-	
-/*	const FString mapName = TEXT("/Game/Maps/SampleTest.SampleTest");
+	*/
+	const FString mapName = TEXT("/Game/Maps/SampleTest.SampleTest");
 	if (!AutomationOpenMap(mapName))
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to load world"));
@@ -114,15 +111,11 @@ bool FJumpTest_WhenAbilityJumpIsTriggered_And_CanJump_CharacterIsJumping::RunTes
 		UE_LOG(LogTemp, Error, TEXT("Failed to retrieve world"));
 		return false;
 	}
-
-	const auto gameState = Cast<IIGameState>(world->GetGameState());
-*/
+	
 	//ADD_LATENT_AUTOMATION_COMMAND(FMyCommand(gameState));
 	//ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(5.0f));
 	//while(!gameState->IsGameReadyToStart()){};
 	
-	/*
-	const auto playerController = world->GetFirstPlayerController();
 	const auto character = UGameplayStatics::GetPlayerCharacter(world, 0);
 	if(!character)
 	{
@@ -148,8 +141,8 @@ bool FJumpTest_WhenAbilityJumpIsTriggered_And_CanJump_CharacterIsJumping::RunTes
 	const auto newVelocityZ = characterBase->GetVelocity().Z;
 	TestTrue(TEXT("When Character is jumping Z is increased"), newVelocityZ > originalVelocityZ);
 	
-	world->DestroyWorld(true);
-	*/
+	//world->DestroyWorld(false);
+	
 	return true;
 }
 PRAGMA_ENABLE_OPTIMIZATION_ACTUAL

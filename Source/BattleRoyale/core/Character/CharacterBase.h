@@ -24,7 +24,7 @@ class UAnimMontage;
 class USoundBase;
 
 UCLASS(config=Game)
-class ACharacterBase : public ACharacter, public IICharacter
+class BATTLEROYALE_API ACharacterBase : public ACharacter, public IICharacter
 {
 	GENERATED_BODY()
 	

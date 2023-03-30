@@ -1,12 +1,8 @@
 ﻿#include <vector>
 
 #include "CoreMinimal.h"
-#include "BattleRoyale/core/Character/CharacterBase.h"
-#include "BattleRoyale/core/GameMode/BattleRoyale/GameRules/CheckThereIsOnlyOneTeamAliveRule.h"
-#include "BattleRoyale/core/GameMode/GameRules/GameRules.h"
 #include "BattleRoyale/core/Utils/TeamSelectionStrategies/ITeamSelectionStrategy.h"
 #include "BattleRoyale/core/Utils/TeamSelectionStrategies/SimpleTeamSelectionStrategy.h"
-#include "BattleRoyale/Tests/GameRules/MockClasses.h"
 
 #if WITH_EDITOR
 #include "Misc/AutomationTest.h"
@@ -15,7 +11,7 @@
 #if WITH_DEV_AUTOMATION_TESTS
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSimpleTeamSelectionStrategyTest_When_ATeamIsRequestedFor_1PlayerPerTeam_Then_ProperTeamIdIsReturned,
-                                 "Project.Utils.TeamSelectionStrategy.SimpleTeamSelectionStrategy.When_ATeamIsRequestedFor_1PlayerPerTeam_Then_ProperTeamIdIsReturned",
+                                 "BattleRoyale.Multiplayer.Utils.TeamSelectionStrategy.SimpleTeamSelectionStrategy.When_ATeamIsRequestedFor_1PlayerPerTeam_Then_ProperTeamIdIsReturned",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 bool FSimpleTeamSelectionStrategyTest_When_ATeamIsRequestedFor_1PlayerPerTeam_Then_ProperTeamIdIsReturned::RunTest(const FString& Parameters)
@@ -36,7 +32,7 @@ bool FSimpleTeamSelectionStrategyTest_When_ATeamIsRequestedFor_1PlayerPerTeam_Th
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSimpleTeamSelectionStrategyTest_When_ATeamIsRequestedFor_2PlayerPerTeam_Then_ProperTeamIdIsReturned,
-								 "Project.Utils.TeamSelectionStrategy.SimpleTeamSelectionStrategy.When_ATeamIsRequestedFor_2PlayerPerTeam_Then_ProperTeamIdIsReturned",
+								 "BattleRoyale.Multiplayer.Utils.TeamSelectionStrategy.SimpleTeamSelectionStrategy.When_ATeamIsRequestedFor_2PlayerPerTeam_Then_ProperTeamIdIsReturned",
 								 EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 bool FSimpleTeamSelectionStrategyTest_When_ATeamIsRequestedFor_2PlayerPerTeam_Then_ProperTeamIdIsReturned::RunTest(const FString& Parameters)
@@ -57,7 +53,7 @@ bool FSimpleTeamSelectionStrategyTest_When_ATeamIsRequestedFor_2PlayerPerTeam_Th
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSimpleTeamSelectionStrategyTest_When_ATeamIsRequestedFor_3PlayerPerTeam_Then_ProperTeamIdIsReturned,
-								 "Project.Utils.TeamSelectionStrategy.SimpleTeamSelectionStrategy.When_ATeamIsRequestedFor_3PlayerPerTeam_Then_ProperTeamIdIsReturned",
+								 "BattleRoyale.Multiplayer.Utils.TeamSelectionStrategy.SimpleTeamSelectionStrategy.When_ATeamIsRequestedFor_3PlayerPerTeam_Then_ProperTeamIdIsReturned",
 								 EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 bool FSimpleTeamSelectionStrategyTest_When_ATeamIsRequestedFor_3PlayerPerTeam_Then_ProperTeamIdIsReturned::RunTest(const FString& Parameters)

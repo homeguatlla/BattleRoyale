@@ -16,7 +16,7 @@ class UGameRules;
 
 // This class does not need to be modified.
 UINTERFACE(NotBlueprintable, meta = (CannotImplementInterfaceInBlueprint))
-class UIGameState : public UInterface
+class BATTLEROYALE_API UIGameState : public UInterface
 {
 	GENERATED_BODY()
 };
