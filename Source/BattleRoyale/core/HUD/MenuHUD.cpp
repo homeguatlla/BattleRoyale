@@ -41,6 +41,7 @@ void AMenuHUD::BindToDelegate()
 		
 		eventDispatcher->OnRefreshCountDown.AddDynamic(this, &ThisClass::OnRefreshCountDown);
 		eventDispatcher->OnFinishCountDown.AddDynamic(this, &ThisClass::OnFinishCountDown);
+		eventDispatcher->OnSetVisibilityCountDown.AddDynamic(this, &ThisClass::OnSetVisibilityCountDown);
 
 		eventDispatcher->OnShowStatsScreen.AddDynamic(this, &ThisClass::OnShowStatsScreen);
 		eventDispatcher->OnHideStatsScreen.AddDynamic(this, &ThisClass::OnHideStatsScreen);
@@ -76,6 +77,14 @@ void AMenuHUD::OnFinishCountDown()
 	if(mHUDWidget->GetClass()->ImplementsInterface(UCounterDownMenuHUD::StaticClass()))
 	{
 		ICounterDownMenuHUD::Execute_OnFinishCountDown(mHUDWidget);
+	}
+}
+
+void AMenuHUD::OnSetVisibilityCountDown(bool visible)
+{
+	if(mHUDWidget->GetClass()->ImplementsInterface(UCounterDownMenuHUD::StaticClass()))
+	{
+		ICounterDownMenuHUD::Execute_OnSetVisibilityCountDown(mHUDWidget, visible);
 	}
 }
 

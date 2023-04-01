@@ -36,6 +36,9 @@ private:
 	void Tick(float DeltaSeconds);
 	void PerformActionForEachPlayerState(std::function<bool(IIPlayerState* playerState)> action) const;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastGameStarted();
+	
 	//TODO no queremos heredar de multiplayer. Igual el single player debería ser el cooperativo!!! ojo
 	//porque el cooperativo es un single player que adicionalmente se puede agregar más players.
 	virtual void AddStatesMachineServer(

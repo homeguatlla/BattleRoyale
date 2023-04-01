@@ -16,4 +16,6 @@ public:
 	void OnRefreshCountDown(uint8 counter);
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Menu Countdown HUD")
 	void OnFinishCountDown();
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Menu Countdown HUD")
+	void OnSetVisibilityCountDown(bool visible);
 };

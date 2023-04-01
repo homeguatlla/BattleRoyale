@@ -23,6 +23,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAnnounceTeamsAndPlayersAlive, ui
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFinishCountDown);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRefreshCountDown, uint8, counter);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetVisibilityCountDown, bool, visible);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowStatsScreen, const FPlayerStatsData&, statsData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHideStatsScreen);
 
@@ -74,6 +75,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="Menu")
 	FOnRefreshCountDown OnRefreshCountDown;
 
+	UPROPERTY(BlueprintAssignable, Category="Menu")
+	FOnSetVisibilityCountDown OnSetVisibilityCountDown;
+	
 	UPROPERTY(BlueprintAssignable, Category="Menu")
 	FOnShowStatsScreen OnShowStatsScreen;
 

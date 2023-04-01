@@ -33,6 +33,8 @@ private:
 	UFUNCTION()
 	void OnFinishCountDown();
 	UFUNCTION()
+	void OnSetVisibilityCountDown(bool visible);
+	UFUNCTION()
 	void OnShowStatsScreen(const FPlayerStatsData& playerStatsData);
 	UFUNCTION()
 	void OnHideStatsScreen();

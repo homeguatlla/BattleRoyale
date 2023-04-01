@@ -3,6 +3,7 @@
 
 #include "SinglePlayerGameState.h"
 #include "SinglePlayerGameMode.h"
+#include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Utils/FSM/StatesMachineFactory.h"
 #include "Net/UnrealNetwork.h"
 
@@ -42,6 +43,8 @@ void ASinglePlayerGameState::Tick(float DeltaSeconds)
 
 void ASinglePlayerGameState::StartGameServer()
 {
+	MulticastGameStarted();
+	
 	//For all players execute the gameStarted
 	PerformActionForEachPlayerState(
 		[](IIPlayerState* playerState) -> bool
@@ -94,6 +97,13 @@ void ASinglePlayerGameState::PerformActionForEachPlayerState(
 				break;
 		}
 	}
+}
+
+void ASinglePlayerGameState::MulticastGameStarted_Implementation()
+{
+	//To notify HUD
+	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+	gameInstance->GetEventDispatcher()->OnGameStarted.Broadcast();
 }
 
 void ASinglePlayerGameState::AddStatesMachineServer(
