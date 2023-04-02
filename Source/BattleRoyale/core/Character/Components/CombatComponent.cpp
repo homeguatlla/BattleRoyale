@@ -208,9 +208,11 @@ void UCombatComponent::CalculateInterpolatedFOV(float DeltaTime)
 	if(mIsAiming)
 	{
 		mCurrentFOV = FMath::FInterpTo(mCurrentFOV, weapon->GetZoomedFOV(), DeltaTime, weapon->GetZoomInterpolationSpeed());
+		//TODO The camera position when aiming is for grenade launcher. Probably for another weapon we should use another value.
+		//Right now we left it like it is. When we have another weapon we can see what to do.
 		mCurrentCameraRelativeLocation = FMath::Lerp(
 			mCurrentCameraRelativeLocation,
-			mDefaultCameraRelativeLocation + FVector(0.0f, 16.5f, 15.0f),
+			mDefaultCameraRelativeLocation + FVector(0.0f, 16.7f, 15.0f),
 			DeltaTime * weapon->GetZoomInterpolationSpeed());
 	}
 	else
