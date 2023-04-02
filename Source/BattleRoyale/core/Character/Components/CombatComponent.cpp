@@ -42,6 +42,7 @@ void UCombatComponent::BeginPlay()
 	
 	mAimWalkSpeed = mCharacter->GetMinWalkSpeed();
 	SetCameraFOV(mCharacter->GetCamera()->FieldOfView);
+	SetCameraRelativeLocation(mCharacter->GetCamera()->GetRelativeLocation());
 }
 
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -163,7 +164,6 @@ void UCombatComponent::SetupLeftHandSocketTransform(const ACharacterBase* charac
 	GetEquippedWeapon()->SetupLeftHandSocketTransform(newPosition, newRotator);
 }
 
-
 FVector UCombatComponent::CalculateShootingTargetLocation() const
 {
 	const auto playerController = Cast<APlayerController>(GetOwner()->GetInstigatorController());
@@ -201,18 +201,29 @@ void UCombatComponent::CalculateInterpolatedFOV(float DeltaTime)
 	//and Camera/Aperture(F-stop) for instance with a value of 32
 	//look at 87-Zoom While Aiming of the Multiplayer shooter course.
 	check(mCharacter->GetCamera());
-	
+
+	const auto camera = mCharacter->GetCamera();
 	const auto weapon = GetEquippedWeapon();
+	
 	if(mIsAiming)
 	{
 		mCurrentFOV = FMath::FInterpTo(mCurrentFOV, weapon->GetZoomedFOV(), DeltaTime, weapon->GetZoomInterpolationSpeed());
+		mCurrentCameraRelativeLocation = FMath::Lerp(
+			mCurrentCameraRelativeLocation,
+			mDefaultCameraRelativeLocation + FVector(0.0f, 16.5f, 15.0f),
+			DeltaTime * weapon->GetZoomInterpolationSpeed());
 	}
 	else
 	{
 		mCurrentFOV = FMath::FInterpTo(mCurrentFOV, mDefaultFOV, DeltaTime, ZoomInterpolationFOV);
+		mCurrentCameraRelativeLocation = FMath::Lerp<FVector>(
+			mCurrentCameraRelativeLocation,
+			mDefaultCameraRelativeLocation,
+			DeltaTime * weapon->GetZoomInterpolationSpeed());
 	}
-
-	mCharacter->GetCamera()->SetFieldOfView(mCurrentFOV);
+	
+	camera->SetFieldOfView(mCurrentFOV);
+	camera->SetRelativeLocation(mCurrentCameraRelativeLocation);
 }
 
 UBattleRoyaleGameInstance* UCombatComponent::GetGameInstance() const
@@ -224,6 +235,11 @@ void UCombatComponent::SetCameraFOV(float fov)
 {
 	mDefaultFOV = fov;
 	mCurrentFOV = fov;
+}
+
+void UCombatComponent::SetCameraRelativeLocation(const FVector& location)
+{
+	mDefaultCameraRelativeLocation = location;
 }
 
 void UCombatComponent::DebugDrawAiming() const

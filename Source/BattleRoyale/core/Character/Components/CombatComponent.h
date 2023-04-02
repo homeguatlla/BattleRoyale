@@ -45,6 +45,9 @@ private:
 	float mDefaultFOV;
 	float mCurrentFOV;
 	
+	FVector mDefaultCameraRelativeLocation;
+	FVector mCurrentCameraRelativeLocation;
+	
 	UPROPERTY(EditAnywhere, Category = "CombatComponent")
 	float ZoomedFOV = 30.0f;
 	UPROPERTY(EditAnywhere, Category = "CombatComponent")
@@ -97,6 +100,7 @@ private:
 
 	UBattleRoyaleGameInstance* GetGameInstance() const;
 	void SetCameraFOV(float fov);
+	void SetCameraRelativeLocation(const FVector& location);
 	
 	void DebugDrawAiming() const;
 };
