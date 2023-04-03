@@ -212,7 +212,7 @@ void UCombatComponent::CalculateInterpolatedFOV(float DeltaTime)
 		//Right now we left it like it is. When we have another weapon we can see what to do.
 		mCurrentCameraRelativeLocation = FMath::Lerp(
 			mCurrentCameraRelativeLocation,
-			mDefaultCameraRelativeLocation + FVector(0.0f, 16.7f, 15.0f),
+			mDefaultCameraRelativeLocation + FVector(0.0f, 16.7f, 13.0f),
 			DeltaTime * weapon->GetZoomInterpolationSpeed());
 	}
 	else

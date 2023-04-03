@@ -63,6 +63,9 @@ public:
 	virtual FTransform SaveLeftHandSocketTransform() = 0;
 	virtual void SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation) = 0;
 
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual UAnimationAsset* GetShootingAnimation() const = 0;
+	
 	/**
 	 * Aiming and FOV 
 	 */

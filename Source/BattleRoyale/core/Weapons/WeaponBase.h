@@ -46,6 +46,9 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName LeftHandSocketName;
+
+	UPROPERTY(EditDefaultsOnly, Category="Weapon")
+	UAnimationAsset* ShootingAnimation;
 	
 	//This is where the left hand goes on the weapon.
 	FTransform mLeftHandSocketTransform;
@@ -71,11 +74,13 @@ public:
 	virtual bool CanBeFired() const override;
 	virtual void Fire(const FVector& targetLocation) override;
 	virtual void OnFire() override;//This method will be called from Blueprint (Gameplay cue shoot that makes the visual effects of the weapon when firing)
+
+	virtual UAnimationAsset* GetShootingAnimation() const override { return ShootingAnimation; }
 	
 	virtual void SetCharacterOwner(ACharacterBase* character) override;
 	virtual void SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation) override;
 	virtual TScriptInterface<ICrosshair> GetCrosshairWidget() const override { return Crosshair; }
-
+	
 	virtual float GetZoomedFOV() const override { return ZoomedFOV; }
 	virtual float GetZoomInterpolationSpeed() const override { return ZoomInterpolationSpeed; }
 	
