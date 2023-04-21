@@ -107,14 +107,15 @@ void UFirstPersonAnimationInstance::CheckEquippedToMakeWeaponPointsToCrosshair()
 		RightHandRotation = UKismetMathLibrary::MakeRotFromY( newShootingTargetLocation - rightHandSocketTransform.GetLocation());
 	
 		//Weapon axis
-		DrawDebugLine(GetWorld(), rightHandSocketTransform.GetLocation(), rightHandSocketTransform.GetLocation() +  rightHandSocketTransform.GetRotation().GetForwardVector() * 100.0f, FColor::Red);
+		/*DrawDebugLine(GetWorld(), rightHandSocketTransform.GetLocation(), rightHandSocketTransform.GetLocation() +  rightHandSocketTransform.GetRotation().GetForwardVector() * 100.0f, FColor::Red);
 		DrawDebugLine(GetWorld(), rightHandSocketTransform.GetLocation(), rightHandSocketTransform.GetLocation() +  rightHandSocketTransform.GetRotation().GetAxisY() * 100.0f, FColor::Green);//, false, -1, 0, 2);
 		DrawDebugLine(GetWorld(), rightHandSocketTransform.GetLocation(), rightHandSocketTransform.GetLocation() +  rightHandSocketTransform.GetRotation().GetUpVector() * 100.0f, FColor::Blue);
-		
-		const auto weapon = gunComponent->GetEquippedWeapon();
+		*/
+		/*const auto weapon = gunComponent->GetEquippedWeapon();
 		const auto muzzleSocketTransform = weapon->GetMuzzleSocketTransform();
 		DrawDebugLine(GetWorld(), muzzleSocketTransform.GetLocation(), muzzleSocketTransform.GetLocation() +  muzzleSocketTransform.GetRotation().GetForwardVector() * 10000.0f, FColor::Yellow);
 		DrawDebugLine(GetWorld(), muzzleSocketTransform.GetLocation(), shootingTarget, FColor::Cyan);
+		*/
 	}
 }
 

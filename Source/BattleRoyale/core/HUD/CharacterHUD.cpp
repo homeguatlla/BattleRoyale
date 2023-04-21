@@ -67,16 +67,20 @@ void ACharacterHUD::OnUnEquippedWeapon()
 	}
 }
 
-void ACharacterHUD::OnRefreshCrosshair(float spread)
+void ACharacterHUD::OnRefreshCrosshair(float spread, AActor* targetActor, bool isAiming)
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UPlayerHUD::StaticClass()))
 	{
-		IPlayerHUD::Execute_OnRefreshCrosshair(mHUDWidget, spread);
+		IPlayerHUD::Execute_OnRefreshCrosshair(mHUDWidget, spread, targetActor, isAiming);
 	}
 }
 
 void ACharacterHUD::OnRefreshHealthReceived(float health)
 {
+	//TODO esto se puede poner,
+	//if(mHUDWidget->Implements<UHealthHUD>())
+	
+	
 	if (mHUDWidget->GetClass()->ImplementsInterface(UHealthHUD::StaticClass()))
 	{
 		IHealthHUD::Execute_OnRefreshHealth(mHUDWidget, health);

@@ -54,4 +54,5 @@ public:
 	virtual void Shoot() const = 0;	
 	virtual UAnimMontage* GetShootingMontage() const = 0;
 };
+
  

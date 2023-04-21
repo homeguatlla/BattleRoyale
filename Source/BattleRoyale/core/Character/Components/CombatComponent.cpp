@@ -12,6 +12,7 @@
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "BattleRoyale/core/Weapons/IWeapon.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values for this component's properties
 UCombatComponent::UCombatComponent()
@@ -53,7 +54,11 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	if(mCharacter && mCharacter->IsLocallyControlled() && HasWeaponEquipped())
 	{
 		const auto spread = CalculateCrosshairSpread();
-		GetGameInstance()->GetEventDispatcher()->OnRefreshCrosshair.Broadcast(spread);
+		const auto shootingTargetData = CalculateShootingTargetData();
+		//GEngine->AddOnScreenDebugMessage(-1, 0.05, FColor::Green, shootingTargetData.targetActor ? *shootingTargetData.targetActor->GetName() : *FString("No target"));
+		//TODO igual podemos forzar aquí que el shootingTargetData.targetActor implemente una interfaz que afecte al crosshairs.
+		//también lo puede validar el blueprint.
+		GetGameInstance()->GetEventDispatcher()->OnRefreshCrosshair.Broadcast(spread, shootingTargetData.targetActor, mIsAiming);
 
 		CalculateInterpolatedFOV(DeltaTime);
 	}
@@ -130,7 +135,7 @@ bool UCombatComponent::CanAim() const
 
 FVector UCombatComponent::GetShootingTargetLocation() const
 {
-	return CalculateShootingTargetLocation();
+	return CalculateShootingTargetData().targetLocation;
 }
 
 void UCombatComponent::Shoot() const
@@ -140,10 +145,10 @@ void UCombatComponent::Shoot() const
 		UE_LOG(LogCharacter, Error, TEXT("[%s][UCombatComponent::Shoot] There is no weapon equipped"), *GetName());
 		return;
 	}
-
-	const auto shootingTargetLocation = CalculateShootingTargetLocation();
+	
+	const auto shootingTargetData = CalculateShootingTargetData();
 	const auto weapon = GetEquippedWeapon();
-	weapon->Fire(shootingTargetLocation);
+	weapon->Fire(shootingTargetData.targetLocation);
 }
 
 void UCombatComponent::SetupLeftHandSocketTransform(const ACharacterBase* character) const
@@ -164,16 +169,17 @@ void UCombatComponent::SetupLeftHandSocketTransform(const ACharacterBase* charac
 	GetEquippedWeapon()->SetupLeftHandSocketTransform(newPosition, newRotator);
 }
 
-FVector UCombatComponent::CalculateShootingTargetLocation() const
+FShootingData UCombatComponent::CalculateShootingTargetData() const
 {
 	const auto playerController = Cast<APlayerController>(GetOwner()->GetInstigatorController());
 	const auto hitResult = utils::UtilsLibrary::TraceLineSingleByChannelToCrosshair(GetWorld(), playerController, MaxShootingDistance);
 
-	if(!hitResult.IsValidBlockingHit())
+	if(!hitResult.bBlockingHit)
 	{
-		return hitResult.TraceEnd;
+		return {hitResult.TraceEnd, nullptr};
 	}
-	return hitResult.ImpactPoint;
+	
+	return {hitResult.ImpactPoint, hitResult.GetActor()};
 }
 
 float UCombatComponent::CalculateCrosshairSpread() const
@@ -194,6 +200,8 @@ float UCombatComponent::CalculateCrosshairSpread() const
 	return 0.0f;
 }
 
+static FVector normalCameraOffset;
+
 void UCombatComponent::CalculateInterpolatedFOV(float DeltaTime)
 {
 	//If zoom is very large and we see things blured, there are two parameters in the camera we can modify in order
@@ -204,16 +212,61 @@ void UCombatComponent::CalculateInterpolatedFOV(float DeltaTime)
 
 	const auto camera = mCharacter->GetCamera();
 	const auto weapon = GetEquippedWeapon();
+	const auto mesh = mCharacter->GetMesh();
 	
 	if(mIsAiming)
 	{
 		mCurrentFOV = FMath::FInterpTo(mCurrentFOV, weapon->GetZoomedFOV(), DeltaTime, weapon->GetZoomInterpolationSpeed());
-		//TODO The camera position when aiming is for grenade launcher. Probably for another weapon we should use another value.
-		//Right now we left it like it is. When we have another weapon we can see what to do.
-		mCurrentCameraRelativeLocation = FMath::Lerp(
-			mCurrentCameraRelativeLocation,
-			mDefaultCameraRelativeLocation + FVector(0.0f, 16.7f, 13.0f),
-			DeltaTime * weapon->GetZoomInterpolationSpeed());
+		
+		const auto weaponDirection = weapon->GetForwardVector();
+		const auto cameraDirection = camera->GetForwardVector();
+		auto cameraLocation = camera->GetComponentLocation();
+		
+		GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Cyan, FString::Printf(TEXT("Camera: %s"), *cameraDirection.ToString()));
+		GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Cyan, FString::Printf(TEXT("Weapon: %s"), *weaponDirection.ToString()));
+		
+		DrawDebugLine(GetWorld(), weapon->GetMuzzleLocation(), weapon->GetMuzzleLocation() + weaponDirection * 1000, FColor::Blue);
+		DrawDebugSphere(GetWorld(), weapon->GetMuzzleLocation(), 3, 10, FColor::Blue);
+		
+		//Esto es necesario para que coincidan exactamente los dos vectores de dirección de la cámara y el weapon
+		const auto rotator = camera->GetComponentRotation();
+		const auto result = UKismetMathLibrary::ComposeRotators(FRotator(0.0f, -90.0f, 0.0f), rotator);
+		weapon->StartAiming(FVector::Zero(), result);
+
+		camera->SetRelativeLocation(mDefaultCameraRelativeLocation + FVector(0.0f, 16.7, 0.0f));
+		cameraLocation = camera->GetComponentLocation();
+		DrawDebugLine(GetWorld(), cameraLocation , cameraLocation + cameraDirection * 1000, FColor::Green);
+		DrawDebugSphere(GetWorld(), cameraLocation, 3, 10, FColor::Green);
+
+
+		
+		const auto weaponCrosshairTransform = weapon->GetCrosshairSocketTransform();
+		DrawDebugLine(GetWorld(), weaponCrosshairTransform.GetLocation(), weaponCrosshairTransform.GetLocation() + weaponCrosshairTransform.GetRotation().GetUpVector() * 100, FColor::Cyan);
+		const auto distanceCrosshairToCameraLine = FMath::PointDistToLine(weaponCrosshairTransform.GetLocation(), cameraDirection, cameraLocation);
+		GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Cyan, FString::Printf(TEXT("Distance: %f"), distanceCrosshairToCameraLine));
+		DrawDebugLine(
+					GetWorld(),
+					weaponCrosshairTransform.GetLocation(),
+					weaponCrosshairTransform.GetLocation() + weaponCrosshairTransform.GetRotation().GetUpVector() * distanceCrosshairToCameraLine,
+					FColor::Black,
+					false,
+					-1,
+					0,
+					0.3);
+		
+		
+	/*
+		mCurrentCameraRelativeLocation = FMath::Lerp(mCurrentCameraRelativeLocation,
+													 normalCameraOffset + FVector(0.0f, 16.7f, distanceCrosshairToCameraLine),
+													 DeltaTime * weapon->GetZoomInterpolationSpeed());*/
+		mCurrentCameraRelativeLocation = mDefaultCameraRelativeLocation + FVector(0.0f, 16.7f, distanceCrosshairToCameraLine);
+		camera->SetRelativeLocation(mCurrentCameraRelativeLocation);
+	
+		DrawDebugLine(GetWorld(), camera->GetComponentLocation(), camera->GetComponentLocation() + camera->GetForwardVector() * 500, FColor::Red, false, -1, 0, 0.3);
+
+		
+		const auto newDistanceLines = FMath::PointDistToLine(cameraLocation, cameraDirection, camera->GetComponentLocation());
+		GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Red, FString::Printf(TEXT("DiffDistance: %f"), distanceCrosshairToCameraLine - newDistanceLines));
 	}
 	else
 	{
@@ -222,10 +275,12 @@ void UCombatComponent::CalculateInterpolatedFOV(float DeltaTime)
 			mCurrentCameraRelativeLocation,
 			mDefaultCameraRelativeLocation,
 			DeltaTime * weapon->GetZoomInterpolationSpeed());
+		camera->SetRelativeLocation(mCurrentCameraRelativeLocation);
+		//weapon->StopAiming();
 	}
 	
-	camera->SetFieldOfView(mCurrentFOV);
-	camera->SetRelativeLocation(mCurrentCameraRelativeLocation);
+	//camera->SetFieldOfView(mCurrentFOV);
+	
 }
 
 UBattleRoyaleGameInstance* UCombatComponent::GetGameInstance() const
@@ -242,6 +297,8 @@ void UCombatComponent::SetCameraFOV(float fov)
 void UCombatComponent::SetCameraRelativeLocation(const FVector& location)
 {
 	mDefaultCameraRelativeLocation = location;
+	mCurrentCameraRelativeLocation = mDefaultCameraRelativeLocation;
+	normalCameraOffset = mDefaultCameraRelativeLocation;
 }
 
 void UCombatComponent::DebugDrawAiming() const
@@ -251,8 +308,8 @@ void UCombatComponent::DebugDrawAiming() const
 		return;
 	} 
 	const auto muzzleLocation = GetEquippedWeapon()->GetMuzzleLocation();
-	const auto shootingTargetLocation = CalculateShootingTargetLocation();
+	const auto shootingTargetData = CalculateShootingTargetData();
 	DrawDebugSphere(GetWorld(), muzzleLocation, 5, 12, FColor::White, false);
 	DrawDebugSphere(GetWorld(), muzzleLocation, 3, 12, FColor::Blue, false);
-	DrawDebugLine(GetWorld(), muzzleLocation, shootingTargetLocation, FColor::Blue, false);
+	DrawDebugLine(GetWorld(), muzzleLocation, shootingTargetData.targetLocation, FColor::Blue, false);
 }

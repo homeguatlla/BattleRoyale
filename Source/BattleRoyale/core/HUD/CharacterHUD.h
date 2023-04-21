@@ -28,7 +28,7 @@ private:
 	UFUNCTION()
 	void OnUnEquippedWeapon();
 	UFUNCTION()
-	void OnRefreshCrosshair(float spread);
+	void OnRefreshCrosshair(float spread, AActor* targetActor, bool isAiming);
 	UFUNCTION()
 	void OnRefreshHealthReceived(float health);
 	UFUNCTION()

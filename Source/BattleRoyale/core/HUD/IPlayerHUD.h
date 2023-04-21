@@ -19,5 +19,5 @@ public:
 	void OnRefreshNumKills(int numKills);
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Player HUD")
-	void OnRefreshCrosshair(float spread);
+	void OnRefreshCrosshair(float spread, AActor* targetActor, bool isAiming);
 };

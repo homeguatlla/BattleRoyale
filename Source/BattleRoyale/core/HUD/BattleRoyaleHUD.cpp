@@ -22,7 +22,7 @@ void ABattleRoyaleHUD::BeginPlay()
 
 		return;
 	}
-	CreateHUD<ACharacterHUD>(mCharacterHUD, CharacterHUDWidgetClasses);
-	CreateHUD<AAnnouncementsHUD>(mAnnouncementsHUD,AnnouncementsHUDWidgetClasses);
-	CreateHUD<AMenuHUD>(mMenuHUD, MenuHUDWidgetClasses);
+	mCharacterHUD = CreateHUD<ACharacterHUD>(CharacterHUDWidgetClasses);
+	mAnnouncementsHUD = CreateHUD<AAnnouncementsHUD>(AnnouncementsHUDWidgetClasses);
+	mMenuHUD = CreateHUD<AMenuHUD>(MenuHUDWidgetClasses);
 }

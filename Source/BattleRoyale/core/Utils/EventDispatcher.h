@@ -8,7 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquippedWeapon, TScriptInterface<IWeapon>, weapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnEquippedWeapon);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRefreshCrosshair, float, spread);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRefreshCrosshair, float, spread, AActor*, targetActor, bool, isAiming);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshHealth, float, health);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshNumKills, int, numKills);
 

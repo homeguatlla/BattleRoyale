@@ -57,6 +57,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual FTransform GetMuzzleSocketTransform() = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual FTransform GetCrosshairSocketTransform() = 0;
 	
 	virtual void SetCharacterOwner(ACharacterBase* character) = 0;
 
@@ -65,6 +68,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual UAnimationAsset* GetShootingAnimation() const = 0;
+
+
+	virtual void StartAiming(const FVector& location, const FRotator& rotation) = 0;
+	virtual void StopAiming() = 0;
+
+	virtual FVector GetForwardVector() const = 0;
 	
 	/**
 	 * Aiming and FOV 
@@ -72,4 +81,7 @@ public:
 
 	virtual float GetZoomedFOV() const = 0;
 	virtual float GetZoomInterpolationSpeed() const = 0;
+
+	virtual FVector GetAimingTopOffset() const = 0;
+	virtual FVector GetAimingBottomOffset() const = 0;
 };

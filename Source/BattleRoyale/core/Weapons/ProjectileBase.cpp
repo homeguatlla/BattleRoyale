@@ -41,11 +41,6 @@ AProjectileBase::AProjectileBase()
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
-
-	//Setup damage
-	DamageType = UDamageType::StaticClass();
-	Damage = 10;
-	
 	bReplicates = true;
 }
 

@@ -116,13 +116,16 @@ class BATTLEROYALE_API UtilsLibrary
 			const auto rayStart = crossHairsWorldLocation;
 			//crossHairsWorldDirectionn is already normalized
 			const auto rayEnd = rayStart + crossHairsWorldDirection * maxTraceDistance;
-
+			FCollisionQueryParams params;
+			params.AddIgnoredActor(playerController->GetPawn());
+			
 			FHitResult hitResult;
 			world->LineTraceSingleByChannel(
 				hitResult,
 				rayStart,
 				rayEnd,
-				ECollisionChannel::ECC_Visibility);
+				ECollisionChannel::ECC_Visibility,
+				params);
 			
 			return hitResult;
 		}

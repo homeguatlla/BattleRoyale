@@ -18,9 +18,12 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName MuzzleSocketName;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName ShellSocketName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	FName CrosshairSocketName;
 	
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
@@ -58,6 +61,12 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	float ZoomInterpolationSpeed = 20.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	FVector AimingTopOffset;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	FVector AimingBottomOffset;
 	
 public:	
 	AWeaponBase();
@@ -69,6 +78,7 @@ public:
 	virtual FTransform GetLeftHandSocketTransform() override;
 	virtual FTransform SaveLeftHandSocketTransform() override;
 	virtual FTransform GetMuzzleSocketTransform() override;
+	virtual FTransform GetCrosshairSocketTransform() override;
 	
 	virtual void Destroy() override;
 	virtual bool CanBeFired() const override;
@@ -83,6 +93,13 @@ public:
 	
 	virtual float GetZoomedFOV() const override { return ZoomedFOV; }
 	virtual float GetZoomInterpolationSpeed() const override { return ZoomInterpolationSpeed; }
+
+	virtual FVector GetAimingTopOffset() const override { return AimingTopOffset; }
+	virtual FVector GetAimingBottomOffset() const override { return AimingBottomOffset; }
+	virtual void StartAiming(const FVector& location, const FRotator& rotation) override;
+	virtual void StopAiming() override;
+	virtual FVector GetForwardVector() const override;
+	
 	
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon", meta = (DisplayName = OnFire))
 	void BP_OnFire();
@@ -97,4 +114,7 @@ private:
 
 	FTransform GetSocketMeshTransformBySocketName(const FName& socketName) const;
 	void SpawnBulletShell() const;
+
+	FVector m_AimingLocationOffset;
+	FRotator m_AimingRotator;
 };

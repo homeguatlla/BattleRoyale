@@ -36,14 +36,6 @@ class AProjectileBase : public AActor, public IProjectile
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	USoundBase* ExplosionSound;
 	
-	//The damage type and damage that will be done by this projectile
-	UPROPERTY(EditAnywhere, Category = "Projectile")
-	TSubclassOf<class UDamageType> DamageType;
-
-	//The damage dealt by this projectile.
-	UPROPERTY(EditAnywhere, Category="Projectile")
-	float Damage;
-
 	UPROPERTY(EditAnywhere, Category = "Projectile")
 	TSubclassOf<UGameplayEffect> DamageEffect;
 	

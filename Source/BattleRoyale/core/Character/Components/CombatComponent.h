@@ -11,6 +11,15 @@ class UBattleRoyaleGameInstance;
 class ACharacterBase;
 class IWeapon;
 
+USTRUCT()
+struct BATTLEROYALE_API FShootingData
+{
+	GENERATED_BODY()
+	
+	FVector targetLocation;
+	UPROPERTY()
+	AActor* targetActor;
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BATTLEROYALE_API UCombatComponent : public UActorComponent, public IGunComponent
@@ -94,7 +103,7 @@ private:
 
 	UFUNCTION()
 	void OnRep_EquippedWeapon() const;
-	FVector CalculateShootingTargetLocation() const;
+	FShootingData CalculateShootingTargetData() const;
 	float CalculateCrosshairSpread() const;
 	void CalculateInterpolatedFOV(float DeltaTime);
 

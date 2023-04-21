@@ -39,8 +39,8 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	template<class HUDClass>
-	void CreateHUD(HUDClass* instance, TArray<TSubclassOf<UUserWidget>> widgetClasses);
+	template<class THUDClass>
+	THUDClass* CreateHUD(TArray<TSubclassOf<UUserWidget>> widgetClasses);
 
 	UPROPERTY()
 	ACharacterHUD* mCharacterHUD = nullptr;
@@ -50,17 +50,18 @@ private:
 	AMenuHUD* mMenuHUD = nullptr;
 };
 
-template<class HUDClass>
-void ABattleRoyaleHUD::CreateHUD(HUDClass* instance, TArray<TSubclassOf<UUserWidget>> widgetClasses)
+template<class THUDClass>
+THUDClass* ABattleRoyaleHUD::CreateHUD(TArray<TSubclassOf<UUserWidget>> widgetClasses)
 {
 	FActorSpawnParameters spawnInfo;
 	spawnInfo.Owner = this;
 	//spawnInfo.Instigator = this;
 	spawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	instance = GetWorld()->SpawnActor<HUDClass>(
-		HUDClass::StaticClass(),
+	const auto instance = GetWorld()->SpawnActor<THUDClass>(
+		THUDClass::StaticClass(),
 		FVector::ZeroVector,
 		FRotator::ZeroRotator,
 		spawnInfo);
 	instance->Initialize(0, GetOwningPlayerController(), widgetClasses);
+	return instance;
 }

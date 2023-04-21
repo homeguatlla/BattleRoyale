@@ -100,6 +100,26 @@ void AWeaponBase::OnFire()
 	SpawnBulletShell();
 }
 
+void AWeaponBase::StartAiming(const FVector& location, const FRotator& rotation)
+{
+	m_AimingLocationOffset = location;
+	//m_AimingRotator = GetActorRo;
+	SetActorRotation(rotation);
+	//SetActorLocation(GetActorLocation() + m_AimingLocationOffset);
+}
+
+void AWeaponBase::StopAiming()
+{
+	//SetActorLocation(GetActorLocation() - m_AimingLocationOffset);
+	//SetActorRotation(m_AimingRotator);
+}
+
+FVector AWeaponBase::GetForwardVector() const
+{
+	return GetSocketMeshTransformBySocketName(MuzzleSocketName).GetRotation().GetForwardVector();
+	//return GetActorTransform().GetRotation().GetForwardVector(); 
+}
+
 void AWeaponBase::SpawnProjectileServer(const FVector& muzzleLocation, const FVector& shootingDirection) const
 {
 	if (ProjectileClass != nullptr)
@@ -141,6 +161,12 @@ FTransform AWeaponBase::GetMuzzleSocketTransform()
 {
 	check(!MuzzleSocketName.IsNone());
 	return GetMesh()->GetSocketTransform(MuzzleSocketName, RTS_World);
+}
+
+FTransform AWeaponBase::GetCrosshairSocketTransform()
+{
+	check(!CrosshairSocketName.IsNone());
+	return GetMesh()->GetSocketTransform(CrosshairSocketName, RTS_World);
 }
 
 void AWeaponBase::SpawnBulletShell() const
