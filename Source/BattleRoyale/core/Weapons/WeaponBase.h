@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "IWeapon.h"
 #include "BattleRoyale/core/General/PickupObjectBase.h"
-#include "Camera/CameraComponent.h"
 #include "WeaponBase.generated.h"
 
 class ICrosshair;
@@ -63,12 +62,6 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	float ZoomInterpolationSpeed = 20.0f;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon")
-	FVector AimingTopOffset;
-
-	UPROPERTY(EditAnywhere, Category = "Weapon")
-	FVector AimingBottomOffset;
-	
 public:	
 	AWeaponBase();
 
@@ -95,8 +88,6 @@ public:
 	virtual float GetZoomedFOV() const override { return ZoomedFOV; }
 	virtual float GetZoomInterpolationSpeed() const override { return ZoomInterpolationSpeed; }
 
-	virtual FVector GetAimingTopOffset() const override { return AimingTopOffset; }
-	virtual FVector GetAimingBottomOffset() const override { return AimingBottomOffset; }
 	virtual void StartAiming(const FVector& location, const FRotator& rotation) override;
 	virtual void StopAiming() override;
 	virtual FVector GetForwardVector() const override;

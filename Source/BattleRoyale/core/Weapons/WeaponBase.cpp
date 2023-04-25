@@ -10,7 +10,6 @@
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
-#include "Camera/CameraComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 
 // Sets default values

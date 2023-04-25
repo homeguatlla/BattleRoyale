@@ -3,9 +3,7 @@
 
 #include "FirstPersonAnimationInstance.h"
 
-#include "DetailLayoutBuilder.h"
 #include "KismetAnimationLibrary.h"
-#include "SAdvancedTransformInputBox.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "Components/CombatComponent.h"
 #include "Kismet/KismetMathLibrary.h"

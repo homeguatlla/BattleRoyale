@@ -81,7 +81,4 @@ public:
 
 	virtual float GetZoomedFOV() const = 0;
 	virtual float GetZoomInterpolationSpeed() const = 0;
-
-	virtual FVector GetAimingTopOffset() const = 0;
-	virtual FVector GetAimingBottomOffset() const = 0;
 };
