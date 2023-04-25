@@ -10,6 +10,7 @@
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
+#include "Camera/CameraComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 
 // Sets default values
@@ -102,16 +103,11 @@ void AWeaponBase::OnFire()
 
 void AWeaponBase::StartAiming(const FVector& location, const FRotator& rotation)
 {
-	m_AimingLocationOffset = location;
-	//m_AimingRotator = GetActorRo;
 	SetActorRotation(rotation);
-	//SetActorLocation(GetActorLocation() + m_AimingLocationOffset);
 }
 
 void AWeaponBase::StopAiming()
 {
-	//SetActorLocation(GetActorLocation() - m_AimingLocationOffset);
-	//SetActorRotation(m_AimingRotator);
 }
 
 FVector AWeaponBase::GetForwardVector() const

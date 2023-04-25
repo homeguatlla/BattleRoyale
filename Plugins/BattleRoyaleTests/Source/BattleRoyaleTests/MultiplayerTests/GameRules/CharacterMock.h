@@ -48,6 +48,7 @@ public:
 	virtual void DieClient() override{}
 	virtual void SetEnableInput(bool enable, const FInputModeDataBase& inputMode) override{}
 	virtual UCameraComponent* GetCamera() const override { return nullptr;}
+	virtual UCameraComponent* GetAimingCamera() const override { return nullptr;}
 	virtual UHurtComponent* GetHurtComponent() const override { return nullptr;}
 	virtual void NotifyRefreshHealth(float health) const override{}
 	virtual void NotifyTakeDamage(float damage, const AActor* causer, float currentHealth) override{}

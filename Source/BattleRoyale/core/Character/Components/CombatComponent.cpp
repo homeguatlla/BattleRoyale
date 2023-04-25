@@ -14,6 +14,8 @@
 #include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
+#define CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON 16.7f
+
 // Sets default values for this component's properties
 UCombatComponent::UCombatComponent()
 {
@@ -60,7 +62,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		//también lo puede validar el blueprint.
 		GetGameInstance()->GetEventDispatcher()->OnRefreshCrosshair.Broadcast(spread, shootingTargetData.targetActor, mIsAiming);
 
-		CalculateInterpolatedFOV(DeltaTime);
+		CalculateInterpolatedFOVAndCameraLocation(DeltaTime);
 	}
 	if(IsDebugEnabled)
 	{
@@ -125,7 +127,12 @@ void UCombatComponent::StopAiming()
 {
 	mIsAiming = false;
 	mCharacter->GetCharacterMovement()->MaxWalkSpeed = mCharacter->GetMaxWalkSpeed();
-	mCharacter->GetAbilitySystemComponentBase()->RemoveGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_AIMING));
+	//TODO cuando cerramos el juego el player state es nulo y por tanto no hay GAS y peta aquí
+	//si cerremos el juego mientras estás haciendo aiming
+	if(const auto abilitySystemComponent = mCharacter->GetAbilitySystemComponentBase())
+	{
+		abilitySystemComponent->RemoveGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_AIMING));
+	}
 }
 
 bool UCombatComponent::CanAim() const
@@ -202,7 +209,7 @@ float UCombatComponent::CalculateCrosshairSpread() const
 
 static FVector normalCameraOffset;
 
-void UCombatComponent::CalculateInterpolatedFOV(float DeltaTime)
+void UCombatComponent::CalculateInterpolatedFOVAndCameraLocation(float DeltaTime)
 {
 	//If zoom is very large and we see things blured, there are two parameters in the camera we can modify in order
 	//to make image sharper and without blur. DepthOfField/FocalDistance (10000)
@@ -212,61 +219,55 @@ void UCombatComponent::CalculateInterpolatedFOV(float DeltaTime)
 
 	const auto camera = mCharacter->GetCamera();
 	const auto weapon = GetEquippedWeapon();
-	const auto mesh = mCharacter->GetMesh();
 	
 	if(mIsAiming)
 	{
 		mCurrentFOV = FMath::FInterpTo(mCurrentFOV, weapon->GetZoomedFOV(), DeltaTime, weapon->GetZoomInterpolationSpeed());
-		
-		const auto weaponDirection = weapon->GetForwardVector();
+	
 		const auto cameraDirection = camera->GetForwardVector();
-		auto cameraLocation = camera->GetComponentLocation();
 		
-		GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Cyan, FString::Printf(TEXT("Camera: %s"), *cameraDirection.ToString()));
-		GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Cyan, FString::Printf(TEXT("Weapon: %s"), *weaponDirection.ToString()));
-		
-		DrawDebugLine(GetWorld(), weapon->GetMuzzleLocation(), weapon->GetMuzzleLocation() + weaponDirection * 1000, FColor::Blue);
-		DrawDebugSphere(GetWorld(), weapon->GetMuzzleLocation(), 3, 10, FColor::Blue);
-		
-		//Esto es necesario para que coincidan exactamente los dos vectores de dirección de la cámara y el weapon
+		//Rotate weapon to make camera direction and weapon direction both the same direction
 		const auto rotator = camera->GetComponentRotation();
 		const auto result = UKismetMathLibrary::ComposeRotators(FRotator(0.0f, -90.0f, 0.0f), rotator);
 		weapon->StartAiming(FVector::Zero(), result);
 
-		camera->SetRelativeLocation(mDefaultCameraRelativeLocation + FVector(0.0f, 16.7, 0.0f));
-		cameraLocation = camera->GetComponentLocation();
-		DrawDebugLine(GetWorld(), cameraLocation , cameraLocation + cameraDirection * 1000, FColor::Green);
-		DrawDebugSphere(GetWorld(), cameraLocation, 3, 10, FColor::Green);
+		//Camera and Weapon directions. Must be parallel (the same vector)
+		//GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Cyan, FString::Printf(TEXT("Camera: %s"), *cameraDirection.ToString()));
+		//GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Cyan, FString::Printf(TEXT("Weapon: %s"), *weaponDirection.ToString()));
 
+		//Weapon Line
+		//DrawDebugLine(GetWorld(), weapon->GetMuzzleLocation(), weapon->GetMuzzleLocation() + weaponDirection * 1000, FColor::Blue);
 
+		//Move camera to center on the weapon.
+		camera->SetRelativeLocation(mDefaultCameraRelativeLocation + FVector(0.0f, CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON, 0.0f));
+		const auto cameraLocation = camera->GetComponentLocation();
 		
+		//Camera line
+		//DrawDebugLine(GetWorld(), cameraLocation , cameraLocation + cameraDirection * 1000, FColor::Green);
+
 		const auto weaponCrosshairTransform = weapon->GetCrosshairSocketTransform();
-		DrawDebugLine(GetWorld(), weaponCrosshairTransform.GetLocation(), weaponCrosshairTransform.GetLocation() + weaponCrosshairTransform.GetRotation().GetUpVector() * 100, FColor::Cyan);
-		const auto distanceCrosshairToCameraLine = FMath::PointDistToLine(weaponCrosshairTransform.GetLocation(), cameraDirection, cameraLocation);
-		GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Cyan, FString::Printf(TEXT("Distance: %f"), distanceCrosshairToCameraLine));
-		DrawDebugLine(
-					GetWorld(),
-					weaponCrosshairTransform.GetLocation(),
-					weaponCrosshairTransform.GetLocation() + weaponCrosshairTransform.GetRotation().GetUpVector() * distanceCrosshairToCameraLine,
-					FColor::Black,
-					false,
-					-1,
-					0,
-					0.3);
 		
-		
-	/*
-		mCurrentCameraRelativeLocation = FMath::Lerp(mCurrentCameraRelativeLocation,
-													 normalCameraOffset + FVector(0.0f, 16.7f, distanceCrosshairToCameraLine),
-													 DeltaTime * weapon->GetZoomInterpolationSpeed());*/
-		mCurrentCameraRelativeLocation = mDefaultCameraRelativeLocation + FVector(0.0f, 16.7f, distanceCrosshairToCameraLine);
-		camera->SetRelativeLocation(mCurrentCameraRelativeLocation);
-	
-		DrawDebugLine(GetWorld(), camera->GetComponentLocation(), camera->GetComponentLocation() + camera->GetForwardVector() * 500, FColor::Red, false, -1, 0, 0.3);
+		//Crosshair UP line
+		//DrawDebugLine(GetWorld(), weaponCrosshairTransform.GetLocation(), weaponCrosshairTransform.GetLocation() + weaponCrosshairTransform.GetRotation().GetUpVector() * 100, FColor::Cyan);
 
+		//Calculate the distance from the crosshair to the camera line (once aligned with the weapon)
+		const auto distanceCrosshairToCameraLine = FMath::PointDistToLine(weaponCrosshairTransform.GetLocation(), cameraDirection, cameraLocation);
+		//We have to move camera relative position in z, up to distanceCrosshairToCameraLine. But, camera can be rotated because of pitch.
+		//So we cannot add relative z = distanceCrosshairToCameraLine because camera up vector can not be 1.
+		//To calculate the distance to move we know that upvector.z * newDistance = distanceCrosshairToCameraLine, so newDistance = distanceCrosshairToCameraLine/cameraUp.z
+		const auto cameraUpVector = camera->GetComponentTransform().GetRotation().GetUpVector();
+		const auto relativeUpZ = distanceCrosshairToCameraLine / cameraUpVector.Z;
+		mCurrentCameraRelativeLocation = FMath::Lerp(mCurrentCameraRelativeLocation,
+															 mDefaultCameraRelativeLocation + FVector(0.0f, CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON, relativeUpZ),
+															 DeltaTime * weapon->GetZoomInterpolationSpeed());
 		
-		const auto newDistanceLines = FMath::PointDistToLine(cameraLocation, cameraDirection, camera->GetComponentLocation());
-		GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Red, FString::Printf(TEXT("DiffDistance: %f"), distanceCrosshairToCameraLine - newDistanceLines));
+	
+		
+		//Decomment to see the difference between the final camera position and the current camera position
+		//DrawDebugLine(GetWorld(), camera->GetComponentLocation(), camera->GetComponentLocation() + camera->GetForwardVector() * 500, FColor::Red, false, -1, 0, 0.3);
+		//const auto newDistanceLines = FMath::PointDistToLine(cameraLocation, cameraDirection, camera->GetComponentLocation());
+		//float diff = distanceCrosshairToCameraLine - newDistanceLines;
+		//GEngine->AddOnScreenDebugMessage(-1, 0.1, fabs(diff) < 0.05 ? FColor::Green : FColor::Red, FString::Printf(TEXT("DiffDistance: %f"), diff));
 	}
 	else
 	{
@@ -275,12 +276,11 @@ void UCombatComponent::CalculateInterpolatedFOV(float DeltaTime)
 			mCurrentCameraRelativeLocation,
 			mDefaultCameraRelativeLocation,
 			DeltaTime * weapon->GetZoomInterpolationSpeed());
-		camera->SetRelativeLocation(mCurrentCameraRelativeLocation);
-		//weapon->StopAiming();
+		weapon->StopAiming();
 	}
 	
-	//camera->SetFieldOfView(mCurrentFOV);
-	
+	camera->SetFieldOfView(mCurrentFOV);
+	camera->SetRelativeLocation(mCurrentCameraRelativeLocation);
 }
 
 UBattleRoyaleGameInstance* UCombatComponent::GetGameInstance() const

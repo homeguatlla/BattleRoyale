@@ -80,13 +80,12 @@ void UAbilityAim::CancelAbility(const FGameplayAbilitySpecHandle Handle, const F
 		                                                      ActivationInfo, bReplicateCancelAbility));
 		return;
 	}
-
-	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
-
+	
 	if(const auto gunComponent = GetGunComponent(ActorInfo))
 	{
 		gunComponent->StopAiming();
 	}
+	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 }
 
 TScriptInterface<IGunComponent> UAbilityAim::GetGunComponent(const FGameplayAbilityActorInfo* ActorInfo) const

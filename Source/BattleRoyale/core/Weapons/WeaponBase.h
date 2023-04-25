@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "IWeapon.h"
 #include "BattleRoyale/core/General/PickupObjectBase.h"
+#include "Camera/CameraComponent.h"
 #include "WeaponBase.generated.h"
 
 class ICrosshair;
@@ -70,7 +71,7 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 	
 public:	
 	AWeaponBase();
-	
+
 	virtual FVector GetMuzzleLocation() const override;
 	virtual FRotator GetMuzzleRotation() const override;
 	virtual float GetCooldownTime() const override { return CooldownTime; }
@@ -100,7 +101,6 @@ public:
 	virtual void StopAiming() override;
 	virtual FVector GetForwardVector() const override;
 	
-	
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon", meta = (DisplayName = OnFire))
 	void BP_OnFire();
 
@@ -114,7 +114,4 @@ private:
 
 	FTransform GetSocketMeshTransformBySocketName(const FName& socketName) const;
 	void SpawnBulletShell() const;
-
-	FVector m_AimingLocationOffset;
-	FRotator m_AimingRotator;
 };

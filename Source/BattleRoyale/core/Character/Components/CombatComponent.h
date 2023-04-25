@@ -105,7 +105,7 @@ private:
 	void OnRep_EquippedWeapon() const;
 	FShootingData CalculateShootingTargetData() const;
 	float CalculateCrosshairSpread() const;
-	void CalculateInterpolatedFOV(float DeltaTime);
+	void CalculateInterpolatedFOVAndCameraLocation(float DeltaTime);
 
 	UBattleRoyaleGameInstance* GetGameInstance() const;
 	void SetCameraFOV(float fov);
