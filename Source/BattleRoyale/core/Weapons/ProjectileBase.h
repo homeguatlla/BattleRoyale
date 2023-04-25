@@ -10,6 +10,7 @@
 
 class USphereComponent;
 class UProjectileMovementComponent;
+class IICharacter;
 
 UCLASS(config=Game)
 class AProjectileBase : public AActor, public IProjectile
@@ -38,12 +39,17 @@ class AProjectileBase : public AActor, public IProjectile
 	
 	UPROPERTY(EditAnywhere, Category = "Projectile")
 	TSubclassOf<UGameplayEffect> DamageEffect;
+
+	UPROPERTY(EditAnywhere, Category = "Projectile")
+	float ProjectileEjectionImpulse = 100.0f;
+
+	
 	
 public:
 	AProjectileBase();
 
 	virtual void Destroyed() override;
-
+	
 	virtual UParticleSystem* GetExplosionEffect() const override { return ExplosionEffect; }
 	virtual USoundBase* GetExplosionSound() const override { return ExplosionSound; }
 	virtual UParticleSystem* GetTrailEffect() const override { return TrailEffect; }
@@ -54,10 +60,17 @@ public:
 	/** called when projectile hits something */
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
+	
 	/** Returns CollisionComp subobject **/
 	USphereComponent* GetCollisionComp() const { return CollisionComp; }
 	/** Returns ProjectileMovement subobject **/
 	UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
+
+protected:
+	void ApplyDamageToCharacter(IICharacter* character) const;
+	virtual void DoApplyDamageFrom(const FVector& center) const {}
+
+	UPROPERTY(EditAnywhere, Category = "Projectile")
+	bool IsDebugEnabled { false };
 };
 

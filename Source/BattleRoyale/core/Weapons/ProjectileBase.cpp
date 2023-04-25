@@ -58,25 +58,17 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 		// Only add impulse and destroy projectile if we hit a physics
 		if(OtherComp->IsSimulatingPhysics())
 		{
-			//TODO cambiar el valor del impulso por una UPROPERTY como hemos hecho en el BulletShell
-			OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+			OtherComp->AddImpulseAtLocation(GetVelocity() * ProjectileEjectionImpulse, GetActorLocation());
 		}
-		
+
 		if(const auto hurtCharacter = Cast<IICharacter>(OtherActor))
-        {
-        	const auto gameplayAbilityInterface = hurtCharacter->GetAbilitySystemComponentBase();
-			const auto instigatorPlayerState = Cast<IIPlayerState>(GetInstigator()->GetPlayerState());
-			if(instigatorPlayerState)
-			{
-				const auto damageEffectHandle = instigatorPlayerState->GetAbilitySystemComponentInterface()->ApplyGameplayEffectToTarget(DamageEffect, hurtCharacter);
-				if(!damageEffectHandle.IsValid())
-				{
-					//UE_LOG(LogTemp, Error, TEXT("AProjectileBase::OnHit gameplay effect Damage couldn't be applied"));
-				}
-			}
-        }
+		{
+			ApplyDamageToCharacter(hurtCharacter);
+		}
+		DoApplyDamageFrom(Hit.ImpactPoint);
 		
 		/*
+		 * Unreal way to apply damage
 		if(OtherActor->CanBeDamaged())
 		{
 			AController* controller = nullptr;
@@ -95,5 +87,19 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 				DamageType);
 		}*/
 		Destroy();
+	}
+}
+
+void AProjectileBase::ApplyDamageToCharacter(IICharacter* character) const
+{
+	
+	const auto gameplayAbilityInterface = character->GetAbilitySystemComponentBase();
+	if(const auto instigatorPlayerState = Cast<IIPlayerState>(GetInstigator()->GetPlayerState()))
+	{
+		const auto damageEffectHandle = instigatorPlayerState->GetAbilitySystemComponentInterface()->ApplyGameplayEffectToTarget(DamageEffect, character);
+		if(!damageEffectHandle.IsValid())
+		{
+			//UE_LOG(LogTemp, Error, TEXT("AProjectileBase::OnHit gameplay effect Damage couldn't be applied"));
+		}
 	}
 }
