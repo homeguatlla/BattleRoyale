@@ -18,5 +18,5 @@ class BATTLEROYALE_API AAreaProjectile : public AProjectileBase
 	float ExplosionRadius = 150.0f; //3 meters
 
 protected:
-	virtual void DoApplyDamageFrom(const FVector& center) const override;
+	virtual void DoApplyDamageFrom(AActor* hitActor, const FVector& center) const override;
 };

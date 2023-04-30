@@ -68,7 +68,7 @@ public:
 
 protected:
 	void ApplyDamageToCharacter(IICharacter* character) const;
-	virtual void DoApplyDamageFrom(const FVector& center) const {}
+	virtual void DoApplyDamageFrom(AActor* hitActor, const FVector& center) const;
 
 	UPROPERTY(EditAnywhere, Category = "Projectile")
 	bool IsDebugEnabled { false };

@@ -6,7 +6,7 @@
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "Kismet/GameplayStatics.h"
 
-void AAreaProjectile::DoApplyDamageFrom(const FVector& center) const
+void AAreaProjectile::DoApplyDamageFrom(AActor* hitActor, const FVector& center) const
 {
 	TArray<AActor*> charactersFound;
 

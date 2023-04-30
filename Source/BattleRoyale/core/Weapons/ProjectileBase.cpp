@@ -60,12 +60,8 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 		{
 			OtherComp->AddImpulseAtLocation(GetVelocity() * ProjectileEjectionImpulse, GetActorLocation());
 		}
-
-		if(const auto hurtCharacter = Cast<IICharacter>(OtherActor))
-		{
-			ApplyDamageToCharacter(hurtCharacter);
-		}
-		DoApplyDamageFrom(Hit.ImpactPoint);
+		
+		DoApplyDamageFrom(OtherActor, Hit.ImpactPoint);
 		
 		/*
 		 * Unreal way to apply damage
@@ -101,5 +97,13 @@ void AProjectileBase::ApplyDamageToCharacter(IICharacter* character) const
 		{
 			//UE_LOG(LogTemp, Error, TEXT("AProjectileBase::OnHit gameplay effect Damage couldn't be applied"));
 		}
+	}
+}
+
+void AProjectileBase::DoApplyDamageFrom(AActor* hitActor, const FVector& center) const
+{
+	if(const auto hurtCharacter = Cast<IICharacter>(hitActor))
+	{
+		ApplyDamageToCharacter(hurtCharacter);
 	}
 }
