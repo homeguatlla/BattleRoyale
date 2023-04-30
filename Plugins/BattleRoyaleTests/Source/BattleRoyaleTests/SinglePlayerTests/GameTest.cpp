@@ -1,8 +1,11 @@
 #include "BattleRoyaleTests/BattleRoyaleTests.h"
 
+#if WITH_EDITOR
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
 #include "BattleRoyale/core/GameMode/SinglePlayer/SinglePlayerGameMode.h"
+
+#if WITH_DEV_AUTOMATION_TESTS
 
 //#include "YourGameModeBase.h"
 //#include "MyEssentialActor.h"
@@ -41,3 +44,6 @@ bool FGameTest::RunTest(const FString& Parameters)
 
     return true;
 }
+PRAGMA_ENABLE_OPTIMIZATION_ACTUAL
+#endif
+#endif

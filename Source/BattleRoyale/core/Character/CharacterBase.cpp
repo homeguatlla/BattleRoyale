@@ -480,6 +480,11 @@ bool ACharacterBase::UnEquipServer() const
 	{
 		return false;
 	}
+
+	if(!CombatComponent->HasWeaponEquipped())
+	{
+		return false;	
+	}
 	
 	const TScriptInterface<IPickupObject> pickupObject = CombatComponent->GetEquippedWeapon().GetObject();
 	check(pickupObject.GetObject());
@@ -527,8 +532,8 @@ bool ACharacterBase::EquipWeaponServer(TScriptInterface<IPickupObject> pickableO
 		return false;
 	}
 
-	const TScriptInterface<IWeapon> weapon =pickableObject.GetObject();
 	check(CombatComponent);
+	const TScriptInterface<IWeapon> weapon = pickableObject.GetObject();
 	if(CombatComponent->EquipWeapon(weapon, RightHandSocketName))
 	{
 		pickableObject->ChangeStateServer(EPickupObjectState::Equipped);
