@@ -87,8 +87,11 @@ private:
 
 	UFUNCTION(Client, Unreliable)
 	void ClientNotifyTeamsAndPlayersAlive(uint8 numTeams, uint8 numPlayers);
-	
+
 	void CreateStatesMachine();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastCreateStatesMachine();
 	
 	APlayerController* GetPlayerController() const;
 	UEventDispatcher* GetEventDispatcher() const;

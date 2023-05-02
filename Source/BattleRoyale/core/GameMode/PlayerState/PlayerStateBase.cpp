@@ -147,7 +147,7 @@ void APlayerStateBase::ShowDeathScreen() const
 
 void APlayerStateBase::OnGameStartedServer()
 {
-	CreateStatesMachine();
+	MulticastCreateStatesMachine();
 	SetActorTickEnabled(true);
 	
 	//Notify refresh health and is client rpc, so clients will refresh live ui
@@ -260,6 +260,11 @@ void APlayerStateBase::CreateStatesMachine()
 	
 	mStatesMachineController.AddMachine(
 		std::move(factory.CreatePlayerStateFSM(fsmType, mPlayerStateFSMContext)));
+}
+
+void APlayerStateBase::MulticastCreateStatesMachine_Implementation()
+{
+	CreateStatesMachine();
 }
 
 APlayerController* APlayerStateBase::GetPlayerController() const
