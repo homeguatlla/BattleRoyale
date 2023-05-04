@@ -14,7 +14,8 @@
 #include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
-#define CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON 16.7f
+#define CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON_STANDUP 16.7f
+#define CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON_CROUCH 5.8f
 
 // Sets default values for this component's properties
 UCombatComponent::UCombatComponent()
@@ -127,7 +128,7 @@ void UCombatComponent::StopAiming()
 {
 	mIsAiming = false;
 	mCharacter->GetCharacterMovement()->MaxWalkSpeed = mCharacter->GetMaxWalkSpeed();
-	//TODO cuando cerramos el juego el player state es nulo y por tanto no hay GAS y peta aquí
+	//Cuando cerramos el juego el player state es nulo y por tanto no hay GAS y peta aquí
 	//si cerremos el juego mientras estás haciendo aiming
 	if(const auto abilitySystemComponent = mCharacter->GetAbilitySystemComponentBase())
 	{
@@ -191,18 +192,16 @@ FShootingData UCombatComponent::CalculateShootingTargetData() const
 
 float UCombatComponent::CalculateCrosshairSpread() const
 {
-	//TODO el spread ahora mismo depende de la velocidad.
-	//en el curso depende también de si estás aiming, se estrecha,
-	//si disparas lo setea a un valor fijo y luego interpola a cero ese factor.
-	//siempre está interpolando con DeltaTime.
 	if(const auto characterInterface = Cast<IICharacter>(GetOwner()))
 	{
-		auto velocity = characterInterface->GetCurrentVelocity();
-		//velocity.Z = 0.0f;
+		const auto velocity = characterInterface->GetCurrentVelocity();
 		const auto maxWalkSpeed = characterInterface->GetMaxWalkSpeed();
 
 		//From velocity [0, maxWalkSpeed] to [0, 1] depending on the velocity
-		return FMath::GetMappedRangeValueClamped(FVector2D(0, maxWalkSpeed), FVector2D(0.0f, 1.0f), velocity.Size());
+		return FMath::GetMappedRangeValueClamped(
+			FVector2D(0, maxWalkSpeed),
+			FVector2D(0.0f, 1.0f),
+			velocity.Size());
 	}
 	return 0.0f;
 }
@@ -222,6 +221,19 @@ void UCombatComponent::CalculateInterpolatedFOVAndCameraLocation(float DeltaTime
 	
 	if(mIsAiming)
 	{
+		float relativeYOffsetToAlignCameraAndWeapon = 0.0f;
+		float upCameraVectorSign = -1.0f;
+		if(mCharacter->IsCrouching())
+		{
+			relativeYOffsetToAlignCameraAndWeapon = CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON_CROUCH;
+			upCameraVectorSign = -1.0f;
+		}
+		else
+		{
+			relativeYOffsetToAlignCameraAndWeapon = CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON_STANDUP;
+			upCameraVectorSign = 1.0f;
+		}
+		
 		mCurrentFOV = FMath::FInterpTo(mCurrentFOV, weapon->GetZoomedFOV(), DeltaTime, weapon->GetZoomInterpolationSpeed());
 	
 		const auto cameraDirection = camera->GetForwardVector();
@@ -239,7 +251,7 @@ void UCombatComponent::CalculateInterpolatedFOVAndCameraLocation(float DeltaTime
 		//DrawDebugLine(GetWorld(), weapon->GetMuzzleLocation(), weapon->GetMuzzleLocation() + weaponDirection * 1000, FColor::Blue);
 
 		//Move camera to center on the weapon.
-		camera->SetRelativeLocation(mDefaultCameraRelativeLocation + FVector(0.0f, CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON, 0.0f));
+		camera->SetRelativeLocation(mDefaultCameraRelativeLocation + FVector(0.0f, relativeYOffsetToAlignCameraAndWeapon, 0.0f));
 		const auto cameraLocation = camera->GetComponentLocation();
 		
 		//Camera line
@@ -258,7 +270,7 @@ void UCombatComponent::CalculateInterpolatedFOVAndCameraLocation(float DeltaTime
 		const auto cameraUpVector = camera->GetComponentTransform().GetRotation().GetUpVector();
 		const auto relativeUpZ = distanceCrosshairToCameraLine / cameraUpVector.Z;
 		mCurrentCameraRelativeLocation = FMath::Lerp(mCurrentCameraRelativeLocation,
-															 mDefaultCameraRelativeLocation + FVector(0.0f, CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON, relativeUpZ),
+															 mDefaultCameraRelativeLocation + FVector(0.0f, relativeYOffsetToAlignCameraAndWeapon, upCameraVectorSign * relativeUpZ),
 															 DeltaTime * weapon->GetZoomInterpolationSpeed());
 		
 	
