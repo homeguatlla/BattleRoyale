@@ -71,6 +71,7 @@ void ACharacterBase::BeginPlay()
 void ACharacterBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	//GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Green, FString::Printf(TEXT("Speed %f"), GetCurrentVelocity().Size()));
 }
 
 void ACharacterBase::PossessedBy(AController* NewController)
@@ -617,9 +618,14 @@ void ACharacterBase::MulticastTakeDamage_Implementation(float damage, const AAct
 {
 	const bool isNotLocallyControlledAndCauserIsAutonomousProxy = !IsLocallyControlled() && causer && causer->GetLocalRole() == ROLE_AutonomousProxy;
 	const bool isAuthorityAndCauserIsLocallyControlled = HasAuthority() && Cast<ACharacter>(causer)->IsLocallyControlled();
-	if(isNotLocallyControlledAndCauserIsAutonomousProxy || isAuthorityAndCauserIsLocallyControlled)
+	const bool hasToShowDamagePoints = isNotLocallyControlledAndCauserIsAutonomousProxy || isAuthorityAndCauserIsLocallyControlled;
+
+	//Give all instances of the damaged character the opportunity to show something (at least the hit reaction animation)
+	BP_OnTakenDamage(damage, causer->GetActorLocation(), currentHealth, hasToShowDamagePoints);
+
+	//Only if the damaged character has to show damage points. The one who is in the pc of the player who shot.
+	if(hasToShowDamagePoints)
 	{
-		BP_OnTakenDamage(damage, causer->GetActorLocation(), currentHealth);
 		if(currentHealth<= 0.0f)
 		{
 			BP_OnDead();

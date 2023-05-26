@@ -69,9 +69,6 @@ private:
 	ETurningInPlace TurningInPlace = ETurningInPlace::NotTurning;
 	
 	UPROPERTY(BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = true))
-	float InterpolatedTurnInPlaceDeltaYaw;
-
-	UPROPERTY(BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = true))
 	FRotator RightHandRotation;
 
 	UPROPERTY(BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = true))

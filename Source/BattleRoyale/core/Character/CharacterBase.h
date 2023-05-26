@@ -167,7 +167,7 @@ public:
 	void BP_OnShoot();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnTakenDamage))
-	void BP_OnTakenDamage(float damage, const FVector& damageCauserLocation, float currentHealth);
+	void BP_OnTakenDamage(float damage, const FVector& damageCauserLocation, float currentHealth, bool hasToShowDamagePoints);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnDead))
 	void BP_OnDead();
