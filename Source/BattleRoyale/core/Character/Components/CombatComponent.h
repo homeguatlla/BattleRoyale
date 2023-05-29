@@ -62,6 +62,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "CombatComponent")
 	float ZoomInterpolationFOV = 20.0f;
 	
+	FTimerHandle mAutomaticFireTimer;
+	
 public:	
 	// Sets default values for this component's properties
 	UCombatComponent();
@@ -79,7 +81,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
 	virtual bool CanShoot() const override;
-	virtual void Shoot() const override;
+	virtual void Shoot() override;
+	virtual void ReleaseTrigger() override;
 	virtual UAnimMontage* GetShootingMontage() const override { return ShootingAnimation; }
 	
 	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
@@ -100,6 +103,7 @@ private:
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	bool IsInputPressedByActionName(const FName& ActionName, const APlayerController* PlayerController) const;
 
 	UFUNCTION()
 	void OnRep_EquippedWeapon() const;
@@ -110,6 +114,10 @@ private:
 	UBattleRoyaleGameInstance* GetGameInstance() const;
 	void SetCameraFOV(float fov);
 	void SetCameraRelativeLocation(const FVector& location);
+
+	void StartAutomaticFireTimer();
+	void OnAutomaticFire() ;
+	void ShootOnce() const;
 	
 	void DebugDrawAiming() const;
 };

@@ -52,6 +52,12 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 
 	UPROPERTY(EditDefaultsOnly, Category="Weapon")
 	UAnimationAsset* ShootingAnimation;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	bool AutomaticFire = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	float AutomaticFireDelay = 0.0f;
 	
 	//This is where the left hand goes on the weapon.
 	FTransform mLeftHandSocketTransform;
@@ -78,7 +84,9 @@ public:
 	virtual bool CanBeFired() const override;
 	virtual void Fire(const FVector& targetLocation) override;
 	virtual void OnFire() override;//This method will be called from Blueprint (Gameplay cue shoot that makes the visual effects of the weapon when firing)
-
+	virtual bool IsAutomaticFireEnabled() const override { return AutomaticFire; }
+	virtual float GetAutomaticFireDelay() const override { return AutomaticFireDelay; }
+	
 	virtual UAnimationAsset* GetShootingAnimation() const override { return ShootingAnimation; }
 	
 	virtual void SetCharacterOwner(ACharacterBase* character) override;

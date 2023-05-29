@@ -4,8 +4,6 @@
 #include "CoreMinimal.h"
 #include "GameplayAbilityBase.h"
 #include "Abilities/GameplayAbility.h"
-#include "BattleRoyale/core/Character/ICharacter.h"
-#include "BattleRoyale/core/Character/Components/IGunComponent.h"
 #include "AbilityShootProjectileGun.generated.h"
 
 /**
@@ -27,7 +25,7 @@ public:
 	
 	virtual void ApplyCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                           const FGameplayAbilityActivationInfo ActivationInfo) const override;
-	
+
 private:
 	UFUNCTION()
 	void OnMontageCompleted();
@@ -42,7 +40,7 @@ private:
 	float GetWeaponCooldownDuration() const;
 	void SubscribeToEventMontageShoot(const IICharacter* character);
 	void CreateTaskPlayMontageShooting(const IICharacter* character, const FGameplayAbilityActorInfo* ActorInfo);
-
+	
 	IICharacter* mCharacter;
 	//METHOD FDelegateHandle mEventMontageShootHandle;
 

@@ -2,7 +2,6 @@
 
 #include "BattleRoyale/core/Abilities/GameplayAbilityBase.h"
 #include "AbilitySystemComponent.h"
-#include "AbilitySystemGlobals.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 
 UGameplayAbilityBase::UGameplayAbilityBase()

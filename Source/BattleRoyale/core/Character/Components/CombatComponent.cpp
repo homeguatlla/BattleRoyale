@@ -12,6 +12,7 @@
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "BattleRoyale/core/Weapons/IWeapon.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/InputSettings.h"
 #include "Kismet/KismetMathLibrary.h"
 
 #define CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON_STANDUP 16.7f
@@ -146,7 +147,22 @@ FVector UCombatComponent::GetShootingTargetLocation() const
 	return CalculateShootingTargetData().targetLocation;
 }
 
-void UCombatComponent::Shoot() const
+void UCombatComponent::Shoot()
+{
+	//We shoot, and then if is still fire button pressed we start the timer.
+	ShootOnce();
+	
+	const auto weapon = GetEquippedWeapon();
+	const auto playerController = Cast<APlayerController>(GetOwner()->GetInstigatorController());
+
+	const auto isFireInputPressed = IsInputPressedByActionName("Fire", playerController);
+	if(weapon->IsAutomaticFireEnabled() && isFireInputPressed)
+	{
+		StartAutomaticFireTimer();
+	}
+}
+
+void UCombatComponent::ShootOnce() const
 {
 	if(!HasWeaponEquipped())
 	{
@@ -157,6 +173,40 @@ void UCombatComponent::Shoot() const
 	const auto shootingTargetData = CalculateShootingTargetData();
 	const auto weapon = GetEquippedWeapon();
 	weapon->Fire(shootingTargetData.targetLocation);
+}
+
+void UCombatComponent::ReleaseTrigger()
+{
+	GetWorld()->GetTimerManager().ClearTimer(mAutomaticFireTimer);
+}
+
+void UCombatComponent::StartAutomaticFireTimer()
+{
+	const auto weapon = GetEquippedWeapon();
+	if(!weapon->IsAutomaticFireEnabled())
+	{
+		return;
+	}
+	
+	GetWorld()->GetTimerManager().SetTimer(
+		mAutomaticFireTimer,
+		this,
+		&ThisClass::OnAutomaticFire,
+		weapon->GetAutomaticFireDelay(),
+		true
+		);
+}
+
+void UCombatComponent::OnAutomaticFire()
+{
+	const auto playerController = Cast<APlayerController>(GetOwner()->GetInstigatorController());
+	const auto isFireInputPressed = IsInputPressedByActionName("Fire", playerController);
+	if(!isFireInputPressed)
+	{
+		ReleaseTrigger();
+		return;
+	}
+	ShootOnce();
 }
 
 void UCombatComponent::SetupLeftHandSocketTransform(const ACharacterBase* character) const
@@ -312,6 +362,24 @@ void UCombatComponent::SetCameraRelativeLocation(const FVector& location)
 	mCurrentCameraRelativeLocation = mDefaultCameraRelativeLocation;
 	normalCameraOffset = mDefaultCameraRelativeLocation;
 }
+
+bool UCombatComponent::IsInputPressedByActionName(const FName& ActionName, const APlayerController* PlayerController) const
+{
+	TArray <FInputActionKeyMapping> OutMappings;
+	const UInputSettings* InputSettings = UInputSettings::GetInputSettings();
+	InputSettings->GetActionMappingByName(ActionName, OutMappings);
+		
+	bool isPressed = false;
+	for (auto&& inputActionKey : OutMappings)
+	{
+		if(PlayerController->IsInputKeyDown(inputActionKey.Key))
+		{
+			isPressed = true;
+		}
+	}
+	return isPressed;
+}
+
 
 void UCombatComponent::DebugDrawAiming() const
 {

@@ -51,7 +51,8 @@ public:
 	 * Shoot is aim and try to hit something
 	 **/
 
-	virtual void Shoot() const = 0;	
+	virtual void Shoot() = 0;
+	virtual void ReleaseTrigger() = 0;
 	virtual UAnimMontage* GetShootingMontage() const = 0;
 };
 
