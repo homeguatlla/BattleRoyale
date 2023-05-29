@@ -199,6 +199,9 @@ void UCombatComponent::StartAutomaticFireTimer()
 
 void UCombatComponent::OnAutomaticFire()
 {
+	//TODO lo que estaría bien es  que de alguna manera te pudieras suscribir a un evento que te diga cuando se ha dejado el trigger y entonces ejecutar
+	//el ReleaseTrigger del combat component más que mirar si el fire está todavía pulsado
+	//Claro el player controller podría estar suscrito al evento de Fire e informar al combatcomponent, pero no sé si esto choca con la abilidad.
 	const auto playerController = Cast<APlayerController>(GetOwner()->GetInstigatorController());
 	const auto isFireInputPressed = IsInputPressedByActionName("Fire", playerController);
 	if(!isFireInputPressed)
