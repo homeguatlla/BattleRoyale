@@ -9,7 +9,6 @@
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
-#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UHurtComponent::UHurtComponent()

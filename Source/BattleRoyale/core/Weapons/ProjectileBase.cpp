@@ -87,16 +87,14 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 	}
 }
 
-void AProjectileBase::ApplyDamageToCharacter(IICharacter* character) const
+void AProjectileBase::ApplyDamageToCharacter(const IICharacter* character) const
 {
-	
-	const auto gameplayAbilityInterface = character->GetAbilitySystemComponentBase();
 	if(const auto instigatorPlayerState = Cast<IIPlayerState>(GetInstigator()->GetPlayerState()))
 	{
 		const auto damageEffectHandle = instigatorPlayerState->GetAbilitySystemComponentInterface()->ApplyGameplayEffectToTarget(DamageEffect, character);
 		if(!damageEffectHandle.IsValid())
 		{
-			//UE_LOG(LogTemp, Error, TEXT("AProjectileBase::OnHit gameplay effect Damage couldn't be applied"));
+			UE_LOG(LogTemp, Error, TEXT("AProjectileBase::OnHit gameplay effect Damage couldn't be applied"));
 		}
 	}
 }
