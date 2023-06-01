@@ -46,8 +46,17 @@ void UAbilityShootProjectileGun::ActivateAbility(const FGameplayAbilitySpecHandl
 
 		if (mCharacter != nullptr)
 		{
-			SubscribeToEventMontageShoot(mCharacter);
-			CreateTaskPlayMontageShooting(mCharacter, ActorInfo);
+			if(mCharacter->GetGunComponent()->IsAiming())
+			{
+				Shoot();
+				EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+			}
+			else
+			{
+				SubscribeToEventMontageShoot(mCharacter);
+				//Play shooting montage
+				CreateTaskPlayMontageShooting(mCharacter, ActorInfo);
+			}
 		}
 	}
 }
@@ -196,6 +205,11 @@ void UAbilityShootProjectileGun::OnEventMontageShootReceived(const FGameplayEven
 		FString::Printf(TEXT("AbilityShootProjectileGun::OnEventMontageShootReceived localRole %d, RemoteRole %d"),
 			localRole,
 			remoteRole ));*/
+	Shoot();
+}
+
+void UAbilityShootProjectileGun::Shoot() const
+{
 	if(!mCharacter || !IsLocallyControlled())
 	{
 		return;

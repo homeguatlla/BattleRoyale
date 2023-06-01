@@ -364,7 +364,7 @@ void ACharacterBase::Shoot()
 	
 	//Character OnShoot, for instance to make a camera shake
 	//We want the camera shake be only executed locally on the player who shot.
-	BP_OnShoot();
+	BP_OnShoot(CombatComponent->IsAiming());
 	CombatComponent->Shoot();
 }
 

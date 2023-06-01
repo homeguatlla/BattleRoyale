@@ -32,6 +32,7 @@ private:
 
 	UFUNCTION()
 	void OnMontageCancelled();
+	void Shoot() const;
 
 	UFUNCTION()
 	void OnEventMontageShootReceived(const FGameplayEventData Payload);
