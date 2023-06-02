@@ -48,6 +48,7 @@ void UAbilityShootProjectileGun::ActivateAbility(const FGameplayAbilitySpecHandl
 		{
 			if(mCharacter->GetGunComponent()->IsAiming())
 			{
+				//if aiming we don't want to play shooting montage
 				Shoot();
 				EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 			}

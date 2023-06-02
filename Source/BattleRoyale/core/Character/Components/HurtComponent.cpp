@@ -5,6 +5,7 @@
 
 #include <functional>
 #include "GameplayEffectExtension.h"
+#include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/Character/AttributeSetHealth.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
@@ -39,7 +40,10 @@ void UHurtComponent::InitializeServer() const
 	//Play a gameplay effect to add the ability
 	if(InitializeHurtEffect)
 	{
-		abilitySystemComponentInterface->ApplyGameplayEffectToSelf(InitializeHurtEffect);
+		if(!abilitySystemComponentInterface->ApplyGameplayEffectToSelf(InitializeHurtEffect).WasSuccessfullyApplied())
+		{
+			UE_LOG(LogCharacter, Warning, TEXT("[%s][UHurtComponent::InitializeServer] hurt initializing effect was not successfully applied"), *GetName());
+		}
 	}
 }
 
