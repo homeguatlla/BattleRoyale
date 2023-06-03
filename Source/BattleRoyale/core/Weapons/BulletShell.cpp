@@ -20,7 +20,7 @@ void ABulletShell::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Mesh->AddImpulse(GetActorForwardVector() * ShellEjectionImpulse);
+	Mesh->AddImpulse(GetActorRightVector() * ShellEjectionImpulse);
 	Mesh->OnComponentHit.AddDynamic(this, &ThisClass::OnHit);
 }
 
