@@ -172,10 +172,11 @@ void AWeaponBase::SpawnBulletShell() const
 	}
 
 	const auto socketTransform = GetSocketMeshTransformBySocketName(ShellSocketName);
-	GetWorld()->SpawnActor<ABulletShell>(
+	const auto bulletShell = GetWorld()->SpawnActor<ABulletShell>(
 		BulletShellClass,
 		socketTransform.GetLocation(),
-		socketTransform.GetRotation().Rotator());	
+		socketTransform.GetRotation().Rotator());
+	bulletShell->MulticastSetEjectionImpulse(ShellEjectionImpulse);
 }
 
 FTransform AWeaponBase::GetSocketMeshTransformBySocketName(const FName& socketName) const
