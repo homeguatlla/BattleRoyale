@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AbilityEquip.h"
+#include "AbilityPickUp.h"
 
 #include "BlueprintGameplayTagLibrary.h"
 #include "GameplayTagsList.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 
-UAbilityEquip::UAbilityEquip()
+UAbilityPickUp::UAbilityPickUp()
 {
 	AbilityInputID = EAbilityInputID::Equip;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
@@ -17,7 +17,7 @@ UAbilityEquip::UAbilityEquip()
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_EQUIP));
 }
 
-bool UAbilityEquip::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+bool UAbilityPickUp::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
 	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
@@ -29,7 +29,7 @@ bool UAbilityEquip::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	return true;
 }
 
-void UAbilityEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+void UAbilityPickUp::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                     const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
@@ -48,7 +48,7 @@ void UAbilityEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }
 
-void UAbilityEquip::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+void UAbilityPickUp::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, FString("AbilityEquip OFF"));
@@ -56,7 +56,7 @@ void UAbilityEquip::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-void UAbilityEquip::CancelPickupIndicatorAbility(IICharacter* const character) const
+void UAbilityPickUp::CancelPickupIndicatorAbility(IICharacter* const character) const
 {
 	FGameplayTagContainer cancelTags;
 	UBlueprintGameplayTagLibrary::AddGameplayTag(cancelTags, FGameplayTag::RequestGameplayTag(TAG_ABILITY_PICKUP_INDICATOR));

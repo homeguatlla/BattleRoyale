@@ -172,6 +172,7 @@ void UCombatComponent::ShootOnce() const
 	
 	const auto shootingTargetData = CalculateShootingTargetData();
 	const auto weapon = GetEquippedWeapon();
+
 	weapon->Fire(shootingTargetData.targetLocation);
 }
 

@@ -16,16 +16,20 @@ ABulletShell::ABulletShell()
 	Mesh->SetNotifyRigidBodyCollision(true);
 }
 
+void ABulletShell::ApplyEjectionImpulse(float ejectionImpulse) const
+{
+	Mesh->AddImpulse(GetActorRightVector() * ejectionImpulse);
+}
+
 void ABulletShell::BeginPlay()
 {
 	Super::BeginPlay();
-
-	Mesh->AddImpulse(GetActorForwardVector() * ShellEjectionImpulse);
+	
 	Mesh->OnComponentHit.AddDynamic(this, &ThisClass::OnHit);
 }
 
 void ABulletShell::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	FVector NormalImpulse, const FHitResult& Hit)
+                         FVector NormalImpulse, const FHitResult& Hit)
 {
 	BP_OnHit();
 	if(ShellSound)

@@ -164,7 +164,7 @@ public:
 	void BP_OnStopSprinting(float maxSpeed);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnShoot))
-	void BP_OnShoot();
+	void BP_OnShoot(bool isAiming);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Character", meta = (DisplayName = OnTakenDamage))
 	void BP_OnTakenDamage(float damage, const FVector& damageCauserLocation, float currentHealth, bool hasToShowDamagePoints);

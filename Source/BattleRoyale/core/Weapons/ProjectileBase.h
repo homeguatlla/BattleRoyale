@@ -67,7 +67,7 @@ public:
 	UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
 
 protected:
-	void ApplyDamageToCharacter(IICharacter* character) const;
+	void ApplyDamageToCharacter(const IICharacter* character) const;
 	virtual void DoApplyDamageFrom(AActor* hitActor, const FVector& center) const;
 
 	UPROPERTY(EditAnywhere, Category = "Projectile")

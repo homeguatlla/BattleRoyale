@@ -6,7 +6,6 @@
 #include "AbilitySystemInterface.h"
 #include "GameplayEffectExtension.h"
 #include "GameplayTagsList.h"
-#include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/Character/Components/HurtComponent.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"

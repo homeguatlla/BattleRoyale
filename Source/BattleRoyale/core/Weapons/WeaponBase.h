@@ -23,6 +23,9 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 	FName ShellSocketName;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	float ShellEjectionImpulse = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName CrosshairSocketName;
 	
 	/** Projectile class to spawn */

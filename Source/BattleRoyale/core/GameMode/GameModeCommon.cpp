@@ -26,6 +26,7 @@ void AGameModeCommon::InitGame(const FString& MapName, const FString& Options, F
 	Super::InitGame(MapName, Options, ErrorMessage);
 	
 	DoInitGame();
+	//TODO in other places they put this on the Gameinstance init()
 	//This line is important to make ability system target data works.
 	UAbilitySystemGlobals::Get().InitGlobalData();
 }
