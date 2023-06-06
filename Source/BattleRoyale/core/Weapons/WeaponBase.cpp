@@ -176,7 +176,7 @@ void AWeaponBase::SpawnBulletShell() const
 		BulletShellClass,
 		socketTransform.GetLocation(),
 		socketTransform.GetRotation().Rotator());
-	bulletShell->MulticastSetEjectionImpulse(ShellEjectionImpulse);
+	bulletShell->ApplyEjectionImpulse(ShellEjectionImpulse);
 }
 
 FTransform AWeaponBase::GetSocketMeshTransformBySocketName(const FName& socketName) const

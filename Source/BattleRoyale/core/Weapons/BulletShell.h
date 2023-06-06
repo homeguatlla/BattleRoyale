@@ -16,8 +16,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "BulletShell", meta = (DisplayName = OnHit))
 	void BP_OnHit();
 
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastSetEjectionImpulse(float ejectionImpulse);
+	void ApplyEjectionImpulse(float ejectionImpulse) const;
 	
 	UPROPERTY(EditAnywhere)
 	class USoundCue* ShellSound;

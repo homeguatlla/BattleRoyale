@@ -16,7 +16,7 @@ ABulletShell::ABulletShell()
 	Mesh->SetNotifyRigidBodyCollision(true);
 }
 
-void ABulletShell::MulticastSetEjectionImpulse_Implementation(float ejectionImpulse)
+void ABulletShell::ApplyEjectionImpulse(float ejectionImpulse) const
 {
 	Mesh->AddImpulse(GetActorRightVector() * ejectionImpulse);
 }
