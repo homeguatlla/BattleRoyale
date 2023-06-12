@@ -96,7 +96,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
 	virtual FVector GetShootingTargetLocation() const override;
 	
-	void SetupLeftHandSocketTransform(const ACharacterBase* character) const;
+	virtual void SetupLeftHandSocketTransform(const ACharacterBase* character) const override;
 	
 private:
 	//void OnRep_EquippedWeapon();

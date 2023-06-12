@@ -22,6 +22,7 @@
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
 #include "Components/CombatComponent.h"
+#include "Components/FootstepsComponent.h"
 #include "Components/HurtComponent.h"
 #include "Components/PickupComponent.h"
 #include "GameFramework/PlayerState.h"
@@ -57,8 +58,9 @@ ACharacterBase::ACharacterBase()
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	CombatComponent->SetIsReplicated(true);
 
-	//Create PickupComponent
+	//Create Other Components
 	PickupComponent = CreateDefaultSubobject<UPickupComponent>(TEXT("PickupComponent"));
+	FootstepsComponent = CreateDefaultSubobject<UFootstepsComponent>(TEXT("FootstepsComponent"));
 }
 
 void ACharacterBase::BeginPlay()
@@ -258,6 +260,18 @@ FTransform ACharacterBase::GetRightHandSocketTransform() const
 {
 	check(!RightHandSocketName.IsNone());
 	return GetMesh()->GetSocketTransform("hand_r", RTS_World);
+}
+
+FTransform ACharacterBase::GetRightFootSocketTransform() const
+{
+	check(!RightFootSocketName.IsNone());
+	return GetMesh()->GetSocketTransform("foot_r", RTS_World);
+}
+
+FTransform ACharacterBase::GetLeftFootSocketTransform() const
+{
+	check(!LeftFootSocketName.IsNone());
+	return GetMesh()->GetSocketTransform("foot_l", RTS_World);
 }
 
 bool ACharacterBase::CanSprint() const

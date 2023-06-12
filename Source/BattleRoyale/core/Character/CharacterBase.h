@@ -9,6 +9,7 @@
 #include "BattleRoyale/core/Weapons/WeaponBase.h"
 #include "Components/HurtComponent.h"
 #include "Components/IGunComponent.h"
+#include "Components/FootstepsComponent.h"
 #include "Components/CombatComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -27,7 +28,7 @@ UCLASS(config=Game)
 class BATTLEROYALE_API ACharacterBase : public ACharacter, public IICharacter
 {
 	GENERATED_BODY()
-	
+
 	/** Motion controller (right hand) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UMotionControllerComponent* R_MotionController;
@@ -38,6 +39,12 @@ class BATTLEROYALE_API ACharacterBase : public ACharacter, public IICharacter
 
 	UPROPERTY(EditDefaultsOnly, Category = Character)
 	FName RightHandSocketName;
+
+	UPROPERTY(EditDefaultsOnly, Category = Character)
+	FName RightFootSocketName;
+
+	UPROPERTY(EditDefaultsOnly, Category = Character)
+	FName LeftFootSocketName;
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Character", meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<class UGameplayAbilityBase>> mDefaultAbilities;
@@ -70,13 +77,14 @@ class BATTLEROYALE_API ACharacterBase : public ACharacter, public IICharacter
 	FRotator mControlRotation;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	class UHurtComponent* HurtComponent;
+	UHurtComponent* HurtComponent;
 	
-public:
 	UPROPERTY(VisibleAnywhere)
 	UCombatComponent* CombatComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UFootstepsComponent* FootstepsComponent;
 	
-private:
 	UPROPERTY(VisibleAnywhere)
 	class UPickupComponent* PickupComponent;
 	
@@ -139,6 +147,18 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual FTransform GetRightHandSocketTransform() const override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual FName GetRightFootSocketName() const override { return RightFootSocketName; }
+
+	UFUNCTION(BlueprintCallable)
+	virtual FTransform GetRightFootSocketTransform() const override;
+	
+	UFUNCTION(BlueprintCallable)
+	virtual FName GetLeftFootSocketName() const override { return LeftFootSocketName; }
+
+	UFUNCTION(BlueprintCallable)
+	virtual FTransform GetLeftFootSocketTransform() const override;
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool CanSprint() const override;
@@ -198,6 +218,7 @@ public:
 	virtual void NotifyTakeDamage(float damage, const AActor* causer, float currentHealth) override;
 
 	virtual TScriptInterface<IGunComponent> GetGunComponent() const override { return CombatComponent; }
+	virtual TScriptInterface<IIFootstepsComponent> GetFootstepsComponent() const override { return FootstepsComponent; }
 	
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const override;
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const override;

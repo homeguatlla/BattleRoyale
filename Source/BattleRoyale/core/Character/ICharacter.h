@@ -14,6 +14,7 @@ class IWeapon;
 class UCameraComponent;
 class UHurtComponent;
 class IGunComponent;
+class IIFootstepsComponent;
 class IICharacter;
 
 // This class does not need to be modified.
@@ -136,9 +137,24 @@ public:
 	virtual FTransform GetRightHandSocketTransform() const = 0;
 	
 	virtual void Shoot() = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual FName GetRightFootSocketName() const = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual FTransform GetRightFootSocketTransform() const = 0;
+	
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual FName GetLeftFootSocketName() const = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual FTransform GetLeftFootSocketTransform() const = 0;
 	
 	UFUNCTION(BlueprintCallable, Category = "ICharacter")
 	virtual TScriptInterface<IGunComponent> GetGunComponent() const = 0;
+
+	UFUNCTION(BlueprintCallable, Category = "ICharacter")
+	virtual TScriptInterface<IIFootstepsComponent> GetFootstepsComponent() const = 0;
 	
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const = 0;
 

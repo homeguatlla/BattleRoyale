@@ -74,7 +74,7 @@ void UFirstPersonAnimationInstance::CheckEquippedToMakeLeftHandHoldsWeapon()
 	if(gunComponent->HasWeaponEquipped())
 	{
 		//This is to make left hand holds the weapon with IK 
-		Character->CombatComponent->SetupLeftHandSocketTransform(Character);
+		Character->GetGunComponent()->SetupLeftHandSocketTransform(Character);
 		LeftHandSocketTransform = gunComponent->GetEquippedWeapon()->GetLeftHandSocketTransform();
 	}
 }

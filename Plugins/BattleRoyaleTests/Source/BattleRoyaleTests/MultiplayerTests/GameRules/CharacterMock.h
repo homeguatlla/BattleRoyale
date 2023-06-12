@@ -53,13 +53,17 @@ public:
 	virtual void NotifyTakeDamage(float damage, const AActor* causer, float currentHealth) override{}
 	virtual FName GetRightHandSocketName() const override{return FName();}
 	virtual FTransform GetRightHandSocketTransform() const override{ return FTransform();}
+	virtual FName GetRightFootSocketName() const override{return FName();}
+	virtual FTransform GetRightFootSocketTransform() const override{ return FTransform();}
+	virtual FName GetLeftFootSocketName() const override{return FName();}
+	virtual FTransform GetLeftFootSocketTransform() const override{ return FTransform();}
 	virtual void Shoot() override{}
 	virtual TScriptInterface<IGunComponent> GetGunComponent() const override{ return nullptr;}
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const override{return nullptr;}
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const override{return nullptr;}
 	virtual void SetPickupObject(TScriptInterface<IPickupObject> object) override{}
 	virtual TScriptInterface<IPickupObject> GetPickupObject() const override{ return nullptr;}
-
+	virtual TScriptInterface<IIFootstepsComponent> GetFootstepsComponent() const override {return nullptr;}
 	
 private:
 	float mHealth {100};

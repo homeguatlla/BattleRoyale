@@ -7,6 +7,7 @@
 #include "IGunComponent.generated.h"
 
 class IWeapon;
+class ACharacterBase;
 
 // This class does not need to be modified.
 UINTERFACE(NotBlueprintable, meta = (CannotImplementInterfaceInBlueprint))
@@ -54,6 +55,9 @@ public:
 	virtual void Shoot() = 0;
 	virtual void ReleaseTrigger() = 0;
 	virtual UAnimMontage* GetShootingMontage() const = 0;
+
+
+	virtual void SetupLeftHandSocketTransform(const ACharacterBase* character) const = 0;
 };
 
  
