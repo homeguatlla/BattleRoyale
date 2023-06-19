@@ -139,6 +139,8 @@ void APlayerStateBase::ShowVictoryScreen() const
 
 void APlayerStateBase::ShowDeathScreen() const
 {
+	check(GetPawn());
+	
 	if(GetPawn()->IsLocallyControlled())
 	{
 		GetEventDispatcher()->OnPlayerDead.Broadcast();

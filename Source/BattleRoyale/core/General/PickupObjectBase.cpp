@@ -146,6 +146,7 @@ void APickupObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedCom
 		utils::UtilsLibrary::SendGameplayEventWithTargetData<FTargetDataPickupObject>(
 			character,
 			FGameplayTag::RequestGameplayTag(TAG_EVENT_PICKUP_INDICATOR),
+			this,
 			new FTargetDataPickupObject(GetPickupWidgetLocation(Mesh->GetLocalBounds()), this));
 
 		//Si enviamos un efecto también funciona, incluso podemos dejar la habilidad como Local Only,

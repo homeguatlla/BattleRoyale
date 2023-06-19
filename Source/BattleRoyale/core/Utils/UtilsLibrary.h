@@ -1,6 +1,7 @@
 #pragma once
 #include "Abilities/GameplayAbilityTypes.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
+#include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "Kismet/GameplayStatics.h"
 
 namespace utils
@@ -190,7 +191,7 @@ class BATTLEROYALE_API UtilsLibrary
 			return false;
 		}
 	
-		FGameplayAbilityTargetData* targetData = Payload->TargetData.Data[0].Get();
+		const auto targetData = Payload->TargetData.Data[0].Get();
 
 		if(targetData == nullptr)
 		{
@@ -214,7 +215,7 @@ class BATTLEROYALE_API UtilsLibrary
 	}
 
 	template<typename TargetDataClass, typename = typename TEnableIf<TIsDerivedFrom<TargetDataClass, FGameplayAbilityTargetData>::IsDerived>::Type>
-	static void SendGameplayEventWithTargetData(const IICharacter* target, FGameplayTag eventTag, TargetDataClass* targetData, const AActor* instigator = nullptr, float eventMagnitude = 0.0f)
+	static void SendGameplayEventWithTargetData(const IICharacter* target, FGameplayTag eventTag, const AActor* instigator = nullptr, TargetDataClass* targetData = nullptr, float eventMagnitude = 0.0f)
 	{
 		if(!target)
 		{
@@ -229,8 +230,11 @@ class BATTLEROYALE_API UtilsLibrary
 		data.EventTag = eventTag;
 		data.Instigator = instigator;
 		data.EventMagnitude = eventMagnitude;
-		data.TargetData.Add(targetData);
-
+		if(targetData)
+		{
+			data.TargetData.Add(targetData);
+		}
+		
 		target->GetAbilitySystemComponentBase()->SendGameplayEvent(eventTag, data);
 	}
 };
