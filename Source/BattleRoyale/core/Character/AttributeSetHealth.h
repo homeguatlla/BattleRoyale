@@ -39,7 +39,6 @@ private:
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
-	void DissolveCharacterVictim(const UAbilitySystemComponent* abilitySystemComponent) const;
 	
 	IIGameMode* GetGameModeServer() const;
 	bool IsAlive() const { return GetHealth() > 0.0f;}

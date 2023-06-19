@@ -3,6 +3,7 @@
 
 #include "AbilityHurt.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayEffectExtension.h"
 #include "GameplayTagsList.h"

@@ -89,21 +89,8 @@ void UAttributeSetHealth::PostGameplayEffectExecute(const FGameplayEffectModCall
 		{
 			const auto gameMode = GetGameModeServer();
 			gameMode->OnNewKill(instigatorPlayerState, receptorPlayerState);
-			DissolveCharacterVictim(abilitySystemComponent);
 		}
 	}
-}
-
-void UAttributeSetHealth::DissolveCharacterVictim(const UAbilitySystemComponent* abilitySystemComponent) const
-{
-	//Set TAG to the victim.
-	//In this case better a tag than a gameplay event.
-	//first, because we don't need to send parameters
-	//second because at the end, we want to add a tag to change its state.
-	FGameplayTagContainer gameplayTags;
-	gameplayTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_STATE_DEAD));
-	UAbilitySystemBlueprintLibrary::AddLooseGameplayTags(
-		abilitySystemComponent->GetOwner(), gameplayTags, true);
 }
 
 IIGameMode* UAttributeSetHealth::GetGameModeServer() const

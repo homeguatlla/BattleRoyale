@@ -97,6 +97,21 @@ bool UHurtComponent::IsReady() const
 	return abilitySystem->GetAttributeSetHealth() != nullptr;
 }
 
+void UHurtComponent::Dissolve() const
+{
+	const auto abilitySystem = GetAbilitySystemComponent();
+	if(!abilitySystem)
+	{
+		return;
+	}
+	if(!DissolveEffect)
+	{
+		return;
+	}
+	
+	abilitySystem->ApplyGameplayEffectToSelf(DissolveEffect);
+}
+
 IIAbilitySystemInterfaceBase* UHurtComponent::GetAbilitySystemComponent() const
 {
 	const auto character = Cast<IICharacter>(GetOwner());

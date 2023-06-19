@@ -22,7 +22,6 @@ public:
 	//https://github.com/tranek/GASDocumentation#concepts-ga-activating-passive
 	virtual void OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
 
-
 private:
 	void OnHealthChanged(const FOnAttributeChangeData& data) const;
 };

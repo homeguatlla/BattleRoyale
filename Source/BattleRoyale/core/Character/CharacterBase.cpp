@@ -619,7 +619,7 @@ void ACharacterBase::DieServer()
 	GetCharacterMovement()->StopMovementImmediately();
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->SetComponentTickEnabled(false);
-	
+	GetHurtComponent()->Dissolve();
 	DieClient();
 }
 

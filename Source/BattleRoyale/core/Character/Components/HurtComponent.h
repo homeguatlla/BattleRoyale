@@ -25,9 +25,13 @@ public:
 	virtual bool IsAlive() const { return GetCurrentHealth() > 0.0f; }
 	float GetCurrentHealth() const;
 	bool IsReady() const;
-
+	void Dissolve() const;
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Hurt")
 	TSubclassOf<UGameplayEffect> InitializeHurtEffect;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Hurt")
+	TSubclassOf<UGameplayEffect> DissolveEffect;
 	
 private:
 	// Implement IAbilitySystemInterface
