@@ -534,8 +534,10 @@ TScriptInterface<IPickupObject> ACharacterBase::GetPickupObject() const
 
 bool ACharacterBase::EquipWeaponServer(TScriptInterface<IPickupObject> pickableObject) const
 {
-	//TODO si ya tengo un arma hacer un unequip primero
-	//equipar arma.
+	if(CombatComponent->HasWeaponEquipped())
+	{
+		UnEquipWeaponServer();
+	}
 	
 	const auto isAttached = pickableObject->AttachToComponent(
 				GetMesh(),
