@@ -101,10 +101,10 @@ public:
 	virtual FVector GetLocation() const override { return GetActorLocation(); }
 	
 	UFUNCTION(BlueprintCallable)
-	virtual bool EquipServer(TScriptInterface<IPickupObject> pickableObject) override;
+	virtual bool PickupObjectServer(TScriptInterface<IPickupObject> pickableObject) override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual bool UnEquipServer() const override;
+	virtual bool UnEquipWeaponServer() const override;
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsCharacterValid() const override;
@@ -216,7 +216,7 @@ public:
 	
 	virtual void NotifyRefreshHealth(float health) const override;
 	virtual void NotifyTakeDamage(float damage, const AActor* causer, float currentHealth) override;
-
+	
 	virtual TScriptInterface<IGunComponent> GetGunComponent() const override { return CombatComponent; }
 	virtual TScriptInterface<IIFootstepsComponent> GetFootstepsComponent() const override { return FootstepsComponent; }
 	
@@ -303,6 +303,9 @@ private:
 	
 	UFUNCTION(Unreliable, Server, WithValidation)
 	void ServerSetCharacterControlRotation(const FRotator& rotation);
+
+	void DisableMovement() const;
+	void DisableCollision() const;
 	
 	//UFUNCTION()
 	//void OnRep_TakeDamageData();

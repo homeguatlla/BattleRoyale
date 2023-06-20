@@ -66,9 +66,11 @@ void APickupObjectBase::ChangeStateServer(EPickupObjectState state)
 	{
 	case EPickupObjectState::Equipped:
 		DisableDetectionArea();
+		SetEnableMeshPhysicsAndCollision(false);
 		break;
 	case EPickupObjectState::Dropped:
 		EnableDetectionArea();
+		SetEnableMeshPhysicsAndCollision(true);
 		break;
 	case EPickupObjectState::Initial:
 		break;
@@ -124,6 +126,14 @@ void APickupObjectBase::DisableDetectionArea() const
 	AreaSphere->SetCollisionResponseToChannels(ECollisionResponse::ECR_Ignore);
 	
 	AreaSphere->OnComponentBeginOverlap.RemoveAll(this);
+	AreaSphere->OnComponentEndOverlap.RemoveAll(this);
+}
+
+void APickupObjectBase::SetEnableMeshPhysicsAndCollision(bool enable) const
+{
+	GetMesh()->SetSimulatePhysics(enable);
+	GetMesh()->SetEnableGravity(enable);
+	GetMesh()->SetCollisionEnabled(enable ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
 }
 
 void APickupObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

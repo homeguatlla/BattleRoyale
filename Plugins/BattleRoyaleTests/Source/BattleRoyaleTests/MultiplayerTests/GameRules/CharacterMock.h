@@ -21,8 +21,8 @@ public:
 
 
 	virtual FVector GetLocation() const override { return FVector::Zero(); }
-	virtual bool EquipServer(TScriptInterface<IPickupObject> pickableObject) override { return true; }
-	virtual bool UnEquipServer() const override { return true; }
+	virtual bool PickupObjectServer(TScriptInterface<IPickupObject> pickableObject) override { return true; }
+	virtual bool UnEquipWeaponServer() const override { return true; }
 	virtual bool IsCharacterValid() const override { return true; }
 	virtual FVector GetCurrentVelocity() const override { return FVector::Zero(); }
 	virtual FVector GetCurrentMeshSpaceVelocity() const override { return FVector::Zero(); }

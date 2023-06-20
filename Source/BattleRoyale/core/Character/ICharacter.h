@@ -33,10 +33,10 @@ public:
 	virtual FVector GetLocation() const = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual bool EquipServer(TScriptInterface<IPickupObject> pickableObject) = 0;
+	virtual bool PickupObjectServer(TScriptInterface<IPickupObject> pickableObject) = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual bool UnEquipServer() const = 0;
+	virtual bool UnEquipWeaponServer() const = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool IsCharacterValid() const = 0;

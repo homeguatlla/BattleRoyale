@@ -71,7 +71,7 @@ public:
 	virtual void InitializeComponent() override;
 	
 	virtual bool EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName) override;
-	virtual bool UnEquipWeapon() const override;
+	virtual bool UnEquipWeapon() override;
 
 	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
 	virtual TScriptInterface<IWeapon> GetEquippedWeapon() const override;

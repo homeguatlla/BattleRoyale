@@ -465,7 +465,7 @@ void ACharacterBase::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-bool ACharacterBase::EquipServer(TScriptInterface<IPickupObject> pickableObject)
+bool ACharacterBase::PickupObjectServer(TScriptInterface<IPickupObject> pickableObject)
 {
 	if(!HasAuthority())
 	{
@@ -489,7 +489,7 @@ bool ACharacterBase::EquipServer(TScriptInterface<IPickupObject> pickableObject)
 	return false;
 }
 
-bool ACharacterBase::UnEquipServer() const
+bool ACharacterBase::UnEquipWeaponServer() const
 {
 	if(!HasAuthority())
 	{
@@ -506,10 +506,10 @@ bool ACharacterBase::UnEquipServer() const
 	
 	pickupObject->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	
-	//TODO se tiene que cambiar el estado del objeto y hacer un drop
 	check(CombatComponent);
 	if(CombatComponent->UnEquipWeapon())
 	{
+		pickupObject->ChangeStateServer(EPickupObjectState::Dropped);
 		if(IsLocallyControlled())
 		{
 			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
@@ -596,7 +596,7 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 
 void ACharacterBase::DieClient()
 {
-	UnEquipServer();
+	UnEquipWeaponServer();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 	
@@ -616,9 +616,12 @@ void ACharacterBase::NotifyTakeDamage(float damage, const AActor* causer, float 
 void ACharacterBase::DieServer()
 {
 	SetCanBeDamaged(false); //replicated
-	GetCharacterMovement()->StopMovementImmediately();
-	GetCharacterMovement()->DisableMovement();
-	GetCharacterMovement()->SetComponentTickEnabled(false);
+	//Character can not move, and rotate
+	DisableMovement();
+	
+	SetEnableInput(false);
+	DisableCollision();
+	
 	GetHurtComponent()->Dissolve();
 	DieClient();
 }
@@ -656,4 +659,17 @@ void ACharacterBase::ServerSetCharacterControlRotation_Implementation(const FRot
 bool ACharacterBase::ServerSetCharacterControlRotation_Validate(const FRotator& rotation)
 {
 	return true;
+}
+
+void ACharacterBase::DisableMovement() const
+{
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+	GetCharacterMovement()->SetComponentTickEnabled(false);
+}
+
+void ACharacterBase::DisableCollision() const 
+{
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

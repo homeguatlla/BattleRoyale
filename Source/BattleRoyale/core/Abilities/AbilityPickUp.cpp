@@ -39,7 +39,7 @@ void UAbilityPickUp::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 	{
 		if(const auto pickupObject = character->GetPickupObject())
 		{
-			if(character->EquipServer(pickupObject))
+			if(character->PickupObjectServer(pickupObject))
 			{
 				CancelPickupIndicatorAbility(character);
 			}

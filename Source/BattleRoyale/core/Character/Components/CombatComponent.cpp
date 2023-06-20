@@ -76,7 +76,7 @@ void UCombatComponent::OnRep_EquippedWeapon() const
 {
 	//This rep notify is to inform the clients when the client just equipped a weapon,
 	//and then show the crosshairs.
-	if(!mCharacter || !mCharacter->IsLocallyControlled())
+	if(!mCharacter || !mCharacter->IsLocallyControlled() || !GetEquippedWeapon())
 	{
 		return;
 	}
@@ -98,9 +98,11 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName
 	return true;
 }
 
-bool UCombatComponent::UnEquipWeapon() const
+bool UCombatComponent::UnEquipWeapon()
 {
-	mEquippedWeapon->Destroy(); //TODO esto está mal creo debería dejarla tal cual y hacerle un dropped en el character
+	mEquippedWeapon->SetCharacterOwner(nullptr);
+	//Reset the equipped weapon
+	mEquippedWeapon = TScriptInterface<IWeapon>();
 
 	return true;
 }

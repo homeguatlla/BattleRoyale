@@ -22,7 +22,7 @@ class BATTLEROYALE_API IGunComponent
 
 public:
 	virtual bool EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName) = 0;
-	virtual bool UnEquipWeapon() const = 0;
+	virtual bool UnEquipWeapon() = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IGunComponent")
 	virtual TScriptInterface<IWeapon> GetEquippedWeapon() const = 0;

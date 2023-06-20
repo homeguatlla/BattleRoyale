@@ -40,6 +40,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
 	UFUNCTION()
 	void OnSphereOverlapServer(
 		UPrimitiveComponent* OverlappedComponent,
@@ -59,4 +60,5 @@ private:
 	virtual EPickupObjectState GetState() const override { return State; }
 	void EnableDetectionArea() const;
 	void DisableDetectionArea() const;
+	void SetEnableMeshPhysicsAndCollision(bool enable) const;
 };
