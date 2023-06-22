@@ -19,7 +19,7 @@ class BATTLEROYALE_API IPickupObject
 	GENERATED_BODY()
 
 public:
-	virtual FVector GetPickupWidgetLocation(const FBoxSphereBounds& bounds) const = 0;
+	virtual FVector GetPickupWidgetLocation() const = 0;
 	virtual EPickupObjectState GetState() const = 0;
 	virtual void ChangeStateServer(EPickupObjectState state) = 0;
 	virtual bool IsEquipped() const = 0;

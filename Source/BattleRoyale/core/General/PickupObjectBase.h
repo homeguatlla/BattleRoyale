@@ -27,7 +27,7 @@ public:
 	// Sets default values for this actor's properties
 	APickupObjectBase();
 	
-	virtual FVector GetPickupWidgetLocation(const FBoxSphereBounds& bounds) const override;
+	virtual FVector GetPickupWidgetLocation() const override;
 	
 	UFUNCTION(BlueprintCallable, Category="PickableObject")
 	virtual USkeletalMeshComponent* GetMesh() const { return Mesh; }

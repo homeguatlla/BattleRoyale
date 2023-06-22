@@ -91,6 +91,11 @@ void ACharacterBase::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
+	//Read this document if there is any issue with GAS initialization
+	//because in client side if the abilitySystemComponent is already initiated
+	//they are doing a RefreshAbilityActorInfo instead of initialize it.
+	//https://vorixo.github.io/devtricks/gas-replication-proxy/
+
 	//only for clients
 	InitializeGAS();
 	BindAbilityActivationToInputComponent();
@@ -113,8 +118,12 @@ void ACharacterBase::InitializeGAS()
 		const auto serverOrClient = HasAuthority() ? FString("Server") : FString("Client");
 		const auto locallyControlled = IsLocallyControlled() ? FString("Player") : FString("Simulated");
 		UE_LOG(LogTemp, Display, TEXT("[%s][%s] Character name: %s"), *serverOrClient, *locallyControlled, *GetName());
-		
-		InitializeAttributes();
+
+		if(HasAuthority())
+		{
+			//Otherwise gameplay effects won't work
+			InitializeAttributes();
+		}
 	}
 }
 

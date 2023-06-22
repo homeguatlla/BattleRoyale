@@ -102,13 +102,21 @@ void APickupObjectBase::DetachFromComponent(const FDetachmentTransformRules& rul
 	GetMesh()->DetachFromComponent(rules);
 }
 
-FVector APickupObjectBase::GetPickupWidgetLocation(const FBoxSphereBounds& bounds) const
+FVector APickupObjectBase::GetPickupWidgetLocation() const
 {
-	const auto height = bounds.BoxExtent.Z * 2.0f; //Extend is half size side
+	FVector boundingBoxOrigin, boundingBoxExtend;
+	//TODO Nos devuelve las bounds de la esfera de colision, y no nos interesa porque el texto saldrá a un radio
+	//demasiado alejado del pick up object.
+	//Queremos los bounds de la mesh. Pero no hay manera. Igual hay que pillar la local bound de la mesh y aplicarle la rotacion
+	//del actor. Pensarlo bien, buscar ejemplos.
+	
+	GetActorBounds(false, boundingBoxOrigin, boundingBoxExtend);
+		
+	const auto height = boundingBoxExtend.Z;
 	const auto objectLocation = GetActorLocation();
-	//DrawDebugBox(GetWorld(), bounds.Origin + GetActorLocation() , bounds.BoxExtent,FColor::Green, false, 20);
-	//DrawDebugSphere(GetWorld(), bounds.Origin + GetActorLocation() + FVector(0.0f, 0.0f, height), 10, 30, FColor::Red, false, 20);
-	return bounds.Origin + GetActorLocation() + FVector(0.0f, 0.0f, height);
+	//DrawDebugBox(GetWorld(), boundingBoxOrigin , boundingBoxExtend,FColor::Green, false, 20);
+	//DrawDebugSphere(GetWorld(), boundingBoxOrigin + FVector(0.0f, 0.0f, height), 3, 30, FColor::Red, false, 20);
+	return boundingBoxOrigin + FVector(0.0f, 0.0f, height);
 }
 
 void APickupObjectBase::EnableDetectionArea() const
@@ -152,13 +160,12 @@ void APickupObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedCom
 			return;
 		}
 
-		check(character->GetMesh());
 		utils::UtilsLibrary::SendGameplayEventWithTargetData<FTargetDataPickupObject>(
 			character,
 			FGameplayTag::RequestGameplayTag(TAG_EVENT_PICKUP_INDICATOR),
 			this,
-			new FTargetDataPickupObject(GetPickupWidgetLocation(Mesh->GetLocalBounds()), this));
-
+			new FTargetDataPickupObject(GetPickupWidgetLocation(), this));
+		
 		//Si enviamos un efecto también funciona, incluso podemos dejar la habilidad como Local Only,
 		//pero no podemos pasar parámetros
 		//mPickupIndicatorEffectHandle = playerState->GetAbilitySystemComponentInterface()->ApplyGameplayEffectToSelf(PickupIndicatorEffect);

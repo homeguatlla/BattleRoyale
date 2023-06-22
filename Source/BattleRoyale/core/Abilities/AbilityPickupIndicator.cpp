@@ -69,7 +69,7 @@ void UAbilityPickupIndicator::ActivateAbility(const FGameplayAbilitySpecHandle H
 	
 	if(IsLocallyControlled())
 	{
-		OnShowPickupIndicator(pickupIndicatorData.GetLocation());
+		OnShowPickupIndicator(pickupIndicatorData.mPickableObject, pickupIndicatorData.GetLocation());
 		
 		//character->GetAbilitySystemComponentBase()->GiveAbility();
 
