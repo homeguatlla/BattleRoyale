@@ -20,7 +20,7 @@ class BATTLEROYALE_API APickupObjectBase : public AActor, public IPickupObject
 	UPROPERTY(EditDefaultsOnly, Category = "PickableObject")
 	class USphereComponent* AreaSphere;
 
-	UPROPERTY(VisibleAnywhere, Category = "PickableObject")
+	UPROPERTY(ReplicatedUsing=OnRep_State, VisibleAnywhere, Category = "PickableObject")
 	EPickupObjectState State = EPickupObjectState::Initial;
 	
 public:	
@@ -32,7 +32,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="PickableObject")
 	virtual USkeletalMeshComponent* GetMesh() const { return Mesh; }
 
-	virtual void ChangeStateServer(EPickupObjectState state) override;
+	virtual void ChangeState(EPickupObjectState state) override;
 	virtual bool IsEquipped() const override { return State == EPickupObjectState::Equipped; }
 	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) override;
 	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) override;
@@ -57,8 +57,11 @@ protected:
 		int32 OtherBodyIndex);
 	
 private:
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual EPickupObjectState GetState() const override { return State; }
 	void EnableDetectionArea() const;
 	void DisableDetectionArea() const;
 	void SetEnableMeshPhysicsAndCollision(bool enable) const;
+	UFUNCTION()
+	void OnRep_State();
 };

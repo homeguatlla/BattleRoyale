@@ -91,11 +91,8 @@ void AProjectileBase::ApplyDamageToCharacter(const IICharacter* character) const
 {
 	if(const auto instigatorPlayerState = Cast<IIPlayerState>(GetInstigator()->GetPlayerState()))
 	{
-		const auto damageEffectHandle = instigatorPlayerState->GetAbilitySystemComponentInterface()->ApplyGameplayEffectToTarget(DamageEffect, character);
-		if(!damageEffectHandle.IsValid())
-		{
-			UE_LOG(LogTemp, Error, TEXT("AProjectileBase::OnHit gameplay effect Damage couldn't be applied"));
-		}
+		//On instant effects, the handle returned is always not valid. So don't check if the effect has been properly applied.
+		instigatorPlayerState->GetAbilitySystemComponentInterface()->ApplyGameplayEffectToTarget(DamageEffect, character);
 	}
 }
 

@@ -11,13 +11,15 @@
 #include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
 #include "BattleRoyale/BattleRoyale.h"
 #include "Components/SphereComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 APickupObjectBase::APickupObjectBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	bReplicates = true;
+	
 	// Create a gun mesh component
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PickableObject"));
 	Mesh->SetupAttachment(RootComponent);
@@ -54,22 +56,22 @@ void APickupObjectBase::BeginPlay()
 	}
 }
 
-void APickupObjectBase::ChangeStateServer(EPickupObjectState state)
+void APickupObjectBase::ChangeState(EPickupObjectState state)
 {
-	if(!HasAuthority())
-	{
-		return;
-	}
-	
-	State = state;
-	switch (State)
+	switch (state)
 	{
 	case EPickupObjectState::Equipped:
-		DisableDetectionArea();
+		if(HasAuthority())
+		{
+			DisableDetectionArea();
+		}
 		SetEnableMeshPhysicsAndCollision(false);
 		break;
 	case EPickupObjectState::Dropped:
-		EnableDetectionArea();
+		if(HasAuthority())
+		{
+			EnableDetectionArea();
+		}
 		SetEnableMeshPhysicsAndCollision(true);
 		break;
 	case EPickupObjectState::Initial:
@@ -77,6 +79,7 @@ void APickupObjectBase::ChangeStateServer(EPickupObjectState state)
 	default:
 		break;
 	}
+	State = state;
 }
 
 bool APickupObjectBase::AttachToComponent(USkeletalMeshComponent* meshComponent,
@@ -142,6 +145,18 @@ void APickupObjectBase::SetEnableMeshPhysicsAndCollision(bool enable) const
 	GetMesh()->SetSimulatePhysics(enable);
 	GetMesh()->SetEnableGravity(enable);
 	GetMesh()->SetCollisionEnabled(enable ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
+}
+
+void APickupObjectBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APickupObjectBase, State);
+}
+
+void APickupObjectBase::OnRep_State()
+{
+	ChangeState(State);
 }
 
 void APickupObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

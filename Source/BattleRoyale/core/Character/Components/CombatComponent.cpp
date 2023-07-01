@@ -76,11 +76,11 @@ void UCombatComponent::OnRep_EquippedWeapon() const
 {
 	//This rep notify is to inform the clients when the client just equipped a weapon,
 	//and then show the crosshairs.
-	if(!mCharacter || !mCharacter->IsLocallyControlled() || !GetEquippedWeapon())
+	if(!mCharacter || !mCharacter->IsLocallyControlled() || !mEquippedWeapon)
 	{
 		return;
 	}
-	GetGameInstance()->GetEventDispatcher()->OnEquippedWeapon.Broadcast(GetEquippedWeapon());
+	GetGameInstance()->GetEventDispatcher()->OnEquippedWeapon.Broadcast(mEquippedWeapon);
 }
 
 bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName)
@@ -154,7 +154,7 @@ void UCombatComponent::Shoot()
 	//We shoot, and then if is still fire button pressed we start the timer.
 	ShootOnce();
 	
-	const auto weapon = GetEquippedWeapon();
+	const auto weapon = mEquippedWeapon;
 	const auto playerController = Cast<APlayerController>(GetOwner()->GetInstigatorController());
 
 	const auto isFireInputPressed = IsInputPressedByActionName("Fire", playerController);
@@ -173,7 +173,7 @@ void UCombatComponent::ShootOnce() const
 	}
 	
 	const auto shootingTargetData = CalculateShootingTargetData();
-	const auto weapon = GetEquippedWeapon();
+	const auto weapon = mEquippedWeapon;
 
 	weapon->Fire(shootingTargetData.targetLocation);
 }
@@ -185,7 +185,7 @@ void UCombatComponent::ReleaseTrigger()
 
 void UCombatComponent::StartAutomaticFireTimer()
 {
-	const auto weapon = GetEquippedWeapon();
+	const auto weapon = mEquippedWeapon;
 	if(!weapon->IsAutomaticFireEnabled())
 	{
 		return;
@@ -220,7 +220,7 @@ void UCombatComponent::SetupLeftHandSocketTransform(const ACharacterBase* charac
 	if(!HasWeaponEquipped())
 		return;
 
-	const auto leftHandTransform = GetEquippedWeapon()->SaveLeftHandSocketTransform();
+	const auto leftHandTransform = mEquippedWeapon->SaveLeftHandSocketTransform();
 	FVector newPosition;
 	FRotator newRotator;
 	character->GetMesh()->TransformToBoneSpace(
@@ -230,7 +230,7 @@ void UCombatComponent::SetupLeftHandSocketTransform(const ACharacterBase* charac
 		newPosition,
 		newRotator);
 
-	GetEquippedWeapon()->SetupLeftHandSocketTransform(newPosition, newRotator);
+	mEquippedWeapon->SetupLeftHandSocketTransform(newPosition, newRotator);
 }
 
 FShootingData UCombatComponent::CalculateShootingTargetData() const
@@ -273,7 +273,7 @@ void UCombatComponent::CalculateInterpolatedFOVAndCameraLocation(float DeltaTime
 	check(mCharacter->GetCamera());
 
 	const auto camera = mCharacter->GetCamera();
-	const auto weapon = GetEquippedWeapon();
+	const auto weapon = mEquippedWeapon;
 	
 	if(mIsAiming)
 	{
@@ -393,7 +393,7 @@ void UCombatComponent::DebugDrawAiming() const
 	{
 		return;
 	} 
-	const auto muzzleLocation = GetEquippedWeapon()->GetMuzzleLocation();
+	const auto muzzleLocation = mEquippedWeapon->GetMuzzleLocation();
 	const auto shootingTargetData = CalculateShootingTargetData();
 	DrawDebugSphere(GetWorld(), muzzleLocation, 5, 12, FColor::White, false);
 	DrawDebugSphere(GetWorld(), muzzleLocation, 3, 12, FColor::Blue, false);
