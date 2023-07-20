@@ -157,6 +157,22 @@ void APickupObjectBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 void APickupObjectBase::OnRep_State()
 {
 	ChangeState(State);
+
+	//This code is because we can not attach the pickup object if it has physics enabled.
+	//So, in client side once the state has been changed we can do the attach.
+	//I don't know a better way to do it.
+	if(State == EPickupObjectState::Equipped)
+	{
+		const auto character = Cast<ACharacterBase>(GetOwner());
+		const auto isAttached = AttachToComponent(
+					character->GetMesh(),
+					FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+					character->GetRightHandSocketName());
+		if(!isAttached)
+		{
+			UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::Equip] pickup object not attached to the character"), *GetName());
+		}	
+	}
 }
 
 void APickupObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

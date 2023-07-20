@@ -60,7 +60,6 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 		{
 			OtherComp->AddImpulseAtLocation(GetVelocity() * ProjectileEjectionImpulse, GetActorLocation());
 		}
-
 		
 		DoApplyDamageFrom(OtherActor, Hit.ImpactPoint);
 		

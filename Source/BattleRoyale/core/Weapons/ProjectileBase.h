@@ -41,7 +41,7 @@ class AProjectileBase : public AActor, public IProjectile
 	TSubclassOf<UGameplayEffect> DamageEffect;
 
 	UPROPERTY(EditAnywhere, Category = "Projectile")
-	float ProjectileEjectionImpulse = 100.0f;
+	float ProjectileEjectionImpulse = 1.f;
 
 	
 	

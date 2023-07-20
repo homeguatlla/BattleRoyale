@@ -507,10 +507,7 @@ bool ACharacterBase::EquipWeaponServer(TScriptInterface<IPickupObject> pickableO
 	//TODO el attach se propaga a los clientes, pero el pickupObject no puede tener la física activada.
 	//Cuando hacemos un equip sobre un arma que hemos hecho un drop, tiene la física activada
 	//Hay que desactivarla primero antes de hacer el attach. Hay que ver como.
-	//Sabemos que en el OnRep_State ya tendremos la física desactivada. Entonces hay que hacer el equip, setear el estado y
-	//cuando llegue el onrep del estado o el onrep del weapon hacer el attach. De alguna manera hará falta un delegate o callback
-	//que nos diga en cliente cuando el objeto ya está ready para hacer el attach. Y probablemente entonces el server tiene que hacer
-	//el attach. Cosa imposible. En el curso, hacen otro attach en cliente. video 107 min 15 aprox.
+	//En el OnRep_StateEn el curso, hacen otro attach en cliente. video 107 min 15 aprox.
 	const auto isAttached = pickableObject->AttachToComponent(
 				GetMesh(),
 				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
