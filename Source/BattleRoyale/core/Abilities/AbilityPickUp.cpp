@@ -10,11 +10,11 @@
 
 UAbilityPickUp::UAbilityPickUp()
 {
-	AbilityInputID = EAbilityInputID::Equip;
+	AbilityInputID = EAbilityInputID::PickUp;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerOnly;
 	
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_EQUIP));
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_PICKUP));
 }
 
 bool UAbilityPickUp::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
