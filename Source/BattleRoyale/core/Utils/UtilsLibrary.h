@@ -1,4 +1,5 @@
 #pragma once
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/GameplayAbilityTypes.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
@@ -234,7 +235,7 @@ class BATTLEROYALE_API UtilsLibrary
 		{
 			data.TargetData.Add(targetData);
 		}
-		
+
 		target->GetAbilitySystemComponentBase()->SendGameplayEvent(eventTag, data);
 	}
 };

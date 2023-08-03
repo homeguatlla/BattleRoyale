@@ -7,7 +7,6 @@
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
-#include "Components/WidgetComponent.h"
 
 UAbilityPickupIndicator::UAbilityPickupIndicator()
 {
