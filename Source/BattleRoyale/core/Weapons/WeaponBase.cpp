@@ -11,6 +11,7 @@
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AWeaponBase::AWeaponBase()
@@ -18,6 +19,7 @@ AWeaponBase::AWeaponBase()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	//PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
+	mAmmo = MagazineCapacity;
 }
 
 void AWeaponBase::Destroy()
@@ -25,10 +27,16 @@ void AWeaponBase::Destroy()
 	AActor::Destroy();
 }
 
+void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWeaponBase, mAmmo);
+}
+
 bool AWeaponBase::CanBeFired() const
 {
-	//TODO has bullets?
-	return true;
+	return !IsMagazineEmpty();
 }
 
 void AWeaponBase::Fire(const FVector& targetLocation)
@@ -74,7 +82,7 @@ FVector AWeaponBase::GetProjectileSpawnLocation(const FVector& location, const F
 	return location + normalizedDirection * distanceFromMuzzleLocation;
 }
 
-void AWeaponBase::ServerFire_Implementation(const FVector& muzzleLocation, const FVector& targetLocation) const
+void AWeaponBase::ServerFire_Implementation(const FVector& muzzleLocation, const FVector& targetLocation)
 {
 	if(!HasAuthority())
 	{
@@ -83,8 +91,12 @@ void AWeaponBase::ServerFire_Implementation(const FVector& muzzleLocation, const
 
 	//DrawDebugSphere(GetWorld(), targetLocation, 5, 10, FColor::Blue, true);
 	//DrawDebugLine(GetWorld(), muzzleLocation, targetLocation, FColor::Red, true);
-	SpawnProjectileServer(muzzleLocation, targetLocation - muzzleLocation);
+	if(!SpawnProjectileServer(muzzleLocation, targetLocation - muzzleLocation))
+	{
+		return;
+	}
 
+	mAmmo = FMath::Clamp(mAmmo-1, 0, MagazineCapacity);
 	if(const auto character = Cast<IICharacter>(GetOwner()))
 	{
 		if(MuzzleGameplayEffectClass)
@@ -115,7 +127,7 @@ FVector AWeaponBase::GetForwardVector() const
 	//return GetActorTransform().GetRotation().GetForwardVector(); 
 }
 
-void AWeaponBase::SpawnProjectileServer(const FVector& muzzleLocation, const FVector& shootingDirection) const
+bool AWeaponBase::SpawnProjectileServer(const FVector& muzzleLocation, const FVector& shootingDirection) const
 {
 	if (ProjectileClass != nullptr)
 	{
@@ -135,6 +147,7 @@ void AWeaponBase::SpawnProjectileServer(const FVector& muzzleLocation, const FVe
 			{
 				const auto owner = GetOwner();
 				projectile->SetInstigator(Cast<APawn>(GetOwner()));
+				return true;
 			}
 			else
 			{
@@ -142,6 +155,7 @@ void AWeaponBase::SpawnProjectileServer(const FVector& muzzleLocation, const FVe
 			}
 		}
 	}
+	return false;
 }
 
 FTransform AWeaponBase::SaveLeftHandSocketTransform()

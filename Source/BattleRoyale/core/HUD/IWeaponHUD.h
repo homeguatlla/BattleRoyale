@@ -19,4 +19,6 @@ public:
 	void OnEquippedWeapon(const TScriptInterface<ICrosshair>& crosshair);
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Weapon HUD")
 	void OnUnEquippedWeapon();
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Weapon HUD")
+	void OnRefreshAmmo(int32 ammo, int32 magazineCapacity);
 };

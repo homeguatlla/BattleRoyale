@@ -11,6 +11,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnEquippedWeapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRefreshCrosshair, float, spread, AActor*, targetActor, bool, isAiming);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshHealth, float, health);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshNumKills, int, numKills);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRefreshAmmo, int32, ammo, int32, magazineCapacity);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
@@ -47,7 +48,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="Character Weapon")
 	FOnRefreshCrosshair OnRefreshCrosshair;
-	
+
+	UPROPERTY(BlueprintAssignable, Category="Character Weapon")
+	FRefreshAmmo OnRefreshAmmo;
+
 	UPROPERTY(BlueprintAssignable, Category="Character Stats")
 	FRefreshNumKills OnRefreshNumKills;
 	

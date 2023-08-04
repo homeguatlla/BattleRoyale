@@ -43,6 +43,7 @@ void ACharacterHUD::BindToDelegate()
 		eventDispatcher->OnUnEquippedWeapon.AddDynamic(this, &ThisClass::OnUnEquippedWeapon);
 		eventDispatcher->OnRefreshCrosshair.AddDynamic(this, &ThisClass::OnRefreshCrosshair);
 		eventDispatcher->OnRefreshHealth.AddDynamic(this, &ThisClass::OnRefreshHealthReceived);
+		eventDispatcher->OnRefreshAmmo.AddDynamic(this, &ThisClass::OnRefreshAmmo);
 		
 		eventDispatcher->OnPlayerDead.AddDynamic(this, &ThisClass::OnPlayerDead);
 		eventDispatcher->OnRefreshNumKills.AddDynamic(this, &ThisClass::OnRefreshNumKills);
@@ -78,12 +79,20 @@ void ACharacterHUD::OnRefreshCrosshair(float spread, AActor* targetActor, bool i
 void ACharacterHUD::OnRefreshHealthReceived(float health)
 {
 	//TODO esto se puede poner,
-	//if(mHUDWidget->Implements<UHealthHUD>())
+	//if(mHUDWidget->Implements<UHealthHUD>()), esto no funciona. Googlear a ver porque.
 	
 	
 	if (mHUDWidget->GetClass()->ImplementsInterface(UHealthHUD::StaticClass()))
 	{
 		IHealthHUD::Execute_OnRefreshHealth(mHUDWidget, health);
+	}
+}
+
+void ACharacterHUD::OnRefreshAmmo(int32 ammo, int32 magazineCapacity)
+{
+	if (mHUDWidget->GetClass()->ImplementsInterface(UWeaponHUD::StaticClass()))
+	{
+		IWeaponHUD::Execute_OnRefreshAmmo(mHUDWidget, ammo, magazineCapacity);
 	}
 }
 

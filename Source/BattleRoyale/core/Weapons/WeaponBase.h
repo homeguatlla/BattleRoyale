@@ -71,6 +71,12 @@ class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	float ZoomInterpolationSpeed = 20.0f;
 
+	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Weapon")
+	int32 mAmmo;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	int32 MagazineCapacity;
+	
 public:	
 	AWeaponBase();
 
@@ -89,6 +95,8 @@ public:
 	virtual void OnFire() override;//This method will be called from Blueprint (Gameplay cue shoot that makes the visual effects of the weapon when firing)
 	virtual bool IsAutomaticFireEnabled() const override { return AutomaticFire; }
 	virtual float GetAutomaticFireDelay() const override { return AutomaticFireDelay; }
+	virtual int32 GetAmmo() const override { return mAmmo; }
+	virtual int32 GetMagazineCapacity() const override { return MagazineCapacity; }
 	
 	virtual UAnimationAsset* GetShootingAnimation() const override { return ShootingAnimation; }
 	
@@ -108,12 +116,16 @@ public:
 
 	
 private:
-	UFUNCTION(Server, Reliable)
-	void ServerFire(const FVector& muzzleLocation, const FVector& targetLocation) const;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	void SpawnProjectileServer(const FVector& muzzleLocation, const FVector& shootingDirection) const;
+	UFUNCTION(Server, Reliable)
+	void ServerFire(const FVector& muzzleLocation, const FVector& targetLocation);
+	
+	bool SpawnProjectileServer(const FVector& muzzleLocation, const FVector& shootingDirection) const;
 	FVector GetProjectileSpawnLocation(const FVector& location, const FVector& direction, float distanceFromMuzzleLocation) const;
 
 	FTransform GetSocketMeshTransformBySocketName(const FName& socketName) const;
 	void SpawnBulletShell() const;
+
+	bool IsMagazineEmpty() const { return mAmmo <= 0; }
 };

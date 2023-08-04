@@ -44,7 +44,13 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual float GetAutomaticFireDelay() const = 0;
-	
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual int32 GetAmmo() const = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual int32 GetMagazineCapacity() const = 0;
+
 	/**
 	 * Fire is to activate the mechanism of the weapon. Pulling the trigger.
 	 **/

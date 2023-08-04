@@ -78,9 +78,11 @@ void UCombatComponent::OnRep_EquippedWeapon() const
 	//and then show the crosshairs.
 	if(!mCharacter || !mCharacter->IsLocallyControlled() || !mEquippedWeapon)
 	{
+		GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(0,0);
 		return;
 	}
 	GetGameInstance()->GetEventDispatcher()->OnEquippedWeapon.Broadcast(mEquippedWeapon);
+	GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(GetEquippedWeapon()->GetAmmo(), GetEquippedWeapon()->GetMagazineCapacity());
 }
 
 bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName)
@@ -94,6 +96,7 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName
 	mEquippedWeapon = weapon;
 	mEquippedWeapon->SetCharacterOwner(mCharacter);
 	SetupLeftHandSocketTransform(mCharacter);
+	GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(weapon->GetAmmo(), weapon->GetMagazineCapacity());
 	
 	return true;
 }
@@ -103,6 +106,7 @@ bool UCombatComponent::UnEquipWeapon()
 	mEquippedWeapon->SetCharacterOwner(nullptr);
 	//Reset the equipped weapon
 	mEquippedWeapon = TScriptInterface<IWeapon>();
+	GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(0, 0);
 
 	return true;
 }
@@ -176,6 +180,7 @@ void UCombatComponent::ShootOnce() const
 	const auto weapon = mEquippedWeapon;
 
 	weapon->Fire(shootingTargetData.targetLocation);
+	GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(weapon->GetAmmo(), weapon->GetMagazineCapacity());
 }
 
 void UCombatComponent::ReleaseTrigger()
