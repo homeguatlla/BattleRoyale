@@ -3,6 +3,7 @@
 
 #include "GameplayBlueprintFunctionLibrary.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Inventory/InventoryItemStaticData.h"
 
 
 UMaterialInstanceDynamic* UGameplayBlueprintFunctionLibrary::CreateAndAssignMaterialInstanceDynamicToMeshFromActor(AActor* actor)
@@ -48,4 +49,13 @@ UMaterialInstanceDynamic* UGameplayBlueprintFunctionLibrary::CreateAndAssignMate
 void UGameplayBlueprintFunctionLibrary::SetMaterialColor(UMaterialInstanceDynamic* dynamicMaterial, const FName& parameterName, const FColor& color)
 {
 	dynamicMaterial->SetVectorParameterValue(parameterName, color);
+}
+
+const UInventoryItemStaticData* UGameplayBlueprintFunctionLibrary::GetInventoryItemStaticData(
+	TSubclassOf<UInventoryItemStaticData> inventoryItemStaticDataClass)
+{
+	if(!IsValid(inventoryItemStaticDataClass))
+		return nullptr;
+
+	return GetDefault<UInventoryItemStaticData>(inventoryItemStaticDataClass);
 }

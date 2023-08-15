@@ -32,8 +32,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="PickableObject")
 	virtual USkeletalMeshComponent* GetMesh() const { return Mesh; }
 
-	virtual void ChangeState(EPickupObjectState state) override;
-	virtual bool IsEquipped() const override { return State == EPickupObjectState::Equipped; }
+	virtual void OnPickedUp() override;
+	virtual void OnDropped() override;
+	
+	virtual bool IsEquipped() const override { return State == EPickupObjectState::PickedUp; }
 	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) override;
 	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) override;
 
@@ -58,6 +60,7 @@ protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 private:
+	void ChangeState(EPickupObjectState state);
 	virtual EPickupObjectState GetState() const override { return State; }
 	void EnableDetectionArea() const;
 	void DisableDetectionArea() const;

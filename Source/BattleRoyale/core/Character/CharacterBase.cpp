@@ -24,6 +24,7 @@
 #include "Components/CombatComponent.h"
 #include "Components/FootstepsComponent.h"
 #include "Components/HurtComponent.h"
+#include "Components/InventoryComponent.h"
 #include "Components/PickupComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
@@ -61,6 +62,8 @@ ACharacterBase::ACharacterBase()
 	//Create Other Components
 	PickupComponent = CreateDefaultSubobject<UPickupComponent>(TEXT("PickupComponent"));
 	FootstepsComponent = CreateDefaultSubobject<UFootstepsComponent>(TEXT("FootstepsComponent"));
+	//When player dies, inventory is lost. Move it to PlayerState to maintain it
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 }
 
 void ACharacterBase::BeginPlay()
@@ -216,6 +219,7 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ACharacterBase, mControlRotation);
+	DOREPLIFETIME(ACharacterBase, InventoryComponent);
 }
 
 void ACharacterBase::BindAbilityActivationToInputComponent() const
@@ -522,7 +526,7 @@ bool ACharacterBase::EquipWeaponServer(TScriptInterface<IPickupObject> pickableO
 	const TScriptInterface<IWeapon> weapon = pickableObject.GetObject();
 	if(CombatComponent->EquipWeapon(weapon, RightHandSocketName))
 	{
-		pickableObject->ChangeState(EPickupObjectState::Equipped);
+		pickableObject->OnPickedUp();
 
 		//If server equips a weapon, enable crosshair. OnRepNotify (on the equipedWeapon) is not called on Server.
 		if(IsLocallyControlled())
@@ -555,7 +559,7 @@ bool ACharacterBase::UnEquipWeaponServer() const
 	check(CombatComponent);
 	if(CombatComponent->UnEquipWeapon())
 	{
-		pickupObject->ChangeState(EPickupObjectState::Dropped);
+		pickupObject->OnDropped();
 		if(IsLocallyControlled())
 		{
 			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());

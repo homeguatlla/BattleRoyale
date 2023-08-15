@@ -60,7 +60,7 @@ void APickupObjectBase::ChangeState(EPickupObjectState state)
 {
 	switch (state)
 	{
-	case EPickupObjectState::Equipped:
+	case EPickupObjectState::PickedUp:
 		if(HasAuthority())
 		{
 			DisableDetectionArea();
@@ -122,6 +122,16 @@ FVector APickupObjectBase::GetPickupWidgetLocation() const
 	return boundingBoxOrigin + FVector(0.0f, 0.0f, height);
 }
 
+void APickupObjectBase::OnPickedUp()
+{
+	ChangeState(EPickupObjectState::PickedUp);
+}
+
+void APickupObjectBase::OnDropped()
+{
+	ChangeState(EPickupObjectState::Dropped);
+}
+
 void APickupObjectBase::EnableDetectionArea() const
 {
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -161,7 +171,7 @@ void APickupObjectBase::OnRep_State()
 	//This code is because we can not attach the pickup object if it has physics enabled.
 	//So, in client side once the state has been changed we can do the attach.
 	//I don't know a better way to do it.
-	if(State == EPickupObjectState::Equipped)
+	if(State == EPickupObjectState::PickedUp)
 	{
 		const auto character = Cast<ACharacterBase>(GetOwner());
 		const auto isAttached = AttachToComponent(

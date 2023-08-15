@@ -77,16 +77,19 @@ class BATTLEROYALE_API ACharacterBase : public ACharacter, public IICharacter
 	FRotator mControlRotation;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	UHurtComponent* HurtComponent;
+	UHurtComponent* HurtComponent = nullptr;
 	
 	UPROPERTY(VisibleAnywhere)
-	UCombatComponent* CombatComponent;
+	UCombatComponent* CombatComponent = nullptr;
 
 	UPROPERTY(VisibleAnywhere)
-	UFootstepsComponent* FootstepsComponent;
+	UFootstepsComponent* FootstepsComponent = nullptr;
 	
 	UPROPERTY(VisibleAnywhere)
-	class UPickupComponent* PickupComponent;
+	class UPickupComponent* PickupComponent = nullptr;
+
+	UPROPERTY(Replicated, VisibleAnywhere)
+	class UInventoryComponent* InventoryComponent = nullptr;
 	
 	bool mIsInvulnerable = false;
 

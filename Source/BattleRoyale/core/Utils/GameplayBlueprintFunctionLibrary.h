@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GameplayBlueprintFunctionLibrary.generated.h"
 
+class UInventoryItemStaticData;
 /**
  * 
  */
@@ -23,4 +24,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="GameplayBlueprintFunctionLibrary")
 	static void SetMaterialColor(UMaterialInstanceDynamic* dynamicMaterial, const FName& parameterName, const FColor& color);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static const UInventoryItemStaticData* GetInventoryItemStaticData(TSubclassOf<UInventoryItemStaticData> inventoryItemStaticDataClass); 
 };

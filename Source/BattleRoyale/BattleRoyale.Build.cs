@@ -26,7 +26,9 @@ public class BattleRoyale : ModuleRules
 			"GameplayTasks",
 			//HUD
 			"UMG",
-			"MultiplayerSessions"
+			"MultiplayerSessions",
+			//For inventory custom net replication
+			"NetCore"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]

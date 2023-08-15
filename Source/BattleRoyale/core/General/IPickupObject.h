@@ -21,7 +21,8 @@ class BATTLEROYALE_API IPickupObject
 public:
 	virtual FVector GetPickupWidgetLocation() const = 0;
 	virtual EPickupObjectState GetState() const = 0;
-	virtual void ChangeState(EPickupObjectState state) = 0;
+	virtual void OnPickedUp() = 0;
+	virtual void OnDropped() = 0;
 	virtual bool IsEquipped() const = 0;
 	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) = 0;
 	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) = 0;
