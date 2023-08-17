@@ -8,7 +8,7 @@ UENUM(BlueprintType)
 enum class EPickupObjectState : uint8
 {
 	Initial UMETA(DisplayName = "Initial State"),
-	PickedUp UMETA(DisplayName = "PickedUp State"),
+	Equipped UMETA(DisplayName = "Equipped State"),
 	Dropped UMETA(DisplayName = "Dropped State"),
 	Max UMETA(DisplayName = "Max State")
 };

@@ -526,7 +526,7 @@ bool ACharacterBase::EquipWeaponServer(TScriptInterface<IPickupObject> pickableO
 	const TScriptInterface<IWeapon> weapon = pickableObject.GetObject();
 	if(CombatComponent->EquipWeapon(weapon, RightHandSocketName))
 	{
-		pickableObject->OnPickedUp();
+		pickableObject->OnEquipped();
 
 		//If server equips a weapon, enable crosshair. OnRepNotify (on the equipedWeapon) is not called on Server.
 		if(IsLocallyControlled())

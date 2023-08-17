@@ -27,8 +27,10 @@ private:
 	UFUNCTION()
 	void OnRep_IsEquipped();
 
-	void OnEquipped() {}
-	void OnUnEquipped() {}
+	//OnEquip means to put it on hand
+	void OnEquipped();
+	//OnUnEquip means to put it back to the inventory
+	void OnUnEquipped();
 	
 	UPROPERTY(Replicated)
 	TSubclassOf<UInventoryItemStaticData> mStaticDataClass;

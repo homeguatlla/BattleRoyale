@@ -32,10 +32,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="PickableObject")
 	virtual USkeletalMeshComponent* GetMesh() const { return Mesh; }
 
-	virtual void OnPickedUp() override;
+	virtual void OnEquipped() override;
 	virtual void OnDropped() override;
 	
-	virtual bool IsEquipped() const override { return State == EPickupObjectState::PickedUp; }
+	virtual bool IsEquipped() const override { return State == EPickupObjectState::Equipped; }
 	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) override;
 	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) override;
 

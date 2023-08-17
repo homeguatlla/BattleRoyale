@@ -15,7 +15,7 @@ struct FInventoryArray : public FFastArraySerializer
 {
 	GENERATED_BODY()
 	
-	void AddItem(TSubclassOf<UInventoryItemStaticData> itemClass);
+	void AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
 	void RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
 
 	void PerformActionForEachItem(std::function<void(const FInventoryArrayItem& inventoryItem)> action);

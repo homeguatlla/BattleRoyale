@@ -5,7 +5,7 @@
 #include "InventoryArrayItem.h"
 #include "InventoryItemInstance.h"
 
-void FInventoryArray::AddItem(TSubclassOf<UInventoryItemStaticData> itemClass)
+void FInventoryArray::AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass)
 {
 	auto& item = mItems.AddDefaulted_GetRef();
 	item.mInventoryItem = NewObject<UInventoryItemInstance>();

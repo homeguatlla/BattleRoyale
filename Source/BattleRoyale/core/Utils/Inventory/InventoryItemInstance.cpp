@@ -27,3 +27,11 @@ void UInventoryItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 void UInventoryItemInstance::OnRep_IsEquipped()
 {
 }
+
+void UInventoryItemInstance::OnEquipped()
+{
+}
+
+void UInventoryItemInstance::OnUnEquipped()
+{
+}

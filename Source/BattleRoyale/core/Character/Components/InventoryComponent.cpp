@@ -39,7 +39,7 @@ void UInventoryComponent::InitializeComponent()
 	//Adding default items to player
 	for(const auto item : DefaultItems)
 	{
-		mInventoryArray.AddItem(item);
+		mInventoryArray.AddItemOfClass(item);
 	}
 }
 
