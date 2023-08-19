@@ -7,6 +7,7 @@
 #include "Components/ActorComponent.h"
 #include "CombatComponent.generated.h"
 
+class IPickupObject;
 class UBattleRoyaleGameInstance;
 class ACharacterBase;
 class IWeapon;
@@ -70,7 +71,6 @@ public:
 
 	virtual void InitializeComponent() override;
 	
-	virtual bool EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName) override;
 	virtual bool UnEquipWeapon() override;
 
 	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
@@ -118,6 +118,10 @@ private:
 	void StartAutomaticFireTimer();
 	void OnAutomaticFire() ;
 	void ShootOnce() const;
+
+	bool EquipWeapon(TScriptInterface<IWeapon> weapon);
+	void OnEquippedPickableObject(TScriptInterface<IPickupObject> pickableObject);
+	void OnDroppedPickableObject();
 	
 	void DebugDrawAiming() const;
 };

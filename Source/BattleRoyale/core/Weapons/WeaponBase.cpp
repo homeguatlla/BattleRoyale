@@ -7,6 +7,7 @@
 #include "DrawDebugHelpers.h"
 #include "ProjectileBase.h"
 #include "BattleRoyale/BattleRoyale.h"
+#include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
@@ -47,11 +48,6 @@ void AWeaponBase::Fire(const FVector& targetLocation)
 	//DrawDebugSphere(GetWorld(), targetLocation, 10, 10, FColor::Green, true);
 	
 	ServerFire(GetMuzzleLocation(), targetLocation);
-}
-
-void AWeaponBase::SetCharacterOwner(ACharacterBase* character)
-{
-	SetOwner(character);
 }
 
 void AWeaponBase::SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation)

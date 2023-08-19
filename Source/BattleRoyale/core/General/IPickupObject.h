@@ -7,6 +7,8 @@
 #include "UObject/Interface.h"
 #include "IPickupObject.generated.h"
 
+class ACharacterBase;
+
 // This class does not need to be modified.
 UINTERFACE(NotBlueprintable, meta = (CannotImplementInterfaceInBlueprint))
 class UPickupObject : public UInterface
@@ -21,7 +23,9 @@ class BATTLEROYALE_API IPickupObject
 public:
 	virtual FVector GetPickupWidgetLocation() const = 0;
 	virtual EPickupObjectState GetState() const = 0;
+	virtual void SetCharacterOwner(ACharacterBase* character) = 0;
 	virtual void OnEquipped() = 0;
+	virtual void OnUnEquipped() = 0;
 	virtual void OnDropped() = 0;
 	virtual bool IsEquipped() const = 0;
 	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) = 0;

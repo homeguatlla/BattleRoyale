@@ -31,6 +31,13 @@ void UCombatComponent::InitializeComponent()
 
 	mCharacter = Cast<ACharacterBase>(GetOwner());
 	check(mCharacter);
+
+	//Subscribe to pickup delegate
+	if(const auto inventoryComponent = Cast<UInventoryComponent>(mCharacter->GetInventoryComponent().GetObject()))
+	{
+		inventoryComponent->OnEquippedPickableObjectDelegate.AddUObject(this, &ThisClass::OnEquippedPickableObject);
+		inventoryComponent->OnDroppedPickableObject.AddUObject(this, &ThisClass::OnDroppedPickableObject);
+	}
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -85,7 +92,7 @@ void UCombatComponent::OnRep_EquippedWeapon() const
 	GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(GetEquippedWeapon()->GetAmmo(), GetEquippedWeapon()->GetMagazineCapacity());
 }
 
-bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName)
+bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon)
 {
 	if(weapon == nullptr)
 	{
@@ -94,8 +101,12 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName
 	}
 	
 	mEquippedWeapon = weapon;
-	mEquippedWeapon->SetCharacterOwner(mCharacter);
 	SetupLeftHandSocketTransform(mCharacter);
+	if(mCharacter->IsLocallyControlled())
+	{
+		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+		gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(GetEquippedWeapon());
+	}
 	GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(weapon->GetAmmo(), weapon->GetMagazineCapacity());
 	
 	return true;
@@ -103,7 +114,7 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon, const FName
 
 bool UCombatComponent::UnEquipWeapon()
 {
-	mEquippedWeapon->SetCharacterOwner(nullptr);
+	//mEquippedWeapon->SetCharacterOwner(nullptr);
 	//Reset the equipped weapon
 	mEquippedWeapon = TScriptInterface<IWeapon>();
 	GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(0, 0);
@@ -181,6 +192,27 @@ void UCombatComponent::ShootOnce() const
 
 	weapon->Fire(shootingTargetData.targetLocation);
 	GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(weapon->GetAmmo(), weapon->GetMagazineCapacity());
+}
+
+void UCombatComponent::OnEquippedPickableObject(TScriptInterface<IPickupObject> pickableObject)
+{
+	if(pickableObject.GetObject()->Implements<UWeapon>())
+	{
+		const TScriptInterface<IWeapon> weapon = pickableObject.GetObject();
+		EquipWeapon(weapon);
+	}
+}
+
+void UCombatComponent::OnDroppedPickableObject()
+{
+	if(UnEquipWeapon())
+	{		
+		if(mCharacter->IsLocallyControlled())
+		{
+			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+			gameInstance->GetEventDispatcher()->OnUnEquippedWeapon.Broadcast();
+		}
+	}
 }
 
 void UCombatComponent::ReleaseTrigger()

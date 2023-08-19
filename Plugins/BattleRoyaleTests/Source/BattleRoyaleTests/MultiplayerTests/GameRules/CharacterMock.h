@@ -21,8 +21,6 @@ public:
 
 
 	virtual FVector GetLocation() const override { return FVector::Zero(); }
-	virtual bool PickupObjectServer(TScriptInterface<IPickupObject> pickableObject) override { return true; }
-	virtual bool UnEquipWeaponServer() const override { return true; }
 	virtual bool IsCharacterValid() const override { return true; }
 	virtual FVector GetCurrentVelocity() const override { return FVector::Zero(); }
 	virtual FVector GetCurrentMeshSpaceVelocity() const override { return FVector::Zero(); }
@@ -61,10 +59,9 @@ public:
 	virtual TScriptInterface<IGunComponent> GetGunComponent() const override{ return nullptr;}
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const override{return nullptr;}
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const override{return nullptr;}
-	virtual void SetPickupObject(TScriptInterface<IPickupObject> object) override{}
-	virtual TScriptInterface<IPickupObject> GetPickupObject() const override{ return nullptr;}
 	virtual TScriptInterface<IIFootstepsComponent> GetFootstepsComponent() const override {return nullptr;}
-	
+	virtual TScriptInterface<IIInventoryComponent> GetInventoryComponent() const override {return nullptr;}
+	virtual UPickupComponent* GetPickupComponent() const override { return nullptr; }
 private:
 	float mHealth {100};
 };

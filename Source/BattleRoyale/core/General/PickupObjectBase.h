@@ -8,6 +8,8 @@
 #include "GameFramework/Actor.h"
 #include "PickupObjectBase.generated.h"
 
+class UInventoryItemInstance;
+
 UCLASS()
 class BATTLEROYALE_API APickupObjectBase : public AActor, public IPickupObject
 {
@@ -32,13 +34,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category="PickableObject")
 	virtual USkeletalMeshComponent* GetMesh() const { return Mesh; }
 
+	virtual void SetCharacterOwner(ACharacterBase* character) override;
+	
 	virtual void OnEquipped() override;
+	virtual void OnUnEquipped() override;
 	virtual void OnDropped() override;
 	
 	virtual bool IsEquipped() const override { return State == EPickupObjectState::Equipped; }
 	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) override;
 	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) override;
 
+	virtual void DoEquipped() {};
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

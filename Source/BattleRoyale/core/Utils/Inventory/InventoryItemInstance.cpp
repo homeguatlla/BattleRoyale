@@ -22,6 +22,7 @@ void UInventoryItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 	DOREPLIFETIME(UInventoryItemInstance, mStaticDataClass);
 	DOREPLIFETIME(UInventoryItemInstance, mIsEquipped);
+	DOREPLIFETIME(UInventoryItemInstance, mPickupObject);
 }
 
 void UInventoryItemInstance::OnRep_IsEquipped()

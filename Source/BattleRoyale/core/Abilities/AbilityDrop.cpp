@@ -5,7 +5,7 @@
 
 #include "GameplayTagsList.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
-#include "BattleRoyale/core/Character/Components/IGunComponent.h"
+#include "BattleRoyale/core/Character/Components/IInventoryComponent.h"
 
 UAbilityDrop::UAbilityDrop()
 {
@@ -27,8 +27,8 @@ bool UAbilityDrop::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	if(const auto character = Cast<IICharacter>(ActorInfo->AvatarActor))
 	{
-		const auto gunComponent = character->GetGunComponent();
-		return gunComponent->HasWeaponEquipped();
+		const auto inventoryComponent = character->GetInventoryComponent();
+		return inventoryComponent->HasItemEquipped();
 	}
 	return false;
 }
@@ -40,8 +40,8 @@ void UAbilityDrop::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 
 	if(const auto character = Cast<IICharacter>(ActorInfo->AvatarActor))
 	{
-		//const auto gunComponent = character->GetGunComponent();
-		character->UnEquipWeaponServer();
+		const auto inventoryComponent = character->GetInventoryComponent();
+		inventoryComponent->DropObjectServer();
 	}
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }

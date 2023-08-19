@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 #include "InventoryItemInstance.generated.h"
 
+class IPickupObject;
 class UInventoryItemStaticData;
 /**
  * 
@@ -37,4 +38,7 @@ private:
 
 	UPROPERTY(ReplicatedUsing=OnRep_IsEquipped)
 	bool mIsEquipped = false;
+
+	UPROPERTY(Replicated)
+	TScriptInterface<IPickupObject> mPickupObject;
 };

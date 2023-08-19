@@ -21,7 +21,6 @@ class BATTLEROYALE_API IGunComponent
 	GENERATED_BODY()
 
 public:
-	virtual bool EquipWeapon(TScriptInterface<IWeapon> weapon, const FName& socketName) = 0;
 	virtual bool UnEquipWeapon() = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IGunComponent")

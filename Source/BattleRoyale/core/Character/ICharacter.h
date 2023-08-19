@@ -7,6 +7,8 @@
 #include "UObject/Interface.h"
 #include "ICharacter.generated.h"
 
+class UPickupComponent;
+class IIInventoryComponent;
 class IPickupObject;
 class IIAbilitySystemInterfaceBase;
 class IAbilitySystemInterface;
@@ -31,12 +33,6 @@ class BATTLEROYALE_API IICharacter
 public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual FVector GetLocation() const = 0;
-	
-	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual bool PickupObjectServer(TScriptInterface<IPickupObject> pickableObject) = 0;
-	
-	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
-	virtual bool UnEquipWeaponServer() const = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual bool IsCharacterValid() const = 0;
@@ -155,12 +151,15 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "ICharacter")
 	virtual TScriptInterface<IIFootstepsComponent> GetFootstepsComponent() const = 0;
+
+	UFUNCTION(BlueprintCallable, Category = "ICharacter")
+	virtual TScriptInterface<IIInventoryComponent> GetInventoryComponent() const = 0;
+
+	UFUNCTION(BlueprintCallable, Category = "ICharacter")
+	virtual UPickupComponent* GetPickupComponent() const = 0;
 	
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const = 0;
 
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const = 0;
-	
-	virtual void SetPickupObject(TScriptInterface<IPickupObject> object) = 0;
-	virtual TScriptInterface<IPickupObject> GetPickupObject() const = 0;
 };
  

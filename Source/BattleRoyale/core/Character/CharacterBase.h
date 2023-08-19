@@ -11,6 +11,7 @@
 #include "Components/IGunComponent.h"
 #include "Components/FootstepsComponent.h"
 #include "Components/CombatComponent.h"
+#include "Components/InventoryComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CharacterBase.generated.h"
@@ -102,12 +103,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual FVector GetLocation() const override { return GetActorLocation(); }
-	
-	UFUNCTION(BlueprintCallable)
-	virtual bool PickupObjectServer(TScriptInterface<IPickupObject> pickableObject) override;
-
-	UFUNCTION(BlueprintCallable)
-	virtual bool UnEquipWeaponServer() const override;
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsCharacterValid() const override;
@@ -222,12 +217,11 @@ public:
 	
 	virtual TScriptInterface<IGunComponent> GetGunComponent() const override { return CombatComponent; }
 	virtual TScriptInterface<IIFootstepsComponent> GetFootstepsComponent() const override { return FootstepsComponent; }
+	virtual TScriptInterface<IIInventoryComponent> GetInventoryComponent() const override { return InventoryComponent; }
+	virtual UPickupComponent* GetPickupComponent() const override { return PickupComponent; }
 	
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const override;
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const override;
-	
-	virtual void SetPickupObject(TScriptInterface<IPickupObject> object) override;
-	virtual TScriptInterface<IPickupObject> GetPickupObject() const override;
 	
 
 	//virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
@@ -296,7 +290,7 @@ private:
 	
 	virtual USkeletalMeshComponent* GetCurrentMesh() const { return GetMesh(); }
 
-	bool EquipWeaponServer(TScriptInterface<IPickupObject> pickableObject) const;
+	//bool EquipWeaponServer(TScriptInterface<IPickupObject> pickableObject) const;
 	
 	//UFUNCTION(NetMulticast, Unreliable)
 	//void MulticastSpawnWeapon();

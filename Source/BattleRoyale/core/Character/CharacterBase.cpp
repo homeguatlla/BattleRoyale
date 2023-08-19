@@ -478,110 +478,6 @@ void ACharacterBase::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-bool ACharacterBase::PickupObjectServer(TScriptInterface<IPickupObject> pickableObject)
-{
-	if(!HasAuthority())
-	{
-		return false;
-	}
-	
-	check(pickableObject);
-	if(pickableObject->IsEquipped())
-	{
-		return false;
-	}
-
-	if(pickableObject.GetObject()->Implements<UWeapon>())
-	{
-		return EquipWeaponServer(pickableObject);
-	}
-	else
-	{
-		//TODO guardar en el inventario
-	}
-	return false;
-}
-
-bool ACharacterBase::EquipWeaponServer(TScriptInterface<IPickupObject> pickableObject) const
-{
-	if(CombatComponent->HasWeaponEquipped())
-	{
-		UnEquipWeaponServer();
-	}
-	//TODO el attach se propaga a los clientes, pero el pickupObject no puede tener la física activada.
-	//Cuando hacemos un equip sobre un arma que hemos hecho un drop, tiene la física activada
-	//Hay que desactivarla primero antes de hacer el attach. Hay que ver como.
-	//En el OnRep_StateEn el curso, hacen otro attach en cliente. video 107 min 15 aprox.
-	const auto isAttached = pickableObject->AttachToComponent(
-				GetMesh(),
-				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
-				RightHandSocketName);
-	if(!isAttached)
-	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::Equip] pickup object not attached to the character"), *GetName());
-		return false;
-	}
-
-	check(CombatComponent);
-	const TScriptInterface<IWeapon> weapon = pickableObject.GetObject();
-	if(CombatComponent->EquipWeapon(weapon, RightHandSocketName))
-	{
-		pickableObject->OnEquipped();
-
-		//If server equips a weapon, enable crosshair. OnRepNotify (on the equipedWeapon) is not called on Server.
-		if(IsLocallyControlled())
-		{
-			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-			gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(CombatComponent->GetEquippedWeapon());
-		}
-		return true;
-	}
-	return false;
-}
-
-bool ACharacterBase::UnEquipWeaponServer() const
-{
-	if(!HasAuthority())
-	{
-		return false;
-	}
-
-	if(!CombatComponent->HasWeaponEquipped())
-	{
-		return false;	
-	}
-	
-	const TScriptInterface<IPickupObject> pickupObject = CombatComponent->GetEquippedWeapon().GetObject();
-	check(pickupObject.GetObject());
-	
-	pickupObject->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
-	
-	check(CombatComponent);
-	if(CombatComponent->UnEquipWeapon())
-	{
-		pickupObject->OnDropped();
-		if(IsLocallyControlled())
-		{
-			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-			gameInstance->GetEventDispatcher()->OnUnEquippedWeapon.Broadcast();
-		}
-		return true;
-	}
-	return false;
-}
-
-void ACharacterBase::SetPickupObject(TScriptInterface<IPickupObject> object)
-{
-	check(PickupComponent);
-	PickupComponent->SetPickupObject(object);
-}
-
-TScriptInterface<IPickupObject> ACharacterBase::GetPickupObject() const
-{
-	check(PickupComponent);
-	return PickupComponent->GetPickupObject();
-}
-
 void ACharacterBase::PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const
 {
 	if (montage != nullptr)
@@ -614,7 +510,7 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 
 void ACharacterBase::DieClient()
 {
-	UnEquipWeaponServer();
+	GetInventoryComponent()->DropObjectServer();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 	

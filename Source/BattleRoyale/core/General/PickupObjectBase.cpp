@@ -122,9 +122,20 @@ FVector APickupObjectBase::GetPickupWidgetLocation() const
 	return boundingBoxOrigin + FVector(0.0f, 0.0f, height);
 }
 
+void APickupObjectBase::SetCharacterOwner(ACharacterBase* character)
+{
+	SetOwner(character);
+}
+
 void APickupObjectBase::OnEquipped()
 {
 	ChangeState(EPickupObjectState::Equipped);
+	DoEquipped();
+}
+
+void APickupObjectBase::OnUnEquipped()
+{
+	ChangeState(EPickupObjectState::InInventory);
 }
 
 void APickupObjectBase::OnDropped()

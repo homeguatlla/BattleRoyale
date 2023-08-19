@@ -7,6 +7,8 @@
 #include "InventoryItemStaticData.generated.h"
 
 
+class APickupObjectBase;
+
 UCLASS(Blueprintable, BlueprintType)
 class BATTLEROYALE_API UInventoryItemStaticData : public UObject
 {
@@ -18,4 +20,7 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Name"))
 	FName mName;
+
+	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Pickup Object Class (Visual)"))
+	TSubclassOf<APickupObjectBase> mPickupObjectClass;
 };

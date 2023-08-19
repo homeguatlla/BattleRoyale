@@ -15,7 +15,7 @@ UCLASS(Blueprintable)
 class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName MuzzleSocketName;
 	
@@ -100,7 +100,6 @@ public:
 	
 	virtual UAnimationAsset* GetShootingAnimation() const override { return ShootingAnimation; }
 	
-	virtual void SetCharacterOwner(ACharacterBase* character) override;
 	virtual void SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation) override;
 	virtual TScriptInterface<ICrosshair> GetCrosshairWidget() const override { return Crosshair; }
 	

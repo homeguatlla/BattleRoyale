@@ -6,6 +6,8 @@
 #include "BlueprintGameplayTagLibrary.h"
 #include "GameplayTagsList.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
+#include "BattleRoyale/core/Character/Components/IInventoryComponent.h"
+#include "BattleRoyale/core/Character/Components/PickupComponent.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 
 UAbilityPickUp::UAbilityPickUp()
@@ -37,9 +39,14 @@ void UAbilityPickUp::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 
 	if(const auto character = Cast<IICharacter>(ActorInfo->AvatarActor))
 	{
-		if(const auto pickupObject = character->GetPickupObject())
+		const auto pickupComponent = character->GetPickupComponent();
+		check(pickupComponent);
+		if(const auto pickupObject = pickupComponent->GetPickupObject())
 		{
-			if(character->PickupObjectServer(pickupObject))
+			const auto inventoryComponent = character->GetInventoryComponent();
+			check(inventoryComponent);
+			
+			if(inventoryComponent->PickupObjectServer(pickupObject))
 			{
 				CancelPickupIndicatorAbility(character);
 			}

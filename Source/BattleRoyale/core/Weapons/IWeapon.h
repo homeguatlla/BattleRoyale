@@ -73,8 +73,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual FTransform GetCrosshairSocketTransform() = 0;
 	
-	virtual void SetCharacterOwner(ACharacterBase* character) = 0;
-
 	virtual FTransform SaveLeftHandSocketTransform() = 0;
 	virtual void SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation) = 0;
 
