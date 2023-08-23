@@ -18,6 +18,8 @@ struct FInventoryArray : public FFastArraySerializer
 	void AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
 	void RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
 
+	UInventoryItemInstance* FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
+	
 	void PerformActionForEachItem(std::function<void(const FInventoryArrayItem& inventoryItem)> action);
 	
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams)

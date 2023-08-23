@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "PickupObjectBase.generated.h"
 
+class UInventoryItemStaticData;
 class UInventoryItemInstance;
 
 UCLASS()
@@ -24,11 +25,15 @@ class BATTLEROYALE_API APickupObjectBase : public AActor, public IPickupObject
 
 	UPROPERTY(ReplicatedUsing=OnRep_State, VisibleAnywhere, Category = "PickableObject")
 	EPickupObjectState State = EPickupObjectState::Initial;
+
+	UPROPERTY(EditDefaultsOnly, Category="PickableObject")
+	TSubclassOf<UInventoryItemStaticData> InventoryItemStaticData;
 	
 public:	
 	// Sets default values for this actor's properties
 	APickupObjectBase();
-	
+
+	virtual TSubclassOf<UInventoryItemStaticData> GetInventoryItemStaticData() const override { return InventoryItemStaticData; }
 	virtual FVector GetPickupWidgetLocation() const override;
 	
 	UFUNCTION(BlueprintCallable, Category="PickableObject")

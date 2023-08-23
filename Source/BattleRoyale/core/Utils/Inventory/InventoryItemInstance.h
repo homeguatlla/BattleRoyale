@@ -19,8 +19,13 @@ class BATTLEROYALE_API UInventoryItemInstance : public UObject
 	virtual bool IsSupportedForNetworking() const override { return true; }
 
 public:
-	void Initialize(TSubclassOf<UInventoryItemStaticData> staticDataClass);
+	void Initialize(TSubclassOf<UInventoryItemStaticData> itemStaticClass);
 	const UInventoryItemStaticData* GetStaticData() const;
+
+	//OnEquip means to put it on hand
+	void OnEquipped();
+	//OnUnEquip means to put it back to the inventory
+	void OnUnEquipped();
 
 private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -28,17 +33,9 @@ private:
 	UFUNCTION()
 	void OnRep_IsEquipped();
 
-	//OnEquip means to put it on hand
-	void OnEquipped();
-	//OnUnEquip means to put it back to the inventory
-	void OnUnEquipped();
-	
 	UPROPERTY(Replicated)
 	TSubclassOf<UInventoryItemStaticData> mStaticDataClass;
 
 	UPROPERTY(ReplicatedUsing=OnRep_IsEquipped)
 	bool mIsEquipped = false;
-
-	UPROPERTY(Replicated)
-	TScriptInterface<IPickupObject> mPickupObject;
 };

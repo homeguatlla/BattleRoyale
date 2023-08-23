@@ -15,7 +15,10 @@ class BATTLEROYALE_API UInventoryItemStaticData : public UObject
 	GENERATED_BODY()
 
 public:
+	UInventoryItemStaticData(){}
+	UInventoryItemStaticData(const FName& name, TSubclassOf<APickupObjectBase> pickableObjectClass);
 	FName GetItemName() const { return mName; }
+	TSubclassOf<APickupObjectBase> GetPickupObjectClass() const { return mPickupObjectClass;}
 	
 private:
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Name"))

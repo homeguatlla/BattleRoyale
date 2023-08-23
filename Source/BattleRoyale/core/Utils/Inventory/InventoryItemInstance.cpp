@@ -3,12 +3,13 @@
 
 #include "InventoryItemInstance.h"
 
+#include "BattleRoyale/core/General/IPickupObject.h"
 #include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 
-void UInventoryItemInstance::Initialize(TSubclassOf<UInventoryItemStaticData> staticDataClass)
+void UInventoryItemInstance::Initialize(TSubclassOf<UInventoryItemStaticData> itemStaticClass)
 {
-	mStaticDataClass = staticDataClass;
+	mStaticDataClass = itemStaticClass;
 }
 
 const UInventoryItemStaticData* UInventoryItemInstance::GetStaticData() const
@@ -22,7 +23,6 @@ void UInventoryItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 	DOREPLIFETIME(UInventoryItemInstance, mStaticDataClass);
 	DOREPLIFETIME(UInventoryItemInstance, mIsEquipped);
-	DOREPLIFETIME(UInventoryItemInstance, mPickupObject);
 }
 
 void UInventoryItemInstance::OnRep_IsEquipped()

@@ -8,6 +8,7 @@
 #include "IPickupObject.generated.h"
 
 class ACharacterBase;
+class UInventoryItemStaticData;
 
 // This class does not need to be modified.
 UINTERFACE(NotBlueprintable, meta = (CannotImplementInterfaceInBlueprint))
@@ -21,6 +22,7 @@ class BATTLEROYALE_API IPickupObject
 	GENERATED_BODY()
 
 public:
+	virtual TSubclassOf<UInventoryItemStaticData> GetInventoryItemStaticData() const = 0;
 	virtual FVector GetPickupWidgetLocation() const = 0;
 	virtual EPickupObjectState GetState() const = 0;
 	virtual void SetCharacterOwner(ACharacterBase* character) = 0;

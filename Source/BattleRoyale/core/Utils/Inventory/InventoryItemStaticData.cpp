@@ -2,3 +2,10 @@
 
 
 #include "InventoryItemStaticData.h"
+
+UInventoryItemStaticData::UInventoryItemStaticData(const FName& name,
+	TSubclassOf<APickupObjectBase> pickableObjectClass) :
+mName(name),
+mPickupObjectClass(pickableObjectClass)
+{
+}

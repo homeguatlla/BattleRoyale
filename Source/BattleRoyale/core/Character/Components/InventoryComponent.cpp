@@ -42,7 +42,7 @@ void UInventoryComponent::InitializeComponent()
 	//Adding default items to player
 	for(const auto item : DefaultItems)
 	{
-		mInventoryArray.AddItemOfClass(item);
+		//mInventoryArray.AddItem(item);
 	}
 }
 
@@ -108,9 +108,16 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 		//y equipar la nueva.
 	}
 	
-	//TODO guardar en el inventario
-	//Crear instancia del item y guardarlo en el inventoryArray
-	
+	//Save picked up object to the inventory.
+	mInventoryArray.AddItemOfClass(pickableObject->GetInventoryItemStaticData());
+	if(const auto inventoryItemInstance = mInventoryArray.FindFirstItemOfClass(pickableObject->GetInventoryItemStaticData()))
+	{
+		if(const auto object = Cast<APickupObjectBase>(pickableObject.GetObject()))
+		{
+			object->Destroy();
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -123,6 +130,11 @@ bool UInventoryComponent::DropObjectServer()
 		return false;
 	}
 
+	//TODO hay que tener en cuenta que, en estos momentos el drop se hace del objeto equipado.
+	//Si hacemos un unequip se irá de la mano a la mochila.
+	//Si hacemos equip, irá de la mochila a la mano o del suelo a la mano
+	//Si hacemos drop, irá de la mano al suelo y quizá de la mochila al suelo para evitar tener que pasar por la mano
+	//ya que si ya tienes un objeto en la mano, no podrías hacer drop.
 	if(!HasItemEquipped())
 	{
 		return false;	

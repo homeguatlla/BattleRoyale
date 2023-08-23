@@ -28,6 +28,18 @@ void FInventoryArray::RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticDat
 	}
 }
 
+UInventoryItemInstance* FInventoryArray::FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass)
+{
+	for(auto&& item : mItems)
+	{
+		if(item.mInventoryItem->GetStaticData()->IsA(itemClass))
+		{
+			return item.mInventoryItem;
+		}
+	}
+	return nullptr;
+}
+
 void FInventoryArray::PerformActionForEachItem(std::function<void(const FInventoryArrayItem& inventoryItem)> action)
 {
 	for(auto&& item : mItems)
