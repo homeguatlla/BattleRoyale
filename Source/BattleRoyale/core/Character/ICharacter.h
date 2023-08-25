@@ -154,9 +154,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "ICharacter")
 	virtual TScriptInterface<IIInventoryComponent> GetInventoryComponent() const = 0;
-
-	UFUNCTION(BlueprintCallable, Category = "ICharacter")
-	virtual UPickupComponent* GetPickupComponent() const = 0;
 	
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const = 0;
 

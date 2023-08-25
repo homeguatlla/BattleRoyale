@@ -35,7 +35,10 @@ public:
 	virtual bool DropObjectServer() override;
 	virtual TScriptInterface<IPickupObject> GetEquippedItem() const override;
 	virtual bool HasItemEquipped() const override { return mEquippedItem != nullptr; }
-
+	
+	virtual void SetPickableObject(TScriptInterface<IPickupObject> object) override { mPickupObject = object; }
+	virtual TScriptInterface<IPickupObject> GetPickableObject() const override { return mPickupObject; }
+	
 protected:
 	// Called when the game starts
 	virtual void InitializeComponent() override;
@@ -54,4 +57,6 @@ private:
 
 	UPROPERTY(Replicated)
 	TScriptInterface<IPickupObject> mEquippedItem = nullptr;
+
+	TScriptInterface<IPickupObject> mPickupObject;
 };

@@ -28,4 +28,7 @@ public:
 	virtual bool DropObjectServer() = 0;
 	virtual TScriptInterface<IPickupObject> GetEquippedItem() const = 0;
 	virtual bool HasItemEquipped() const = 0;
+
+	virtual void SetPickableObject(TScriptInterface<IPickupObject> object) = 0;
+	virtual TScriptInterface<IPickupObject> GetPickableObject() const = 0;
 };

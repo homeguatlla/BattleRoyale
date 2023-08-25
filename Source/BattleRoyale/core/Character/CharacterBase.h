@@ -86,9 +86,6 @@ class BATTLEROYALE_API ACharacterBase : public ACharacter, public IICharacter
 	UPROPERTY(VisibleAnywhere)
 	UFootstepsComponent* FootstepsComponent = nullptr;
 	
-	UPROPERTY(VisibleAnywhere)
-	class UPickupComponent* PickupComponent = nullptr;
-
 	UPROPERTY(Replicated, VisibleAnywhere)
 	class UInventoryComponent* InventoryComponent = nullptr;
 	
@@ -218,7 +215,6 @@ public:
 	virtual TScriptInterface<IGunComponent> GetGunComponent() const override { return CombatComponent; }
 	virtual TScriptInterface<IIFootstepsComponent> GetFootstepsComponent() const override { return FootstepsComponent; }
 	virtual TScriptInterface<IIInventoryComponent> GetInventoryComponent() const override { return InventoryComponent; }
-	virtual UPickupComponent* GetPickupComponent() const override { return PickupComponent; }
 	
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const override;
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const override;
@@ -236,6 +232,7 @@ protected:
 	/** Resets HMD orientation and position in VR. */
 	void OnResetVR();
 	void OnSetInvulnerable();
+	void OnShowInventory();
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);

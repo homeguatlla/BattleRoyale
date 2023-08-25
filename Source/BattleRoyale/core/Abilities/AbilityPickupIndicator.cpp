@@ -5,7 +5,6 @@
 
 #include "GameplayTagsList.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
-#include "BattleRoyale/core/Character/Components/PickupComponent.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
 
@@ -63,9 +62,9 @@ void UAbilityPickupIndicator::ActivateAbility(const FGameplayAbilitySpecHandle H
 	{
 		if(const auto character = Cast<IICharacter>(ActorInfo->AvatarActor))
 		{
-			if(const auto pickupComponent = character->GetPickupComponent())
+			if(const auto inventoryComponent = character->GetInventoryComponent())
 			{
-				pickupComponent->SetPickupObject(pickupIndicatorData.mPickableObject);
+				inventoryComponent->SetPickableObject(pickupIndicatorData.mPickableObject);
 			}
 		}
 	}
@@ -97,9 +96,9 @@ void UAbilityPickupIndicator::EndAbility(const FGameplayAbilitySpecHandle Handle
 	{
 		if(const auto character = Cast<IICharacter>(ActorInfo->AvatarActor))
 		{
-			if(const auto pickupComponent = character->GetPickupComponent())
+			if(const auto inventoryComponent = character->GetInventoryComponent())
 			{
-				pickupComponent->SetPickupObject(nullptr);
+				inventoryComponent->SetPickableObject(nullptr);
 			}			
 		}
 	}

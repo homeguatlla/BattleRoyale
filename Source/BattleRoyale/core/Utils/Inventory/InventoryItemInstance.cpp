@@ -31,8 +31,10 @@ void UInventoryItemInstance::OnRep_IsEquipped()
 
 void UInventoryItemInstance::OnEquipped()
 {
+	mIsEquipped = true;
 }
 
 void UInventoryItemInstance::OnUnEquipped()
 {
+	mIsEquipped = false;
 }

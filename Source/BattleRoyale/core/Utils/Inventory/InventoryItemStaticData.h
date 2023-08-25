@@ -26,4 +26,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Pickup Object Class (Visual)"))
 	TSubclassOf<APickupObjectBase> mPickupObjectClass;
+
+	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Can be equipped"))
+	bool mCanBeEquipped = true;
 };

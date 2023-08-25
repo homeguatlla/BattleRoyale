@@ -7,7 +7,7 @@
 #include "GameplayTagsList.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/Character/Components/IInventoryComponent.h"
-#include "BattleRoyale/core/Character/Components/PickupComponent.h"
+#include "BattleRoyale/core/Character/Components/InventoryComponent.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 
 UAbilityPickUp::UAbilityPickUp()
@@ -39,13 +39,12 @@ void UAbilityPickUp::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 
 	if(const auto character = Cast<IICharacter>(ActorInfo->AvatarActor))
 	{
-		const auto pickupComponent = character->GetPickupComponent();
-		check(pickupComponent);
-		if(const auto pickupObject = pickupComponent->GetPickupObject())
+		const auto inventoryComponent = character->GetInventoryComponent();
+		check(inventoryComponent);
+		//TODO podríamos quitar el GetPickableObject y hacer que el PickupObjectServer lo pille directamente
+		//lo dejo por ahora porque igual el get nos podría hacer falta desde fuera del inventoryComponent.
+		if(const auto pickupObject = inventoryComponent->GetPickableObject())
 		{
-			const auto inventoryComponent = character->GetInventoryComponent();
-			check(inventoryComponent);
-			
 			if(inventoryComponent->PickupObjectServer(pickupObject))
 			{
 				CancelPickupIndicatorAbility(character);

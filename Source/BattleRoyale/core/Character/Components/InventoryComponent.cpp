@@ -112,6 +112,8 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	mInventoryArray.AddItemOfClass(pickableObject->GetInventoryItemStaticData());
 	if(const auto inventoryItemInstance = mInventoryArray.FindFirstItemOfClass(pickableObject->GetInventoryItemStaticData()))
 	{
+		inventoryItemInstance->OnUnEquipped();
+		//Destroy the pickable object actor
 		if(const auto object = Cast<APickupObjectBase>(pickableObject.GetObject()))
 		{
 			object->Destroy();

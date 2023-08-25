@@ -25,7 +25,6 @@
 #include "Components/FootstepsComponent.h"
 #include "Components/HurtComponent.h"
 #include "Components/InventoryComponent.h"
-#include "Components/PickupComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 
@@ -60,7 +59,6 @@ ACharacterBase::ACharacterBase()
 	CombatComponent->SetIsReplicated(true);
 
 	//Create Other Components
-	PickupComponent = CreateDefaultSubobject<UPickupComponent>(TEXT("PickupComponent"));
 	FootstepsComponent = CreateDefaultSubobject<UFootstepsComponent>(TEXT("FootstepsComponent"));
 	//When player dies, inventory is lost. Move it to PlayerState to maintain it
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
@@ -196,20 +194,21 @@ void ACharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	
 	// Bind fire event
 	//PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ACharacterBase::OnFire);
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ACharacterBase::OnResetVR);
-	PlayerInputComponent->BindAction("Invulnerable", IE_Pressed, this, &ACharacterBase::OnSetInvulnerable);
+	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ThisClass::OnResetVR);
+	PlayerInputComponent->BindAction("Invulnerable", IE_Pressed, this, &ThisClass::OnSetInvulnerable);
+	PlayerInputComponent->BindAction("Inventory", IE_Pressed, this, &ThisClass::OnShowInventory);
 	
 	// Bind movement events
-	PlayerInputComponent->BindAxis("MoveForward", this, &ACharacterBase::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ACharacterBase::MoveRight);
+	PlayerInputComponent->BindAxis("MoveForward", this, &ThisClass::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &ThisClass::MoveRight);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("TurnRate", this, &ACharacterBase::TurnAtRate);
-	PlayerInputComponent->BindAxis("LookUp", this, &ACharacterBase::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("LookUpRate", this, &ACharacterBase::LookUpAtRate);
+	PlayerInputComponent->BindAxis("TurnRate", this, &ThisClass::TurnAtRate);
+	PlayerInputComponent->BindAxis("LookUp", this, &ThisClass::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookUpRate", this, &ThisClass::LookUpAtRate);
 	
 	BindAbilityActivationToInputComponent();
 }
@@ -435,6 +434,12 @@ void ACharacterBase::OnSetInvulnerable()
 {
 	mIsInvulnerable = !mIsInvulnerable;
 	HurtComponent->SetInvulnerableServer(mIsInvulnerable);
+}
+
+void ACharacterBase::OnShowInventory()
+{
+	//TODO create widget and add to viewport if not showed
+	//hide widget if showed.
 }
 
 void ACharacterBase::MoveForward(float Value)
