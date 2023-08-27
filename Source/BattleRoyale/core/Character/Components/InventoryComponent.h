@@ -38,7 +38,8 @@ public:
 	
 	virtual void SetPickableObject(TScriptInterface<IPickupObject> object) override { mPickupObject = object; }
 	virtual TScriptInterface<IPickupObject> GetPickableObject() const override { return mPickupObject; }
-	
+	void OnInventoryKeyPressed();
+
 protected:
 	// Called when the game starts
 	virtual void InitializeComponent() override;
@@ -59,4 +60,6 @@ private:
 	TScriptInterface<IPickupObject> mEquippedItem = nullptr;
 
 	TScriptInterface<IPickupObject> mPickupObject;
+
+	bool mIsInventoryShown = false;
 };

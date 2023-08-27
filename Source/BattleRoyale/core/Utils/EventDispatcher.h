@@ -28,6 +28,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetVisibilityCountDown, bool, vis
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowStatsScreen, const FPlayerStatsData&, statsData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHideStatsScreen);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnShowInventoryScreen);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHideInventoryScreen);
+
+
 UCLASS(Blueprintable)
 class BATTLEROYALE_API UEventDispatcher : public UObject
 {
@@ -87,4 +91,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="Menu")
 	FOnHideStatsScreen OnHideStatsScreen;
+
+	UPROPERTY(BlueprintAssignable, Category="Inventory")
+	FOnShowInventoryScreen OnShowInventoryScreen;
+	UPROPERTY(BlueprintAssignable, Category="Inventory")
+	FOnHideInventoryScreen OnHideInventoryScreen;
 };

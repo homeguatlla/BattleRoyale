@@ -16,7 +16,6 @@
 #include "BattleRoyale/core/Abilities/AbilitiesInput.h"
 #include "BattleRoyale/core/Abilities/GameplayAbilityBase.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
-#include "BattleRoyale/core/Weapons/IWeapon.h"
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
@@ -438,8 +437,8 @@ void ACharacterBase::OnSetInvulnerable()
 
 void ACharacterBase::OnShowInventory()
 {
-	//TODO create widget and add to viewport if not showed
-	//hide widget if showed.
+	check(InventoryComponent);
+	InventoryComponent->OnInventoryKeyPressed();
 }
 
 void ACharacterBase::MoveForward(float Value)

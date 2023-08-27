@@ -6,6 +6,7 @@
 #include <cassert>
 
 #include "BattleRoyale/BattleRoyale.h"
+#include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/General/IPickupObject.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemInstance.h"
@@ -180,3 +181,17 @@ TScriptInterface<IPickupObject> UInventoryComponent::GetEquippedItem() const
 	return mEquippedItem;
 }
 
+void UInventoryComponent::OnInventoryKeyPressed()
+{
+	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetOwner()->GetGameInstance());
+		
+	if(mIsInventoryShown)
+	{
+		gameInstance->GetEventDispatcher()->OnHideInventoryScreen.Broadcast();
+	}
+	else
+	{
+		gameInstance->GetEventDispatcher()->OnShowInventoryScreen.Broadcast();
+	}
+	mIsInventoryShown = !mIsInventoryShown;
+}

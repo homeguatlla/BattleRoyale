@@ -7,7 +7,9 @@
 #include "MenuHUD.h"
 #include "CharacterHUD.h"
 #include "AnnouncementsHUD.h"
+#include "InventoryHUD.h"
 #include "BattleRoyaleHUD.generated.h"
+
 
 UCLASS()
 class BATTLEROYALE_API ABattleRoyaleHUD : public AHUD
@@ -25,6 +27,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Menu HUDs")
 	TArray<TSubclassOf<UUserWidget>> MenuHUDWidgetClasses;
+
+	UPROPERTY(EditAnywhere, Category = "Inventory HUDs")
+	TArray<TSubclassOf<UUserWidget>> InventoryHUDWidgetClasses;
 	
 	UPROPERTY()
 	UUserWidget* mCharacterHUDWidget;
@@ -48,6 +53,9 @@ private:
 	AAnnouncementsHUD* mAnnouncementsHUD = nullptr;
 	UPROPERTY()
 	AMenuHUD* mMenuHUD = nullptr;
+
+	UPROPERTY()
+	AInventoryHUD* mInventoryHUD = nullptr;
 };
 
 template<class THUDClass>
