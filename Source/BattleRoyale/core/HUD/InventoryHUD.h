@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryHUD.generated.h"
 
+struct FInventoryArray;
 /**
  * 
  */
@@ -22,11 +23,13 @@ private:
 	void BindToDelegate();
 	
 	UFUNCTION()
-	void OnShowInventoryScreen();
+	void OnShowInventoryScreen(const FInventoryArray& items);
 
 	UFUNCTION()
 	void OnHideInventoryScreen();
-	
+
+	UFUNCTION()
+	void OnRefreshInventory(const FInventoryArray& items);
 public:
 	UPROPERTY()
 	UUserWidget* mHUDWidget;

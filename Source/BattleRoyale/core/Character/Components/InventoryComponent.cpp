@@ -10,7 +10,7 @@
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/General/IPickupObject.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemInstance.h"
-#include "BattleRoyale/core/Utils/Inventory/InventoryArrayItem.h"
+#include "BattleRoyale/core/Utils/Inventory/InventoryArray.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemStaticData.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
@@ -99,7 +99,7 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 		return false;
 	}
 	
-	if(!HasItemEquipped())
+	if(!HasItemEquipped() && pickableObject.GetObject()->IsA<AWeaponBase>())
 	{
 		return EquipItem(pickableObject);
 	}
@@ -110,6 +110,11 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	}
 	
 	//Save picked up object to the inventory.
+	if(mInventoryArray.Num() > 5)
+	{
+		return false;	
+	}
+	
 	mInventoryArray.AddItemOfClass(pickableObject->GetInventoryItemStaticData());
 	if(const auto inventoryItemInstance = mInventoryArray.FindFirstItemOfClass(pickableObject->GetInventoryItemStaticData()))
 	{
@@ -184,14 +189,15 @@ TScriptInterface<IPickupObject> UInventoryComponent::GetEquippedItem() const
 void UInventoryComponent::OnInventoryKeyPressed()
 {
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetOwner()->GetGameInstance());
-		
+	check(gameInstance);
+
 	if(mIsInventoryShown)
 	{
 		gameInstance->GetEventDispatcher()->OnHideInventoryScreen.Broadcast();
 	}
 	else
 	{
-		gameInstance->GetEventDispatcher()->OnShowInventoryScreen.Broadcast();
+		gameInstance->GetEventDispatcher()->OnShowInventoryScreen.Broadcast(mInventoryArray);
 	}
 	mIsInventoryShown = !mIsInventoryShown;
 }

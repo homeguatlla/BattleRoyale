@@ -30,14 +30,15 @@ void AInventoryHUD::BindToDelegate()
 		const auto eventDispatcher = gameInstance->GetEventDispatcher();
 		eventDispatcher->OnShowInventoryScreen.AddDynamic(this, &ThisClass::OnShowInventoryScreen);
 		eventDispatcher->OnHideInventoryScreen.AddDynamic(this, &ThisClass::OnHideInventoryScreen);
+		eventDispatcher->OnRefreshInventory.AddDynamic(this, &ThisClass::OnRefreshInventory);
 	}
 }
 
-void AInventoryHUD::OnShowInventoryScreen()
+void AInventoryHUD::OnShowInventoryScreen(const FInventoryArray& items)
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UIInventoryHUD::StaticClass()))
 	{
-		IIInventoryHUD::Execute_OnShowInventoryScreen(mHUDWidget);
+		IIInventoryHUD::Execute_OnShowInventoryScreen(mHUDWidget, items);
 	}
 }
 
@@ -46,5 +47,13 @@ void AInventoryHUD::OnHideInventoryScreen()
 	if (mHUDWidget->GetClass()->ImplementsInterface(UIInventoryHUD::StaticClass()))
 	{
 		IIInventoryHUD::Execute_OnHideInventoryScreen(mHUDWidget);
+	}
+}
+
+void AInventoryHUD::OnRefreshInventory(const FInventoryArray& items)
+{
+	if (mHUDWidget->GetClass()->ImplementsInterface(UIInventoryHUD::StaticClass()))
+	{
+		IIInventoryHUD::Execute_OnRefreshInventory(mHUDWidget, items);
 	}
 }

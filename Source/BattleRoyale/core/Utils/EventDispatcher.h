@@ -28,8 +28,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetVisibilityCountDown, bool, vis
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowStatsScreen, const FPlayerStatsData&, statsData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHideStatsScreen);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnShowInventoryScreen);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowInventoryScreen, const FInventoryArray&, items);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHideInventoryScreen);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRefreshInventory, const FInventoryArray&, items);
 
 
 UCLASS(Blueprintable)
@@ -94,6 +95,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="Inventory")
 	FOnShowInventoryScreen OnShowInventoryScreen;
+	
 	UPROPERTY(BlueprintAssignable, Category="Inventory")
 	FOnHideInventoryScreen OnHideInventoryScreen;
+
+	UPROPERTY(BlueprintAssignable, Category="Inventory")
+	FOnRefreshInventory OnRefreshInventory;
 };

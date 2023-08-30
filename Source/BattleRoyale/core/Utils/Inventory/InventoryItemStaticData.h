@@ -15,10 +15,14 @@ class BATTLEROYALE_API UInventoryItemStaticData : public UObject
 	GENERATED_BODY()
 
 public:
+	
 	UInventoryItemStaticData(){}
 	UInventoryItemStaticData(const FName& name, TSubclassOf<APickupObjectBase> pickableObjectClass);
+	UFUNCTION(BlueprintCallable)
 	FName GetItemName() const { return mName; }
 	TSubclassOf<APickupObjectBase> GetPickupObjectClass() const { return mPickupObjectClass;}
+	UFUNCTION(BlueprintCallable)
+	TSubclassOf<UUserWidget> GetItemWidgetClass() const { return mWidget; }
 	
 private:
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Name"))
@@ -27,6 +31,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Pickup Object Class (Visual)"))
 	TSubclassOf<APickupObjectBase> mPickupObjectClass;
 
+	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="UI Widget (Visual)"))
+	TSubclassOf<UUserWidget> mWidget = nullptr;
+	
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Can be equipped"))
 	bool mCanBeEquipped = true;
 };
