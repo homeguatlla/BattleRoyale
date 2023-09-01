@@ -224,7 +224,7 @@ public:
 	//                         AActor* DamageCauser) override;
 	
 protected:
-	virtual void BeginPlay();
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
 protected:

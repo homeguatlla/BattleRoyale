@@ -5,6 +5,10 @@
 
 void UInventoryItemOverlay::SetItem(const TSubclassOf<UUserWidget>& widget)
 {
+	if(!widget->IsValidLowLevel())
+	{
+		return;
+	}
 	const auto itemWidget = CreateWidget<UUserWidget>(this, widget);
 	if(!itemWidget)
 	{

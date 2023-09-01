@@ -23,13 +23,13 @@ private:
 	void BindToDelegate();
 	
 	UFUNCTION()
-	void OnShowInventoryScreen(const FInventoryArray& items);
+	void OnShowInventoryScreen(const UInventoryBag* items);
 
 	UFUNCTION()
 	void OnHideInventoryScreen();
 
 	UFUNCTION()
-	void OnRefreshInventory(const FInventoryArray& items);
+	void OnRefreshInventory(const UInventoryBag* items);
 public:
 	UPROPERTY()
 	UUserWidget* mHUDWidget;

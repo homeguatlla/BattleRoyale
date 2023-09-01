@@ -61,6 +61,7 @@ ACharacterBase::ACharacterBase()
 	FootstepsComponent = CreateDefaultSubobject<UFootstepsComponent>(TEXT("FootstepsComponent"));
 	//When player dies, inventory is lost. Move it to PlayerState to maintain it
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+	InventoryComponent->SetIsReplicated(true);
 }
 
 void ACharacterBase::BeginPlay()

@@ -14,7 +14,7 @@ USTRUCT(BlueprintType)
 struct FInventoryArray : public FFastArraySerializer
 {
 	GENERATED_BODY()
-
+	
 	void AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
 	void RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
 
@@ -22,6 +22,10 @@ struct FInventoryArray : public FFastArraySerializer
 
 	void PerformActionForEachItem(std::function<void(const FInventoryArrayItem& inventoryItem)> action);
 	int Num() const { return mItems.Num(); }
+	FInventoryArrayItem GetItemByIndex(int index) const;
+
+	void Clear();
+	
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams)
 	{
 		return FastArrayDeltaSerialize<FInventoryArrayItem, FInventoryArray>(mItems, DeltaParams, *this);

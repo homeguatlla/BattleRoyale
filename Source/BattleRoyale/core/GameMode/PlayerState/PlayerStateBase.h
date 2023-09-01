@@ -100,7 +100,7 @@ private:
 	const UGameModeConfigurationInfo* mGameModeConfiguration;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AbilitySystemComponent, meta = (AllowPrivateAccess = "true"))
-	UAbilitySystemComponentBase* mAbilitySystemComponent;
+	UAbilitySystemComponentBase* mAbilitySystemComponent = nullptr;
 	
 	int mTeamId;
 	int mNumKills;

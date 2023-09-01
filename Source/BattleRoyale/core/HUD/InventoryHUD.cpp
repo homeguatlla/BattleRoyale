@@ -34,7 +34,7 @@ void AInventoryHUD::BindToDelegate()
 	}
 }
 
-void AInventoryHUD::OnShowInventoryScreen(const FInventoryArray& items)
+void AInventoryHUD::OnShowInventoryScreen(const UInventoryBag* items)
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UIInventoryHUD::StaticClass()))
 	{
@@ -50,7 +50,7 @@ void AInventoryHUD::OnHideInventoryScreen()
 	}
 }
 
-void AInventoryHUD::OnRefreshInventory(const FInventoryArray& items)
+void AInventoryHUD::OnRefreshInventory(const UInventoryBag* items)
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UIInventoryHUD::StaticClass()))
 	{

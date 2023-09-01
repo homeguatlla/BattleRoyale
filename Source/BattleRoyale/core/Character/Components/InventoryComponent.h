@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "IInventoryComponent.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryArray.h"
+#include "BattleRoyale/core/Utils/Inventory/InventoryBag.h"
 #include "Components/ActorComponent.h"
 #include "InventoryComponent.generated.h"
 
@@ -24,7 +25,7 @@ public:
 	
 	// Sets default values for this component's properties
 	UInventoryComponent();
-
+	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 							   FActorComponentTickFunction* ThisTickFunction) override;
@@ -49,9 +50,12 @@ private:
 	virtual bool EquipItem(TScriptInterface<IPickupObject> pickableObject) override;
 	//void UnEquipItem();
 	//void DropItem();
+
+	UPROPERTY(EditDefaultsOnly)
+	int MaxInventoryItems = 5;
 	
 	UPROPERTY(Replicated)
-	FInventoryArray mInventoryArray;
+	UInventoryBag* mInventoryBag = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
 	TArray<TSubclassOf<UInventoryItemStaticData>> DefaultItems;

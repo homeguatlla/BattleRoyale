@@ -47,3 +47,18 @@ void FInventoryArray::PerformActionForEachItem(std::function<void(const FInvento
 		action(item);
 	}
 }
+
+FInventoryArrayItem FInventoryArray::GetItemByIndex(int index) const
+{
+	if(index < 0 || index >= mItems.Num())
+	{
+		return {};
+	}
+
+	return mItems[index];
+}
+
+void FInventoryArray::Clear()
+{
+	mItems.Empty();
+}

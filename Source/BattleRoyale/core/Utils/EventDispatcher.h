@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "BattleRoyale/core/Weapons/IWeapon.h"
 #include "BattleRoyale/core/Utils/Stats/PlayerStatsData.h"
-#include "Delegates/DelegateCombinations.h"
+#include "Inventory/InventoryBag.h"
 #include "Delegates/DelegateCombinations.h"
 #include "EventDispatcher.generated.h"
 
@@ -28,9 +28,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetVisibilityCountDown, bool, vis
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowStatsScreen, const FPlayerStatsData&, statsData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHideStatsScreen);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowInventoryScreen, const FInventoryArray&, items);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowInventoryScreen, const UInventoryBag*, items);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHideInventoryScreen);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRefreshInventory, const FInventoryArray&, items);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRefreshInventory, const UInventoryBag*, items);
 
 
 UCLASS(Blueprintable)

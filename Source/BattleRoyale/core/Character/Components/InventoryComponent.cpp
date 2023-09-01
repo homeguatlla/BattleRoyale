@@ -29,6 +29,8 @@ UInventoryComponent::UInventoryComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
 	SetIsReplicatedByDefault(true);
+	mInventoryBag = CreateDefaultSubobject<UInventoryBag>("InventoryBag");
+	mInventoryBag->SetMaxItems(MaxInventoryItems);
 }
 
 void UInventoryComponent::InitializeComponent()
@@ -39,7 +41,7 @@ void UInventoryComponent::InitializeComponent()
 	{
 		return;
 	}
-
+	
 	//Adding default items to player
 	for(const auto item : DefaultItems)
 	{
@@ -51,7 +53,7 @@ bool UInventoryComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch*
 {
 	auto result = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
 
-	mInventoryArray.PerformActionForEachItem([&Channel, &Bunch, &RepFlags, &result](const FInventoryArrayItem& inventoryItem)
+	mInventoryBag->PerformActionForEachItem([&Channel, &Bunch, &RepFlags, &result](const FInventoryArrayItem& inventoryItem)
 	{
 		if(const auto inventoryItemInstance = inventoryItem.mInventoryItem)
 		{
@@ -64,7 +66,7 @@ bool UInventoryComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch*
 void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UInventoryComponent, mInventoryArray);
+	DOREPLIFETIME(UInventoryComponent, mInventoryBag);
 	DOREPLIFETIME(UInventoryComponent, mEquippedItem);
 }
 
@@ -75,7 +77,7 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	//DEBUG purposes only
 	if(ConsoleShowInventory.GetValueOnGameThread() != 0)
 	{
-		mInventoryArray.PerformActionForEachItem([](const FInventoryArrayItem& inventoryItem)
+		mInventoryBag->PerformActionForEachItem([](const FInventoryArrayItem& inventoryItem)
 		{
 			const auto inventoryItemStaticData = inventoryItem.mInventoryItem->GetStaticData();
 			assert(inventoryItemStaticData);
@@ -110,13 +112,13 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	}
 	
 	//Save picked up object to the inventory.
-	if(mInventoryArray.Num() > 5)
+	if(mInventoryBag->IsFull())
 	{
 		return false;	
 	}
 	
-	mInventoryArray.AddItemOfClass(pickableObject->GetInventoryItemStaticData());
-	if(const auto inventoryItemInstance = mInventoryArray.FindFirstItemOfClass(pickableObject->GetInventoryItemStaticData()))
+	mInventoryBag->AddItemOfClass(pickableObject->GetInventoryItemStaticData());
+	if(const auto inventoryItemInstance = mInventoryBag->FindFirstItemOfClass(pickableObject->GetInventoryItemStaticData()))
 	{
 		inventoryItemInstance->OnUnEquipped();
 		//Destroy the pickable object actor
@@ -197,7 +199,7 @@ void UInventoryComponent::OnInventoryKeyPressed()
 	}
 	else
 	{
-		gameInstance->GetEventDispatcher()->OnShowInventoryScreen.Broadcast(mInventoryArray);
+		gameInstance->GetEventDispatcher()->OnShowInventoryScreen.Broadcast(mInventoryBag);
 	}
 	mIsInventoryShown = !mIsInventoryShown;
 }
