@@ -9,17 +9,17 @@ UInventoryBag::UInventoryBag()
 	mInventoryArray.Clear();
 }
 
-void UInventoryBag::AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass)
+void UInventoryBag::AddItem(TSubclassOf<UInventoryItemStaticData> itemClass)
 {
 	mInventoryArray.AddItemOfClass(itemClass);
 }
 
-void UInventoryBag::RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass)
+void UInventoryBag::RemoveFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass)
 {
 	mInventoryArray.RemoveFirstItemOfClass(itemClass);
 }
 
-UInventoryItemInstance* UInventoryBag::FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass)
+UInventoryItemInstance* UInventoryBag::FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass)
 {
 	return mInventoryArray.FindFirstItemOfClass(itemClass);
 }

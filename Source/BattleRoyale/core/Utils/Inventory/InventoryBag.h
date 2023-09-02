@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "IInventoryBag.h"
 #include "InventoryArray.h"
 #include "UObject/Object.h"
 #include "InventoryBag.generated.h"
@@ -11,25 +12,24 @@
  * 
  */
 UCLASS(BlueprintType)
-class BATTLEROYALE_API UInventoryBag : public UObject
-
+class BATTLEROYALE_API UInventoryBag : public UObject, public IIInventoryBag
 {
 	GENERATED_BODY()
 
 public:
 	UInventoryBag();
 	
-	void AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
-	void RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
+	virtual void AddItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;
+	virtual void RemoveFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;
 
-	void SetMaxItems(int max) { mMaxItems = max; }
-	UInventoryItemInstance* FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
+	virtual void SetMaxItems(int max) override { mMaxItems = max; }
+	virtual UInventoryItemInstance* FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;
 
-	void PerformActionForEachItem(std::function<void(const FInventoryArrayItem& inventoryItem)> action);
+	virtual void PerformActionForEachItem(std::function<void(const FInventoryArrayItem& inventoryItem)> action) override;
 	UFUNCTION(BlueprintCallable)
-	int Num() const { return mInventoryArray.Num(); }
+	virtual int Num() const override { return mInventoryArray.Num(); }
 	UFUNCTION(BlueprintCallable)
-	bool IsFull() const { return mInventoryArray.Num() >= mMaxItems; }
+	virtual bool IsFull() const override { return mInventoryArray.Num() >= mMaxItems; }
 	UFUNCTION(BlueprintCallable)
 	TSubclassOf<UUserWidget> GetItemWidgetClassByIndex(int index);
 	
