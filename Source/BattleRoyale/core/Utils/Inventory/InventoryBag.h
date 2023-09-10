@@ -11,7 +11,7 @@
 /**
  * 
  */
-UCLASS(BlueprintType)
+UCLASS()
 class BATTLEROYALE_API UInventoryBag : public UObject, public IIInventoryBag
 {
 	GENERATED_BODY()
@@ -19,19 +19,19 @@ class BATTLEROYALE_API UInventoryBag : public UObject, public IIInventoryBag
 public:
 	UInventoryBag();
 	
-	virtual void AddItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;
+	virtual void AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value) override;
 	virtual void RemoveFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;
 
 	virtual void SetMaxItems(int max) override { mMaxItems = max; }
-	virtual UInventoryItemInstance* FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;
+	virtual TScriptInterface<IIInventoryItemInstance> FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;
 
+	virtual bool ExistItemWithID(int ID) const override;
+	
 	virtual void PerformActionForEachItem(std::function<void(const FInventoryArrayItem& inventoryItem)> action) override;
-	UFUNCTION(BlueprintCallable)
 	virtual int Num() const override { return mInventoryArray.Num(); }
-	UFUNCTION(BlueprintCallable)
 	virtual bool IsFull() const override { return mInventoryArray.Num() >= mMaxItems; }
-	UFUNCTION(BlueprintCallable)
-	TSubclassOf<UUserWidget> GetItemWidgetClassByIndex(int index);
+	virtual bool IsEmpty() const override { return mInventoryArray.Num() <= 0; }
+	TSubclassOf<UUserWidget> GetItemWidgetClassByIndex(int index) const;
 	
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

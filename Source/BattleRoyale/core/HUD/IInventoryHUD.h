@@ -22,9 +22,9 @@ class BATTLEROYALE_API IIInventoryHUD
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Inventory HUD")
-	void OnShowInventoryScreen(const UInventoryBag* items);
+	void OnShowInventoryScreen(const UInventoryBagVisual* items);
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Inventory HUD")
 	void OnHideInventoryScreen();
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Inventory HUD")
-	void OnRefreshInventory(const UInventoryBag* items);
+	void OnRefreshInventory(const UInventoryBagVisual* items);
 };

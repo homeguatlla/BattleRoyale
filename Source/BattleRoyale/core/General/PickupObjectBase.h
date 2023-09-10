@@ -28,6 +28,9 @@ class BATTLEROYALE_API APickupObjectBase : public AActor, public IPickupObject
 
 	UPROPERTY(EditDefaultsOnly, Category="PickableObject")
 	TSubclassOf<UInventoryItemStaticData> InventoryItemStaticData;
+
+	UPROPERTY(Replicated, EditDefaultsOnly, Category="PickableObject")
+	int Value = 0;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -39,6 +42,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="PickableObject")
 	virtual USkeletalMeshComponent* GetMesh() const { return Mesh; }
 
+	virtual int GetValue() const override { return Value; }
+	virtual void SetValue(int value) override;
 	virtual void SetCharacterOwner(ACharacterBase* character) override;
 	
 	virtual void OnEquipped() override;

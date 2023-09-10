@@ -122,6 +122,14 @@ FVector APickupObjectBase::GetPickupWidgetLocation() const
 	return boundingBoxOrigin + FVector(0.0f, 0.0f, height);
 }
 
+void APickupObjectBase::SetValue(int value)
+{
+	if(HasAuthority())
+	{
+		Value = value;
+	}
+}
+
 void APickupObjectBase::SetCharacterOwner(ACharacterBase* character)
 {
 	SetOwner(character);
@@ -173,6 +181,7 @@ void APickupObjectBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(APickupObjectBase, State);
+	DOREPLIFETIME(APickupObjectBase, Value);
 }
 
 void APickupObjectBase::OnRep_State()

@@ -23,6 +23,8 @@ public:
 	TSubclassOf<APickupObjectBase> GetPickupObjectClass() const { return mPickupObjectClass;}
 	UFUNCTION(BlueprintCallable)
 	TSubclassOf<UUserWidget> GetItemWidgetClass() const { return mWidget; }
+	UFUNCTION(BlueprintCallable)
+	int GetValue() const { return mValue; }
 	
 private:
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Name"))
@@ -36,4 +38,7 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Can be equipped"))
 	bool mCanBeEquipped = true;
+
+	UPROPERTY(EditDefaultsOnly, meta=(DisplayName = "Value"))
+	int mValue = 0;
 };

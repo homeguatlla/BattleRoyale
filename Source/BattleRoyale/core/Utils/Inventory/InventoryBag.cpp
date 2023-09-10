@@ -2,6 +2,8 @@
 
 
 #include "InventoryBag.h"
+
+#include "IInventoryItemInstance.h"
 #include "Net/UnrealNetwork.h"
 
 UInventoryBag::UInventoryBag()
@@ -9,9 +11,9 @@ UInventoryBag::UInventoryBag()
 	mInventoryArray.Clear();
 }
 
-void UInventoryBag::AddItem(TSubclassOf<UInventoryItemStaticData> itemClass)
+void UInventoryBag::AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value)
 {
-	mInventoryArray.AddItemOfClass(itemClass);
+	mInventoryArray.AddItemOfClass(itemClass, value);
 }
 
 void UInventoryBag::RemoveFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass)
@@ -19,9 +21,23 @@ void UInventoryBag::RemoveFirstItem(TSubclassOf<UInventoryItemStaticData> itemCl
 	mInventoryArray.RemoveFirstItemOfClass(itemClass);
 }
 
-UInventoryItemInstance* UInventoryBag::FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass)
+TScriptInterface<IIInventoryItemInstance> UInventoryBag::FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass)
 {
 	return mInventoryArray.FindFirstItemOfClass(itemClass);
+}
+
+bool UInventoryBag::ExistItemWithID(int ID) const
+{
+	for(int i = 0; i < Num(); ++i)
+	{
+		const auto item = mInventoryArray.GetItemByIndex(i);
+		if(item.GetID() == ID)
+		{
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 void UInventoryBag::PerformActionForEachItem(std::function<void(const FInventoryArrayItem& inventoryItem)> action)
@@ -29,7 +45,7 @@ void UInventoryBag::PerformActionForEachItem(std::function<void(const FInventory
 	mInventoryArray.PerformActionForEachItem(action);
 }
 
-TSubclassOf<UUserWidget> UInventoryBag::GetItemWidgetClassByIndex(int index)
+TSubclassOf<UUserWidget> UInventoryBag::GetItemWidgetClassByIndex(int index) const
 {
 	if(index < 0 || index >= mInventoryArray.Num())
 	{

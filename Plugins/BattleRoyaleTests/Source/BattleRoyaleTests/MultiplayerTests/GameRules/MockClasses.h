@@ -27,7 +27,7 @@ class UHurtComponentMock : public UHurtComponent
 {
 	UHurtComponentMock() = default;
 
-	virtual bool IsAlive() { return true; }
+	virtual bool IsAlive() const override { return true; }
 };
 
 #endif

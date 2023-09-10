@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "IInventoryItemOverlay.h"
 #include "Components/Overlay.h"
 #include "InventoryItemOverlay.generated.h"
 
@@ -18,7 +19,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsEmpty() const { return mIsEmpty; }
 	UFUNCTION(BlueprintCallable)
-	void SetItem(const TSubclassOf<UUserWidget>& widget);
+	void SetItem(int value, const TSubclassOf<UUserWidget>& widget);
 	UFUNCTION(BlueprintCallable)
 	void RemoveItem();
 	
@@ -28,6 +29,6 @@ private:
 
 	UPROPERTY()
 	TSubclassOf<UUserWidget> CurrentWidgetClass;
-	
+
 	bool mIsEmpty = true;
 };

@@ -10,13 +10,29 @@
 #include "InventoryArrayItem.generated.h"
 
 class UInventoryItemStaticData;
-class UInventoryItemInstance;
+class IIInventoryItemInstance;
 
 USTRUCT(BlueprintType)
 struct FInventoryArrayItem : public FFastArraySerializerItem
 {
 	GENERATED_BODY()
+
+	FInventoryArrayItem()
+	{
+		mID = ++Counter;
+	}
 	
 	UPROPERTY()
-	UInventoryItemInstance* mInventoryItem;
+	TScriptInterface<IIInventoryItemInstance> mInventoryItem;
+
+	int GetID() const { return mID; }
+
+	//Test purposes
+	void SetID(int id) { mID = id; }
+private:
+	static int Counter;
+	
+	int mID = 0;
 };
+
+int FInventoryArrayItem::Counter = 0;

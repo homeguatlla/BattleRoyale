@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryHUD.generated.h"
 
+class UInventoryBagVisual;
 struct FInventoryArray;
 /**
  * 
@@ -23,14 +24,17 @@ private:
 	void BindToDelegate();
 	
 	UFUNCTION()
-	void OnShowInventoryScreen(const UInventoryBag* items);
+	void OnShowInventoryScreen(const TScriptInterface<IIInventoryBag> inventoryBag);
 
 	UFUNCTION()
 	void OnHideInventoryScreen();
 
 	UFUNCTION()
-	void OnRefreshInventory(const UInventoryBag* items);
+	void OnRefreshInventory(const TScriptInterface<IIInventoryBag> inventoryBag);
 public:
 	UPROPERTY()
 	UUserWidget* mHUDWidget;
+
+	UPROPERTY()
+	UInventoryBagVisual* inventoryBagVisual;
 };

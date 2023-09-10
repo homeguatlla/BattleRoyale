@@ -5,11 +5,11 @@
 #include "InventoryArrayItem.h"
 #include "InventoryItemInstance.h"
 
-void FInventoryArray::AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass)
+void FInventoryArray::AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass, int _value)
 {
 	auto& item = mItems.AddDefaulted_GetRef();
 	item.mInventoryItem = NewObject<UInventoryItemInstance>();
-	item.mInventoryItem->Initialize(itemClass);
+	item.mInventoryItem->Initialize(itemClass, _value);
 	MarkItemDirty(item);
 }
 
@@ -17,7 +17,7 @@ void FInventoryArray::RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticDat
 {
 	for(auto it = mItems.CreateConstIterator(); it; ++it)
 	{
-		if(it->mInventoryItem && it->mInventoryItem->IsA(itemClass))
+		if(it->mInventoryItem && it->mInventoryItem.GetObject()->IsA(itemClass))
 		{
 			//it.RemoveCurrent();
 			const auto index = it.GetIndex();
@@ -28,7 +28,7 @@ void FInventoryArray::RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticDat
 	}
 }
 
-UInventoryItemInstance* FInventoryArray::FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass)
+TScriptInterface<IIInventoryItemInstance> FInventoryArray::FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass)
 {
 	for(auto&& item : mItems)
 	{

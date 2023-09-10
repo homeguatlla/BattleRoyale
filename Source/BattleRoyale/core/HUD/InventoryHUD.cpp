@@ -6,6 +6,7 @@
 #include "IInventoryHUD.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
+#include "BattleRoyale/core/Utils/Inventory/InventoryBagVisual.h"
 #include "Kismet/GameplayStatics.h"
 
 const FString INVENTORY_HUD_NAME("InventoryHUD");
@@ -19,6 +20,7 @@ void AInventoryHUD::Initialize(int hudIndex, APlayerController* playerController
 		playerController,
 		widgetClasses[0]);
 
+	inventoryBagVisual = NewObject<UInventoryBagVisual>();
 	BindToDelegate();
 }
 
@@ -34,11 +36,12 @@ void AInventoryHUD::BindToDelegate()
 	}
 }
 
-void AInventoryHUD::OnShowInventoryScreen(const UInventoryBag* items)
+void AInventoryHUD::OnShowInventoryScreen(const TScriptInterface<IIInventoryBag> inventoryBag)
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UIInventoryHUD::StaticClass()))
 	{
-		IIInventoryHUD::Execute_OnShowInventoryScreen(mHUDWidget, items);
+		inventoryBagVisual->Refresh(inventoryBag);
+		IIInventoryHUD::Execute_OnShowInventoryScreen(mHUDWidget, inventoryBagVisual);
 	}
 }
 
@@ -50,10 +53,11 @@ void AInventoryHUD::OnHideInventoryScreen()
 	}
 }
 
-void AInventoryHUD::OnRefreshInventory(const UInventoryBag* items)
+void AInventoryHUD::OnRefreshInventory(const TScriptInterface<IIInventoryBag> inventoryBag)
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UIInventoryHUD::StaticClass()))
 	{
-		IIInventoryHUD::Execute_OnRefreshInventory(mHUDWidget, items);
+		inventoryBagVisual->Refresh(inventoryBag);
+		IIInventoryHUD::Execute_OnRefreshInventory(mHUDWidget, inventoryBagVisual);
 	}
 }

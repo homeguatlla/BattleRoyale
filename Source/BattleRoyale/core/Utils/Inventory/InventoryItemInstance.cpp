@@ -7,9 +7,10 @@
 #include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 
-void UInventoryItemInstance::Initialize(TSubclassOf<UInventoryItemStaticData> itemStaticClass)
+void UInventoryItemInstance::Initialize(TSubclassOf<UInventoryItemStaticData> itemStaticClass, int value)
 {
 	mStaticDataClass = itemStaticClass;
+	mValue = value;
 }
 
 const UInventoryItemStaticData* UInventoryItemInstance::GetStaticData() const
@@ -23,6 +24,7 @@ void UInventoryItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 	DOREPLIFETIME(UInventoryItemInstance, mStaticDataClass);
 	DOREPLIFETIME(UInventoryItemInstance, mIsEquipped);
+	DOREPLIFETIME(UInventoryItemInstance, mValue);
 }
 
 void UInventoryItemInstance::OnRep_IsEquipped()

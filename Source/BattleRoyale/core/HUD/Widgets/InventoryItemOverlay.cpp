@@ -2,8 +2,9 @@
 
 
 #include "InventoryItemOverlay.h"
+#include "IInventoryItemOverlay.h"
 
-void UInventoryItemOverlay::SetItem(const TSubclassOf<UUserWidget>& widget)
+void UInventoryItemOverlay::SetItem(int value, const TSubclassOf<UUserWidget>& widget)
 {
 	if(!widget->IsValidLowLevel())
 	{
@@ -18,6 +19,12 @@ void UInventoryItemOverlay::SetItem(const TSubclassOf<UUserWidget>& widget)
 	RemoveChild(GetChildAt(0));
     	
 	AddChild(itemWidget);
+
+	if(itemWidget->Implements<UIInventoryItemOverlay>())
+	{
+		const auto inventoryItemOverlayWidget = Cast<IIInventoryItemOverlay>(itemWidget);
+		inventoryItemOverlayWidget->Execute_SetValue(itemWidget, value);
+	}
 	mIsEmpty = false;
 }
 

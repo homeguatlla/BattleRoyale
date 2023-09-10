@@ -57,7 +57,7 @@ bool UInventoryComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch*
 	{
 		if(const auto inventoryItemInstance = inventoryItem.mInventoryItem)
 		{
-			result = Channel->ReplicateSubobject(inventoryItemInstance, *Bunch, *RepFlags);
+			result = Channel->ReplicateSubobject(inventoryItemInstance.GetObject(), *Bunch, *RepFlags);
 		}
 	});
 	return result;
@@ -117,7 +117,7 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 		return false;	
 	}
 	
-	mInventoryBag->AddItem(pickableObject->GetInventoryItemStaticData());
+	mInventoryBag->AddItem(pickableObject->GetInventoryItemStaticData(), pickableObject->GetValue());
 	if(const auto inventoryItemInstance = mInventoryBag->FindFirstItem(pickableObject->GetInventoryItemStaticData()))
 	{
 		inventoryItemInstance->OnUnEquipped();

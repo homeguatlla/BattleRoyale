@@ -15,10 +15,10 @@ struct FInventoryArray : public FFastArraySerializer
 {
 	GENERATED_BODY()
 	
-	void AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
+	void AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass, int value);
 	void RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
 
-	UInventoryItemInstance* FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
+	TScriptInterface<IIInventoryItemInstance> FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
 
 	void PerformActionForEachItem(std::function<void(const FInventoryArrayItem& inventoryItem)> action);
 	int Num() const { return mItems.Num(); }

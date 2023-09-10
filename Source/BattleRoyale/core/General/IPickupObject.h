@@ -25,6 +25,8 @@ public:
 	virtual TSubclassOf<UInventoryItemStaticData> GetInventoryItemStaticData() const = 0;
 	virtual FVector GetPickupWidgetLocation() const = 0;
 	virtual EPickupObjectState GetState() const = 0;
+	virtual int GetValue() const = 0;
+	virtual void SetValue(int value) = 0;
 	virtual void SetCharacterOwner(ACharacterBase* character) = 0;
 	virtual void OnEquipped() = 0;
 	virtual void OnUnEquipped() = 0;
