@@ -37,7 +37,6 @@ public:
 	APickupObjectBase();
 
 	virtual TSubclassOf<UInventoryItemStaticData> GetInventoryItemStaticData() const override { return InventoryItemStaticData; }
-	virtual FVector GetPickupWidgetLocation() const override;
 	
 	UFUNCTION(BlueprintCallable, Category="PickableObject")
 	virtual USkeletalMeshComponent* GetMesh() const { return Mesh; }

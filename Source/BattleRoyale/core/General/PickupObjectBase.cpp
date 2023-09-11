@@ -104,7 +104,7 @@ void APickupObjectBase::DetachFromComponent(const FDetachmentTransformRules& rul
 	
 	GetMesh()->DetachFromComponent(rules);
 }
-
+/*
 FVector APickupObjectBase::GetPickupWidgetLocation() const
 {
 	FVector boundingBoxOrigin, boundingBoxExtend;
@@ -113,14 +113,15 @@ FVector APickupObjectBase::GetPickupWidgetLocation() const
 	//Queremos los bounds de la mesh. Pero no hay manera. Igual hay que pillar la local bound de la mesh y aplicarle la rotacion
 	//del actor. Pensarlo bien, buscar ejemplos.
 	
-	GetActorBounds(false, boundingBoxOrigin, boundingBoxExtend);
-		
+	//GetActorBounds(false, boundingBoxOrigin, boundingBoxExtend);
+	boundingBoxOrigin = GetActorLocation();
+	boundingBoxExtend = GetMesh()->GetLocalBounds().BoxExtent;
 	const auto height = boundingBoxExtend.Z;
 	const auto objectLocation = GetActorLocation();
-	//DrawDebugBox(GetWorld(), boundingBoxOrigin , boundingBoxExtend,FColor::Green, false, 20);
-	//DrawDebugSphere(GetWorld(), boundingBoxOrigin + FVector(0.0f, 0.0f, height), 3, 30, FColor::Red, false, 20);
-	return boundingBoxOrigin + FVector(0.0f, 0.0f, height);
-}
+	DrawDebugBox(GetWorld(), boundingBoxOrigin , boundingBoxExtend,FColor::Green, false, 20);
+	DrawDebugSphere(GetWorld(), boundingBoxOrigin + FVector(0.0f, 0.0f, height), 3, 30, FColor::Red, false, 20);
+	return boundingBoxOrigin;// + FVector(0.0f, 0.0f, height);
+}*/
 
 void APickupObjectBase::SetValue(int value)
 {
@@ -225,7 +226,7 @@ void APickupObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedCom
 			character,
 			FGameplayTag::RequestGameplayTag(TAG_EVENT_PICKUP_INDICATOR),
 			this,
-			new FTargetDataPickupObject(GetPickupWidgetLocation(), this));
+			new FTargetDataPickupObject(GetActorLocation(), this));
 		
 		//Si enviamos un efecto también funciona, incluso podemos dejar la habilidad como Local Only,
 		//pero no podemos pasar parámetros

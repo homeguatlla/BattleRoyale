@@ -14,7 +14,7 @@ struct BATTLEROYALE_API FTargetDataPickupObject : public FGameplayAbilityTargetD
 	
 	FTargetDataPickupObject(const FVector& location, APickupObjectBase* pickableObject)
 	{
-		mLocation = location;		
+		mLocation = location;
 		mPickableObject = pickableObject;
 	}
 
