@@ -213,6 +213,8 @@ void APickupObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedCom
 	{
 		return;
 	}
+
+	CancelPickupIndicator(OtherActor);
 	
 	if(const auto character = Cast<ACharacterBase>(OtherActor))
 	{
@@ -235,18 +237,27 @@ void APickupObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedCom
 }
 
 void APickupObjectBase::OnSphereEndOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+                                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	//No matter the state of the weapon if end overlap, remove pickup indicator.
 	//imagin situation where player 1 is seeing its player indicator, and a player 2 equips the
 	//object the player 1 is seeing, we want the indicator be disabled in both.
-	
+
+	//TODO tenemos un bug.
+	//Si entramos en una sphera se muestra el indicador. Si estando dentro de una entramos dentro de otra, se cancela la anterior y
+	//se muestra el nuevo indicador. Correcto. Pero si salimos de la primera, nos quita el indicador aún cuando estamos dentro de la otra.
+	//Hay que ver que hacer aquí. Igual lo mejor sería quitar el indicador por tiempo. Sale, se queda 3 segundos y desaparece.
+	CancelPickupIndicator(OtherActor);
+}
+
+bool APickupObjectBase::CancelPickupIndicator(AActor* OtherActor) const
+{
 	if(const auto character = Cast<ACharacterBase>(OtherActor))
 	{
 		const auto playerState = Cast<APlayerStateBase>(character->GetPlayerState());
 		if(!playerState)
 		{
-			return;
+			return true;
 		}
 		//Remove the ability with tag pickup indicator
 		FGameplayTagContainer cancelTags;
@@ -256,4 +267,5 @@ void APickupObjectBase::OnSphereEndOverlapServer(UPrimitiveComponent* Overlapped
 		//En caso que enviemos effecto hay que quitarlo
 		//playerState->GetAbilitySystemComponentInterface()->RemoveGameplayEffect(mPickupIndicatorEffectHandle);
 	}
+	return false;
 }

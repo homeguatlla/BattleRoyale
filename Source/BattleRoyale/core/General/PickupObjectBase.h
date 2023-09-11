@@ -81,6 +81,7 @@ private:
 	void EnableDetectionArea() const;
 	void DisableDetectionArea() const;
 	void SetEnableMeshPhysicsAndCollision(bool enable) const;
+	bool CancelPickupIndicator(AActor* OtherActor) const;
 	UFUNCTION()
 	void OnRep_State();
 };
