@@ -54,8 +54,12 @@ public:
 	virtual void Shoot() = 0;
 	virtual void ReleaseTrigger() = 0;
 	virtual UAnimMontage* GetShootingMontage() const = 0;
+	virtual UAnimMontage* GetReloadingMontage() const = 0;
 
-
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IGunComponent")
+	virtual bool CanReload(const TScriptInterface<IIInventoryComponent> inventoryComponent) const = 0;
+	virtual void Reload(const TScriptInterface<IIInventoryComponent> inventoryComponent) = 0;
+	
 	virtual void SetupLeftHandSocketTransform(const ACharacterBase* character) const = 0;
 };
 

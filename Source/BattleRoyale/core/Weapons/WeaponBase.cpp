@@ -50,6 +50,11 @@ void AWeaponBase::Fire(const FVector& targetLocation)
 	ServerFire(GetMuzzleLocation(), targetLocation);
 }
 
+EAmmoType AWeaponBase::GetAmmoType() const
+{
+	return ProjectileClass.GetDefaultObject()->GetAmmoType();	
+}
+
 void AWeaponBase::SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation)
 {
 	mLeftHandSocketTransform.SetLocation(newLocation);

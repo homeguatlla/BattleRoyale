@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AmmoTypes.h"
 #include "GameplayTagContainer.h"
 #include "UObject/Interface.h"
 #include "IWeapon.generated.h"
@@ -51,6 +52,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual int32 GetMagazineCapacity() const = 0;
 
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual EAmmoType GetAmmoType() const = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual bool IsMagazineFull() const = 0;
+	
 	/**
 	 * Fire is to activate the mechanism of the weapon. Pulling the trigger.
 	 **/

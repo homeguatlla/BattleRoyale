@@ -114,7 +114,7 @@ bool FSprintTest_WhenAbilitySprintIsTriggered_And_CanSprint_CharacterIsSprinting
 	const auto playerState = Cast<APlayerStateBase>(characterBase->GetPlayerState());
 	const auto gas = playerState->GetAbilitySystemComponent();
 
-	gas->AbilityLocalInputPressed(static_cast<uint8>(EAbilityInputID::Sprint));
+	gas->AbilityLocalInputPressed(static_cast<int32>(EAbilityInputID::Sprint));
 	TestTrue(TEXT("When Character is sprinting SPRINT max walk speed increased"),characterMovementComponent->MaxWalkSpeed > maxWalkSpeedBeforeSprint);
 
 	//world->DestroyWorld(true);

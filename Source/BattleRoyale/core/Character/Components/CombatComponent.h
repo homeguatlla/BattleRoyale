@@ -38,6 +38,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatComponent", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* ShootingAnimation;
 
+	/** AnimMontage to play each time we fire */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatComponent", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* ReloadAnimation;
+    	
 	UPROPERTY(EditDefaultsOnly, Category = "CombatComponent")
 	bool IsDebugEnabled { false };
 	
@@ -84,6 +88,7 @@ public:
 	virtual void Shoot() override;
 	virtual void ReleaseTrigger() override;
 	virtual UAnimMontage* GetShootingMontage() const override { return ShootingAnimation; }
+	virtual UAnimMontage* GetReloadingMontage() const override { return ReloadAnimation; }
 	
 	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
 	virtual bool IsAiming() const override{ return mIsAiming; }
@@ -95,6 +100,9 @@ public:
 	virtual bool CanAim() const override;
 	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
 	virtual FVector GetShootingTargetLocation() const override;
+
+	virtual bool CanReload(const TScriptInterface<IIInventoryComponent> inventoryComponent) const override;
+	virtual void Reload(const TScriptInterface<IIInventoryComponent> inventoryComponent) override;
 	
 	virtual void SetupLeftHandSocketTransform(const ACharacterBase* character) const override;
 	

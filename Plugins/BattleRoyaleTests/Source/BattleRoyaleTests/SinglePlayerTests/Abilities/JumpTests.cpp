@@ -134,7 +134,7 @@ bool FJumpTest_WhenAbilityJumpIsTriggered_And_CanJump_CharacterIsJumping::RunTes
 	const auto playerState = Cast<APlayerStateBase>(characterBase->GetPlayerState());
 	const auto gas = playerState->GetAbilitySystemComponent();
 
-	gas->AbilityLocalInputPressed(static_cast<uint8>(EAbilityInputID::Jump));
+	gas->AbilityLocalInputPressed(static_cast<int32>(EAbilityInputID::Jump));
 
 	characterBase->GetCharacterMovement()->DoJump(false);
 	

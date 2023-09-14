@@ -97,6 +97,8 @@ public:
 	virtual float GetAutomaticFireDelay() const override { return AutomaticFireDelay; }
 	virtual int32 GetAmmo() const override { return mAmmo; }
 	virtual int32 GetMagazineCapacity() const override { return MagazineCapacity; }
+	virtual EAmmoType GetAmmoType() const override;
+	virtual bool IsMagazineFull() const override { return MagazineCapacity == mAmmo; }
 	
 	virtual UAnimationAsset* GetShootingAnimation() const override { return ShootingAnimation; }
 	

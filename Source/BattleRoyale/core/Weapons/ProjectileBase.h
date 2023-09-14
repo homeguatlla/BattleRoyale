@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AmmoTypes.h"
 #include "GameplayEffect.h"
 #include "IProjectile.h"
 #include "GameFramework/Actor.h"
@@ -43,7 +44,8 @@ class AProjectileBase : public AActor, public IProjectile
 	UPROPERTY(EditAnywhere, Category = "Projectile")
 	float ProjectileEjectionImpulse = 1.f;
 
-	
+	UPROPERTY(EditAnywhere, Category = "Projectile")
+	EAmmoType AmmoType;
 	
 public:
 	AProjectileBase();
@@ -53,6 +55,8 @@ public:
 	virtual UParticleSystem* GetExplosionEffect() const override { return ExplosionEffect; }
 	virtual USoundBase* GetExplosionSound() const override { return ExplosionSound; }
 	virtual UParticleSystem* GetTrailEffect() const override { return TrailEffect; }
+
+	virtual EAmmoType GetAmmoType() const override { return AmmoType; }
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Projectile")
 	void OnExplode();

@@ -145,7 +145,7 @@ void UAbilityShootProjectileGun::SubscribeToEventMontageShoot(const IICharacter*
 			FGameplayTag::RequestGameplayTag(TAG_EVENT_MONTAGE_SHOOT),
 			nullptr,
 			true);
-	waitGameplayEventTask->EventReceived.AddDynamic(this, &UAbilityShootProjectileGun::OnEventMontageShootReceived);
+	waitGameplayEventTask->EventReceived.AddDynamic(this, &ThisClass::OnEventMontageShootReceived);
 	waitGameplayEventTask->Activate();
 	
 	/* METHOD Another way to register to the event without using a task
@@ -170,10 +170,10 @@ void UAbilityShootProjectileGun::CreateTaskPlayMontageShooting(const IICharacter
 		sectionName,
 		true);
 	
-	taskPlayMontage->OnCancelled.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCancelled);
-	taskPlayMontage->OnInterrupted.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCancelled);
-	taskPlayMontage->OnCompleted.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCompleted);
-	taskPlayMontage->OnBlendOut.AddDynamic(this, &UAbilityShootProjectileGun::OnMontageCompleted);
+	taskPlayMontage->OnCancelled.AddDynamic(this, &ThisClass::OnMontageCancelled);
+	taskPlayMontage->OnInterrupted.AddDynamic(this, &ThisClass::OnMontageCancelled);
+	taskPlayMontage->OnCompleted.AddDynamic(this, &ThisClass::OnMontageCompleted);
+	taskPlayMontage->OnBlendOut.AddDynamic(this, &ThisClass::OnMontageCompleted);
 	taskPlayMontage->ReadyForActivation();
 }
 

@@ -11,6 +11,7 @@
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "BattleRoyale/core/Weapons/IWeapon.h"
+#include "BattleRoyale/core/Character/Components/IInventoryComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/InputSettings.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -162,6 +163,32 @@ bool UCombatComponent::CanAim() const
 FVector UCombatComponent::GetShootingTargetLocation() const
 {
 	return CalculateShootingTargetData().targetLocation;
+}
+
+bool UCombatComponent::CanReload(const TScriptInterface<IIInventoryComponent> inventoryComponent) const
+{
+	if(!HasWeaponEquipped())
+	{
+		return false;
+	}
+	
+	const auto weapon = GetEquippedWeapon();
+	if(GetEquippedWeapon()->IsMagazineFull())
+	{
+		return false;
+	}
+	
+	const auto ammoTypeNeeded = GetEquippedWeapon()->GetAmmoType();
+	//TODO buscar si hay munición del tipo en el inventario.
+	//Por ahora para buscar en el inventario hay que hacerlo con el staticdataclass. De donde lo sacamos?
+	//Podemos buscar directamente por munición. Igual lo ideal sería hacer un perform y poder hacer
+	//lo que nos interesa.
+	
+	return true;
+}
+
+void UCombatComponent::Reload(const TScriptInterface<IIInventoryComponent> inventoryComponent)
+{
 }
 
 void UCombatComponent::Shoot()
