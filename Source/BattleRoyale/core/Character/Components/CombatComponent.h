@@ -101,7 +101,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
 	virtual FVector GetShootingTargetLocation() const override;
 
-	virtual bool CanReload(const TScriptInterface<IIInventoryComponent> inventoryComponent) const override;
+	virtual bool CanReload(const TScriptInterface<IIInventoryComponent> inventoryComponent) const override;	
 	virtual void Reload(const TScriptInterface<IIInventoryComponent> inventoryComponent) override;
 	
 	virtual void SetupLeftHandSocketTransform(const ACharacterBase* character) const override;
