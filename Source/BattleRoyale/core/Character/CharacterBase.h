@@ -6,7 +6,6 @@
 #include "AttributeSetHealth.h"
 #include "ICharacter.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
-#include "BattleRoyale/core/Weapons/WeaponBase.h"
 #include "Components/HurtComponent.h"
 #include "Components/IGunComponent.h"
 #include "Components/FootstepsComponent.h"

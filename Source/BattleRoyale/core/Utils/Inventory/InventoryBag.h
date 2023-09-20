@@ -27,7 +27,7 @@ public:
 
 	virtual bool ExistItemWithID(int ID) const override;
 	
-	virtual void PerformActionForEachItem(std::function<void(const FInventoryArrayItem& inventoryItem)> action) override;
+	virtual void PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action) override;
 	virtual int Num() const override { return mInventoryArray.Num(); }
 	virtual bool IsFull() const override { return mInventoryArray.Num() >= mMaxItems; }
 	virtual bool IsEmpty() const override { return mInventoryArray.Num() <= 0; }

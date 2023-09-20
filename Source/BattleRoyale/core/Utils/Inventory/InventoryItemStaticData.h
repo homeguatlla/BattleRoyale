@@ -7,7 +7,7 @@
 #include "InventoryItemStaticData.generated.h"
 
 
-class APickupObjectBase;
+class APickableObjectBase;
 
 UCLASS(Blueprintable, BlueprintType)
 class BATTLEROYALE_API UInventoryItemStaticData : public UObject
@@ -17,10 +17,10 @@ class BATTLEROYALE_API UInventoryItemStaticData : public UObject
 public:
 	
 	UInventoryItemStaticData(){}
-	UInventoryItemStaticData(const FName& name, TSubclassOf<APickupObjectBase> pickableObjectClass);
+	UInventoryItemStaticData(const FName& name, TSubclassOf<APickableObjectBase> pickableObjectClass);
 	UFUNCTION(BlueprintCallable)
 	FName GetItemName() const { return mName; }
-	TSubclassOf<APickupObjectBase> GetPickupObjectClass() const { return mPickupObjectClass;}
+	TSubclassOf<APickableObjectBase> GetPickupObjectClass() const { return mPickupObjectClass;}
 	UFUNCTION(BlueprintCallable)
 	TSubclassOf<UUserWidget> GetItemWidgetClass() const { return mWidget; }
 	UFUNCTION(BlueprintCallable)
@@ -31,7 +31,7 @@ private:
 	FName mName;
 
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Pickup Object Class (Visual)"))
-	TSubclassOf<APickupObjectBase> mPickupObjectClass;
+	TSubclassOf<APickableObjectBase> mPickupObjectClass;
 
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="UI Widget (Visual)"))
 	TSubclassOf<UUserWidget> mWidget = nullptr;

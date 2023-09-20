@@ -8,7 +8,9 @@
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
-#include "BattleRoyale/core/General/IPickupObject.h"
+#include "BattleRoyale/core/PickableObjects/IPickupObject.h"
+#include "BattleRoyale/core/PickableObjects/PickableObjectBase.h"
+#include "BattleRoyale/core/PickableObjects/Weapons/WeaponBase.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemInstance.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryArray.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemStaticData.h"
@@ -53,12 +55,13 @@ bool UInventoryComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch*
 {
 	auto result = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
 
-	mInventoryBag->PerformActionForEachItem([&Channel, &Bunch, &RepFlags, &result](const FInventoryArrayItem& inventoryItem)
+	mInventoryBag->PerformActionForEachItem([&Channel, &Bunch, &RepFlags, &result](const FInventoryArrayItem& inventoryItem)-> bool
 	{
 		if(const auto inventoryItemInstance = inventoryItem.mInventoryItem)
 		{
 			result = Channel->ReplicateSubobject(inventoryItemInstance.GetObject(), *Bunch, *RepFlags);
 		}
+		return false;
 	});
 	return result;
 }
@@ -77,11 +80,12 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	//DEBUG purposes only
 	if(ConsoleShowInventory.GetValueOnGameThread() != 0)
 	{
-		mInventoryBag->PerformActionForEachItem([](const FInventoryArrayItem& inventoryItem)
+		mInventoryBag->PerformActionForEachItem([](const FInventoryArrayItem& inventoryItem) -> bool
 		{
 			const auto inventoryItemStaticData = inventoryItem.mInventoryItem->GetStaticData();
 			assert(inventoryItemStaticData);
 			GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Blue, inventoryItemStaticData->GetItemName().ToString());
+			return false;
 		});
 	}
 }
@@ -122,7 +126,7 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	{
 		inventoryItemInstance->OnUnEquipped();
 		//Destroy the pickable object actor
-		if(const auto object = Cast<APickupObjectBase>(pickableObject.GetObject()))
+		if(const auto object = Cast<APickableObjectBase>(pickableObject.GetObject()))
 		{
 			object->Destroy();
 			return true;
@@ -186,6 +190,12 @@ bool UInventoryComponent::EquipItem(TScriptInterface<IPickupObject> pickableObje
 TScriptInterface<IPickupObject> UInventoryComponent::GetEquippedItem() const
 {
 	return mEquippedItem;
+}
+
+void UInventoryComponent::PerformActionForEachInventoryItem(
+	const std::function<bool (const FInventoryArrayItem& inventoryItem)>& action)
+{
+	mInventoryBag->PerformActionForEachItem(action);
 }
 
 void UInventoryComponent::OnInventoryKeyPressed()

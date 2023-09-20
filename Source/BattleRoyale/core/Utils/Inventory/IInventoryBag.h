@@ -36,7 +36,7 @@ public:
 	virtual void SetMaxItems(int max) = 0;
 	virtual TScriptInterface<IIInventoryItemInstance> FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) = 0;
 
-	virtual void PerformActionForEachItem(std::function<void(const FInventoryArrayItem& inventoryItem)> action) = 0;
+	virtual void PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action) = 0;
 	virtual int Num() const = 0;
 	virtual bool IsFull() const = 0;
 	virtual bool IsEmpty() const = 0;

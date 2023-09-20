@@ -3,7 +3,7 @@
 #include "CharacterBase.h"
 
 
-#include "BattleRoyale/core/Weapons/ProjectileBase.h"
+#include "BattleRoyale/core/PickableObjects/Weapons/ProjectileBase.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"

@@ -1,6 +1,5 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "BattleRoyale/core/Weapons/IWeapon.h"
 #include "BattleRoyale/core/Utils/Stats/PlayerStatsData.h"
 #include "Inventory/InventoryBag.h"
 #include "Delegates/DelegateCombinations.h"

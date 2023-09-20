@@ -40,7 +40,7 @@ public:
 	virtual bool ExistItemWithID(int ID) const override;
 	virtual void SetMaxItems(int max) override;
 	virtual TScriptInterface<IIInventoryItemInstance> FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;
-	virtual void PerformActionForEachItem(std::function<void(const FInventoryArrayItem& inventoryItem)> action) override;
+	virtual void PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action) override;
 	virtual int Num() const override;
 	virtual bool IsFull() const override;
 	virtual bool IsEmpty() const override;

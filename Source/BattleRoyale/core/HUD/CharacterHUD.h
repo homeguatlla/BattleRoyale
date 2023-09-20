@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BattleRoyale/core/Weapons/IWeapon.h"
+#include "BattleRoyale/core/PickableObjects/Weapons/IWeapon.h"
 #include "Blueprint/UserWidget.h"
 #include "CharacterHUD.generated.h"
 

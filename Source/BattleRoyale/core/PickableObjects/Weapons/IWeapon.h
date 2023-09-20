@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AmmoTypes.h"
 #include "GameplayTagContainer.h"
 #include "UObject/Interface.h"
 #include "IWeapon.generated.h"

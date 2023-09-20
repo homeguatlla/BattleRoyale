@@ -6,13 +6,13 @@
 #include "IPickupObject.h"
 #include "PickupObjectTypes.h"
 #include "GameFramework/Actor.h"
-#include "PickupObjectBase.generated.h"
+#include "PickableObjectBase.generated.h"
 
 class UInventoryItemStaticData;
 class UInventoryItemInstance;
 
 UCLASS()
-class BATTLEROYALE_API APickupObjectBase : public AActor, public IPickupObject
+class BATTLEROYALE_API APickableObjectBase : public AActor, public IPickupObject
 {
 	GENERATED_BODY()
 
@@ -34,7 +34,7 @@ class BATTLEROYALE_API APickupObjectBase : public AActor, public IPickupObject
 	
 public:	
 	// Sets default values for this actor's properties
-	APickupObjectBase();
+	APickableObjectBase();
 
 	virtual TSubclassOf<UInventoryItemStaticData> GetInventoryItemStaticData() const override { return InventoryItemStaticData; }
 	

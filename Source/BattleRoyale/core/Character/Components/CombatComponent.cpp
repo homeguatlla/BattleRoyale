@@ -10,8 +10,10 @@
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
-#include "BattleRoyale/core/Weapons/IWeapon.h"
+#include "BattleRoyale/core/PickableObjects/Weapons/IWeapon.h"
 #include "BattleRoyale/core/Character/Components/IInventoryComponent.h"
+#include "BattleRoyale/core/PickableObjects/Ammo/Ammo.h"
+#include "BattleRoyale/core/PickableObjects/Weapons/WeaponBase.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/InputSettings.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -179,12 +181,26 @@ bool UCombatComponent::CanReload(const TScriptInterface<IIInventoryComponent> in
 	}
 	
 	const auto ammoTypeNeeded = GetEquippedWeapon()->GetAmmoType();
-	//TODO buscar si hay munición del tipo en el inventario.
-	//Por ahora para buscar en el inventario hay que hacerlo con el staticdataclass. De donde lo sacamos?
-	//Podemos buscar directamente por munición. Igual lo ideal sería hacer un perform y poder hacer
-	//lo que nos interesa.
+	bool foundAmmoInTheInventory = false;
+	inventoryComponent->PerformActionForEachInventoryItem(
+		[&ammoTypeNeeded, &foundAmmoInTheInventory](const FInventoryArrayItem& inventoryItem) -> bool
+		{
+			const auto staticData = inventoryItem.mInventoryItem->GetStaticData();
+			const auto objectClass = staticData->GetPickupObjectClass();
+			const auto pickableObject = objectClass.GetDefaultObject();
+			if(pickableObject->IsA<AAmmo>())
+			{
+				const auto ammo = Cast<AAmmo>(pickableObject);
+				if(ammo->GetAmmoType() == ammoTypeNeeded)
+				{
+					foundAmmoInTheInventory = true;
+					return true;
+				}
+			}
+			return false;
+		});
 	
-	return true;
+	return foundAmmoInTheInventory;
 }
 
 void UCombatComponent::Reload(const TScriptInterface<IIInventoryComponent> inventoryComponent)

@@ -34,14 +34,17 @@ TScriptInterface<IIInventoryItemInstance> UInventoryBagMock::FindFirstItem(TSubc
 	return nullptr;
 }
 
-void UInventoryBagMock::PerformActionForEachItem(std::function<void(const FInventoryArrayItem& inventoryItem)> action)
+void UInventoryBagMock::PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action)
 {
 	for(auto&& item : mItems)
 	{
 		FInventoryArrayItem inventoryItem;
 		inventoryItem.SetID(item.id);
 		//inventoryItem.mInventoryItem = item.data;
-		action(inventoryItem);
+		if(action(inventoryItem))
+		{
+			break;
+		}
 	}
 }
 

@@ -39,6 +39,8 @@ public:
 	
 	virtual void SetPickableObject(TScriptInterface<IPickupObject> object) override { mPickupObject = object; }
 	virtual TScriptInterface<IPickupObject> GetPickableObject() const override { return mPickupObject; }
+	virtual void PerformActionForEachInventoryItem(const std::function<bool (const FInventoryArrayItem& inventoryItem)>& callback) override;
+	
 	void OnInventoryKeyPressed();
 
 protected:

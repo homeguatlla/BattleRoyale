@@ -19,7 +19,7 @@ void UInventoryBagVisual::Refresh(const TScriptInterface<IIInventoryBag> invento
 	}
 
 	int i = 0;
-	inventoryBag->PerformActionForEachItem([this, &i](const FInventoryArrayItem& inventoryItem)
+	inventoryBag->PerformActionForEachItem([this, &i](const FInventoryArrayItem& inventoryItem) -> bool
 	{
 		const auto index = FindItemByID(inventoryItem.GetID());
 		if(index == -1) //not found
@@ -49,6 +49,7 @@ void UInventoryBagVisual::Refresh(const TScriptInterface<IIInventoryBag> invento
 		{
 			mItems[index] = inventoryItem;
 		}
+		return false;
 	});
 }
 

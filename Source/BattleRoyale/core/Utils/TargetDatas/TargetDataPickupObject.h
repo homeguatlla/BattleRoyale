@@ -2,7 +2,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbilityTargetTypes.h"
-#include "BattleRoyale/core/General/PickupObjectBase.h"
+#include "BattleRoyale/core/PickableObjects/PickableObjectBase.h"
 #include "TargetDataPickupObject.generated.h"
 
 USTRUCT(BlueprintType)
@@ -12,7 +12,7 @@ struct BATTLEROYALE_API FTargetDataPickupObject : public FGameplayAbilityTargetD
 	
 	FTargetDataPickupObject() = default;
 	
-	FTargetDataPickupObject(const FVector& location, APickupObjectBase* pickableObject)
+	FTargetDataPickupObject(const FVector& location, APickableObjectBase* pickableObject)
 	{
 		mLocation = location;
 		mPickableObject = pickableObject;
@@ -32,7 +32,7 @@ struct BATTLEROYALE_API FTargetDataPickupObject : public FGameplayAbilityTargetD
 	UPROPERTY()
 	FVector mLocation = FVector::Zero();
 	UPROPERTY()
-	APickupObjectBase* mPickableObject = nullptr;
+	APickableObjectBase* mPickableObject = nullptr;
 };
 
 template<>

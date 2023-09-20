@@ -3,7 +3,7 @@
 
 #include "InventoryItemInstance.h"
 
-#include "BattleRoyale/core/General/IPickupObject.h"
+#include "BattleRoyale/core/PickableObjects/IPickupObject.h"
 #include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 

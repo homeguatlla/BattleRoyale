@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "IWeapon.h"
-#include "BattleRoyale/core/General/PickupObjectBase.h"
+#include "BattleRoyale/core/PickableObjects/PickableObjectBase.h"
 #include "WeaponBase.generated.h"
 
 class ICrosshair;
@@ -12,7 +12,7 @@ class UGameplayEffect;
 class IICharacter;
 
 UCLASS(Blueprintable)
-class BATTLEROYALE_API AWeaponBase : public APickupObjectBase, public IWeapon
+class BATTLEROYALE_API AWeaponBase : public APickableObjectBase, public IWeapon
 {
 	GENERATED_BODY()
 

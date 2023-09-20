@@ -2,11 +2,13 @@
 
 #pragma once
 
+#include <functional>
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "IInventoryComponent.generated.h"
 
 class IPickupObject;
+struct FInventoryArrayItem;
 
 // This class does not need to be modified.
 UINTERFACE(NotBlueprintable, meta = (CannotImplementInterfaceInBlueprint))
@@ -31,4 +33,6 @@ public:
 
 	virtual void SetPickableObject(TScriptInterface<IPickupObject> object) = 0;
 	virtual TScriptInterface<IPickupObject> GetPickableObject() const = 0;
+
+	virtual void PerformActionForEachInventoryItem(const std::function<bool (const FInventoryArrayItem& inventoryItem)>& callback) = 0;
 };

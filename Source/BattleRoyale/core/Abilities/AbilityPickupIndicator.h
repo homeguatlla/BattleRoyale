@@ -6,7 +6,7 @@
 #include "GameplayAbilityBase.h"
 #include "AbilityPickupIndicator.generated.h"
 
-class APickupObjectBase;
+class APickableObjectBase;
 struct FTargetDataPickupObject;
 /**
  * 
@@ -24,7 +24,7 @@ public:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnShowPickupIndicator(const APickupObjectBase* object, const FVector& Location);
+	void OnShowPickupIndicator(const APickableObjectBase* object, const FVector& Location);
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHidePickupIndicator();
 	

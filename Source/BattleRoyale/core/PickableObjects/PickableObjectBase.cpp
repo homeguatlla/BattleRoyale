@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PickupObjectBase.h"
+#include "PickableObjectBase.h"
 
 #include "BlueprintGameplayTagLibrary.h"
 #include "BattleRoyale/core/Abilities/GameplayTagsList.h"
@@ -14,7 +14,7 @@
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
-APickupObjectBase::APickupObjectBase()
+APickableObjectBase::APickableObjectBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -46,7 +46,7 @@ APickupObjectBase::APickupObjectBase()
 }
 
 // Called when the game starts or when spawned
-void APickupObjectBase::BeginPlay()
+void APickableObjectBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
@@ -56,7 +56,7 @@ void APickupObjectBase::BeginPlay()
 	}
 }
 
-void APickupObjectBase::ChangeState(EPickupObjectState state)
+void APickableObjectBase::ChangeState(EPickupObjectState state)
 {
 	switch (state)
 	{
@@ -82,7 +82,7 @@ void APickupObjectBase::ChangeState(EPickupObjectState state)
 	State = state;
 }
 
-bool APickupObjectBase::AttachToComponent(USkeletalMeshComponent* meshComponent,
+bool APickableObjectBase::AttachToComponent(USkeletalMeshComponent* meshComponent,
                                           const FAttachmentTransformRules& attachmentRules, const FName& socketName)
 {
 	if(GetMesh() == nullptr)
@@ -94,7 +94,7 @@ bool APickupObjectBase::AttachToComponent(USkeletalMeshComponent* meshComponent,
 	return GetMesh()->AttachToComponent(meshComponent, attachmentRules, socketName);
 }
 
-void APickupObjectBase::DetachFromComponent(const FDetachmentTransformRules& rules)
+void APickableObjectBase::DetachFromComponent(const FDetachmentTransformRules& rules)
 {
 	if(GetMesh() == nullptr)
 	{
@@ -123,7 +123,7 @@ FVector APickupObjectBase::GetPickupWidgetLocation() const
 	return boundingBoxOrigin;// + FVector(0.0f, 0.0f, height);
 }*/
 
-void APickupObjectBase::SetValue(int value)
+void APickableObjectBase::SetValue(int value)
 {
 	if(HasAuthority())
 	{
@@ -131,28 +131,28 @@ void APickupObjectBase::SetValue(int value)
 	}
 }
 
-void APickupObjectBase::SetCharacterOwner(ACharacterBase* character)
+void APickableObjectBase::SetCharacterOwner(ACharacterBase* character)
 {
 	SetOwner(character);
 }
 
-void APickupObjectBase::OnEquipped()
+void APickableObjectBase::OnEquipped()
 {
 	ChangeState(EPickupObjectState::Equipped);
 	DoEquipped();
 }
 
-void APickupObjectBase::OnUnEquipped()
+void APickableObjectBase::OnUnEquipped()
 {
 	ChangeState(EPickupObjectState::InInventory);
 }
 
-void APickupObjectBase::OnDropped()
+void APickableObjectBase::OnDropped()
 {
 	ChangeState(EPickupObjectState::Dropped);
 }
 
-void APickupObjectBase::EnableDetectionArea() const
+void APickableObjectBase::EnableDetectionArea() const
 {
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	AreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
@@ -161,7 +161,7 @@ void APickupObjectBase::EnableDetectionArea() const
 	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnSphereEndOverlapServer);
 }
 
-void APickupObjectBase::DisableDetectionArea() const
+void APickableObjectBase::DisableDetectionArea() const
 {
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AreaSphere->SetCollisionResponseToChannels(ECollisionResponse::ECR_Ignore);
@@ -170,22 +170,22 @@ void APickupObjectBase::DisableDetectionArea() const
 	AreaSphere->OnComponentEndOverlap.RemoveAll(this);
 }
 
-void APickupObjectBase::SetEnableMeshPhysicsAndCollision(bool enable) const
+void APickableObjectBase::SetEnableMeshPhysicsAndCollision(bool enable) const
 {
 	GetMesh()->SetSimulatePhysics(enable);
 	GetMesh()->SetEnableGravity(enable);
 	GetMesh()->SetCollisionEnabled(enable ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
 }
 
-void APickupObjectBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void APickableObjectBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(APickupObjectBase, State);
-	DOREPLIFETIME(APickupObjectBase, Value);
+	DOREPLIFETIME(APickableObjectBase, State);
+	DOREPLIFETIME(APickableObjectBase, Value);
 }
 
-void APickupObjectBase::OnRep_State()
+void APickableObjectBase::OnRep_State()
 {
 	ChangeState(State);
 
@@ -206,7 +206,7 @@ void APickupObjectBase::OnRep_State()
 	}
 }
 
-void APickupObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+void APickableObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                             UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(IsEquipped())
@@ -236,7 +236,7 @@ void APickupObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedCom
 	}
 }
 
-void APickupObjectBase::OnSphereEndOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+void APickableObjectBase::OnSphereEndOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                                  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	//No matter the state of the weapon if end overlap, remove pickup indicator.
@@ -250,7 +250,7 @@ void APickupObjectBase::OnSphereEndOverlapServer(UPrimitiveComponent* Overlapped
 	CancelPickupIndicator(OtherActor);
 }
 
-bool APickupObjectBase::CancelPickupIndicator(AActor* OtherActor) const
+bool APickableObjectBase::CancelPickupIndicator(AActor* OtherActor) const
 {
 	if(const auto character = Cast<ACharacterBase>(OtherActor))
 	{

@@ -40,11 +40,14 @@ TScriptInterface<IIInventoryItemInstance> FInventoryArray::FindFirstItemOfClass(
 	return nullptr;
 }
 
-void FInventoryArray::PerformActionForEachItem(std::function<void(const FInventoryArrayItem& inventoryItem)> action)
+void FInventoryArray::PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action)
 {
 	for(auto&& item : mItems)
 	{
-		action(item);
+		if(action(item))
+		{
+			break;
+		}
 	}
 }
 
