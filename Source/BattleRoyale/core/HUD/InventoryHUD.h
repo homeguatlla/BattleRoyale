@@ -18,7 +18,7 @@ class BATTLEROYALE_API AInventoryHUD : public AActor
 	GENERATED_BODY()
 
 public:	
-	void Initialize(int hudIndex, APlayerController* playerController, TArray<TSubclassOf<UUserWidget>> widgetClasses);
+	void Initialize(int maxInventoryItems, int hudIndex, APlayerController* playerController, TArray<TSubclassOf<UUserWidget>> widgetClasses);
 
 private:
 	void BindToDelegate();

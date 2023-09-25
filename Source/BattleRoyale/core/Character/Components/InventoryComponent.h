@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "IInventoryComponent.h"
+#include "BattleRoyale/core/PickableObjects/Ammo/AmmoTypes.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryArray.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryBag.h"
 #include "Components/ActorComponent.h"
@@ -36,10 +37,16 @@ public:
 	virtual bool DropObjectServer() override;
 	virtual TScriptInterface<IPickupObject> GetEquippedItem() const override;
 	virtual bool HasItemEquipped() const override { return mEquippedItem != nullptr; }
+
+	virtual bool HasItemOfType(TSubclassOf<UInventoryItemStaticData> itemStaticDataClassToFind) const override;
+	virtual bool HasAmmoOfType(EAmmoType ammoType) const override;
+	virtual bool HasLifeKid() const override;
+
+	virtual int RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded) override;
 	
 	virtual void SetPickableObject(TScriptInterface<IPickupObject> object) override { mPickupObject = object; }
 	virtual TScriptInterface<IPickupObject> GetPickableObject() const override { return mPickupObject; }
-	virtual void PerformActionForEachInventoryItem(const std::function<bool (const FInventoryArrayItem& inventoryItem)>& callback) override;
+	virtual void PerformActionForEachInventoryItem(const std::function<bool (const FInventoryArrayItem& inventoryItem)>& callback) const override;
 	
 	void OnInventoryKeyPressed();
 
@@ -50,6 +57,7 @@ protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 private:
 	virtual bool EquipItem(TScriptInterface<IPickupObject> pickableObject) override;
+	TScriptInterface<IIInventoryItemInstance> GetAmmoItemOfType(EAmmoType ammoType) const;
 	//void UnEquipItem();
 	//void DropItem();
 

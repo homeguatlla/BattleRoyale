@@ -20,7 +20,7 @@ struct FInventoryArray : public FFastArraySerializer
 
 	TScriptInterface<IIInventoryItemInstance> FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
 
-	void PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action);
+	void PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action) const;
 	int Num() const { return mItems.Num(); }
 	FInventoryArrayItem GetItemByIndex(int index) const;
 

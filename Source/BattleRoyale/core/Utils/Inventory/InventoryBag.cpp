@@ -40,7 +40,7 @@ bool UInventoryBag::ExistItemWithID(int ID) const
 	return false;
 }
 
-void UInventoryBag::PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action)
+void UInventoryBag::PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action) const
 {
 	mInventoryArray.PerformActionForEachItem(action);
 }

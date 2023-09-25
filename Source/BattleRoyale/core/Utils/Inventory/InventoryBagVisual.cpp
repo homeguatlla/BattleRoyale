@@ -7,14 +7,29 @@
 #include "InventoryItemStaticData.h"
 #include "InventoryItemVisual.h"
 
+void UInventoryBagVisual::Initialize(int max)
+{
+	mMaxItems = max;
+	for(auto i = 0; i < mMaxItems; ++i)
+	{
+		const auto itemVisual = FInventoryItemVisual(
+				-1,
+				0,
+				false,
+				nullptr);
+		mItems.Add(itemVisual);
+	}
+}
+
 void UInventoryBagVisual::Refresh(const TScriptInterface<IIInventoryBag> inventoryBag)
 {
 	//Remove elements that are not in the bag
-	for(auto& itemVisual : mItems)
-	{ 
+	for(int i = mItems.Num()-1 ; i >= 0 ; --i)
+	{
+		auto& itemVisual = mItems[i];
 		if(!inventoryBag->ExistItemWithID(itemVisual.id))
 		{
-			itemVisual.Clear();	
+			itemVisual.Clear();
 		}
 	}
 
@@ -36,14 +51,7 @@ void UInventoryBagVisual::Refresh(const TScriptInterface<IIInventoryBag> invento
 				false,
 				inventoryItem.mInventoryItem->GetStaticData()->GetItemWidgetClass());
 			
-			if(i == mItems.Num())
-			{
-				mItems.Add(itemVisual);
-			}
-			else
-			{
-				mItems[i] = itemVisual;
-			}
+			mItems[i] = itemVisual;
 		}
 		else
 		{
@@ -76,17 +84,7 @@ int UInventoryBagVisual::FindItemByID(int ID) const
 
 int UInventoryBagVisual::Num() const
 {
-	int numItemsNotEmpty = 0;
-	
-	for(auto item : mItems)
-	{
-		if(!item.IsEmpty())
-		{
-			numItemsNotEmpty++;
-		}
-	}
-
-	return numItemsNotEmpty;
+	return mItems.Num();
 }
 
 bool UInventoryBagVisual::IsEmpty() const

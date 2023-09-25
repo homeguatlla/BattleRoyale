@@ -22,7 +22,9 @@ class BATTLEROYALE_API UInventoryItemInstance : public UObject, public IIInvento
 public:
 	virtual void Initialize(TSubclassOf<UInventoryItemStaticData> itemStaticClass, int value) override;
 	virtual const UInventoryItemStaticData* GetStaticData() const override;
+	virtual const TSubclassOf<UInventoryItemStaticData> GetStaticDataClass() const override { return mStaticDataClass; }
 	virtual int GetValue() const override { return mValue; }
+	virtual void UpdateValue(int newValue) override;
 	
 	//OnEquip means to put it on hand
 	virtual void OnEquipped() override;

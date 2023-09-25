@@ -30,6 +30,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Inventory HUDs")
 	TArray<TSubclassOf<UUserWidget>> InventoryHUDWidgetClasses;
+
+	UPROPERTY(EditAnywhere, Category= "Inventory HUD")
+	int MaxInventoryItems = 5;
 	
 	UPROPERTY()
 	UUserWidget* mCharacterHUDWidget;
@@ -46,7 +49,9 @@ protected:
 private:
 	template<class THUDClass>
 	THUDClass* CreateHUD(TArray<TSubclassOf<UUserWidget>> widgetClasses);
-
+	template<class THUDClass>
+	THUDClass* CreateHUD(int param, TArray<TSubclassOf<UUserWidget>> widgetClasses);
+	
 	UPROPERTY()
 	ACharacterHUD* mCharacterHUD = nullptr;
 	UPROPERTY()
@@ -71,5 +76,21 @@ THUDClass* ABattleRoyaleHUD::CreateHUD(TArray<TSubclassOf<UUserWidget>> widgetCl
 		FRotator::ZeroRotator,
 		spawnInfo);
 	instance->Initialize(0, GetOwningPlayerController(), widgetClasses);
+	return instance;
+}
+
+template<class THUDClass>
+THUDClass* ABattleRoyaleHUD::CreateHUD(int param, TArray<TSubclassOf<UUserWidget>> widgetClasses)
+{
+	FActorSpawnParameters spawnInfo;
+	spawnInfo.Owner = this;
+	//spawnInfo.Instigator = this;
+	spawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	const auto instance = GetWorld()->SpawnActor<THUDClass>(
+		THUDClass::StaticClass(),
+		FVector::ZeroVector,
+		FRotator::ZeroRotator,
+		spawnInfo);
+	instance->Initialize(param, 0, GetOwningPlayerController(), widgetClasses);
 	return instance;
 }

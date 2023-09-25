@@ -34,7 +34,7 @@ TScriptInterface<IIInventoryItemInstance> UInventoryBagMock::FindFirstItem(TSubc
 	return nullptr;
 }
 
-void UInventoryBagMock::PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action)
+void UInventoryBagMock::PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action) const
 {
 	for(auto&& item : mItems)
 	{

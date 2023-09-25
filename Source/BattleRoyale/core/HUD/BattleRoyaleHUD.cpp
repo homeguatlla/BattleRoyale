@@ -25,5 +25,5 @@ void ABattleRoyaleHUD::BeginPlay()
 	mCharacterHUD = CreateHUD<ACharacterHUD>(CharacterHUDWidgetClasses);
 	mAnnouncementsHUD = CreateHUD<AAnnouncementsHUD>(AnnouncementsHUDWidgetClasses);
 	mMenuHUD = CreateHUD<AMenuHUD>(MenuHUDWidgetClasses);
-	mInventoryHUD = CreateHUD<AInventoryHUD>(InventoryHUDWidgetClasses);
+	mInventoryHUD = CreateHUD<AInventoryHUD>(MaxInventoryItems, InventoryHUDWidgetClasses);
 }

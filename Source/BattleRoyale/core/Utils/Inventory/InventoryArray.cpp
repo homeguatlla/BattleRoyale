@@ -4,6 +4,7 @@
 #include "InventoryArray.h"
 #include "InventoryArrayItem.h"
 #include "InventoryItemInstance.h"
+#include "BattleRoyale/core/PickableObjects/PickableObjectBase.h"
 
 void FInventoryArray::AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass, int _value)
 {
@@ -17,7 +18,7 @@ void FInventoryArray::RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticDat
 {
 	for(auto it = mItems.CreateConstIterator(); it; ++it)
 	{
-		if(it->mInventoryItem && it->mInventoryItem.GetObject()->IsA(itemClass))
+		if(it->mInventoryItem && it->mInventoryItem->GetStaticDataClass() == itemClass)
 		{
 			//it.RemoveCurrent();
 			const auto index = it.GetIndex();
@@ -40,7 +41,7 @@ TScriptInterface<IIInventoryItemInstance> FInventoryArray::FindFirstItemOfClass(
 	return nullptr;
 }
 
-void FInventoryArray::PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action)
+void FInventoryArray::PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action) const
 {
 	for(auto&& item : mItems)
 	{

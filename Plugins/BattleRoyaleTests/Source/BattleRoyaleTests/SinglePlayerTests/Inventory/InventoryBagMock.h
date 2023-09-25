@@ -13,7 +13,9 @@ struct BATTLEROYALETESTS_API InventoryItemMock : public IIInventoryItemInstance
 	InventoryItemMock(int _id, int _type, int _value = 0, UInventoryItemStaticData* _data = nullptr) : id(_id), type(_type), value(_value), data(_data) {}
 	virtual void Initialize(TSubclassOf<UInventoryItemStaticData> itemStaticClass, int _value) override {}
 	virtual const UInventoryItemStaticData* GetStaticData() const override { return data; }
+	virtual const TSubclassOf<UInventoryItemStaticData> GetStaticDataClass() const override { return nullptr; }
 	virtual int GetValue() const override { return value; }
+	virtual void UpdateValue(int newValue) override { value = newValue; }
 	virtual void OnEquipped() override {}
 	virtual void OnUnEquipped() override {}
 	
@@ -40,7 +42,7 @@ public:
 	virtual bool ExistItemWithID(int ID) const override;
 	virtual void SetMaxItems(int max) override;
 	virtual TScriptInterface<IIInventoryItemInstance> FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;
-	virtual void PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action) override;
+	virtual void PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action) const override;
 	virtual int Num() const override;
 	virtual bool IsFull() const override;
 	virtual bool IsEmpty() const override;

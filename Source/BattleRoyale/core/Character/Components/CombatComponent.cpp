@@ -181,30 +181,25 @@ bool UCombatComponent::CanReload(const TScriptInterface<IIInventoryComponent> in
 	}
 	
 	const auto ammoTypeNeeded = GetEquippedWeapon()->GetAmmoType();
-	bool foundAmmoInTheInventory = false;
-	inventoryComponent->PerformActionForEachInventoryItem(
-		[&ammoTypeNeeded, &foundAmmoInTheInventory](const FInventoryArrayItem& inventoryItem) -> bool
-		{
-			const auto staticData = inventoryItem.mInventoryItem->GetStaticData();
-			const auto objectClass = staticData->GetPickupObjectClass();
-			const auto pickableObject = objectClass.GetDefaultObject();
-			if(pickableObject->IsA<AAmmo>())
-			{
-				const auto ammo = Cast<AAmmo>(pickableObject);
-				if(ammo->GetAmmoType() == ammoTypeNeeded)
-				{
-					foundAmmoInTheInventory = true;
-					return true;
-				}
-			}
-			return false;
-		});
-	
-	return foundAmmoInTheInventory;
+
+	return inventoryComponent->HasAmmoOfType(ammoTypeNeeded);
 }
 
 void UCombatComponent::Reload(const TScriptInterface<IIInventoryComponent> inventoryComponent)
 {
+	//TODO quizá hay que volver a comprobar que pueda hacer el reload y volver a comprobar todo?
+	auto weapon = GetEquippedWeapon();
+	
+	const auto ammoTypeNeeded = weapon->GetAmmoType();
+	auto ammoNeeded = weapon->GetMagazineCapacity() - weapon->GetAmmo();
+
+	const auto ammoFound = inventoryComponent->RemoveEnoughAmmo(ammoTypeNeeded, ammoNeeded);
+
+	//If we can reload at least will be 1 ammo
+	check(ammoFound > 0);
+
+	weapon->Reload(ammoFound);
+	GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(weapon->GetAmmo(), weapon->GetMagazineCapacity());
 }
 
 void UCombatComponent::Shoot()
@@ -287,7 +282,9 @@ void UCombatComponent::OnAutomaticFire()
 	//Claro el player controller podría estar suscrito al evento de Fire e informar al combatcomponent, pero no sé si esto choca con la abilidad.
 	const auto playerController = Cast<APlayerController>(GetOwner()->GetInstigatorController());
 	const auto isFireInputPressed = IsInputPressedByActionName("Fire", playerController);
-	if(!isFireInputPressed)
+	const auto weapon = GetEquippedWeapon();
+	
+	if(!isFireInputPressed || !weapon->HasAmmo())
 	{
 		ReleaseTrigger();
 		return;

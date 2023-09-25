@@ -32,11 +32,11 @@ public:
 	virtual void AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value) = 0;
 	virtual void RemoveFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) = 0;
 	virtual bool ExistItemWithID(int ID) const = 0;
-	
+
 	virtual void SetMaxItems(int max) = 0;
 	virtual TScriptInterface<IIInventoryItemInstance> FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) = 0;
 
-	virtual void PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action) = 0;
+	virtual void PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action) const = 0;
 	virtual int Num() const = 0;
 	virtual bool IsFull() const = 0;
 	virtual bool IsEmpty() const = 0;

@@ -21,13 +21,13 @@ public:
 	
 	virtual void AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value) override;
 	virtual void RemoveFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;
-
+	
 	virtual void SetMaxItems(int max) override { mMaxItems = max; }
 	virtual TScriptInterface<IIInventoryItemInstance> FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;
-
+	
 	virtual bool ExistItemWithID(int ID) const override;
 	
-	virtual void PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action) override;
+	virtual void PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action) const override;
 	virtual int Num() const override { return mInventoryArray.Num(); }
 	virtual bool IsFull() const override { return mInventoryArray.Num() >= mMaxItems; }
 	virtual bool IsEmpty() const override { return mInventoryArray.Num() <= 0; }

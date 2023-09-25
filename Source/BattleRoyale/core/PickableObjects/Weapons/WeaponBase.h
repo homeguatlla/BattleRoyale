@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "IWeapon.h"
 #include "BattleRoyale/core/PickableObjects/PickableObjectBase.h"
+#include "BattleRoyale/core/PickableObjects/Ammo/AmmoTypes.h"
 #include "WeaponBase.generated.h"
 
 class ICrosshair;
@@ -99,6 +100,8 @@ public:
 	virtual int32 GetMagazineCapacity() const override { return MagazineCapacity; }
 	virtual EAmmoType GetAmmoType() const override;
 	virtual bool IsMagazineFull() const override { return MagazineCapacity == mAmmo; }
+	virtual bool HasAmmo() const override{ return mAmmo > 0; }
+	virtual void Reload(int ammoAmount) override;
 	
 	virtual UAnimationAsset* GetShootingAnimation() const override { return ShootingAnimation; }
 	

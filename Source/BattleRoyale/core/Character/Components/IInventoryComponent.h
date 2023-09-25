@@ -5,9 +5,11 @@
 #include <functional>
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "BattleRoyale/core/PickableObjects/Ammo/AmmoTypes.h"
 #include "IInventoryComponent.generated.h"
 
 class IPickupObject;
+class UInventoryItemStaticData;
 struct FInventoryArrayItem;
 
 // This class does not need to be modified.
@@ -31,8 +33,14 @@ public:
 	virtual TScriptInterface<IPickupObject> GetEquippedItem() const = 0;
 	virtual bool HasItemEquipped() const = 0;
 
+	virtual bool HasItemOfType(TSubclassOf<UInventoryItemStaticData> itemStaticDataClassToFind) const = 0;
+	virtual bool HasAmmoOfType(EAmmoType ammoType) const = 0;
+	virtual bool HasLifeKid() const = 0;
+	
+	virtual int RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded) = 0;
+
 	virtual void SetPickableObject(TScriptInterface<IPickupObject> object) = 0;
 	virtual TScriptInterface<IPickupObject> GetPickableObject() const = 0;
 
-	virtual void PerformActionForEachInventoryItem(const std::function<bool (const FInventoryArrayItem& inventoryItem)>& callback) = 0;
+	virtual void PerformActionForEachInventoryItem(const std::function<bool (const FInventoryArrayItem& inventoryItem)>& callback) const = 0;
 };

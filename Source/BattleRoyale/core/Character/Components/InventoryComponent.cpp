@@ -10,6 +10,7 @@
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/PickableObjects/IPickupObject.h"
 #include "BattleRoyale/core/PickableObjects/PickableObjectBase.h"
+#include "BattleRoyale/core/PickableObjects/Ammo/Ammo.h"
 #include "BattleRoyale/core/PickableObjects/Weapons/WeaponBase.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemInstance.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryArray.h"
@@ -192,10 +193,86 @@ TScriptInterface<IPickupObject> UInventoryComponent::GetEquippedItem() const
 	return mEquippedItem;
 }
 
+bool UInventoryComponent::HasAmmoOfType(EAmmoType ammoType) const
+{
+	const auto inventoryItemInstance = GetAmmoItemOfType(ammoType);
+	
+	return inventoryItemInstance != nullptr;
+}
+
+bool UInventoryComponent::HasItemOfType(TSubclassOf<UInventoryItemStaticData> itemStaticDataClassToFind) const
+{
+	return mInventoryBag->FindFirstItem(itemStaticDataClassToFind) != nullptr;
+}
+
+bool UInventoryComponent::HasLifeKid() const
+{
+	return false;
+}
+
+int UInventoryComponent::RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded)
+{
+	int ammoRemoved = 0;
+	auto inventoryItemInstance = GetAmmoItemOfType(ammoType);
+
+	while(ammoRemoved < ammoNeeded && inventoryItemInstance != nullptr)
+	{
+		const auto ammoAvailable = inventoryItemInstance->GetValue();
+		if(ammoRemoved + ammoAvailable >= ammoNeeded)
+		{		
+			const auto newAmmoValue = ammoAvailable - (ammoNeeded - ammoRemoved);
+			if(newAmmoValue == 0)
+			{
+				mInventoryBag->RemoveFirstItem(inventoryItemInstance->GetStaticDataClass());
+			}
+			else
+			{
+				inventoryItemInstance->UpdateValue(newAmmoValue);
+			}
+			ammoRemoved = ammoNeeded;
+		}
+		else
+		{
+			mInventoryBag->RemoveFirstItem(inventoryItemInstance->GetStaticDataClass());
+			ammoRemoved += ammoAvailable;
+			inventoryItemInstance = GetAmmoItemOfType(ammoType);
+		}
+	}
+	
+	return ammoRemoved;
+}
+
 void UInventoryComponent::PerformActionForEachInventoryItem(
-	const std::function<bool (const FInventoryArrayItem& inventoryItem)>& action)
+	const std::function<bool (const FInventoryArrayItem& inventoryItem)>& action) const
 {
 	mInventoryBag->PerformActionForEachItem(action);
+}
+
+TScriptInterface<IIInventoryItemInstance> UInventoryComponent::GetAmmoItemOfType(EAmmoType ammoType) const
+{
+	TScriptInterface<IIInventoryItemInstance> inventoryItemInstanceFound = nullptr;
+	bool foundAmmoInTheInventory = false;
+	
+	PerformActionForEachInventoryItem(
+		[&ammoType, &foundAmmoInTheInventory, &inventoryItemInstanceFound](const FInventoryArrayItem& inventoryItem) -> bool
+		{
+			const auto staticData = inventoryItem.mInventoryItem->GetStaticData();
+			const auto objectClass = staticData->GetPickupObjectClass();
+			const auto pickableObject = objectClass.GetDefaultObject();
+			if(pickableObject->IsA<AAmmo>())
+			{
+				const auto ammo = Cast<AAmmo>(pickableObject);
+				if(ammo->GetAmmoType() == ammoType)
+				{
+					foundAmmoInTheInventory = true;
+					inventoryItemInstanceFound = inventoryItem.mInventoryItem;
+					return true;
+				}
+			}
+			return false;
+		});
+	
+	return inventoryItemInstanceFound;
 }
 
 void UInventoryComponent::OnInventoryKeyPressed()

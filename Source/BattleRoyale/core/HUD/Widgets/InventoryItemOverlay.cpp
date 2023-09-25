@@ -15,9 +15,9 @@ void UInventoryItemOverlay::SetItem(int value, const TSubclassOf<UUserWidget>& w
 	{
 		return;
 	}
+	
 	CurrentWidgetClass = widget;
-	RemoveChild(GetChildAt(0));
-    	
+	RemoveChildAt(0);
 	AddChild(itemWidget);
 
 	if(itemWidget->Implements<UIInventoryItemOverlay>())
@@ -25,18 +25,23 @@ void UInventoryItemOverlay::SetItem(int value, const TSubclassOf<UUserWidget>& w
 		const auto inventoryItemOverlayWidget = Cast<IIInventoryItemOverlay>(itemWidget);
 		inventoryItemOverlayWidget->Execute_SetValue(itemWidget, value);
 	}
+	
 	mIsEmpty = false;
 }
 
 void UInventoryItemOverlay::RemoveItem()
 {
+	if(mIsEmpty)
+	{
+		return;
+	}
 	const auto itemWidget = CreateWidget<UUserWidget>(this, DefaultWidgetClass);
 	if(!itemWidget)
 	{
 		return;
 	}
 	CurrentWidgetClass = DefaultWidgetClass;
-	RemoveChild(GetChildAt(0));
+	RemoveChildAt(0);
 	AddChild(itemWidget);
 	mIsEmpty = true;
 }

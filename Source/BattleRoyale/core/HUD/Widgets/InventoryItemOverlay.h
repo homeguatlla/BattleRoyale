@@ -3,19 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "IInventoryItemOverlay.h"
 #include "Components/Overlay.h"
 #include "InventoryItemOverlay.generated.h"
 
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable, BlueprintType)
 class BATTLEROYALE_API UInventoryItemOverlay : public UOverlay
 {
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	const TSubclassOf<UUserWidget> DefaultWidgetClass;
+
 	UFUNCTION(BlueprintCallable)
 	bool IsEmpty() const { return mIsEmpty; }
 	UFUNCTION(BlueprintCallable)
@@ -24,9 +26,6 @@ public:
 	void RemoveItem();
 	
 private:
-	UPROPERTY(EditDefaultsOnly)
-	const TSubclassOf<UUserWidget> DefaultWidgetClass;
-
 	UPROPERTY()
 	TSubclassOf<UUserWidget> CurrentWidgetClass;
 

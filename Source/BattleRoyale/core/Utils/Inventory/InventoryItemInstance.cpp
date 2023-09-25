@@ -3,7 +3,6 @@
 
 #include "InventoryItemInstance.h"
 
-#include "BattleRoyale/core/PickableObjects/IPickupObject.h"
 #include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 
@@ -29,6 +28,11 @@ void UInventoryItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 void UInventoryItemInstance::OnRep_IsEquipped()
 {
+}
+
+void UInventoryItemInstance::UpdateValue(int newValue)
+{
+	mValue = newValue;
 }
 
 void UInventoryItemInstance::OnEquipped()

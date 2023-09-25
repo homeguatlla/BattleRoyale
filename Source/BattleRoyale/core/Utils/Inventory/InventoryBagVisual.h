@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InventoryItemVisual.h"
 #include "UObject/Object.h"
 #include "InventoryBagVisual.generated.h"
 
@@ -17,8 +18,9 @@ class BATTLEROYALE_API UInventoryBagVisual : public UObject
 	GENERATED_BODY()
 
 public:
+	
 	//num items that can support
-	void SetMaxItems(int max) { mMaxItems = max; }
+	void Initialize(int max);
 	void Refresh(const TScriptInterface<IIInventoryBag> inventoryBag);
 
 	UFUNCTION(BlueprintCallable)

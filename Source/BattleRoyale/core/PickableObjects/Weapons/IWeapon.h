@@ -56,6 +56,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual bool IsMagazineFull() const = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual bool HasAmmo() const = 0;
+	
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual void Reload(int ammoAmount) = 0;
 	
 	/**
 	 * Fire is to activate the mechanism of the weapon. Pulling the trigger.

@@ -11,7 +11,7 @@
 class UInventoryItemStaticData;
 class UInventoryItemInstance;
 
-UCLASS()
+UCLASS(Abstract)
 class BATTLEROYALE_API APickableObjectBase : public AActor, public IPickupObject
 {
 	GENERATED_BODY()

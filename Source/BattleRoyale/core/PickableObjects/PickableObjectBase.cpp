@@ -43,6 +43,13 @@ APickableObjectBase::APickableObjectBase()
 	DisableDetectionArea();
 	//AreaSphere->SetCollisionResponseToChannels(ECollisionResponse::ECR_Ignore);
 	//AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	//The pickupable object starts with the Value of its StaticData
+	if(InventoryItemStaticData)
+	{
+		const auto inventoryItemStaticData = Cast<UInventoryItemStaticData>(InventoryItemStaticData->GetDefaultObject());
+		Value = inventoryItemStaticData->GetValue();
+	}
 }
 
 // Called when the game starts or when spawned

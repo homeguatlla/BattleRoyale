@@ -14,7 +14,7 @@ struct FInventoryItemVisual
 	FInventoryItemVisual() = default;
 	FInventoryItemVisual(int _id, int _value, bool _isEquipped, TSubclassOf<UUserWidget> _widgetClass);
 	FInventoryItemVisual(const FInventoryArrayItem& item);
-	
+
 	bool IsEmpty() const;
 	void Clear();
 	

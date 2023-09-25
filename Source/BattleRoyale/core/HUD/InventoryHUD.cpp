@@ -11,7 +11,7 @@
 
 const FString INVENTORY_HUD_NAME("InventoryHUD");
 
-void AInventoryHUD::Initialize(int hudIndex, APlayerController* playerController,
+void AInventoryHUD::Initialize(int maxInventoryItems, int hudIndex, APlayerController* playerController,
 	TArray<TSubclassOf<UUserWidget>> widgetClasses)
 {
 	mHUDWidget = utils::UtilsLibrary::CreateHUDFromClass<UUserWidget>(
@@ -21,6 +21,7 @@ void AInventoryHUD::Initialize(int hudIndex, APlayerController* playerController
 		widgetClasses[0]);
 
 	inventoryBagVisual = NewObject<UInventoryBagVisual>();
+	inventoryBagVisual->Initialize(maxInventoryItems);
 	BindToDelegate();
 }
 

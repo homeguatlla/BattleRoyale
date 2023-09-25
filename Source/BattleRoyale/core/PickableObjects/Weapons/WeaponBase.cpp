@@ -55,6 +55,12 @@ EAmmoType AWeaponBase::GetAmmoType() const
 	return ProjectileClass.GetDefaultObject()->GetAmmoType();	
 }
 
+void AWeaponBase::Reload(int ammoAmount)
+{
+	mAmmo += ammoAmount;
+	check(mAmmo <= GetMagazineCapacity());
+}
+
 void AWeaponBase::SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation)
 {
 	mLeftHandSocketTransform.SetLocation(newLocation);
