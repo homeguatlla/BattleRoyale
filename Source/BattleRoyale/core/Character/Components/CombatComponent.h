@@ -25,12 +25,8 @@ struct BATTLEROYALE_API FShootingData
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BATTLEROYALE_API UCombatComponent : public UActorComponent, public IGunComponent
 {
-private:
 	GENERATED_BODY()
-
-	UPROPERTY(ReplicatedUsing=OnRep_EquippedWeapon)
-	TScriptInterface<IWeapon> mEquippedWeapon;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatComponent", meta = (AllowPrivateAccess = "true"))
 	float MaxShootingDistance = 100000.0f;
 	
@@ -45,30 +41,13 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "CombatComponent")
 	bool IsDebugEnabled { false };
 	
-	UPROPERTY(Replicated)
-	bool mIsAiming;
-
-	UPROPERTY()
-	ACharacterBase* mCharacter;
-	
-	float mAimWalkSpeed;
-
-	/**
-	 * Aiming and FOV
-	 */
-	float mDefaultFOV;
-	float mCurrentFOV;
-	
-	FVector mDefaultCameraRelativeLocation;
-	FVector mCurrentCameraRelativeLocation;
-	
 	UPROPERTY(EditAnywhere, Category = "CombatComponent")
 	float ZoomedFOV = 30.0f;
+	
 	UPROPERTY(EditAnywhere, Category = "CombatComponent")
 	float ZoomInterpolationFOV = 20.0f;
 	
-	FTimerHandle mAutomaticFireTimer;
-	
+
 public:	
 	// Sets default values for this component's properties
 	UCombatComponent();
@@ -105,16 +84,13 @@ public:
 	virtual void Reload(const TScriptInterface<IIInventoryComponent> inventoryComponent) override;
 	
 	virtual void SetupLeftHandSocketTransform(const ACharacterBase* character) const override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 private:
-	//void OnRep_EquippedWeapon();
 	virtual void BeginPlay() override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	bool IsInputPressedByActionName(const FName& ActionName, const APlayerController* PlayerController) const;
-
-	UFUNCTION()
-	void OnRep_EquippedWeapon() const;
+	
 	FShootingData CalculateShootingTargetData() const;
 	float CalculateCrosshairSpread() const;
 	void CalculateInterpolatedFOVAndCameraLocation(float DeltaTime);
@@ -130,6 +106,31 @@ private:
 	bool EquipWeapon(TScriptInterface<IWeapon> weapon);
 	void OnEquippedPickableObject(TScriptInterface<IPickupObject> pickableObject);
 	void OnDroppedPickableObject();
+
+	UFUNCTION(Client, Reliable)
+	void ClientEquipWeapon(UObject* weapon); //We can not pass a TScriptInterface as a parameter in an RPC, so we pass an UObject instead.
 	
 	void DebugDrawAiming() const;
+
+	UPROPERTY()
+	TScriptInterface<IWeapon> mEquippedWeapon = nullptr;
+	
+	UPROPERTY(Replicated)
+	bool mIsAiming;
+
+	UPROPERTY()
+	ACharacterBase* mCharacter;
+	
+	float mAimWalkSpeed;
+
+	/**
+	 * Aiming and FOV
+	 */
+	float mDefaultFOV;
+	float mCurrentFOV;
+	
+	FVector mDefaultCameraRelativeLocation;
+	FVector mCurrentCameraRelativeLocation;
+
+	FTimerHandle mAutomaticFireTimer;
 };

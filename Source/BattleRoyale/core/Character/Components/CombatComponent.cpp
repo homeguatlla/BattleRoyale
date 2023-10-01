@@ -34,6 +34,11 @@ void UCombatComponent::InitializeComponent()
 	mCharacter = Cast<ACharacterBase>(GetOwner());
 	check(mCharacter);
 
+	if(!mCharacter->HasAuthority())
+	{
+		return;
+	}
+	
 	//Subscribe to pickup delegate
 	if(const auto inventoryComponent = Cast<UInventoryComponent>(mCharacter->GetInventoryComponent().GetObject()))
 	{
@@ -46,7 +51,6 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UCombatComponent, mEquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, mIsAiming);
 }
 
@@ -81,23 +85,12 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	}
 }
 
-void UCombatComponent::OnRep_EquippedWeapon() const
-{
-	//This rep notify is to inform the clients when the client just equipped a weapon,
-	//and then show the crosshairs.
-	if(!mCharacter || !mCharacter->IsLocallyControlled() || !mEquippedWeapon)
-	{
-		GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(0,0);
-		return;
-	}
-	GetGameInstance()->GetEventDispatcher()->OnEquippedWeapon.Broadcast(mEquippedWeapon);
-	GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(GetEquippedWeapon()->GetAmmo(), GetEquippedWeapon()->GetMagazineCapacity());
-}
-
 bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon)
 {
+	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 	if(weapon == nullptr)
 	{
+		gameInstance->GetEventDispatcher()->OnRefreshAmmo.Broadcast(0,0);
 		UE_LOG(LogCharacter, Error, TEXT("[%s][UCombatComponent::EquipWeapon] weapon is null"), *GetName());
 		return false;
 	}
@@ -106,11 +99,11 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon)
 	SetupLeftHandSocketTransform(mCharacter);
 	if(mCharacter->IsLocallyControlled())
 	{
-		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+		
 		gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(GetEquippedWeapon());
+		gameInstance->GetEventDispatcher()->OnRefreshAmmo.Broadcast(weapon->GetAmmo(), weapon->GetMagazineCapacity());
 	}
-	GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(weapon->GetAmmo(), weapon->GetMagazineCapacity());
-
+	
 	return true;
 }
 
@@ -241,6 +234,7 @@ void UCombatComponent::OnEquippedPickableObject(TScriptInterface<IPickupObject> 
 	{
 		const TScriptInterface<IWeapon> weapon = pickableObject.GetObject();
 		EquipWeapon(weapon);
+		ClientEquipWeapon(weapon.GetObject());
 	}
 }
 
@@ -254,6 +248,11 @@ void UCombatComponent::OnDroppedPickableObject()
 			gameInstance->GetEventDispatcher()->OnUnEquippedWeapon.Broadcast();
 		}
 	}
+}
+
+void UCombatComponent::ClientEquipWeapon_Implementation(UObject* weapon)
+{
+	EquipWeapon(weapon);
 }
 
 void UCombatComponent::ReleaseTrigger()

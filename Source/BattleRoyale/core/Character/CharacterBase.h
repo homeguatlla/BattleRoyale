@@ -79,14 +79,14 @@ class BATTLEROYALE_API ACharacterBase : public ACharacter, public IICharacter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	UHurtComponent* HurtComponent = nullptr;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Replicated, VisibleAnywhere)
 	UCombatComponent* CombatComponent = nullptr;
 
 	UPROPERTY(VisibleAnywhere)
 	UFootstepsComponent* FootstepsComponent = nullptr;
 	
 	UPROPERTY(Replicated, VisibleAnywhere)
-	class UInventoryComponent* InventoryComponent = nullptr;
+	UInventoryComponent* InventoryComponent = nullptr;
 	
 	bool mIsInvulnerable = false;
 

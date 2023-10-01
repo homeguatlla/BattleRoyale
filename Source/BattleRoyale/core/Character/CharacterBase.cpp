@@ -17,7 +17,6 @@
 #include "BattleRoyale/core/Abilities/GameplayAbilityBase.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "BattleRoyale/BattleRoyale.h"
-#include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
 #include "Components/CombatComponent.h"
@@ -51,7 +50,7 @@ ACharacterBase::ACharacterBase()
 
 	//Create hurtComponent
 	HurtComponent = CreateDefaultSubobject<UHurtComponent>(TEXT("HurtComponent"));
-	HurtComponent->SetIsReplicated(true);
+	//HurtComponent->SetIsReplicated(true);
 
 	//Create CombatComponent
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
@@ -218,6 +217,7 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ACharacterBase, mControlRotation);
+	DOREPLIFETIME(ACharacterBase, CombatComponent);
 	DOREPLIFETIME(ACharacterBase, InventoryComponent);
 }
 
