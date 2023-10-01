@@ -31,7 +31,6 @@ UInventoryComponent::UInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
-	SetIsReplicatedByDefault(true);
 	mInventoryBag = CreateDefaultSubobject<UInventoryBag>("InventoryBag");
 	mInventoryBag->SetMaxItems(MaxInventoryItems);
 }

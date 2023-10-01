@@ -12,7 +12,6 @@
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "BattleRoyale/core/PickableObjects/Weapons/IWeapon.h"
 #include "BattleRoyale/core/Character/Components/IInventoryComponent.h"
-#include "BattleRoyale/core/PickableObjects/Ammo/Ammo.h"
 #include "BattleRoyale/core/PickableObjects/Weapons/WeaponBase.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/InputSettings.h"
@@ -111,7 +110,7 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon)
 		gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(GetEquippedWeapon());
 	}
 	GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(weapon->GetAmmo(), weapon->GetMagazineCapacity());
-	
+
 	return true;
 }
 
@@ -188,10 +187,12 @@ bool UCombatComponent::CanReload(const TScriptInterface<IIInventoryComponent> in
 void UCombatComponent::Reload(const TScriptInterface<IIInventoryComponent> inventoryComponent)
 {
 	//TODO quizá hay que volver a comprobar que pueda hacer el reload y volver a comprobar todo?
-	auto weapon = GetEquippedWeapon();
+	const auto weapon = GetEquippedWeapon();
+
+	check(weapon);
 	
 	const auto ammoTypeNeeded = weapon->GetAmmoType();
-	auto ammoNeeded = weapon->GetMagazineCapacity() - weapon->GetAmmo();
+	const auto ammoNeeded = weapon->GetMagazineCapacity() - weapon->GetAmmo();
 
 	const auto ammoFound = inventoryComponent->RemoveEnoughAmmo(ammoTypeNeeded, ammoNeeded);
 
@@ -199,6 +200,8 @@ void UCombatComponent::Reload(const TScriptInterface<IIInventoryComponent> inven
 	check(ammoFound > 0);
 
 	weapon->Reload(ammoFound);
+
+	//Update ammo HUD
 	GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(weapon->GetAmmo(), weapon->GetMagazineCapacity());
 }
 
