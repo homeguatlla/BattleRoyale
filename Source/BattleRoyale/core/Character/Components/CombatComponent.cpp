@@ -193,9 +193,6 @@ void UCombatComponent::Reload(const TScriptInterface<IIInventoryComponent> inven
 	check(ammoFound > 0);
 
 	weapon->Reload(ammoFound);
-
-	//Update ammo HUD
-	GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(weapon->GetAmmo(), weapon->GetMagazineCapacity());
 }
 
 void UCombatComponent::Shoot()
@@ -225,7 +222,6 @@ void UCombatComponent::ShootOnce() const
 	const auto weapon = mEquippedWeapon;
 
 	weapon->Fire(shootingTargetData.targetLocation);
-	GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(weapon->GetAmmo(), weapon->GetMagazineCapacity());
 }
 
 void UCombatComponent::OnEquippedPickableObject(TScriptInterface<IPickupObject> pickableObject)

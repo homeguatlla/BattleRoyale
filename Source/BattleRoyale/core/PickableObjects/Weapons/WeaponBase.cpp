@@ -59,6 +59,10 @@ void AWeaponBase::Reload(int ammoAmount)
 {
 	mAmmo += ammoAmount;
 	check(mAmmo <= GetMagazineCapacity());
+	if(const auto character = Cast<ACharacterBase>(GetOwner()))
+	{
+		RefreshAmmoHUD(character);
+	}
 }
 
 void AWeaponBase::SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation)
@@ -104,12 +108,13 @@ void AWeaponBase::ServerFire_Implementation(const FVector& muzzleLocation, const
 	}
 
 	mAmmo = FMath::Clamp(mAmmo-1, 0, MagazineCapacity);
-	if(const auto character = Cast<IICharacter>(GetOwner()))
+	if(const auto character = Cast<ACharacterBase>(GetOwner()))
 	{
 		if(MuzzleGameplayEffectClass)
 		{
 			character->GetAbilitySystemComponentBase()->ApplyGameplayEffectToSelf(MuzzleGameplayEffectClass);
 		}
+		RefreshAmmoHUD(character);
 	}
 }
 
@@ -117,6 +122,14 @@ void AWeaponBase::ServerFire_Implementation(const FVector& muzzleLocation, const
 void AWeaponBase::OnFire()
 {
 	SpawnBulletShell();
+}
+
+void AWeaponBase::OnRep_Ammo() const
+{
+	if(const auto character = Cast<ACharacterBase>(GetOwner()))
+	{
+		RefreshAmmoHUD(character);
+	}
 }
 
 void AWeaponBase::StartAiming(const FVector& location, const FRotator& rotation)
@@ -198,6 +211,14 @@ void AWeaponBase::SpawnBulletShell() const
 		socketTransform.GetLocation(),
 		socketTransform.GetRotation().Rotator());
 	bulletShell->ApplyEjectionImpulse(ShellEjectionImpulse);
+}
+
+void AWeaponBase::RefreshAmmoHUD(const ACharacterBase* character) const
+{
+	if(character->IsLocallyControlled())
+	{
+		Cast<UBattleRoyaleGameInstance>(GetGameInstance())->GetEventDispatcher()->OnRefreshAmmo.Broadcast(GetAmmo(), GetMagazineCapacity());
+	}
 }
 
 FTransform AWeaponBase::GetSocketMeshTransformBySocketName(const FName& socketName) const

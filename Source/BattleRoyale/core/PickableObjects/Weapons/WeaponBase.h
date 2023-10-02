@@ -72,7 +72,7 @@ class BATTLEROYALE_API AWeaponBase : public APickableObjectBase, public IWeapon
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	float ZoomInterpolationSpeed = 20.0f;
 
-	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Weapon")
+	UPROPERTY(EditDefaultsOnly, ReplicatedUsing=OnRep_Ammo, Category = "Weapon")
 	int32 mAmmo;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
@@ -124,9 +124,12 @@ private:
 	
 	UFUNCTION(Server, Reliable)
 	void ServerFire(const FVector& muzzleLocation, const FVector& targetLocation);
+	UFUNCTION()
+	void OnRep_Ammo() const;
 	
 	bool SpawnProjectileServer(const FVector& muzzleLocation, const FVector& shootingDirection) const;
 	FVector GetProjectileSpawnLocation(const FVector& location, const FVector& direction, float distanceFromMuzzleLocation) const;
+	void RefreshAmmoHUD(const ACharacterBase* character) const;
 
 	FTransform GetSocketMeshTransformBySocketName(const FName& socketName) const;
 	void SpawnBulletShell() const;
