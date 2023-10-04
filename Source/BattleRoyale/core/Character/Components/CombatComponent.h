@@ -116,8 +116,10 @@ private:
 	TScriptInterface<IWeapon> mEquippedWeapon = nullptr;
 	
 	UPROPERTY(Replicated)
-	bool mIsAiming;
+	bool mIsAiming = false;
 
+	bool mIsAutomaticFireOn = false;
+	
 	UPROPERTY()
 	ACharacterBase* mCharacter;
 	

@@ -8,6 +8,7 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameplayEffects/CooldownGameplayEffect.h"
+#include "BattleRoyale/core/PickableObjects/Weapons/IWeapon.h"
 
 UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 {
@@ -21,7 +22,7 @@ UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SHOOT_PROJECTILE));
-
+	
 	CooldownGameplayEffectClass = UCooldownGameplayEffect::StaticClass();
 }
 

@@ -204,7 +204,7 @@ void UCombatComponent::Shoot()
 	const auto playerController = Cast<APlayerController>(GetOwner()->GetInstigatorController());
 
 	const auto isFireInputPressed = IsInputPressedByActionName("Fire", playerController);
-	if(weapon->IsAutomaticFireEnabled() && isFireInputPressed)
+	if(weapon->IsAutomaticFireEnabled() && isFireInputPressed && !mIsAutomaticFireOn)
 	{
 		StartAutomaticFireTimer();
 	}
@@ -254,6 +254,7 @@ void UCombatComponent::ClientEquipWeapon_Implementation(UObject* weapon)
 void UCombatComponent::ReleaseTrigger()
 {
 	GetWorld()->GetTimerManager().ClearTimer(mAutomaticFireTimer);
+	mIsAutomaticFireOn = false;
 }
 
 void UCombatComponent::StartAutomaticFireTimer()
@@ -263,6 +264,8 @@ void UCombatComponent::StartAutomaticFireTimer()
 	{
 		return;
 	}
+	
+	mIsAutomaticFireOn = true;
 	
 	GetWorld()->GetTimerManager().SetTimer(
 		mAutomaticFireTimer,

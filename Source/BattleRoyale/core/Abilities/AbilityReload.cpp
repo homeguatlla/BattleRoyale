@@ -17,6 +17,8 @@ UAbilityReload::UAbilityReload()
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_RELOAD));
+
+	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SHOOT_PROJECTILE));
 }
 
 bool UAbilityReload::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -57,6 +59,7 @@ void UAbilityReload::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		{
 			SubscribeToEventMontageShoot(mCharacter);
 			CreateTaskPlayMontageReloading(combatComponent, ActorInfo);
+			combatComponent->ReleaseTrigger();
 			return;
 		}
 	}
