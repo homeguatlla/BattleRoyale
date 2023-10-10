@@ -109,6 +109,9 @@ private:
 
 	UFUNCTION(Client, Reliable)
 	void ClientEquipWeapon(UObject* weapon); //We can not pass a TScriptInterface as a parameter in an RPC, so we pass an UObject instead.
+
+	UFUNCTION(Client, Reliable)
+	void ClientUnEquipWeapon();
 	
 	void DebugDrawAiming() const;
 

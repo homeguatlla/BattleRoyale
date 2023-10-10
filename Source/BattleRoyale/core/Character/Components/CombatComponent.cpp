@@ -98,8 +98,7 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon)
 	mEquippedWeapon = weapon;
 	SetupLeftHandSocketTransform(mCharacter);
 	if(mCharacter->IsLocallyControlled())
-	{
-		
+	{		
 		gameInstance->GetEventDispatcher()->OnEquippedWeapon.Broadcast(GetEquippedWeapon());
 		gameInstance->GetEventDispatcher()->OnRefreshAmmo.Broadcast(weapon->GetAmmo(), weapon->GetMagazineCapacity());
 	}
@@ -237,7 +236,8 @@ void UCombatComponent::OnEquippedPickableObject(TScriptInterface<IPickupObject> 
 void UCombatComponent::OnDroppedPickableObject()
 {
 	if(UnEquipWeapon())
-	{		
+	{
+		ClientUnEquipWeapon();
 		if(mCharacter->IsLocallyControlled())
 		{
 			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
@@ -464,6 +464,10 @@ bool UCombatComponent::IsInputPressedByActionName(const FName& ActionName, const
 	return isPressed;
 }
 
+void UCombatComponent::ClientUnEquipWeapon_Implementation()
+{
+	UnEquipWeapon();
+}
 
 void UCombatComponent::DebugDrawAiming() const
 {
