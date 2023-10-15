@@ -86,7 +86,10 @@ bool UCombatComponent::EquipWeapon(TScriptInterface<IWeapon> weapon)
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 	if(weapon == nullptr)
 	{
-		gameInstance->GetEventDispatcher()->OnRefreshAmmo.Broadcast(0,0);
+		if(mCharacter->IsLocallyControlled())
+		{
+			gameInstance->GetEventDispatcher()->OnRefreshAmmo.Broadcast(0,0);
+		}
 		UE_LOG(LogCharacter, Error, TEXT("[%s][UCombatComponent::EquipWeapon] weapon is null"), *GetName());
 		return false;
 	}
@@ -107,7 +110,10 @@ bool UCombatComponent::UnEquipWeapon()
 	//mEquippedWeapon->SetCharacterOwner(nullptr);
 	//Reset the equipped weapon
 	mEquippedWeapon = TScriptInterface<IWeapon>();
-	GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(0, 0);
+	if(mCharacter->IsLocallyControlled())
+	{
+		GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(0, 0);
+	}
 
 	return true;
 }
