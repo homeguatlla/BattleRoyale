@@ -66,6 +66,7 @@ bool UAbilitySystemComponentBase::HasGameplayTag(const FGameplayTag& tag) const
 
 void UAbilitySystemComponentBase::AddGameplayTag(const FGameplayTag& tag)
 {
+	//AddReplicatedLooseGameplayTag(tag);
 	AddLooseGameplayTag(tag);
 }
 

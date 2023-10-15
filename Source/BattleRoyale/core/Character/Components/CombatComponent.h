@@ -84,6 +84,8 @@ public:
 	virtual void Reload(const TScriptInterface<IIInventoryComponent> inventoryComponent) override;
 	
 	virtual void SetupLeftHandSocketTransform(const ACharacterBase* character) const override;
+
+protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 private:
@@ -106,36 +108,29 @@ private:
 	bool EquipWeapon(TScriptInterface<IWeapon> weapon);
 	void OnEquippedPickableObject(TScriptInterface<IPickupObject> pickableObject);
 	void OnDroppedPickableObject();
-
-	UFUNCTION(Client, Reliable)
-	void ClientEquipWeapon(UObject* weapon); //We can not pass a TScriptInterface as a parameter in an RPC, so we pass an UObject instead.
-
-	UFUNCTION(Client, Reliable)
-	void ClientUnEquipWeapon();
 	
 	void DebugDrawAiming() const;
-
+	
 	UPROPERTY()
 	TScriptInterface<IWeapon> mEquippedWeapon = nullptr;
 	
-	UPROPERTY(Replicated)
-	bool mIsAiming = false;
-
 	bool mIsAutomaticFireOn = false;
+	FTimerHandle mAutomaticFireTimer;
 	
 	UPROPERTY()
 	ACharacterBase* mCharacter;
 	
-	float mAimWalkSpeed;
-
 	/**
 	 * Aiming and FOV
 	 */
+	UPROPERTY(Replicated)
+	bool mIsAiming = false;
+	
 	float mDefaultFOV;
 	float mCurrentFOV;
 	
 	FVector mDefaultCameraRelativeLocation;
 	FVector mCurrentCameraRelativeLocation;
 
-	FTimerHandle mAutomaticFireTimer;
+	float mAimWalkSpeed;
 };

@@ -274,6 +274,18 @@ TScriptInterface<IIInventoryItemInstance> UInventoryComponent::GetAmmoItemOfType
 	return inventoryItemInstanceFound;
 }
 
+void UInventoryComponent::OnRep_EquippedItem() const
+{
+	if(mEquippedItem == nullptr)
+	{
+		OnDroppedPickableObject.Broadcast();	
+	}
+	else
+	{
+		OnEquippedPickableObjectDelegate.Broadcast(mEquippedItem);
+	}
+}
+
 void UInventoryComponent::OnInventoryKeyPressed()
 {
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetOwner()->GetGameInstance());

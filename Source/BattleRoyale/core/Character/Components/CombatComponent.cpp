@@ -33,11 +33,6 @@ void UCombatComponent::InitializeComponent()
 
 	mCharacter = Cast<ACharacterBase>(GetOwner());
 	check(mCharacter);
-
-	if(!mCharacter->HasAuthority())
-	{
-		return;
-	}
 	
 	//Subscribe to pickup delegate
 	if(const auto inventoryComponent = Cast<UInventoryComponent>(mCharacter->GetInventoryComponent().GetObject()))
@@ -79,6 +74,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 		CalculateInterpolatedFOVAndCameraLocation(DeltaTime);
 	}
+	
 	if(IsDebugEnabled)
 	{
 		DebugDrawAiming();
@@ -229,7 +225,6 @@ void UCombatComponent::OnEquippedPickableObject(TScriptInterface<IPickupObject> 
 	{
 		const TScriptInterface<IWeapon> weapon = pickableObject.GetObject();
 		EquipWeapon(weapon);
-		ClientEquipWeapon(weapon.GetObject());
 	}
 }
 
@@ -237,18 +232,12 @@ void UCombatComponent::OnDroppedPickableObject()
 {
 	if(UnEquipWeapon())
 	{
-		ClientUnEquipWeapon();
 		if(mCharacter->IsLocallyControlled())
 		{
 			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 			gameInstance->GetEventDispatcher()->OnUnEquippedWeapon.Broadcast();
 		}
 	}
-}
-
-void UCombatComponent::ClientEquipWeapon_Implementation(UObject* weapon)
-{
-	EquipWeapon(weapon);
 }
 
 void UCombatComponent::ReleaseTrigger()
@@ -339,8 +328,6 @@ float UCombatComponent::CalculateCrosshairSpread() const
 	}
 	return 0.0f;
 }
-
-static FVector normalCameraOffset;
 
 void UCombatComponent::CalculateInterpolatedFOVAndCameraLocation(float DeltaTime)
 {
@@ -444,7 +431,6 @@ void UCombatComponent::SetCameraRelativeLocation(const FVector& location)
 {
 	mDefaultCameraRelativeLocation = location;
 	mCurrentCameraRelativeLocation = mDefaultCameraRelativeLocation;
-	normalCameraOffset = mDefaultCameraRelativeLocation;
 }
 
 bool UCombatComponent::IsInputPressedByActionName(const FName& ActionName, const APlayerController* PlayerController) const
@@ -462,11 +448,6 @@ bool UCombatComponent::IsInputPressedByActionName(const FName& ActionName, const
 		}
 	}
 	return isPressed;
-}
-
-void UCombatComponent::ClientUnEquipWeapon_Implementation()
-{
-	UnEquipWeapon();
 }
 
 void UCombatComponent::DebugDrawAiming() const

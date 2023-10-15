@@ -55,9 +55,13 @@ protected:
 	virtual void InitializeComponent() override;
 	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 private:
 	virtual bool EquipItem(TScriptInterface<IPickupObject> pickableObject) override;
 	TScriptInterface<IIInventoryItemInstance> GetAmmoItemOfType(EAmmoType ammoType) const;
+	UFUNCTION()
+	void OnRep_EquippedItem() const;
+	
 	//void UnEquipItem();
 	//void DropItem();
 
@@ -70,7 +74,7 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TArray<TSubclassOf<UInventoryItemStaticData>> DefaultItems;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing=OnRep_EquippedItem)
 	TScriptInterface<IPickupObject> mEquippedItem = nullptr;
 
 	TScriptInterface<IPickupObject> mPickupObject;
