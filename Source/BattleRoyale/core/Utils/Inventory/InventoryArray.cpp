@@ -4,7 +4,6 @@
 #include "InventoryArray.h"
 #include "InventoryArrayItem.h"
 #include "InventoryItemInstance.h"
-#include "BattleRoyale/core/PickableObjects/PickableObjectBase.h"
 
 void FInventoryArray::AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass, int _value)
 {

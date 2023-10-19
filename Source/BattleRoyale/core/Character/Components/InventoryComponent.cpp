@@ -31,14 +31,24 @@ UInventoryComponent::UInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
-	mInventoryBag = CreateDefaultSubobject<UInventoryBag>("InventoryBag");
-	mInventoryBag->SetMaxItems(MaxInventoryItems);
+	SetIsReplicatedByDefault(true); //esto no sé si hace falta pero estaba en el curso.
+	
 }
 
 void UInventoryComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
+	//If I use a CreateDefaultSubObjects in the constructor for this UObject InventoryBag. Seems everytime I start
+	//a new game, the inventoryBag is like being copied from a default data which contains the last game data.
+	//So, the inventoryBag contains 2 elements in the last game, after creation in a new game is filled up with 2 elements.
+	//Seems that is not correct initialize a UObject with a CreateDefaultSubObjects
+	//If, I use NewObject<UInventoryBag> in the constructor, the inventoryBag is different than nullptr but,
+	//later, is null. So, we can not call NewObjects in the constructor. Seems that, when executing the constructor
+	//the object is not loaded yet and then, one loaded in the BeginPlay or the InitializeComponent can be reset.
+	mInventoryBag = NewObject<UInventoryBag>();
+	mInventoryBag->SetMaxItems(MaxInventoryItems);
+	
 	if(!GetOwner()->HasAuthority())
 	{
 		return;
@@ -47,7 +57,8 @@ void UInventoryComponent::InitializeComponent()
 	//Adding default items to player
 	for(const auto item : DefaultItems)
 	{
-		//mInventoryArray.AddItem(item);
+		const auto itemDefault = item->GetDefaultObject<UInventoryItemStaticData>();
+		mInventoryBag->AddItem(item, itemDefault->GetValue());
 	}
 }
 
@@ -77,6 +88,7 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                         FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
 	//DEBUG purposes only
 	if(ConsoleShowInventory.GetValueOnGameThread() != 0)
 	{

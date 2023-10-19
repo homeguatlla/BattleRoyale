@@ -97,7 +97,10 @@ bool AGameModeCommon::HasCurrentGameSession() const
 void AGameModeCommon::DestroyGameSession()
 {
 	const auto onlineSub = IOnlineSubsystem::Get();
-	onlineSub->GetSessionInterface()->DestroySession(NAME_GameSession);
+	if(onlineSub)
+	{
+		onlineSub->GetSessionInterface()->DestroySession(NAME_GameSession);
+	}
 }
 
 void AGameModeCommon::NotifyNewKillToAll(const IIPlayerState* victimPlayerState, const IIPlayerState* playerStateKiller) const
