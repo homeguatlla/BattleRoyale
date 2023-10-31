@@ -25,7 +25,7 @@ const FName TAG_GAMEPLAYCUE_DISSOLVE("GameplayCue.Dissolve");
 const FName TAG_EVENT_MONTAGE_SHOOT("Event.Montage.Shoot");
 const FName TAG_EVENT_MONTAGE_RELOAD("Event.Montage.Reload");
 
-const FName TAG_EVENT_PICKUP_INDICATOR("Event.PickupIndicator");
+const FName TAG_EVENT_SET_OBJECT_TO_PICKUP_INDICATOR("Event.PickupIndicator.Set");
 const FName TAG_EVENT_PICKUP("Event.Pickup");
 
 

@@ -17,7 +17,8 @@
 APickableObjectBase::APickableObjectBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bStartWithTickEnabled = false;
 	bReplicates = true;
 	
 	// Create a gun mesh component
@@ -41,8 +42,6 @@ APickableObjectBase::APickableObjectBase()
 	AreaSphere->SetupAttachment(RootComponent);
 
 	DisableDetectionArea();
-	//AreaSphere->SetCollisionResponseToChannels(ECollisionResponse::ECR_Ignore);
-	//AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	//The pickupable object starts with the Value of its StaticData
 	if(InventoryItemStaticData)
@@ -50,6 +49,14 @@ APickableObjectBase::APickableObjectBase()
 		const auto inventoryItemStaticData = Cast<UInventoryItemStaticData>(InventoryItemStaticData->GetDefaultObject());
 		Value = inventoryItemStaticData->GetValue();
 	}
+}
+
+void APickableObjectBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APickableObjectBase, State);
+	DOREPLIFETIME(APickableObjectBase, Value);
 }
 
 // Called when the game starts or when spawned
@@ -62,6 +69,7 @@ void APickableObjectBase::BeginPlay()
 		EnableDetectionArea();
 	}
 }
+
 
 void APickableObjectBase::ChangeState(EPickupObjectState state)
 {
@@ -111,24 +119,6 @@ void APickableObjectBase::DetachFromComponent(const FDetachmentTransformRules& r
 	
 	GetMesh()->DetachFromComponent(rules);
 }
-/*
-FVector APickupObjectBase::GetPickupWidgetLocation() const
-{
-	FVector boundingBoxOrigin, boundingBoxExtend;
-	//TODO Nos devuelve las bounds de la esfera de colision, y no nos interesa porque el texto saldrá a un radio
-	//demasiado alejado del pick up object.
-	//Queremos los bounds de la mesh. Pero no hay manera. Igual hay que pillar la local bound de la mesh y aplicarle la rotacion
-	//del actor. Pensarlo bien, buscar ejemplos.
-	
-	//GetActorBounds(false, boundingBoxOrigin, boundingBoxExtend);
-	boundingBoxOrigin = GetActorLocation();
-	boundingBoxExtend = GetMesh()->GetLocalBounds().BoxExtent;
-	const auto height = boundingBoxExtend.Z;
-	const auto objectLocation = GetActorLocation();
-	DrawDebugBox(GetWorld(), boundingBoxOrigin , boundingBoxExtend,FColor::Green, false, 20);
-	DrawDebugSphere(GetWorld(), boundingBoxOrigin + FVector(0.0f, 0.0f, height), 3, 30, FColor::Red, false, 20);
-	return boundingBoxOrigin;// + FVector(0.0f, 0.0f, height);
-}*/
 
 void APickableObjectBase::SetValue(int value)
 {
@@ -163,18 +153,12 @@ void APickableObjectBase::EnableDetectionArea() const
 {
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	AreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-
-	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnSphereOverlapServer);
-	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnSphereEndOverlapServer);
 }
 
 void APickableObjectBase::DisableDetectionArea() const
 {
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AreaSphere->SetCollisionResponseToChannels(ECollisionResponse::ECR_Ignore);
-	
-	AreaSphere->OnComponentBeginOverlap.RemoveAll(this);
-	AreaSphere->OnComponentEndOverlap.RemoveAll(this);
 }
 
 void APickableObjectBase::SetEnableMeshPhysicsAndCollision(bool enable) const
@@ -182,14 +166,6 @@ void APickableObjectBase::SetEnableMeshPhysicsAndCollision(bool enable) const
 	GetMesh()->SetSimulatePhysics(enable);
 	GetMesh()->SetEnableGravity(enable);
 	GetMesh()->SetCollisionEnabled(enable ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
-}
-
-void APickableObjectBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(APickableObjectBase, State);
-	DOREPLIFETIME(APickableObjectBase, Value);
 }
 
 void APickableObjectBase::OnRep_State()
@@ -211,68 +187,4 @@ void APickableObjectBase::OnRep_State()
 			UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::Equip] pickup object not attached to the character"), *GetName());
 		}	
 	}
-}
-
-void APickableObjectBase::OnSphereOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                            UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if(IsEquipped())
-	{
-		return;
-	}
-
-	CancelPickupIndicator(OtherActor);
-	
-	if(const auto character = Cast<ACharacterBase>(OtherActor))
-	{
-		const auto playerState = Cast<APlayerStateBase>(character->GetPlayerState());
-		if(!playerState)
-		{
-			return;
-		}
-
-		utils::UtilsLibrary::SendGameplayEventWithTargetData<FTargetDataPickupObject>(
-			character,
-			FGameplayTag::RequestGameplayTag(TAG_EVENT_PICKUP_INDICATOR),
-			this,
-			new FTargetDataPickupObject(GetActorLocation(), this));
-		
-		//Si enviamos un efecto también funciona, incluso podemos dejar la habilidad como Local Only,
-		//pero no podemos pasar parámetros
-		//mPickupIndicatorEffectHandle = playerState->GetAbilitySystemComponentInterface()->ApplyGameplayEffectToSelf(PickupIndicatorEffect);
-	}
-}
-
-void APickableObjectBase::OnSphereEndOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	//No matter the state of the weapon if end overlap, remove pickup indicator.
-	//imagin situation where player 1 is seeing its player indicator, and a player 2 equips the
-	//object the player 1 is seeing, we want the indicator be disabled in both.
-
-	//TODO tenemos un bug.
-	//Si entramos en una sphera se muestra el indicador. Si estando dentro de una entramos dentro de otra, se cancela la anterior y
-	//se muestra el nuevo indicador. Correcto. Pero si salimos de la primera, nos quita el indicador aún cuando estamos dentro de la otra.
-	//Hay que ver que hacer aquí. Igual lo mejor sería quitar el indicador por tiempo. Sale, se queda 3 segundos y desaparece.
-	CancelPickupIndicator(OtherActor);
-}
-
-bool APickableObjectBase::CancelPickupIndicator(AActor* OtherActor) const
-{
-	if(const auto character = Cast<ACharacterBase>(OtherActor))
-	{
-		const auto playerState = Cast<APlayerStateBase>(character->GetPlayerState());
-		if(!playerState)
-		{
-			return true;
-		}
-		//Remove the ability with tag pickup indicator
-		FGameplayTagContainer cancelTags;
-		UBlueprintGameplayTagLibrary::AddGameplayTag(cancelTags, FGameplayTag::RequestGameplayTag(TAG_ABILITY_PICKUP_INDICATOR));
-		playerState->GetAbilitySystemComponent()->CancelAbilities(&cancelTags);
-
-		//En caso que enviemos effecto hay que quitarlo
-		//playerState->GetAbilitySystemComponentInterface()->RemoveGameplayEffect(mPickupIndicatorEffectHandle);
-	}
-	return false;
 }

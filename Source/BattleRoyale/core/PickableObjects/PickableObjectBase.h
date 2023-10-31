@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "PickableObjectBase.generated.h"
 
+class IICharacter;
 class UInventoryItemStaticData;
 class UInventoryItemInstance;
 
@@ -44,6 +45,7 @@ public:
 	virtual int GetValue() const override { return Value; }
 	virtual void SetValue(int value) override;
 	virtual void SetCharacterOwner(ACharacterBase* character) override;
+	virtual FVector GetLocation() const override { return GetActorLocation(); }
 	
 	virtual void OnEquipped() override;
 	virtual void OnUnEquipped() override;
@@ -58,21 +60,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
-	UFUNCTION()
-	void OnSphereOverlapServer(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult& SweepResult);
-	UFUNCTION()
-	void OnSphereEndOverlapServer(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex);
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 private:
@@ -81,7 +68,7 @@ private:
 	void EnableDetectionArea() const;
 	void DisableDetectionArea() const;
 	void SetEnableMeshPhysicsAndCollision(bool enable) const;
-	bool CancelPickupIndicator(AActor* OtherActor) const;
+	
 	UFUNCTION()
 	void OnRep_State();
 };

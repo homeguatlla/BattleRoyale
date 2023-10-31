@@ -16,6 +16,8 @@ class BATTLEROYALE_API UInventoryBag : public UObject, public IIInventoryBag
 {
 	GENERATED_BODY()
 
+	virtual bool IsSupportedForNetworking() const override { return true; }
+	
 public:
 	UInventoryBag();
 	
@@ -32,7 +34,7 @@ public:
 	virtual bool IsFull() const override { return mInventoryArray.Num() >= mMaxItems; }
 	virtual bool IsEmpty() const override { return mInventoryArray.Num() <= 0; }
 	TSubclassOf<UUserWidget> GetItemWidgetClassByIndex(int index) const;
-	
+
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	

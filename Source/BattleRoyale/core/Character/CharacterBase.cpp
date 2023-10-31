@@ -23,6 +23,7 @@
 #include "Components/FootstepsComponent.h"
 #include "Components/HurtComponent.h"
 #include "Components/InventoryComponent.h"
+#include "Components/PickupSelectorComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 
@@ -61,6 +62,10 @@ ACharacterBase::ACharacterBase()
 	//When player dies, inventory is lost. Move it to PlayerState to maintain it
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 	InventoryComponent->SetIsReplicated(true);
+
+	//Create PickupSelectorComponent
+	CreateDefaultSubobject<UPickupSelectorComponent>(TEXT("PickupSelectorComponent"))->SetIsReplicated(true);
+	
 }
 
 void ACharacterBase::BeginPlay()

@@ -64,6 +64,22 @@ class BATTLEROYALE_API UtilsLibrary
 			const auto shape = FCollisionShape::MakeSphere(radius);
 			return TraceSweepMultyByChannel(world, startLocation, endLocation, rotation, channel, shape, params);
 		}
+
+		static TArray<FHitResult> TraceVisionCapsule(
+				UWorld* world,
+				const FVector& startLocation,
+				const FVector& endLocation,
+				const float radius,
+				const float height,
+				const FQuat& rotation,
+				ECollisionChannel channel,
+				const FCollisionQueryParams& params)
+		{
+			check(world);
+			
+			const auto shape = FCollisionShape::MakeCapsule(radius, height);
+			return TraceSweepMultyByChannel(world, startLocation, endLocation, rotation, channel, shape, params);
+		}
 	
 		static TArray<FHitResult> TraceSweepMultyByChannel(
 			UWorld* world,
@@ -128,6 +144,7 @@ class BATTLEROYALE_API UtilsLibrary
 				rayEnd,
 				ECollisionChannel::ECC_Visibility,
 				params);
+			//DrawDebugLine(world, rayStart, rayEnd, FColor::Blue);
 			
 			return hitResult;
 		}

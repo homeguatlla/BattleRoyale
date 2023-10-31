@@ -7,6 +7,5 @@
 // Sets default values
 AAmmo::AAmmo()
 {
-	PrimaryActorTick.bCanEverTick = false;
 }
 

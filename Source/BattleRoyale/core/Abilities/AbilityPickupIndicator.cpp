@@ -14,15 +14,15 @@ UAbilityPickupIndicator::UAbilityPickupIndicator()
 	//We want server initiated because we initiate from server (when a collision is detected)
 	//and we want server replicates the activation with parameters to the client through a gameplay event.
 	//otherwise, (serverOnly) the ability won't be activated on client to show the pickup indicator
-	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerInitiated;
+	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalOnly;
 
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_PICKUP_INDICATOR));
 	
 	//With this trigger we activate the ability if it receives an gameplay event with the event_pickup_indicator tag
-	FAbilityTriggerData triggerData;
-	triggerData.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_PICKUP_INDICATOR);
-	triggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
-	AbilityTriggers.Add(triggerData);
+	FAbilityTriggerData triggerDataToAdd;
+	triggerDataToAdd.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_SET_OBJECT_TO_PICKUP_INDICATOR);
+	triggerDataToAdd.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
+	AbilityTriggers.Add(triggerDataToAdd);
 }
 
 bool UAbilityPickupIndicator::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,

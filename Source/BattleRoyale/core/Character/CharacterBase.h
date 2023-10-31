@@ -102,7 +102,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsCharacterValid() const override;
-
+	
 	UFUNCTION(BlueprintCallable)
 	virtual FVector GetCurrentVelocity() const override { return GetVelocity(); }
 
