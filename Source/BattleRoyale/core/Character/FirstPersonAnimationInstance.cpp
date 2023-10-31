@@ -4,6 +4,7 @@
 #include "FirstPersonAnimationInstance.h"
 
 #include "KismetAnimationLibrary.h"
+#include "BattleRoyale/core/PickableObjects/Weapons/IWeapon.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "Components/CombatComponent.h"
 #include "Kismet/KismetMathLibrary.h"
