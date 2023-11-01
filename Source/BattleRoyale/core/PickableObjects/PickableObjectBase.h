@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "IPickupObject.h"
 #include "PickupObjectTypes.h"
+#include "BattleRoyale/core/Utils/Inventory/InventoryItemStaticData.h"
 #include "GameFramework/Actor.h"
 #include "PickableObjectBase.generated.h"
 
@@ -46,6 +47,8 @@ public:
 	virtual void SetValue(int value) override;
 	virtual void SetCharacterOwner(ACharacterBase* character) override;
 	virtual FVector GetLocation() const override { return GetActorLocation(); }
+	UFUNCTION(BlueprintCallable, Category="PickableObject")
+	virtual FName GetPickableName() const override;
 	
 	virtual void OnEquipped() override;
 	virtual void OnUnEquipped() override;

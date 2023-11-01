@@ -5,6 +5,7 @@
 
 #include "BlueprintGameplayTagLibrary.h"
 #include "VectorTypes.h"
+#include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/Abilities/GameplayTagsList.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/PickableObjects/IPickupObject.h"
@@ -21,18 +22,38 @@ UPickupSelectorComponent::UPickupSelectorComponent()
 void UPickupSelectorComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
 	SetComponentTickEnabled(false);
 
 	if(GetOwner()->HasAuthority())
 	{
 		RegisterOverlapEvents();
 	}
+
+	const auto character = Cast<IICharacter>(GetOwner());
+	if(!character)
+	{
+		return;
+	}
+	
+	const auto abilitySystemComponentInterface = character->GetAbilitySystemComponentBase();
+	if(!abilitySystemComponentInterface)
+	{
+		return;
+	}
+
+	if(InitializePickupIndicatorEffect)
+	{
+		if(!abilitySystemComponentInterface->ApplyGameplayEffectToSelf(InitializePickupIndicatorEffect).WasSuccessfullyApplied())
+		{
+			UE_LOG(LogCharacter, Warning, TEXT("[%s][UPickupSelectorComponent::InitializeComponent] pickup indicator initializing effect was not successfully applied"), *GetName());
+		}
+	}
 }
 
 void UPickupSelectorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	GEngine->AddOnScreenDebugMessage(1, 1, FColor::White, "Ticking ...");
 	SelectPickupObject();
 }
 
@@ -49,10 +70,13 @@ void UPickupSelectorComponent::SelectPickupObject()
 {
 	if(mPickableObjectsCollisionList.Num() == 1)
 	{
-		mSelectedPickableObject = mPickableObjectsCollisionList[0];
-		NotifyOrCancelSelectedPickupObject();
+		if(mSelectedPickableObject != mPickableObjectsCollisionList[0])
+		{
+			mSelectedPickableObject = mPickableObjectsCollisionList[0];
+			NotifyOrCancelSelectedPickupObject();
+		}
 	}
-	else
+	else if(mPickableObjectsCollisionList.Num() > 1)
 	{
 		//Order list by distance to character
 		const auto characterLocation = GetOwner()->GetActorLocation();
@@ -72,9 +96,11 @@ void UPickupSelectorComponent::SelectPickupObject()
 			const auto dot2 = cameraDirection.Dot(vectorObject2);
 			return dot1 > dot2;
 		});
-
-		mSelectedPickableObject = mPickableObjectsCollisionList[0];
-		NotifyOrCancelSelectedPickupObject();
+		if(mSelectedPickableObject != mPickableObjectsCollisionList[0])
+		{
+			mSelectedPickableObject = mPickableObjectsCollisionList[0];
+			NotifyOrCancelSelectedPickupObject();
+		}
 	}
 }
 
@@ -90,7 +116,6 @@ void UPickupSelectorComponent::OnCapsuleBeginOverlapServer(UPrimitiveComponent* 
 	if(OtherActor->Implements<UPickupObject>())
 	{
 		mPickableObjectsCollisionList.Add(OtherActor);
-		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, FString::Printf(TEXT("UPickupSelectorComponent::OnCapsuleBeginOverlapServer num pickables: %d"), mPickableObjectsCollisionList.Num()));
 		SetComponentTickEnabled(true);
 	}
 }
@@ -101,7 +126,6 @@ void UPickupSelectorComponent::OnCapsuleEndOverlapServer(UPrimitiveComponent* Ov
 	if(OtherActor->Implements<UPickupObject>())
 	{
 		mPickableObjectsCollisionList.Remove(OtherActor);
-		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Orange, FString::Printf(TEXT("UPickupSelectorComponent::OnCapsuleEndOverlapServer num pickables: %d"), mPickableObjectsCollisionList.Num()));
 		if(mPickableObjectsCollisionList.IsEmpty())
 		{
 			SetComponentTickEnabled(false);

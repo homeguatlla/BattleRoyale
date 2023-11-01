@@ -133,6 +133,11 @@ void APickableObjectBase::SetCharacterOwner(ACharacterBase* character)
 	SetOwner(character);
 }
 
+FName APickableObjectBase::GetPickableName() const
+{
+	return InventoryItemStaticData->GetDefaultObject<UInventoryItemStaticData>()->GetItemName();
+}
+
 void APickableObjectBase::OnEquipped()
 {
 	ChangeState(EPickupObjectState::Equipped);

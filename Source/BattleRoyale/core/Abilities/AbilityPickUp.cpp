@@ -43,6 +43,10 @@ void UAbilityPickUp::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 		check(inventoryComponent);
 		//TODO podríamos quitar el GetPickableObject y hacer que el PickupObjectServer lo pille directamente
 		//lo dejo por ahora porque igual el get nos podría hacer falta desde fuera del inventoryComponent.
+		//TODO hay que tener en cuenta que si no tienes la habilidad de pickupindicator no vas a poder
+		//recojer objetos. Hay que poner un else para que busque el objeto más cercano y lo devuelva o
+		//quizá mejor acceder al PickupSelectorComponent y obtenga el objeto que esté marcado como
+		//seleccionado
 		if(const auto pickupObject = inventoryComponent->GetPickableObject())
 		{
 			if(inventoryComponent->PickupObjectServer(pickupObject))

@@ -64,13 +64,13 @@ ACharacterBase::ACharacterBase()
 	InventoryComponent->SetIsReplicated(true);
 
 	//Create PickupSelectorComponent
-	CreateDefaultSubobject<UPickupSelectorComponent>(TEXT("PickupSelectorComponent"))->SetIsReplicated(true);
-	
+	PickupSelectorComponent = CreateDefaultSubobject<UPickupSelectorComponent>(TEXT("PickupSelectorComponent"));
+	PickupSelectorComponent->SetIsReplicated(true);
 }
 
 void ACharacterBase::BeginPlay()
 {
-	// Call the base class  
+	// Call the base class
 	Super::BeginPlay();
 	UE_LOG(LogCharacter, Log, TEXT("ACharacterBase::BeginPlay"));
 }

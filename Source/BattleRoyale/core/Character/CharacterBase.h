@@ -15,6 +15,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CharacterBase.generated.h"
 
+class UPickupSelectorComponent;
 class IWeapon;
 class IIPlayerState;
 class UInputComponent;
@@ -87,6 +88,9 @@ class BATTLEROYALE_API ACharacterBase : public ACharacter, public IICharacter
 	
 	UPROPERTY(Replicated, VisibleAnywhere)
 	UInventoryComponent* InventoryComponent = nullptr;
+
+	UPROPERTY(Replicated, VisibleAnywhere)
+	UPickupSelectorComponent* PickupSelectorComponent = nullptr;
 	
 	bool mIsInvulnerable = false;
 
