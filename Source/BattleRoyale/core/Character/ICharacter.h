@@ -7,6 +7,7 @@
 #include "UObject/Interface.h"
 #include "ICharacter.generated.h"
 
+class UPickupSelectorComponent;
 class UPickupComponent;
 class IIInventoryComponent;
 class IPickupObject;
@@ -154,6 +155,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "ICharacter")
 	virtual TScriptInterface<IIInventoryComponent> GetInventoryComponent() const = 0;
+
+	UFUNCTION(BlueprintCallable, Category = "ICharacter")
+	virtual UPickupSelectorComponent* GetPickupSelectorComponent() const = 0;
 	
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const = 0;
 

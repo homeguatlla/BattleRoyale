@@ -8,6 +8,7 @@
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/Character/Components/IInventoryComponent.h"
 #include "BattleRoyale/core/Character/Components/InventoryComponent.h"
+#include "BattleRoyale/core/Character/Components/PickupSelectorComponent.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 
 UAbilityPickUp::UAbilityPickUp()
@@ -41,18 +42,18 @@ void UAbilityPickUp::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 	{
 		const auto inventoryComponent = character->GetInventoryComponent();
 		check(inventoryComponent);
+		const auto pickupSelectorComponent = character->GetPickupSelectorComponent();
+		check(pickupSelectorComponent);
+		
 		//TODO podríamos quitar el GetPickableObject y hacer que el PickupObjectServer lo pille directamente
 		//lo dejo por ahora porque igual el get nos podría hacer falta desde fuera del inventoryComponent.
 		//TODO hay que tener en cuenta que si no tienes la habilidad de pickupindicator no vas a poder
 		//recojer objetos. Hay que poner un else para que busque el objeto más cercano y lo devuelva o
 		//quizá mejor acceder al PickupSelectorComponent y obtenga el objeto que esté marcado como
 		//seleccionado
-		if(const auto pickupObject = inventoryComponent->GetPickableObject())
+		if(inventoryComponent->PickupObjectServer(pickupSelectorComponent->GetSelectedPickableObject()))
 		{
-			if(inventoryComponent->PickupObjectServer(pickupObject))
-			{
-				CancelPickupIndicatorAbility(character);
-			}
+			CancelPickupIndicatorAbility(character);
 		}
 	}
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);

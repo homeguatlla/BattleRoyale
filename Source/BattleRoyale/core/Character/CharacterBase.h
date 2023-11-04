@@ -218,6 +218,7 @@ public:
 	virtual TScriptInterface<IGunComponent> GetGunComponent() const override { return CombatComponent; }
 	virtual TScriptInterface<IIFootstepsComponent> GetFootstepsComponent() const override { return FootstepsComponent; }
 	virtual TScriptInterface<IIInventoryComponent> GetInventoryComponent() const override { return InventoryComponent; }
+	virtual UPickupSelectorComponent* GetPickupSelectorComponent() const override { return PickupSelectorComponent; }
 	
 	virtual IAbilitySystemInterface* GetAbilitySystemComponent() const override;
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const override;

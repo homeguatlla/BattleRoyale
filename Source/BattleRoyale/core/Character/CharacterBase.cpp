@@ -135,6 +135,7 @@ void ACharacterBase::InitializeGAS()
 void ACharacterBase::InitializeAttributes() const
 {
 	HurtComponent->InitializeServer();
+	PickupSelectorComponent->InitializeServer();
 	
 	const IIPlayerState* playerState = GetPlayerStateInterface();
 	if (playerState)

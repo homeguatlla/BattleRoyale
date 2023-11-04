@@ -58,17 +58,6 @@ void UAbilityPickupIndicator::ActivateAbility(const FGameplayAbilitySpecHandle H
 		return;
 	}	
 	
-	if(ActorInfo->IsNetAuthority())
-	{
-		if(const auto character = Cast<IICharacter>(ActorInfo->AvatarActor))
-		{
-			if(const auto inventoryComponent = character->GetInventoryComponent())
-			{
-				inventoryComponent->SetPickableObject(pickupIndicatorData.mPickableObject);
-			}
-		}
-	}
-	
 	if(IsLocallyControlled())
 	{
 		OnShowPickupIndicator(pickupIndicatorData.mPickableObject, pickupIndicatorData.GetLocation());
@@ -92,17 +81,6 @@ void UAbilityPickupIndicator::EndAbility(const FGameplayAbilitySpecHandle Handle
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	bool bReplicateEndAbility, bool bWasCancelled)
 {
-	if(ActorInfo->IsNetAuthority())
-	{
-		if(const auto character = Cast<IICharacter>(ActorInfo->AvatarActor))
-		{
-			if(const auto inventoryComponent = character->GetInventoryComponent())
-			{
-				inventoryComponent->SetPickableObject(nullptr);
-			}			
-		}
-	}
-	
 	if(IsLocallyControlled())
 	{
 		OnHidePickupIndicator();

@@ -24,12 +24,23 @@ void UPickupSelectorComponent::BeginPlay()
 	Super::BeginPlay();
 
 	SetComponentTickEnabled(false);
+}
 
-	if(GetOwner()->HasAuthority())
+void UPickupSelectorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	SelectPickupObject();
+}
+
+void UPickupSelectorComponent::InitializeServer()
+{
+	if(!GetOwner()->HasAuthority())
 	{
-		RegisterOverlapEvents();
+		return;
 	}
 
+	RegisterOverlapEvents();
+	
 	const auto character = Cast<IICharacter>(GetOwner());
 	if(!character)
 	{
@@ -41,7 +52,7 @@ void UPickupSelectorComponent::BeginPlay()
 	{
 		return;
 	}
-
+	
 	if(InitializePickupIndicatorEffect)
 	{
 		if(!abilitySystemComponentInterface->ApplyGameplayEffectToSelf(InitializePickupIndicatorEffect).WasSuccessfullyApplied())
@@ -49,12 +60,6 @@ void UPickupSelectorComponent::BeginPlay()
 			UE_LOG(LogCharacter, Warning, TEXT("[%s][UPickupSelectorComponent::InitializeComponent] pickup indicator initializing effect was not successfully applied"), *GetName());
 		}
 	}
-}
-
-void UPickupSelectorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	SelectPickupObject();
 }
 
 void UPickupSelectorComponent::RegisterOverlapEvents()

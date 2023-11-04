@@ -38,9 +38,6 @@ public:
 	virtual bool HasLifeKid() const = 0;
 	
 	virtual int RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded) = 0;
-
-	virtual void SetPickableObject(TScriptInterface<IPickupObject> object) = 0;
-	virtual TScriptInterface<IPickupObject> GetPickableObject() const = 0;
-
+	
 	virtual void PerformActionForEachInventoryItem(const std::function<bool (const FInventoryArrayItem& inventoryItem)>& callback) const = 0;
 };

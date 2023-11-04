@@ -43,9 +43,6 @@ public:
 	virtual bool HasLifeKid() const override;
 
 	virtual int RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded) override;
-	
-	virtual void SetPickableObject(TScriptInterface<IPickupObject> object) override { mPickupObject = object; }
-	virtual TScriptInterface<IPickupObject> GetPickableObject() const override { return mPickupObject; }
 	virtual void PerformActionForEachInventoryItem(const std::function<bool (const FInventoryArrayItem& inventoryItem)>& callback) const override;
 	
 	void OnInventoryKeyPressed();
@@ -76,8 +73,6 @@ private:
 
 	UPROPERTY(ReplicatedUsing=OnRep_EquippedItem)
 	TScriptInterface<IPickupObject> mEquippedItem = nullptr;
-
-	TScriptInterface<IPickupObject> mPickupObject;
-
+	
 	bool mIsInventoryShown = false;
 };

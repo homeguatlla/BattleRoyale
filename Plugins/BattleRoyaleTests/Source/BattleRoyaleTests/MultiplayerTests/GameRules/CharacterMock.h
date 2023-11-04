@@ -61,6 +61,7 @@ public:
 	virtual IIAbilitySystemInterfaceBase* GetAbilitySystemComponentBase() const override{return nullptr;}
 	virtual TScriptInterface<IIFootstepsComponent> GetFootstepsComponent() const override {return nullptr;}
 	virtual TScriptInterface<IIInventoryComponent> GetInventoryComponent() const override {return nullptr;}
+	virtual UPickupSelectorComponent* GetPickupSelectorComponent() const override { return nullptr; }
 private:
 	float mHealth {100};
 };
