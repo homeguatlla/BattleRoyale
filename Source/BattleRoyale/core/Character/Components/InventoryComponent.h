@@ -11,6 +11,8 @@
 #include "InventoryComponent.generated.h"
 
 class UPickupObject;
+class UMyReplicatedObject;
+
 //TODO create a delegate to know when something is equipped, unequipped or dropped
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEquippedPickableObject, TScriptInterface<IPickupObject> object);
 DECLARE_MULTICAST_DELEGATE(FOnDroppedPickableObject);
@@ -43,7 +45,7 @@ public:
 	virtual bool HasLifeKid() const override;
 
 	virtual int RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded) override;
-	virtual void PerformActionForEachInventoryItem(const std::function<bool (const FInventoryArrayItem& inventoryItem)>& callback) const override;
+	virtual void PerformActionForEachInventoryItem(const std::function<bool (UInventoryArrayItem* inventoryItem)>& callback) const override;
 	
 	void OnInventoryKeyPressed();
 
@@ -52,12 +54,15 @@ protected:
 	virtual void InitializeComponent() override;
 	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void BeginDestroy() override;
 	
 private:
 	virtual bool EquipItem(TScriptInterface<IPickupObject> pickableObject) override;
 	TScriptInterface<IIInventoryItemInstance> GetAmmoItemOfType(EAmmoType ammoType) const;
 	UFUNCTION()
 	void OnRep_EquippedItem() const;
+	UFUNCTION()
+	void OnRep_InventoryBag() const;
 	
 	//void UnEquipItem();
 	//void DropItem();
@@ -65,7 +70,7 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	int MaxInventoryItems = 5;
 	
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing=OnRep_InventoryBag)
 	UInventoryBag* mInventoryBag = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)

@@ -4,43 +4,49 @@
 #include "InventoryArray.h"
 #include "InventoryArrayItem.h"
 #include "InventoryItemInstance.h"
+#include "Engine/ActorChannel.h"
+#include "Net/UnrealNetwork.h"
 
-void FInventoryArray::AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass, int _value)
+void UInventoryArray::AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass, int _value)
 {
-	auto& item = mItems.AddDefaulted_GetRef();
-	item.mInventoryItem = NewObject<UInventoryItemInstance>();
-	item.mInventoryItem->Initialize(itemClass, _value);
-	MarkItemDirty(item);
+	//auto& item = mItems.AddDefaulted_GetRef();
+	const auto item = NewObject<UInventoryArrayItem>();
+	item->mInventoryItem = NewObject<UInventoryItemInstance>();
+	item->mInventoryItem->Initialize(itemClass, _value);
+	mItems.Add(item);
+	//MarkItemDirty(item);
 }
 
-void FInventoryArray::RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass)
+void UInventoryArray::RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass)
 {
-	for(auto it = mItems.CreateConstIterator(); it; ++it)
+	//for(auto it = mItems.CreateConstIterator(); it; ++it)
+	for(auto&& item : mItems)
 	{
-		if(it->mInventoryItem && it->mInventoryItem->GetStaticDataClass() == itemClass)
+		if(item->mInventoryItem && item->mInventoryItem->GetStaticDataClass() == itemClass)
 		{
 			//it.RemoveCurrent();
-			const auto index = it.GetIndex();
-			mItems.RemoveAt(index);
-			MarkArrayDirty();
+			//const auto index = item.GetIndex();
+			mItems.Remove(item);
+			//mItems.RemoveAt(index);
+			//MarkArrayDirty();
 			break;
 		}
 	}
 }
 
-TScriptInterface<IIInventoryItemInstance> FInventoryArray::FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass)
+TScriptInterface<IIInventoryItemInstance> UInventoryArray::FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass)
 {
 	for(auto&& item : mItems)
 	{
-		if(item.mInventoryItem->GetStaticData()->IsA(itemClass))
+		if(item->mInventoryItem->GetStaticData()->IsA(itemClass))
 		{
-			return item.mInventoryItem;
+			return item->mInventoryItem;
 		}
 	}
 	return nullptr;
 }
 
-void FInventoryArray::PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action) const
+void UInventoryArray::PerformActionForEachItem(const std::function<bool(UInventoryArrayItem* inventoryItem)>& action) const
 {
 	for(auto&& item : mItems)
 	{
@@ -51,7 +57,7 @@ void FInventoryArray::PerformActionForEachItem(const std::function<bool(const FI
 	}
 }
 
-FInventoryArrayItem FInventoryArray::GetItemByIndex(int index) const
+UInventoryArrayItem* UInventoryArray::GetItemByIndex(int index) const
 {
 	if(index < 0 || index >= mItems.Num())
 	{
@@ -61,7 +67,26 @@ FInventoryArrayItem FInventoryArray::GetItemByIndex(int index) const
 	return mItems[index];
 }
 
-void FInventoryArray::Clear()
+void UInventoryArray::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UInventoryArray, mItems);
+}
+
+bool UInventoryArray::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	bool result = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+
+	for(auto&& item : mItems)
+	{
+		result |= Channel->ReplicateSubobject(item, *Bunch, *RepFlags);
+		result |= item->ReplicateSubobjects(Channel, Bunch, RepFlags);
+	}
+
+	return result;
+}
+
+void UInventoryArray::Clear()
 {
 	mItems.Empty();
 }

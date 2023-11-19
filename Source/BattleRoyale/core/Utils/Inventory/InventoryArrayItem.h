@@ -3,36 +3,35 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BattleRoyale/core/Utils/NetworkObject.h"
 #include "InventoryItemInstance.h"
-#include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
-#include "BattleRoyale/core/Utils/UtilsLibrary.h"
-#include "Net/Serialization/FastArraySerializer.h"
 #include "InventoryArrayItem.generated.h"
 
 class UInventoryItemStaticData;
 class IIInventoryItemInstance;
 
-USTRUCT(BlueprintType)
-struct FInventoryArrayItem : public FFastArraySerializerItem
+UCLASS()
+class UInventoryArrayItem : public UNetworkObject //public FFastArraySerializerItem
 {
 	GENERATED_BODY()
 
-	FInventoryArrayItem()
-	{
-		mID = ++Counter;
-	}
-	
-	UPROPERTY()
-	TScriptInterface<IIInventoryItemInstance> mInventoryItem;
+public:
+	UInventoryArrayItem();
 
+	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
+	UPROPERTY(Replicated)
+	UInventoryItemInstance* mInventoryItem = nullptr;
+	//TScriptInterface<IIInventoryItemInstance> mInventoryItem;
+	
 	int GetID() const { return mID; }
 
 	//Test purposes
 	void SetID(int id) { mID = id; }
 private:
 	static int Counter;
-	
+
+	UPROPERTY(Replicated)
 	int mID = 0;
 };
-
-int FInventoryArrayItem::Counter = 0;

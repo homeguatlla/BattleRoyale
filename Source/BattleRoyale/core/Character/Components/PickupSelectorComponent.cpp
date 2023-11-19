@@ -8,8 +8,10 @@
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/Abilities/GameplayTagsList.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
+#include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "BattleRoyale/core/PickableObjects/IPickupObject.h"
 #include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
+#include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "Net/UnrealNetwork.h"
 

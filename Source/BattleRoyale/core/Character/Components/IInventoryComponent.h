@@ -10,7 +10,7 @@
 
 class IPickupObject;
 class UInventoryItemStaticData;
-struct FInventoryArrayItem;
+class UInventoryArrayItem;
 
 // This class does not need to be modified.
 UINTERFACE(NotBlueprintable, meta = (CannotImplementInterfaceInBlueprint))
@@ -39,5 +39,5 @@ public:
 	
 	virtual int RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded) = 0;
 	
-	virtual void PerformActionForEachInventoryItem(const std::function<bool (const FInventoryArrayItem& inventoryItem)>& callback) const = 0;
+	virtual void PerformActionForEachInventoryItem(const std::function<bool (UInventoryArrayItem* inventoryItem)>& callback) const = 0;
 };

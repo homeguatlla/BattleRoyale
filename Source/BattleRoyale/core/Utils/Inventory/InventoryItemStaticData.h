@@ -41,4 +41,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName = "Value"))
 	int mValue = 0;
+
+	//TODO maybe here or in a subclass
+	//we can add new abilities, so could be a property array of GameplayAbility.
 };

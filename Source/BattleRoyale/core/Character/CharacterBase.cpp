@@ -414,6 +414,11 @@ IIAbilitySystemInterfaceBase* ACharacterBase::GetAbilitySystemComponentBase() co
 	return GetPlayerStateInterface()->GetAbilitySystemComponentInterface();		
 }
 
+ELifetimeCondition ACharacterBase::AllowActorComponentToReplicate(const UActorComponent* ComponentToReplicate) const
+{
+	return Super::AllowActorComponentToReplicate(ComponentToReplicate);
+}
+
 IIGameMode* ACharacterBase::GetGameModeServer() const
 {
 	return Cast<IIGameMode>(GetWorld()->GetAuthGameMode<ABattleRoyaleGameMode>());

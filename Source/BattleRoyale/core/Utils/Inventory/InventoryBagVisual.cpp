@@ -34,9 +34,9 @@ void UInventoryBagVisual::Refresh(const TScriptInterface<IIInventoryBag> invento
 	}
 
 	int i = 0;
-	inventoryBag->PerformActionForEachItem([this, &i](const FInventoryArrayItem& inventoryItem) -> bool
+	inventoryBag->PerformActionForEachItem([this, &i](UInventoryArrayItem* inventoryItem) -> bool
 	{
-		const auto index = FindItemByID(inventoryItem.GetID());
+		const auto index = FindItemByID(inventoryItem->GetID());
 		if(index == -1) //not found
 		{
 			//Find first empty space. Must be space for all.			
@@ -46,10 +46,10 @@ void UInventoryBagVisual::Refresh(const TScriptInterface<IIInventoryBag> invento
 			}
 
 			const auto itemVisual = FInventoryItemVisual(
-				inventoryItem.GetID(),
-				inventoryItem.mInventoryItem->GetValue(),
+				inventoryItem->GetID(),
+				inventoryItem->mInventoryItem->GetValue(),
 				false,
-				inventoryItem.mInventoryItem->GetStaticData()->GetItemWidgetClass());
+				inventoryItem->mInventoryItem->GetStaticData()->GetItemWidgetClass());
 			
 			mItems[i] = itemVisual;
 		}

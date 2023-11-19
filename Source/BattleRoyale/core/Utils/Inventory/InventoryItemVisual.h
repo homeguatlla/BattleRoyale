@@ -4,7 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryItemVisual.generated.h"
 
-struct FInventoryArrayItem;
+class UInventoryArrayItem;
 
 USTRUCT(BlueprintType)
 struct FInventoryItemVisual
@@ -13,7 +13,7 @@ struct FInventoryItemVisual
 
 	FInventoryItemVisual() = default;
 	FInventoryItemVisual(int _id, int _value, bool _isEquipped, TSubclassOf<UUserWidget> _widgetClass);
-	FInventoryItemVisual(const FInventoryArrayItem& item);
+	FInventoryItemVisual(const UInventoryArrayItem* item);
 
 	bool IsEmpty() const;
 	void Clear();

@@ -50,10 +50,13 @@ void UAbilityPickUp::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 		//TODO hay que tener en cuenta que si no tienes la habilidad de pickupindicator no vas a poder
 		//recojer objetos. Hay que poner un else para que busque el objeto más cercano y lo devuelva o
 		//quizá mejor acceder al PickupSelectorComponent y obtenga el objeto que esté marcado como
-		//seleccionado
-		if(inventoryComponent->PickupObjectServer(pickupSelectorComponent->GetSelectedPickableObject()))
+		//
+		if(const auto selectedPickableObject = pickupSelectorComponent->GetSelectedPickableObject())
 		{
-			CancelPickupIndicatorAbility(character);
+			if(inventoryComponent->PickupObjectServer(pickupSelectorComponent->GetSelectedPickableObject()))
+			{
+				CancelPickupIndicatorAbility(character);
+			}
 		}
 	}
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);

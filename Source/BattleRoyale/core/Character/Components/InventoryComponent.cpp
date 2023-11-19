@@ -12,6 +12,7 @@
 #include "BattleRoyale/core/PickableObjects/PickableObjectBase.h"
 #include "BattleRoyale/core/PickableObjects/Ammo/Ammo.h"
 #include "BattleRoyale/core/PickableObjects/Weapons/WeaponBase.h"
+#include "BattleRoyale/core/TempCode/MyReplicatedObject.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemInstance.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryArray.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemStaticData.h"
@@ -32,13 +33,18 @@ UInventoryComponent::UInventoryComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
 	SetIsReplicatedByDefault(true); //esto no sé si hace falta pero estaba en el curso.
-	
+	//bReplicateUsingRegisteredSubObjectList = true;
 }
 
 void UInventoryComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
-
+	
+	if(!GetOwner()->HasAuthority())
+	{
+		return;
+	}
+	
 	//If I use a CreateDefaultSubObjects in the constructor for this UObject InventoryBag. Seems everytime I start
 	//a new game, the inventoryBag is like being copied from a default data which contains the last game data.
 	//So, the inventoryBag contains 2 elements in the last game, after creation in a new game is filled up with 2 elements.
@@ -46,13 +52,10 @@ void UInventoryComponent::InitializeComponent()
 	//If, I use NewObject<UInventoryBag> in the constructor, the inventoryBag is different than nullptr but,
 	//later, is null. So, we can not call NewObjects in the constructor. Seems that, when executing the constructor
 	//the object is not loaded yet and then, one loaded in the BeginPlay or the InitializeComponent can be reset.
-	mInventoryBag = NewObject<UInventoryBag>();
-	mInventoryBag->SetMaxItems(MaxInventoryItems);
 	
-	if(!GetOwner()->HasAuthority())
-	{
-		return;
-	}
+	mInventoryBag = NewObject<UInventoryBag>(this);
+	mInventoryBag->SetMaxItems(MaxInventoryItems);
+	//AddReplicatedSubObject(mInventoryBag);
 	
 	//Adding default items to player
 	for(const auto item : DefaultItems)
@@ -66,14 +69,9 @@ bool UInventoryComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch*
 {
 	auto result = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
 
-	mInventoryBag->PerformActionForEachItem([&Channel, &Bunch, &RepFlags, &result](const FInventoryArrayItem& inventoryItem)-> bool
-	{
-		if(const auto inventoryItemInstance = inventoryItem.mInventoryItem)
-		{
-			result = Channel->ReplicateSubobject(inventoryItemInstance.GetObject(), *Bunch, *RepFlags);
-		}
-		return false;
-	});
+	result |= Channel->ReplicateSubobject(mInventoryBag, *Bunch, *RepFlags);
+	result |= mInventoryBag->ReplicateSubobjects(Channel, Bunch, RepFlags);
+	
 	return result;
 }
 
@@ -84,6 +82,16 @@ void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(UInventoryComponent, mEquippedItem);
 }
 
+void UInventoryComponent::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	if(mInventoryBag)
+	{
+		//RemoveReplicatedSubObject(mInventoryBag);
+	}
+}
+
 void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                         FActorComponentTickFunction* ThisTickFunction)
 {
@@ -92,9 +100,9 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	//DEBUG purposes only
 	if(ConsoleShowInventory.GetValueOnGameThread() != 0)
 	{
-		mInventoryBag->PerformActionForEachItem([](const FInventoryArrayItem& inventoryItem) -> bool
+		mInventoryBag->PerformActionForEachItem([](UInventoryArrayItem* inventoryItem) -> bool
 		{
-			const auto inventoryItemStaticData = inventoryItem.mInventoryItem->GetStaticData();
+			const auto inventoryItemStaticData = inventoryItem->mInventoryItem->GetStaticData();
 			assert(inventoryItemStaticData);
 			GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Blue, inventoryItemStaticData->GetItemName().ToString());
 			return false;
@@ -137,7 +145,7 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	if(const auto inventoryItemInstance = mInventoryBag->FindFirstItem(pickableObject->GetInventoryItemStaticData()))
 	{
 		inventoryItemInstance->OnUnEquipped();
-		//Destroy the pickable object actor
+		//Destroy the pickable object acto
 		if(const auto object = Cast<APickableObjectBase>(pickableObject.GetObject()))
 		{
 			object->Destroy();
@@ -254,7 +262,7 @@ int UInventoryComponent::RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded)
 }
 
 void UInventoryComponent::PerformActionForEachInventoryItem(
-	const std::function<bool (const FInventoryArrayItem& inventoryItem)>& action) const
+	const std::function<bool (UInventoryArrayItem* inventoryItem)>& action) const
 {
 	mInventoryBag->PerformActionForEachItem(action);
 }
@@ -265,9 +273,9 @@ TScriptInterface<IIInventoryItemInstance> UInventoryComponent::GetAmmoItemOfType
 	bool foundAmmoInTheInventory = false;
 	
 	PerformActionForEachInventoryItem(
-		[&ammoType, &foundAmmoInTheInventory, &inventoryItemInstanceFound](const FInventoryArrayItem& inventoryItem) -> bool
+		[&ammoType, &foundAmmoInTheInventory, &inventoryItemInstanceFound](UInventoryArrayItem* inventoryItem) -> bool
 		{
-			const auto staticData = inventoryItem.mInventoryItem->GetStaticData();
+			const auto staticData = inventoryItem->mInventoryItem->GetStaticData();
 			const auto objectClass = staticData->GetPickupObjectClass();
 			const auto pickableObject = objectClass.GetDefaultObject();
 			if(pickableObject->IsA<AAmmo>())
@@ -276,7 +284,7 @@ TScriptInterface<IIInventoryItemInstance> UInventoryComponent::GetAmmoItemOfType
 				if(ammo->GetAmmoType() == ammoType)
 				{
 					foundAmmoInTheInventory = true;
-					inventoryItemInstanceFound = inventoryItem.mInventoryItem;
+					inventoryItemInstanceFound = inventoryItem->mInventoryItem;
 					return true;
 				}
 			}
@@ -296,6 +304,10 @@ void UInventoryComponent::OnRep_EquippedItem() const
 	{
 		OnEquippedPickableObjectDelegate.Broadcast(mEquippedItem);
 	}
+}
+
+void UInventoryComponent::OnRep_InventoryBag() const
+{
 }
 
 void UInventoryComponent::OnInventoryKeyPressed()

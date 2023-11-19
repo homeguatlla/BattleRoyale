@@ -5,38 +5,40 @@
 #include <functional>
 
 #include "CoreMinimal.h"
-#include "Net/Serialization/FastArraySerializer.h"
 #include "InventoryItemStaticData.h"
 #include "InventoryArrayItem.h"
 #include "InventoryArray.generated.h"
 
-USTRUCT(BlueprintType)
-struct FInventoryArray : public FFastArraySerializer
+UCLASS()
+class UInventoryArray : public UNetworkObject//public FFastArraySerializer
 {
 	GENERATED_BODY()
-	
+
+public:
 	void AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass, int value);
 	void RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
 
 	TScriptInterface<IIInventoryItemInstance> FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
 
-	void PerformActionForEachItem(const std::function<bool(const FInventoryArrayItem& inventoryItem)>& action) const;
+	void PerformActionForEachItem(const std::function<bool(UInventoryArrayItem* inventoryItem)>& action) const;
 	int Num() const { return mItems.Num(); }
-	FInventoryArrayItem GetItemByIndex(int index) const;
-
+	UInventoryArrayItem* GetItemByIndex(int index) const;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 	void Clear();
-	
+
+	/*
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams)
 	{
 		return FastArrayDeltaSerialize<FInventoryArrayItem, FInventoryArray>(mItems, DeltaParams, *this);
-	}
+	}*/
 
-	UPROPERTY()
-	TArray<FInventoryArrayItem> mItems;
+	UPROPERTY(Replicated)
+	TArray<UInventoryArrayItem*> mItems;
 };
-
+/*
 template<>
 struct TStructOpsTypeTraits<FInventoryArray> : public TStructOpsTypeTraitsBase2<FInventoryArray>
 {
 	enum { WithNetDeltaSerializer = true };
-};
+};*/

@@ -97,9 +97,9 @@ bool FInventoryBagVisualTests_When_GivenAInventoryBagVisualAndAReorderedInventor
 
 	int i = 0;
 	int order[3] = {1, 2, 0};
-	inventoryBag->PerformActionForEachItem([this, &i, &order](const FInventoryArrayItem& item)-> bool
+	inventoryBag->PerformActionForEachItem([this, &i, &order](UInventoryArrayItem* item)-> bool
 	{
-		TestTrue("InventoryBag element", item.GetID() == order[i]);
+		TestTrue("InventoryBag element", item->GetID() == order[i]);
 		++i;
 		return false;
 	});
