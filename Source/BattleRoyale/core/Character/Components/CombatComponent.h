@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "IGunComponent.h"
+#include "PickupSelectorComponent.h"
 #include "Components/ActorComponent.h"
 #include "CombatComponent.generated.h"
 
@@ -80,9 +81,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
 	virtual FVector GetShootingTargetLocation() const override;
 
-	virtual bool CanReload(const TScriptInterface<IIInventoryComponent> inventoryComponent) const override;	
-	virtual void Reload(const TScriptInterface<IIInventoryComponent> inventoryComponent) override;
-	
+	virtual bool CanReload(const TScriptInterface<IIInventoryComponent> inventoryComponent) const override;
+	virtual void Reload(TScriptInterface<IIInventoryComponent> inventoryComponent) override;
 	virtual void SetupLeftHandSocketTransform(const ACharacterBase* character) const override;
 
 protected:
@@ -108,6 +108,9 @@ private:
 	bool EquipWeapon(TScriptInterface<IWeapon> weapon);
 	void OnEquippedPickableObject(TScriptInterface<IPickupObject> pickableObject);
 	void OnDroppedPickableObject();
+
+	UFUNCTION(Server, Reliable)
+	void ServerReload(UInventoryComponent* inventoryComponent);
 	
 	void DebugDrawAiming() const;
 	

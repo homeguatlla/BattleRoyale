@@ -19,8 +19,23 @@ void UInventoryArray::AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemC
 
 void UInventoryArray::RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass)
 {
-	//for(auto it = mItems.CreateConstIterator(); it; ++it)
-	for(auto&& item : mItems)
+	int32 itemIndex = -1;
+
+	for(auto index = 0; index < mItems.Num(); ++index)
+	{
+		const auto item = mItems[index];
+		if(item->mInventoryItem && item->mInventoryItem->GetStaticDataClass() == itemClass)
+		{
+			itemIndex = index;
+			break;
+		}
+	}
+
+	if(mItems.IsValidIndex(itemIndex))
+	{
+		mItems.RemoveAt(itemIndex);
+	}
+	/*for(auto it = mItems.CreateConstIterator(); it; ++it)
 	{
 		if(item->mInventoryItem && item->mInventoryItem->GetStaticDataClass() == itemClass)
 		{
@@ -31,7 +46,7 @@ void UInventoryArray::RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticDat
 			//MarkArrayDirty();
 			break;
 		}
-	}
+	}*/
 }
 
 TScriptInterface<IIInventoryItemInstance> UInventoryArray::FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass)

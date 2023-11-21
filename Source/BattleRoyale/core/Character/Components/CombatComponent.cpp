@@ -180,20 +180,11 @@ bool UCombatComponent::CanReload(const TScriptInterface<IIInventoryComponent> in
 
 void UCombatComponent::Reload(const TScriptInterface<IIInventoryComponent> inventoryComponent)
 {
-	//TODO quizá hay que volver a comprobar que pueda hacer el reload y volver a comprobar todo?
-	const auto weapon = GetEquippedWeapon();
-
-	check(weapon);
-	
-	const auto ammoTypeNeeded = weapon->GetAmmoType();
-	const auto ammoNeeded = weapon->GetMagazineCapacity() - weapon->GetAmmo();
-
-	const auto ammoFound = inventoryComponent->RemoveEnoughAmmo(ammoTypeNeeded, ammoNeeded);
-
-	//If we can reload at least will be 1 ammo
-	check(ammoFound > 0);
-
-	weapon->Reload(ammoFound);
+	if(!GetOwner()->HasAuthority())
+	{
+		return;
+	}
+	ServerReload(Cast<UInventoryComponent>(inventoryComponent.GetObject()));
 }
 
 void UCombatComponent::Shoot()
@@ -244,6 +235,24 @@ void UCombatComponent::OnDroppedPickableObject()
 			gameInstance->GetEventDispatcher()->OnUnEquippedWeapon.Broadcast();
 		}
 	}
+}
+
+void UCombatComponent::ServerReload_Implementation(UInventoryComponent* inventoryComponent)
+{
+	//TODO quizá hay que volver a comprobar que pueda hacer el reload y volver a comprobar todo?
+	const auto weapon = GetEquippedWeapon();
+
+	check(weapon);
+	
+	const auto ammoTypeNeeded = weapon->GetAmmoType();
+	const auto ammoNeeded = weapon->GetMagazineCapacity() - weapon->GetAmmo();
+
+	const auto ammoFound = inventoryComponent->RemoveEnoughAmmo(ammoTypeNeeded, ammoNeeded);
+
+	//If we can reload at least will be 1 ammo
+	check(ammoFound > 0);
+
+	weapon->Reload(ammoFound);
 }
 
 void UCombatComponent::ReleaseTrigger()
