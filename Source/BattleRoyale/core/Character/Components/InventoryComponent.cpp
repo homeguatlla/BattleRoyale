@@ -12,7 +12,6 @@
 #include "BattleRoyale/core/PickableObjects/PickableObjectBase.h"
 #include "BattleRoyale/core/PickableObjects/Ammo/Ammo.h"
 #include "BattleRoyale/core/PickableObjects/Weapons/WeaponBase.h"
-#include "BattleRoyale/core/TempCode/MyReplicatedObject.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemInstance.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryArray.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemStaticData.h"
@@ -227,6 +226,30 @@ bool UInventoryComponent::HasItemOfType(TSubclassOf<UInventoryItemStaticData> it
 bool UInventoryComponent::HasLifeKid() const
 {
 	return false;
+}
+
+int UInventoryComponent::GetTotalAmmoOfType(EAmmoType ammoType) const
+{
+	int totalAmmo = 0;
+	
+	PerformActionForEachInventoryItem(
+		[&ammoType, &totalAmmo](UInventoryArrayItem* inventoryItem) -> bool
+		{
+			const auto staticData = inventoryItem->mInventoryItem->GetStaticData();
+			const auto objectClass = staticData->GetPickupObjectClass();
+			const auto defaultPickableObject = objectClass.GetDefaultObject();
+			if(defaultPickableObject->IsA<AAmmo>())
+			{
+				const auto ammo = Cast<AAmmo>(defaultPickableObject);
+				if(ammo->GetAmmoType() == ammoType)
+				{
+					totalAmmo += inventoryItem->mInventoryItem->GetValue();
+				}
+			}
+			return false;
+		});
+
+	return totalAmmo;
 }
 
 int UInventoryComponent::RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded)

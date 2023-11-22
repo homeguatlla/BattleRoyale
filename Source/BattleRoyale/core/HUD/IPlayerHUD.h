@@ -20,4 +20,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Player HUD")
 	void OnRefreshCrosshair(float spread, AActor* targetActor, bool isAiming);
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Player HUD")
+	void OnRefreshTotalAmmo(int32 totalAmmo);
 };

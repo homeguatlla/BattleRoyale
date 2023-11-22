@@ -11,6 +11,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRefreshCrosshair, float, sprea
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshHealth, float, health);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshNumKills, int, numKills);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRefreshAmmo, int32, ammo, int32, magazineCapacity);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshTotalAmmo, int32, totalAmmo);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
@@ -44,6 +45,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="Character")
 	FRefreshHealth OnRefreshHealth;
 
+	UPROPERTY(BlueprintAssignable, Category="Character")
+	FRefreshTotalAmmo OnRefreshTotalAmmo;
+	
 	UPROPERTY(BlueprintAssignable, Category="Character Weapon")
 	FOnEquippedWeapon OnEquippedWeapon;
 
@@ -55,12 +59,12 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="Character Weapon")
 	FRefreshAmmo OnRefreshAmmo;
-
-	UPROPERTY(BlueprintAssignable, Category="Character Stats")
-	FRefreshNumKills OnRefreshNumKills;
 	
 	UPROPERTY(BlueprintAssignable, Category="Player")
 	FOnPlayerDead OnPlayerDead;
+
+	UPROPERTY(BlueprintAssignable, Category="Player")
+	FRefreshNumKills OnRefreshNumKills;
 	
 	UPROPERTY(BlueprintAssignable, Category="Game")
 	FOnGameStarted OnGameStarted;
@@ -71,7 +75,7 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="Announcement")
 	FOnAnnounceNewDeath OnAnnounceNewDeath;
 
-	UPROPERTY(BlueprintAssignable, Category="Player")
+	UPROPERTY(BlueprintAssignable, Category="Announcement")
 	FOnAnnouncePlayerWon OnAnnouncePlayerWon;
 
 	UPROPERTY(BlueprintAssignable, Category="Announcement")

@@ -44,6 +44,8 @@ public:
 	virtual bool HasAmmoOfType(EAmmoType ammoType) const override;
 	virtual bool HasLifeKid() const override;
 
+	virtual int GetTotalAmmoOfType(EAmmoType ammoType) const override;
+	
 	virtual int RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded) override;
 	virtual void PerformActionForEachInventoryItem(const std::function<bool (UInventoryArrayItem* inventoryItem)>& callback) const override;
 	
@@ -59,6 +61,7 @@ protected:
 private:
 	virtual bool EquipItem(TScriptInterface<IPickupObject> pickableObject) override;
 	TScriptInterface<IIInventoryItemInstance> GetAmmoItemOfType(EAmmoType ammoType) const;
+	
 	UFUNCTION()
 	void OnRep_EquippedItem() const;
 	UFUNCTION()

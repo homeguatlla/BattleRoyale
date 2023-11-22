@@ -34,6 +34,8 @@ private:
 	UFUNCTION()
 	void OnRefreshAmmo(int32 ammo, int32 magazineCapacity);
 	UFUNCTION()
+	void OnRefreshTotalAmmo(int32 totalAmmo);
+	UFUNCTION()
 	void OnPlayerDead();
 	UFUNCTION()
 	void OnRefreshNumKills(int numKills);

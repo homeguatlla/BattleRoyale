@@ -36,6 +36,8 @@ public:
 	virtual bool HasItemOfType(TSubclassOf<UInventoryItemStaticData> itemStaticDataClassToFind) const = 0;
 	virtual bool HasAmmoOfType(EAmmoType ammoType) const = 0;
 	virtual bool HasLifeKid() const = 0;
+
+	virtual int GetTotalAmmoOfType(EAmmoType ammoType) const = 0;
 	
 	virtual int RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded) = 0;
 	

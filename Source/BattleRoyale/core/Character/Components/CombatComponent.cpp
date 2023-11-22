@@ -253,6 +253,17 @@ void UCombatComponent::ServerReload_Implementation(UInventoryComponent* inventor
 	check(ammoFound > 0);
 
 	weapon->Reload(ammoFound);
+
+	MulticastNotifyTotalAmmo(inventoryComponent->GetTotalAmmoOfType(ammoTypeNeeded));
+}
+
+void UCombatComponent::MulticastNotifyTotalAmmo_Implementation(int GetTotalAmmoOfType)
+{
+	if(!mCharacter->IsLocallyControlled())
+	{
+		return;
+	}
+	GetGameInstance()->GetEventDispatcher()->OnRefreshTotalAmmo.Broadcast(GetTotalAmmoOfType);
 }
 
 void UCombatComponent::ReleaseTrigger()

@@ -8,6 +8,7 @@
 #include "Components/ActorComponent.h"
 #include "CombatComponent.generated.h"
 
+class UInventoryComponent;
 class IPickupObject;
 class UBattleRoyaleGameInstance;
 class ACharacterBase;
@@ -111,6 +112,9 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void ServerReload(UInventoryComponent* inventoryComponent);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastNotifyTotalAmmo(int GetTotalAmmoOfType);
 	
 	void DebugDrawAiming() const;
 	

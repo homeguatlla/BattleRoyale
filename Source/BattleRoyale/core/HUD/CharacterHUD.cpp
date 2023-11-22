@@ -44,6 +44,7 @@ void ACharacterHUD::BindToDelegate()
 		eventDispatcher->OnRefreshCrosshair.AddDynamic(this, &ThisClass::OnRefreshCrosshair);
 		eventDispatcher->OnRefreshHealth.AddDynamic(this, &ThisClass::OnRefreshHealthReceived);
 		eventDispatcher->OnRefreshAmmo.AddDynamic(this, &ThisClass::OnRefreshAmmo);
+		eventDispatcher->OnRefreshTotalAmmo.AddDynamic(this, &ThisClass::OnRefreshTotalAmmo);
 		
 		eventDispatcher->OnPlayerDead.AddDynamic(this, &ThisClass::OnPlayerDead);
 		eventDispatcher->OnRefreshNumKills.AddDynamic(this, &ThisClass::OnRefreshNumKills);
@@ -93,6 +94,14 @@ void ACharacterHUD::OnRefreshAmmo(int32 ammo, int32 magazineCapacity)
 	if (mHUDWidget->GetClass()->ImplementsInterface(UWeaponHUD::StaticClass()))
 	{
 		IWeaponHUD::Execute_OnRefreshAmmo(mHUDWidget, ammo, magazineCapacity);
+	}
+}
+
+void ACharacterHUD::OnRefreshTotalAmmo(int32 totalAmmo)
+{
+	if (mHUDWidget->GetClass()->ImplementsInterface(UPlayerHUD::StaticClass()))
+	{
+		IPlayerHUD::Execute_OnRefreshTotalAmmo(mHUDWidget, totalAmmo);
 	}
 }
 
