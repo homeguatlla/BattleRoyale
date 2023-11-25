@@ -74,6 +74,9 @@ private:
 	void OnRep_EquippedObject() const;
 	UFUNCTION()
 	void OnRep_InventoryBag() const;
+
+	UFUNCTION(Client, Reliable)
+	void ClientNotifyPickedUpObject(APickableObjectBase* pickedUpObject) const;
 	
 	//void UnEquipItem();
 	//void DropItem();

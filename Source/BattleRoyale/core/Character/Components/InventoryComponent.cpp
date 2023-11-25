@@ -143,8 +143,10 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	mInventoryBag->AddItem(pickableObject->GetInventoryItemStaticData(), pickableObject->GetValue());
 
 	NotifyIfPickedUpObjectIsAmmo(pickableObject);
+	GetOwner()->ForceNetUpdate();
+	ClientNotifyPickedUpObject(Cast<APickableObjectBase>(pickableObject.GetObject()));
 	
-	//Este código que puse aquí ahora no lo entiendo
+	//Once the pickable object has been saved we can remove it from the world.
 	if(const auto inventoryItemInstance = mInventoryBag->FindFirstItem(pickableObject->GetInventoryItemStaticData()))
 	{
 		inventoryItemInstance->OnUnEquipped();
@@ -338,6 +340,19 @@ void UInventoryComponent::OnRep_EquippedObject() const
 
 void UInventoryComponent::OnRep_InventoryBag() const
 {
+	
+}
+
+void UInventoryComponent::ClientNotifyPickedUpObject_Implementation(APickableObjectBase* pickedUpObject) const
+{
+	//Here we can NOT call NotifyIfPickedUpObjectIsAmmo because GetTotalAmmoOfType is not taking into account
+	//the object just server has picked up because is not replicated to the client yet.
+	//so, as we are receiving the object by parameter we can GetTotalAmmo and add the ammo of the object
+	if(pickedUpObject->IsA<AAmmo>())
+	{
+		const auto ammo = Cast<AAmmo>(pickedUpObject);
+		OnPickedUpAmmoDelegate.Broadcast(ammo->GetAmmoType(), GetTotalAmmoOfType(ammo->GetAmmoType()) + ammo->GetValue());
+	}
 }
 
 void UInventoryComponent::NotifyEquippedWeapon(TScriptInterface<IPickupObject> pickableObject) const

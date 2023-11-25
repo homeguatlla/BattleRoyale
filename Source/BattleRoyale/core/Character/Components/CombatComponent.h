@@ -112,6 +112,7 @@ private:
 	void OnPickedUpAmmo(EAmmoType type, int32 totalAmmo);
 	void OnDroppedPickableObject();
 
+	//RPCs don't support TScriptInterfaces as a parameter
 	UFUNCTION(Server, Reliable)
 	void ServerReload(UInventoryComponent* inventoryComponent);
 
