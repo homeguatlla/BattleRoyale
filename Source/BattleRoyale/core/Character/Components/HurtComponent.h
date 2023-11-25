@@ -5,7 +5,7 @@
 #include <functional>
 
 #include "CoreMinimal.h"
-#include "BattleRoyale/core/Character/AttributeSetHealth.h"
+#include "BattleRoyale/core/Attributes/AttributeSetHealth.h"
 #include "Components/ActorComponent.h"
 #include "HurtComponent.generated.h"
 

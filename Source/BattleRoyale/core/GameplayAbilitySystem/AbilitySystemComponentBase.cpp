@@ -4,7 +4,7 @@
 #include "AbilitySystemComponentBase.h"
 #include "AbilitySystemInterface.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
-#include "BattleRoyale/core/Character/AttributeSetHealth.h"
+#include "BattleRoyale/core/Attributes/AttributeSetHealth.h"
 
 void UAbilitySystemComponentBase::SetSimulatedMontage(UAnimMontage* montage)
 {

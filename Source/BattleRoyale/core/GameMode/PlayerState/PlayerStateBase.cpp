@@ -3,7 +3,7 @@
 
 #include "PlayerStateBase.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
-#include "BattleRoyale/core/Character/AttributeSetHealth.h"
+#include "BattleRoyale/core/Attributes/AttributeSetHealth.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/GameMode/GameModeCommon.h"
 #include "BattleRoyale/core/GameMode/MultiplayerGameMode.h"

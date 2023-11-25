@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AttributeSetHealth.h"
+#include "BattleRoyale/core/Attributes/AttributeSetHealth.h"
 #include "ICharacter.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "Components/HurtComponent.h"

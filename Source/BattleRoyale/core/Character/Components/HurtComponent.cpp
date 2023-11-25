@@ -6,7 +6,7 @@
 #include <functional>
 #include "GameplayEffectExtension.h"
 #include "BattleRoyale/BattleRoyale.h"
-#include "BattleRoyale/core/Character/AttributeSetHealth.h"
+#include "BattleRoyale/core/Attributes/AttributeSetHealth.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
