@@ -90,7 +90,6 @@ public:
 	virtual FTransform GetMuzzleSocketTransform() override;
 	virtual FTransform GetCrosshairSocketTransform() override;
 	
-	virtual void Destroy() override;
 	virtual bool CanBeFired() const override;
 	virtual void Fire(const FVector& targetLocation) override;
 	virtual void OnFire() override;//This method will be called from Blueprint (Gameplay cue shoot that makes the visual effects of the weapon when firing)

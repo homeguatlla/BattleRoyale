@@ -23,8 +23,6 @@ public:
 	//UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	//virtual USkeletalMeshComponent* GetMesh() const = 0;
 
-	virtual void Destroy() = 0;
-	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual FVector GetMuzzleLocation() const = 0;
 	

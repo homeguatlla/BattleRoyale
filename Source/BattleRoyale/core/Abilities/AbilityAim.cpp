@@ -13,6 +13,8 @@ UAbilityAim::UAbilityAim()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
 
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_AIM));
+
+	CancelAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SPRINT));	
 }
 
 bool UAbilityAim::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,

@@ -23,11 +23,6 @@ AWeaponBase::AWeaponBase()
 	mAmmo = MagazineCapacity;
 }
 
-void AWeaponBase::Destroy()
-{
-	AActor::Destroy();
-}
-
 void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
