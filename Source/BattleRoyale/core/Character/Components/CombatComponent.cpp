@@ -37,8 +37,9 @@ void UCombatComponent::InitializeComponent()
 	//Subscribe to pickup delegate
 	if(const auto inventoryComponent = Cast<UInventoryComponent>(mCharacter->GetInventoryComponent().GetObject()))
 	{
-		inventoryComponent->OnEquippedPickableObjectDelegate.AddUObject(this, &ThisClass::OnEquippedPickableObject);
-		inventoryComponent->OnDroppedPickableObject.AddUObject(this, &ThisClass::OnDroppedPickableObject);
+		inventoryComponent->OnEquippedWeaponDelegate.AddUObject(this, &ThisClass::OnEquippedWeapon);
+		inventoryComponent->OnPickedUpAmmoDelegate.AddUObject(this, &ThisClass::OnPickedUpAmmo);
+		inventoryComponent->OnDroppedPickableObjectDelegate.AddUObject(this, &ThisClass::OnDroppedPickableObject);
 	}
 }
 
@@ -216,13 +217,31 @@ void UCombatComponent::ShootOnce() const
 	weapon->Fire(shootingTargetData.targetLocation);
 }
 
-void UCombatComponent::OnEquippedPickableObject(TScriptInterface<IPickupObject> pickableObject)
+void UCombatComponent::OnEquippedWeapon(TScriptInterface<IWeapon> weapon, int32 totalAmmo)
 {
-	if(pickableObject.GetObject()->Implements<UWeapon>())
+	EquipWeapon(weapon);
+	if(mCharacter->IsLocallyControlled())
 	{
-		const TScriptInterface<IWeapon> weapon = pickableObject.GetObject();
-		EquipWeapon(weapon);
+		GetGameInstance()->GetEventDispatcher()->OnRefreshTotalAmmo.Broadcast(totalAmmo);
 	}
+}
+
+void UCombatComponent::OnPickedUpAmmo(EAmmoType type, int32 totalAmmo)
+{
+	if(!mCharacter->IsLocallyControlled())
+	{
+		return;
+	}
+	if(!HasWeaponEquipped())
+	{
+		return;
+	}
+	if(GetEquippedWeapon()->GetAmmoType() != type)
+	{
+		return;
+	}
+	
+	GetGameInstance()->GetEventDispatcher()->OnRefreshTotalAmmo.Broadcast(totalAmmo);
 }
 
 void UCombatComponent::OnDroppedPickableObject()
@@ -232,7 +251,10 @@ void UCombatComponent::OnDroppedPickableObject()
 		if(mCharacter->IsLocallyControlled())
 		{
 			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-			gameInstance->GetEventDispatcher()->OnUnEquippedWeapon.Broadcast();
+			const auto eventDispatcher = gameInstance->GetEventDispatcher();
+			eventDispatcher->OnUnEquippedWeapon.Broadcast();
+			eventDispatcher->OnRefreshAmmo.Broadcast(0, 0);
+			eventDispatcher->OnRefreshTotalAmmo.Broadcast(0);
 		}
 	}
 }

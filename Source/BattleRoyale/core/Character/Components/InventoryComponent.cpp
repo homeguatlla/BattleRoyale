@@ -78,7 +78,7 @@ void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UInventoryComponent, mInventoryBag);
-	DOREPLIFETIME(UInventoryComponent, mEquippedItem);
+	DOREPLIFETIME(UInventoryComponent, mEquippedObject);
 }
 
 void UInventoryComponent::BeginDestroy()
@@ -141,10 +141,14 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	}
 	
 	mInventoryBag->AddItem(pickableObject->GetInventoryItemStaticData(), pickableObject->GetValue());
+
+	NotifyIfPickedUpObjectIsAmmo(pickableObject);
+	
+	//Este código que puse aquí ahora no lo entiendo
 	if(const auto inventoryItemInstance = mInventoryBag->FindFirstItem(pickableObject->GetInventoryItemStaticData()))
 	{
 		inventoryItemInstance->OnUnEquipped();
-		//Destroy the pickable object acto
+		//Destroy the pickable object actor
 		if(const auto object = Cast<APickableObjectBase>(pickableObject.GetObject()))
 		{
 			object->Destroy();
@@ -178,8 +182,8 @@ bool UInventoryComponent::DropObjectServer()
 	
 	pickupObject->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	pickupObject->OnDropped();
-	mEquippedItem = nullptr;
-	OnDroppedPickableObject.Broadcast();
+	mEquippedObject = nullptr;
+	OnDroppedPickableObjectDelegate.Broadcast();
 	
 	return true;
 }
@@ -200,15 +204,17 @@ bool UInventoryComponent::EquipItem(TScriptInterface<IPickupObject> pickableObje
 
 	pickableObject->SetCharacterOwner(character);
 	pickableObject->OnEquipped();
-	mEquippedItem = pickableObject;
+	mEquippedObject = pickableObject;
 	OnEquippedPickableObjectDelegate.Broadcast(pickableObject);
 	
+	NotifyEquippedWeapon(mEquippedObject);
+
 	return true;
 }
 
 TScriptInterface<IPickupObject> UInventoryComponent::GetEquippedItem() const
 {
-	return mEquippedItem;
+	return mEquippedObject;
 }
 
 bool UInventoryComponent::HasAmmoOfType(EAmmoType ammoType) const
@@ -317,20 +323,41 @@ TScriptInterface<IIInventoryItemInstance> UInventoryComponent::GetAmmoItemOfType
 	return inventoryItemInstanceFound;
 }
 
-void UInventoryComponent::OnRep_EquippedItem() const
+void UInventoryComponent::OnRep_EquippedObject() const
 {
-	if(mEquippedItem == nullptr)
+	if(mEquippedObject == nullptr)
 	{
-		OnDroppedPickableObject.Broadcast();	
+		OnDroppedPickableObjectDelegate.Broadcast();	
 	}
 	else
 	{
-		OnEquippedPickableObjectDelegate.Broadcast(mEquippedItem);
+		OnEquippedPickableObjectDelegate.Broadcast(mEquippedObject);
+		NotifyEquippedWeapon(mEquippedObject);
 	}
 }
 
 void UInventoryComponent::OnRep_InventoryBag() const
 {
+}
+
+void UInventoryComponent::NotifyEquippedWeapon(TScriptInterface<IPickupObject> pickableObject) const
+{
+	//Specific case, when weapon we notify a delegate for weapons.
+	if(pickableObject.GetObject()->Implements<UWeapon>())
+	{
+		const TScriptInterface<IWeapon> weapon = pickableObject.GetObject();
+		const auto ammoType = weapon->GetAmmoType();
+		OnEquippedWeaponDelegate.Broadcast(weapon , GetTotalAmmoOfType(ammoType));
+	}
+}
+
+void UInventoryComponent::NotifyIfPickedUpObjectIsAmmo(TScriptInterface<IPickupObject> pickableObject) const
+{
+	if(pickableObject.GetObject()->IsA<AAmmo>())
+	{
+		const auto ammo = Cast<AAmmo>(pickableObject.GetObject());
+		OnPickedUpAmmoDelegate.Broadcast(ammo->GetAmmoType(), GetTotalAmmoOfType(ammo->GetAmmoType()));
+	}
 }
 
 void UInventoryComponent::OnInventoryKeyPressed()

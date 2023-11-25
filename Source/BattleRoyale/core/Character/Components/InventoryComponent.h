@@ -10,12 +10,17 @@
 #include "Components/ActorComponent.h"
 #include "InventoryComponent.generated.h"
 
+class IWeapon;
 class UPickupObject;
 class UMyReplicatedObject;
 
 //TODO create a delegate to know when something is equipped, unequipped or dropped
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEquippedPickableObject, TScriptInterface<IPickupObject> object);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnEquippedItemWeapon, TScriptInterface<IWeapon> weapon, int32 totalAmmo);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPickedUpAmmo, EAmmoType type, int32 totalAmmo);
+
 DECLARE_MULTICAST_DELEGATE(FOnDroppedPickableObject);
+
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class BATTLEROYALE_API UInventoryComponent : public UActorComponent, public IIInventoryComponent
@@ -24,7 +29,9 @@ class BATTLEROYALE_API UInventoryComponent : public UActorComponent, public IIIn
 
 public:
 	FOnEquippedPickableObject OnEquippedPickableObjectDelegate;
-	FOnDroppedPickableObject OnDroppedPickableObject;
+	FOnEquippedItemWeapon OnEquippedWeaponDelegate;
+	FOnPickedUpAmmo OnPickedUpAmmoDelegate;
+	FOnDroppedPickableObject OnDroppedPickableObjectDelegate;
 	
 	// Sets default values for this component's properties
 	UInventoryComponent();
@@ -32,13 +39,12 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 							   FActorComponentTickFunction* ThisTickFunction) override;
-
 	UFUNCTION(BlueprintCallable)
 	virtual bool PickupObjectServer(TScriptInterface<IPickupObject> pickableObject) override;
 	UFUNCTION(BlueprintCallable)
 	virtual bool DropObjectServer() override;
 	virtual TScriptInterface<IPickupObject> GetEquippedItem() const override;
-	virtual bool HasItemEquipped() const override { return mEquippedItem != nullptr; }
+	virtual bool HasItemEquipped() const override { return mEquippedObject != nullptr; }
 
 	virtual bool HasItemOfType(TSubclassOf<UInventoryItemStaticData> itemStaticDataClassToFind) const override;
 	virtual bool HasAmmoOfType(EAmmoType ammoType) const override;
@@ -61,9 +67,11 @@ protected:
 private:
 	virtual bool EquipItem(TScriptInterface<IPickupObject> pickableObject) override;
 	TScriptInterface<IIInventoryItemInstance> GetAmmoItemOfType(EAmmoType ammoType) const;
-	
+	void NotifyEquippedWeapon(TScriptInterface<IPickupObject> pickableObject) const;
+	void NotifyIfPickedUpObjectIsAmmo(TScriptInterface<IPickupObject> pickableObject) const;
+
 	UFUNCTION()
-	void OnRep_EquippedItem() const;
+	void OnRep_EquippedObject() const;
 	UFUNCTION()
 	void OnRep_InventoryBag() const;
 	
@@ -79,8 +87,8 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TArray<TSubclassOf<UInventoryItemStaticData>> DefaultItems;
 
-	UPROPERTY(ReplicatedUsing=OnRep_EquippedItem)
-	TScriptInterface<IPickupObject> mEquippedItem = nullptr;
+	UPROPERTY(ReplicatedUsing=OnRep_EquippedObject)
+	TScriptInterface<IPickupObject> mEquippedObject = nullptr;
 	
 	bool mIsInventoryShown = false;
 };

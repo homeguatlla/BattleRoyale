@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "IGunComponent.h"
 #include "PickupSelectorComponent.h"
+#include "BattleRoyale/core/PickableObjects/Ammo/AmmoTypes.h"
 #include "Components/ActorComponent.h"
 #include "CombatComponent.generated.h"
 
@@ -53,7 +54,7 @@ class BATTLEROYALE_API UCombatComponent : public UActorComponent, public IGunCom
 public:	
 	// Sets default values for this component's properties
 	UCombatComponent();
-
+	
 	virtual void InitializeComponent() override;
 	
 	virtual bool UnEquipWeapon() override;
@@ -107,7 +108,8 @@ private:
 	void ShootOnce() const;
 
 	bool EquipWeapon(TScriptInterface<IWeapon> weapon);
-	void OnEquippedPickableObject(TScriptInterface<IPickupObject> pickableObject);
+	void OnEquippedWeapon(TScriptInterface<IWeapon> weapon, int32 totalAmmo);
+	void OnPickedUpAmmo(EAmmoType type, int32 totalAmmo);
 	void OnDroppedPickableObject();
 
 	UFUNCTION(Server, Reliable)
