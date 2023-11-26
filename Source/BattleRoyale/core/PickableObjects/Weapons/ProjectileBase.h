@@ -38,14 +38,15 @@ class AProjectileBase : public AActor, public IProjectile
 	USoundBase* ExplosionSound;
 	
 	UPROPERTY(EditAnywhere, Category = "Projectile")
-	TSubclassOf<UGameplayEffect> DamageEffect;
-
-	UPROPERTY(EditAnywhere, Category = "Projectile")
 	float ProjectileEjectionImpulse = 1.f;
 
 	UPROPERTY(EditAnywhere, Category = "Projectile")
 	EAmmoType AmmoType;
-	
+
+protected:
+	UPROPERTY(EditAnywhere, Category = "Projectile")
+	TSubclassOf<UGameplayEffect> DamageEffect;
+
 public:
 	AProjectileBase();
 

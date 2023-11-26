@@ -72,9 +72,8 @@ void UAbilityHurt::OnHealthChanged(const FOnAttributeChangeData& data) const
 		victim->NotifyRefreshHealth(currentHealth);
 	}
 
-	const auto causerPlayerState = Cast<APlayerStateBase>(data.GEModData->EffectSpec.GetEffectContext().GetInstigator());
-	//const auto causer = causerPlayerState->GetCharacter();
-
+	const auto instigator = data.GEModData->EffectSpec.GetEffectContext().GetInstigator();
+	
 	//TODO aquí lo suyo sería pasar el IICharacter pero choca con que el propio IICharacter tenga una definición de él mismo
-	victim->NotifyTakeDamage(data.OldValue-data.NewValue, causerPlayerState->GetPawn(), currentHealth);
+	victim->NotifyTakeDamage(data.OldValue-data.NewValue, instigator, currentHealth);
 }

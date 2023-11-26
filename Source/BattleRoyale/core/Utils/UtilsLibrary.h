@@ -1,7 +1,10 @@
 #pragma once
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
 #include "Abilities/GameplayAbilityTypes.h"
 #include "BattleRoyale/BattleRoyale.h"
+#include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "BattleRoyale/core/PickableObjects/Weapons/ProjectileBase.h"
@@ -275,6 +278,55 @@ class BATTLEROYALE_API UtilsLibrary
 			UE_LOG(LogWeapon, Error, TEXT("[%s][LaunchProjectile] Couldn't spawn the projectile"), *instigator->GetName());
 		}
 		return nullptr;
+	}
+
+	static void ApplyRadialDamage(const UObject* worldContextObject, AActor* damageCauser, const FVector& location, float radius,
+		const TArray<TSubclassOf<class UGameplayEffect>>& damageEffects, const TArray<TEnumAsByte<EObjectTypeQuery>>& objectTypes, ETraceTypeQuery traceChannel)
+	{
+		TArray<AActor*> foundActors;
+		const TArray<AActor*> actorsToIgnore = {damageCauser};
+
+		//Find all actors arround	
+		UKismetSystemLibrary::SphereOverlapActors(worldContextObject, location, radius, objectTypes, nullptr, actorsToIgnore, foundActors);
+		for(const auto actor : foundActors)
+		{
+			FHitResult hitResult;
+
+			//Trace from location to actor to know if there is no blocker between
+			if(UKismetSystemLibrary::LineTraceSingle(worldContextObject, location, actor->GetActorLocation(), traceChannel, true, actorsToIgnore, EDrawDebugTrace::None, hitResult, true))
+			{
+				const auto target = hitResult.GetActor();
+				if(target == actor)
+				{
+					const auto character = Cast<ACharacterBase>(target);
+					if(!character)
+					{
+						return;
+					}
+					
+					const auto abilitySystemComponent = character->GetAbilitySystemComponent()->GetAbilitySystemComponent();
+					if(!abilitySystemComponent)
+					{
+						return;
+					}
+					FGameplayEffectContextHandle effectContext = abilitySystemComponent->MakeEffectContext();
+					effectContext.AddInstigator(damageCauser, damageCauser);
+					effectContext.AddSourceObject(damageCauser);
+					for(auto effect : damageEffects)
+					{
+						const auto specHandle = abilitySystemComponent->MakeOutgoingSpec(effect, 1, effectContext);
+						if(specHandle.IsValid())
+						{
+							const auto activeGEHandle = abilitySystemComponent->ApplyGameplayEffectSpecToSelf(*specHandle.Data.Get());
+							if(!activeGEHandle.WasSuccessfullyApplied())
+							{
+								UE_LOG(LogWeapon, Error, TEXT("[ApplyRadialDamage] Couldn't apply GE to target %s"), *target->GetName());
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 };
 }
