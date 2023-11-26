@@ -10,6 +10,7 @@
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
+#include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
@@ -144,33 +145,16 @@ FVector AWeaponBase::GetForwardVector() const
 
 bool AWeaponBase::SpawnProjectileServer(const FVector& muzzleLocation, const FVector& shootingDirection) const
 {
-	if (ProjectileClass != nullptr)
+	if (ProjectileClass == nullptr)
 	{
-		UWorld* const World = GetWorld();
-		if (World != nullptr)
-		{
-			//Set Spawn Collision Handling Override
-			FActorSpawnParameters ActorSpawnParams;
-			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-			const auto location = GetProjectileSpawnLocation(muzzleLocation, shootingDirection, DistanceFromMuzzleLocation);
-			
-			//DrawDebugSphere(GetWorld(), location, 5, 10, FColor::Blue, true);
-			
-			// spawn the projectile at the muzzle
-			if(const auto projectile = World->SpawnActor<AProjectileBase>(ProjectileClass, location, shootingDirection.Rotation(), ActorSpawnParams))
-			{
-				const auto owner = GetOwner();
-				projectile->SetInstigator(Cast<APawn>(GetOwner()));
-				return true;
-			}
-			else
-			{
-				UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::SpawnProjectile] Couldn't spawn the projectile"), *GetName());
-			}
-		}
+		return false;
 	}
-	return false;
+	const auto location = GetProjectileSpawnLocation(muzzleLocation, shootingDirection, DistanceFromMuzzleLocation);
+	FTransform transform;
+	transform.SetLocation(location);
+	transform.SetRotation(shootingDirection.Rotation().Quaternion());
+	const auto projectile = utils::UtilsLibrary::LaunchProjectile(GetWorld(), ProjectileClass, transform, GetOwner(), Cast<APawn>(GetOwner()));
+	return projectile != nullptr;
 }
 
 FTransform AWeaponBase::SaveLeftHandSocketTransform()

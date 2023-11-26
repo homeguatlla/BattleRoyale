@@ -1,8 +1,10 @@
 #pragma once
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/GameplayAbilityTypes.h"
+#include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
+#include "BattleRoyale/core/PickableObjects/Weapons/ProjectileBase.h"
 #include "Kismet/GameplayStatics.h"
 
 namespace utils
@@ -254,6 +256,25 @@ class BATTLEROYALE_API UtilsLibrary
 		}
 
 		target->GetAbilitySystemComponentBase()->SendGameplayEvent(eventTag, data);
+	}
+	
+	static AProjectileBase* LaunchProjectile(const UObject* worldContextObject, TSubclassOf<class AProjectileBase> projectileClass, const FTransform& transform, AActor* owner, APawn* instigator)
+	{
+		const auto world = worldContextObject ? worldContextObject->GetWorld() : nullptr;
+		if(!world || !instigator->HasAuthority())
+		{
+			return nullptr;
+		}
+		if(const auto projectile = world->SpawnActorDeferred<AProjectileBase>(projectileClass, transform, owner, instigator, ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
+		{
+			projectile->FinishSpawning(transform);
+			return projectile;
+		}
+		else
+		{
+			UE_LOG(LogWeapon, Error, TEXT("[%s][LaunchProjectile] Couldn't spawn the projectile"), *instigator->GetName());
+		}
+		return nullptr;
 	}
 };
 }
