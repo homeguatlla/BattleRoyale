@@ -310,6 +310,7 @@ class BATTLEROYALE_API UtilsLibrary
 						return;
 					}
 					FGameplayEffectContextHandle effectContext = abilitySystemComponent->MakeEffectContext();
+					
 					effectContext.AddInstigator(damageCauser, damageCauser);
 					effectContext.AddSourceObject(damageCauser);
 					for(auto effect : damageEffects)

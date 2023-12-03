@@ -2,10 +2,7 @@
 
 
 #include "AreaProjectile.h"
-
-#include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
-#include "Kismet/GameplayStatics.h"
 
 void AAreaProjectile::DoApplyDamageFrom(AActor* hitActor, const FVector& center) const
 {

@@ -72,7 +72,15 @@ void UAbilityHurt::OnHealthChanged(const FOnAttributeChangeData& data) const
 		victim->NotifyRefreshHealth(currentHealth);
 	}
 
-	const auto instigator = data.GEModData->EffectSpec.GetEffectContext().GetInstigator();
+	auto instigator = data.GEModData->EffectSpec.GetEffectContext().GetInstigator();
+
+	//This case is because if is the GE that sets default health values we have as instigator the PlayerState.
+	if(instigator->IsA(APlayerState::StaticClass()))
+	{
+		const auto playerState = Cast<APlayerStateBase>(instigator);
+		check(playerState);
+		instigator = playerState->GetPawn();
+	}
 	
 	//TODO aquí lo suyo sería pasar el IICharacter pero choca con que el propio IICharacter tenga una definición de él mismo
 	victim->NotifyTakeDamage(data.OldValue-data.NewValue, instigator, currentHealth);
