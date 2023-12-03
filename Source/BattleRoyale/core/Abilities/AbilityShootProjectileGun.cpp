@@ -23,6 +23,9 @@ UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SHOOT_PROJECTILE));
 	
+	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SPRINT));
+	CancelAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SPRINT));
+	
 	CooldownGameplayEffectClass = UCooldownGameplayEffect::StaticClass();
 }
 

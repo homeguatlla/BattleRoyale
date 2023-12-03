@@ -15,6 +15,12 @@ class UAbilitySprint : public UGameplayAbilityBase
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Sprint Ability")
+	TSubclassOf<UGameplayEffect> SprintSpeedEffect;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Sprint Ability")
+	TSubclassOf<UGameplayEffect> WalkSpeedEffect;
+	
 	UAbilitySprint();
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;

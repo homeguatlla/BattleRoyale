@@ -17,6 +17,7 @@
 #include "BattleRoyale/core/Abilities/GameplayAbilityBase.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "BattleRoyale/BattleRoyale.h"
+#include "BattleRoyale/core/Attributes/AttributeSetSpeed.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
 #include "Components/CombatComponent.h"
@@ -110,7 +111,6 @@ void ACharacterBase::OnRep_PlayerState()
 void ACharacterBase::Initialize(bool isLocallyControlled)
 {
 	//EquipWeapon(mEquipedWeapon);
-	GetCharacterMovement()->MaxWalkSpeed = GetMinWalkSpeed();
 	DoInitialize(isLocallyControlled);
 }
 
@@ -137,11 +137,16 @@ void ACharacterBase::InitializeAttributes() const
 	HurtComponent->InitializeServer();
 	PickupSelectorComponent->InitializeServer();
 	
-	const IIPlayerState* playerState = GetPlayerStateInterface();
-	if (playerState)
+	if (const auto playerState = GetPlayerStateInterface())
 	{
-		const auto abilitySystemComponent = playerState->GetAbilitySystemComponent();
+		//Adding other attributes
+		if(const auto ab = playerState->GetAbilitySystemComponentInterface())
+		{
+			ab->AddAttributeSet(NewObject<UAttributeSetSpeed>(GetPlayerState()));
+		}
 		
+		const auto abilitySystemComponent = playerState->GetAbilitySystemComponent();
+
 		if(abilitySystemComponent && DefaultAttributeEffect)
 		{
 			FGameplayEffectContextHandle EffectContext = abilitySystemComponent->MakeEffectContext();
@@ -297,12 +302,11 @@ bool ACharacterBase::CanSprint() const
 	//We are not checking if the Velocity > 0 to sprint because
 	//if the shift is pressed and then the player starts walking (velocity >0) then
 	//the ability is not activated.
-	return GetCharacterMovement()->IsWalking();
+	return GetCharacterMovement()->IsWalking() && !CombatComponent->IsAutomaticFiring();
 }
 
 void ACharacterBase::StartSprinting()
 {
-	GetCharacterMovement()->MaxWalkSpeed = GetMaxWalkSpeed();
 	BP_OnStartSprinting(GetMaxWalkSpeed());
 }
 
@@ -323,7 +327,6 @@ void ACharacterBase::SetEnableInput(bool enable, const FInputModeDataBase& input
 
 void ACharacterBase::StopSprinting()
 {
-	GetCharacterMovement()->MaxWalkSpeed = GetMinWalkSpeed();
 	BP_OnStopSprinting(GetMinWalkSpeed());
 }
 

@@ -68,6 +68,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
 	virtual bool CanShoot() const override;
 	virtual void Shoot() override;
+	virtual bool IsAutomaticFiring() const override { return mIsAutomaticFireOn; }
 	virtual void ReleaseTrigger() override;
 	virtual UAnimMontage* GetShootingMontage() const override { return ShootingAnimation; }
 	virtual UAnimMontage* GetReloadingMontage() const override { return ReloadAnimation; }

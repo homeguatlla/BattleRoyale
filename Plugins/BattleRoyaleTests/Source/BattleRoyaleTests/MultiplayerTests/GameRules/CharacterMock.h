@@ -30,6 +30,7 @@ public:
 	virtual float GetMaxHealth() const override { return 100.0f; }
 	virtual float GetMaxWalkSpeed() const override { return 100.0f; }
 	virtual float GetMinWalkSpeed() const override { return 10.0f; }
+	virtual void SetMaxSpeed(float maxSpeed) override {}
 	virtual bool IsFalling() const override { return false;}
 	virtual bool CanSprint() const override { return false; }
 	virtual void StartSprinting() override {}

@@ -52,6 +52,7 @@ public:
 	 **/
 
 	virtual void Shoot() = 0;
+	virtual bool IsAutomaticFiring() const = 0;
 	virtual void ReleaseTrigger() = 0;
 	virtual UAnimMontage* GetShootingMontage() const = 0;
 	virtual UAnimMontage* GetReloadingMontage() const = 0;

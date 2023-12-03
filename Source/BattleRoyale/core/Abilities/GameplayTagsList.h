@@ -16,6 +16,7 @@ const FName TAG_ABILITY_RELOAD("Ability.Reload");
 const FName TAG_STATE_INVULNERABLE = FName("State.Invulnerable");
 const FName TAG_STATE_AIMING = FName("State.Aiming");
 const FName TAG_STATE_DEAD = FName("State.Dead");
+const FName TAG_STATE_SPRINTING = FName("State.Sprinting");
 
 const FName TAG_GAMEPLAYCUE_JUMP("GameplayCue.Jump");
 const FName TAG_GAMEPLAYCUE_SPRINT("GameplayCue.Sprint");

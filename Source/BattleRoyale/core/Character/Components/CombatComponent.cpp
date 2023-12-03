@@ -133,16 +133,12 @@ void UCombatComponent::StartAiming()
 {
 	mIsAiming = true;
 	
-	mCharacter->GetCharacterMovement()->MaxWalkSpeed = mAimWalkSpeed;
-	
 	mCharacter->GetAbilitySystemComponentBase()->AddGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_AIMING));
-	mCharacter->GetAbilitySystemComponentBase()->CancelAbilitiesWithTags(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SPRINT)));
 }
 
 void UCombatComponent::StopAiming()
 {
 	mIsAiming = false;
-	mCharacter->GetCharacterMovement()->MaxWalkSpeed = mCharacter->GetMaxWalkSpeed();
 	//Cuando cerramos el juego el player state es nulo y por tanto no hay GAS y peta aquí
 	//si cerremos el juego mientras estás haciendo aiming
 	if(const auto abilitySystemComponent = mCharacter->GetAbilitySystemComponentBase())

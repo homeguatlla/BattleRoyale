@@ -135,6 +135,9 @@ public:
 	virtual float GetMinWalkSpeed() const override { return MinWalkSpeed; }
 
 	UFUNCTION(BlueprintCallable)
+	virtual void SetMaxSpeed(float maxSpeed) override { GetCharacterMovement()->MaxWalkSpeed = maxSpeed; }
+	
+	UFUNCTION(BlueprintCallable)
 	virtual bool IsAlive() const override { return HurtComponent->IsAlive(); }
 	
 	UFUNCTION(BlueprintCallable)

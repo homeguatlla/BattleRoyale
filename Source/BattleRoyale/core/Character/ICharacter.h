@@ -63,6 +63,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
 	virtual float GetMaxWalkSpeed() const = 0;
 
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "ICharacter")
+	virtual void SetMaxSpeed(float maxSpeed) = 0;
+
 	UFUNCTION(BlueprintCallable)
 	virtual float GetMinWalkSpeed() const = 0;
 	

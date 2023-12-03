@@ -5,6 +5,7 @@
 #include "AbilitySystemGlobals.h"
 #include "GameplayCueManager.h"
 #include "GameplayTagsList.h"
+#include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 
 UAbilitySprint::UAbilitySprint()
 {
@@ -12,11 +13,12 @@ UAbilitySprint::UAbilitySprint()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
 
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SPRINT));
-	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SHOOT));	
+	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_STATE_SPRINTING));
 
 	//Prevents activate sprint ability if aiming.
 	//But if we are already sprinting, the ability is not cancelled.
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_STATE_AIMING));
+	
 	//To enable sprint ability from a trigger
 	/*FAbilityTriggerData triggerData;
 	triggerData.TriggerTag = FGameplayTag::RequestGameplayTag(FName("Trigger.Sprint"));
@@ -38,7 +40,8 @@ void UAbilitySprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		}
 
 		const auto character = GetCharacter(ActorInfo);
-		if (character != nullptr)
+		const auto abilitySystemComponent = character->GetAbilitySystemComponentBase();
+		if (character != nullptr && abilitySystemComponent != nullptr)
 		{
 			UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
 				ActorInfo->AvatarActor.Get(),
@@ -50,10 +53,18 @@ void UAbilitySprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				FGameplayTag::RequestGameplayTag(TAG_GAMEPLAYCUE_SPRINT),
 				EGameplayCueEvent::Type::WhileActive,
 				FGameplayCueParameters());
-			
+
+			if(SprintSpeedEffect)
+			{
+				abilitySystemComponent->ApplyGameplayEffectToSelf(SprintSpeedEffect);
+			}
 			character->StartSprinting();
+				
+			return;
 		}
 	}
+	
+	EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 }
 
 bool UAbilitySprint::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -100,13 +111,19 @@ void UAbilitySprint::CancelAbility(const FGameplayAbilitySpecHandle Handle, cons
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 
 	const auto character = GetCharacter(ActorInfo);
-	if (character != nullptr)
+	const auto abilitySystemComponent = character->GetAbilitySystemComponentBase();
+	if (character != nullptr && abilitySystemComponent != nullptr)
 	{
 		UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(
 				ActorInfo->AvatarActor.Get(),
 				FGameplayTag::RequestGameplayTag(TAG_GAMEPLAYCUE_SPRINT),
 				EGameplayCueEvent::Type::Removed,
 				FGameplayCueParameters());
+
+		if(WalkSpeedEffect)
+		{
+			abilitySystemComponent->ApplyGameplayEffectToSelf(WalkSpeedEffect);
+		}
 		character->StopSprinting();
 	}
 }
