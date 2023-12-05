@@ -70,7 +70,7 @@ void UFootstepsComponent::HandleFootstep(bool isRightFoot) const
 		}
 			
 		//Play sound
-		UGameplayStatics::PlaySoundAtLocation(this, material->Sound, hitResult.Location, FRotator::ZeroRotator);
+		UGameplayStatics::PlaySoundAtLocation(this, material->FootstepSound, hitResult.Location, FRotator::ZeroRotator);
 	}
 }
 

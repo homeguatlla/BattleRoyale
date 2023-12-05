@@ -12,6 +12,7 @@
 #include "BattleRoyale/core/PickableObjects/PickableObjectBase.h"
 #include "BattleRoyale/core/PickableObjects/Ammo/Ammo.h"
 #include "BattleRoyale/core/PickableObjects/Weapons/WeaponBase.h"
+#include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemInstance.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryArray.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemStaticData.h"
@@ -123,8 +124,9 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	{
 		return false;
 	}
-	
-	if(!HasItemEquipped() && pickableObject.GetObject()->IsA<AWeaponBase>())
+
+	const auto inventoryItemStaticData = UGameplayBlueprintFunctionLibrary::GetInventoryItemStaticData(pickableObject->GetInventoryItemStaticData());
+	if(!HasItemEquipped() && inventoryItemStaticData->CanBeEquipped())
 	{
 		return EquipItem(pickableObject);
 	}

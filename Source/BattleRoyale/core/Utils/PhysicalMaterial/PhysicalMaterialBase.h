@@ -16,6 +16,8 @@ class BATTLEROYALE_API UPhysicalMaterialBase : public UPhysicalMaterial
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Physical Material")
-	class USoundBase* Sound;
-	
+	class USoundBase* FootstepSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Physical Material")
+	class USoundBase* ImpactSound;
 };

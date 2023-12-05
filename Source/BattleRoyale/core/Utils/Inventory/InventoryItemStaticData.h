@@ -25,6 +25,8 @@ public:
 	TSubclassOf<UUserWidget> GetItemWidgetClass() const { return mWidget; }
 	UFUNCTION(BlueprintCallable)
 	int GetValue() const { return mValue; }
+	UFUNCTION(Blueprintable)
+	bool CanBeEquipped() const { return mCanBeEquipped; }
 	
 private:
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Name"))
@@ -37,7 +39,7 @@ private:
 	TSubclassOf<UUserWidget> mWidget = nullptr;
 	
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Can be equipped"))
-	bool mCanBeEquipped = true;
+	bool mCanBeEquipped = false;
 
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName = "Value"))
 	int mValue = 0;

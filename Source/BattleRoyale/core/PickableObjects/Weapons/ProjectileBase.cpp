@@ -6,6 +6,7 @@
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
+#include "BattleRoyale/core/Utils/PhysicalMaterial/PhysicalMaterialBase.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "Components/SphereComponent.h"
@@ -48,7 +49,7 @@ void AProjectileBase::Destroyed()
 {
 	Super::Destroyed();
 
-	OnExplode();
+	OnExplode(mImpactPhysicalMaterial);
 }
 
 void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -59,6 +60,11 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 		if(OtherComp->IsSimulatingPhysics())
 		{
 			OtherComp->AddImpulseAtLocation(GetVelocity() * ProjectileEjectionImpulse, GetActorLocation());
+		}
+
+		if(OtherComp->GetNumMaterials() > 0)
+		{
+			mImpactPhysicalMaterial = Cast<UPhysicalMaterialBase>(OtherComp->GetMaterial(0)->GetPhysicalMaterial());
 		}
 		
 		DoApplyDamageFrom(OtherActor, Hit.ImpactPoint);

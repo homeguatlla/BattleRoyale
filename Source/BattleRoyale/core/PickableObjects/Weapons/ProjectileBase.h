@@ -59,7 +59,7 @@ public:
 	virtual EAmmoType GetAmmoType() const override { return AmmoType; }
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Projectile")
-	void OnExplode();
+	void OnExplode(UPhysicalMaterialBase* physicalMaterial);
 
 	/** called when projectile hits something */
 	UFUNCTION()
@@ -76,5 +76,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Projectile")
 	bool IsDebugEnabled { false };
+
+private:
+	UPROPERTY()
+	UPhysicalMaterialBase* mImpactPhysicalMaterial = nullptr;
 };
 
