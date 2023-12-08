@@ -110,6 +110,11 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	}
 }
 
+bool UInventoryComponent::IsAWeapon(TScriptInterface<IPickupObject> pickableObject) const
+{
+	return pickableObject.GetObject()->Implements<UWeapon>();
+}
+
 bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pickableObject)
 {
 	const auto character = Cast<ACharacterBase>(GetOwner());
@@ -124,31 +129,31 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	{
 		return false;
 	}
-
-	const auto inventoryItemStaticData = UGameplayBlueprintFunctionLibrary::GetInventoryItemStaticData(pickableObject->GetInventoryItemStaticData());
-	if(!HasItemEquipped() && inventoryItemStaticData->CanBeEquipped())
-	{
-		return EquipItem(pickableObject);
-	}
-	else
-	{
-		//TODO si tiene un arma equipada, entonces desequipar, no sé si guardarla al inventario o no
-		//y equipar la nueva.
-	}
 	
 	//Save picked up object to the inventory.
 	if(mInventoryBag->IsFull())
 	{
 		return false;	
 	}
-	
-	mInventoryBag->AddItem(pickableObject->GetInventoryItemStaticData(), pickableObject->GetValue());
 
-	NotifyIfPickedUpObjectIsAmmo(pickableObject);
-	GetOwner()->ForceNetUpdate();
+	if(GetTotalWeapons() >= MaxInventoryWeapons && IsAWeapon(pickableObject))
+	{
+		return false;
+	}
+
+	//Add item into the inventory
+	mInventoryBag->AddItem(pickableObject->GetInventoryItemStaticData(), pickableObject->GetValue());
 	ClientNotifyPickedUpObject(Cast<APickableObjectBase>(pickableObject.GetObject()));
 	
-	//Once the pickable object has been saved we can remove it from the world.
+	const auto inventoryItemStaticData = UGameplayBlueprintFunctionLibrary::GetInventoryItemStaticData(pickableObject->GetInventoryItemStaticData());
+	if(!HasItemEquipped() && inventoryItemStaticData->CanBeEquipped())
+	{
+		return EquipItem(pickableObject);
+	}
+	
+	NotifyIfPickedUpObjectIsAmmo(pickableObject);
+	
+	//Once the pickable object has been saved into the inventory we can remove it from the world.
 	if(const auto inventoryItemInstance = mInventoryBag->FindFirstItem(pickableObject->GetInventoryItemStaticData()))
 	{
 		inventoryItemInstance->OnUnEquipped();
@@ -260,6 +265,24 @@ int UInventoryComponent::GetTotalAmmoOfType(EAmmoType ammoType) const
 		});
 
 	return totalAmmo;
+}
+
+int UInventoryComponent::GetTotalWeapons() const
+{
+	int totalWeapons = 0;
+	
+	PerformActionForEachInventoryItem(
+	[&totalWeapons](UInventoryArrayItem* inventoryItem) -> bool
+	{
+		const auto itemClass = inventoryItem->mInventoryItem->GetStaticData()->GetPickupObjectClass();
+		if(itemClass->GetDefaultObject()->Implements<UWeapon>())
+		{
+			totalWeapons++;
+		}
+		return false;	
+	});
+
+	return totalWeapons;
 }
 
 int UInventoryComponent::RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded)

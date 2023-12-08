@@ -51,7 +51,6 @@ public:
 	virtual bool HasLifeKid() const override;
 
 	virtual int GetTotalAmmoOfType(EAmmoType ammoType) const override;
-	
 	virtual int RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded) override;
 	virtual void PerformActionForEachInventoryItem(const std::function<bool (UInventoryArrayItem* inventoryItem)>& callback) const override;
 	
@@ -69,7 +68,9 @@ private:
 	TScriptInterface<IIInventoryItemInstance> GetAmmoItemOfType(EAmmoType ammoType) const;
 	void NotifyEquippedWeapon(TScriptInterface<IPickupObject> pickableObject) const;
 	void NotifyIfPickedUpObjectIsAmmo(TScriptInterface<IPickupObject> pickableObject) const;
-
+	bool IsAWeapon(TScriptInterface<IPickupObject> pickableObject) const;
+	int GetTotalWeapons() const;
+	
 	UFUNCTION()
 	void OnRep_EquippedObject() const;
 	UFUNCTION()
@@ -82,7 +83,10 @@ private:
 	//void DropItem();
 
 	UPROPERTY(EditDefaultsOnly)
-	int MaxInventoryItems = 5;
+	int MaxInventoryItems = 7;
+
+	UPROPERTY(EditDefaultsOnly)
+	int MaxInventoryWeapons = 2;
 	
 	UPROPERTY(ReplicatedUsing=OnRep_InventoryBag)
 	UInventoryBag* mInventoryBag = nullptr;

@@ -26,6 +26,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FInventoryItemVisual GetItemByIndex(int index) const;
 
+	UFUNCTION(BlueprintCallable)
 	int FindItemByID(int ID) const;
 	
 	UFUNCTION(BlueprintCallable)

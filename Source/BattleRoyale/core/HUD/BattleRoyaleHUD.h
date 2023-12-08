@@ -32,7 +32,7 @@ public:
 	TArray<TSubclassOf<UUserWidget>> InventoryHUDWidgetClasses;
 
 	UPROPERTY(EditAnywhere, Category= "Inventory HUD")
-	int MaxInventoryItems = 5;
+	int MaxInventoryItems = 7;
 	
 	UPROPERTY()
 	UUserWidget* mCharacterHUDWidget;

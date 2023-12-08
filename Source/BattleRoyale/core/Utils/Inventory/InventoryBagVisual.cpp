@@ -37,6 +37,7 @@ void UInventoryBagVisual::Refresh(const TScriptInterface<IIInventoryBag> invento
 	inventoryBag->PerformActionForEachItem([this, &i](UInventoryArrayItem* inventoryItem) -> bool
 	{
 		const auto index = FindItemByID(inventoryItem->GetID());
+		
 		if(index == -1) //not found
 		{
 			//Find first empty space. Must be space for all.			
@@ -44,7 +45,8 @@ void UInventoryBagVisual::Refresh(const TScriptInterface<IIInventoryBag> invento
 			{
 				i++;
 			}
-
+			check(i <= mMaxItems);
+			
 			const auto itemVisual = FInventoryItemVisual(
 				inventoryItem->GetID(),
 				inventoryItem->mInventoryItem->GetValue(),
