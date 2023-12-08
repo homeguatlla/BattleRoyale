@@ -143,6 +143,7 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 
 	//Add item into the inventory
 	mInventoryBag->AddItem(pickableObject->GetInventoryItemStaticData(), pickableObject->GetValue());
+	GetOwner()->ForceNetUpdate();
 	ClientNotifyPickedUpObject(Cast<APickableObjectBase>(pickableObject.GetObject()));
 	
 	const auto inventoryItemStaticData = UGameplayBlueprintFunctionLibrary::GetInventoryItemStaticData(pickableObject->GetInventoryItemStaticData());
@@ -250,15 +251,20 @@ int UInventoryComponent::GetTotalAmmoOfType(EAmmoType ammoType) const
 	PerformActionForEachInventoryItem(
 		[&ammoType, &totalAmmo](UInventoryArrayItem* inventoryItem) -> bool
 		{
-			const auto staticData = inventoryItem->mInventoryItem->GetStaticData();
-			const auto objectClass = staticData->GetPickupObjectClass();
-			const auto defaultPickableObject = objectClass.GetDefaultObject();
-			if(defaultPickableObject->IsA<AAmmo>())
+			//It is possible inventoryItem is null because the array could be replicated,
+			//but maybe the items not.
+			if(inventoryItem)
 			{
-				const auto ammo = Cast<AAmmo>(defaultPickableObject);
-				if(ammo->GetAmmoType() == ammoType)
+				const auto staticData = inventoryItem->mInventoryItem->GetStaticData();
+				const auto objectClass = staticData->GetPickupObjectClass();
+				const auto defaultPickableObject = objectClass.GetDefaultObject();
+				if(defaultPickableObject->IsA<AAmmo>())
 				{
-					totalAmmo += inventoryItem->mInventoryItem->GetValue();
+					const auto ammo = Cast<AAmmo>(defaultPickableObject);
+					if(ammo->GetAmmoType() == ammoType)
+					{
+						totalAmmo += inventoryItem->mInventoryItem->GetValue();
+					}
 				}
 			}
 			return false;
