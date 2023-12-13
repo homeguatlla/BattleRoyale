@@ -15,9 +15,10 @@ class UInventoryArray : public UNetworkObject//public FFastArraySerializer
 	GENERATED_BODY()
 
 public:
-	void AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass, int value);
+	TScriptInterface<IIInventoryItemInstance> AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass, int value, int value2);
 	void RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
-
+	void RemoveItem(TScriptInterface<IIInventoryItemInstance> itemInstance);
+	
 	TScriptInterface<IIInventoryItemInstance> FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
 
 	void PerformActionForEachItem(const std::function<bool(UInventoryArrayItem* inventoryItem)>& action) const;

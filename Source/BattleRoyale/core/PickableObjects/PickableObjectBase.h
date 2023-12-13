@@ -33,7 +33,7 @@ class BATTLEROYALE_API APickableObjectBase : public AActor, public IPickupObject
 
 	UPROPERTY(Replicated, EditDefaultsOnly, Category="PickableObject")
 	int Value = 0;
-	
+
 public:	
 	// Sets default values for this actor's properties
 	APickableObjectBase();
@@ -59,6 +59,9 @@ public:
 	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) override;
 
 	virtual void DoEquipped() {};
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_OnEquipped();
 	
 protected:
 	// Called when the game starts or when spawned

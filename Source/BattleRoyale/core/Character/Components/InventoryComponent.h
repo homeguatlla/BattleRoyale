@@ -20,7 +20,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnEquippedItemWeapon, TScriptInterface<IWe
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPickedUpAmmo, EAmmoType type, int32 totalAmmo);
 
 DECLARE_MULTICAST_DELEGATE(FOnDroppedPickableObject);
-
+DECLARE_MULTICAST_DELEGATE(FOnUnEquippedPickableObject);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class BATTLEROYALE_API UInventoryComponent : public UActorComponent, public IIInventoryComponent
@@ -30,8 +30,10 @@ class BATTLEROYALE_API UInventoryComponent : public UActorComponent, public IIIn
 public:
 	FOnEquippedPickableObject OnEquippedPickableObjectDelegate;
 	FOnEquippedItemWeapon OnEquippedWeaponDelegate;
+	FOnUnEquippedPickableObject OnUnEquippedPickableObject;
 	FOnPickedUpAmmo OnPickedUpAmmoDelegate;
 	FOnDroppedPickableObject OnDroppedPickableObjectDelegate;
+	
 	
 	// Sets default values for this component's properties
 	UInventoryComponent();
@@ -43,6 +45,9 @@ public:
 	virtual bool PickupObjectServer(TScriptInterface<IPickupObject> pickableObject) override;
 	UFUNCTION(BlueprintCallable)
 	virtual bool DropObjectServer() override;
+	virtual bool EquipItem(UInventoryItemInstance* item) override;
+	virtual bool UnEquipItem() override;
+	
 	virtual TScriptInterface<IPickupObject> GetEquippedItem() const override;
 	virtual bool HasItemEquipped() const override { return mEquippedObject != nullptr; }
 
@@ -53,6 +58,9 @@ public:
 	virtual int GetTotalAmmoOfType(EAmmoType ammoType) const override;
 	virtual int RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded) override;
 	virtual void PerformActionForEachInventoryItem(const std::function<bool (UInventoryArrayItem* inventoryItem)>& callback) const override;
+
+	virtual int GetTotalWeapons() const override;
+	virtual UInventoryItemInstance* GetNextWeaponDifferentThan(TScriptInterface<IPickupObject> weapon) const override;
 	
 	void OnInventoryKeyPressed();
 
@@ -64,12 +72,11 @@ protected:
 	virtual void BeginDestroy() override;
 	
 private:
-	virtual bool EquipItem(TScriptInterface<IPickupObject> pickableObject) override;
+	bool EquipObject(TScriptInterface<IPickupObject> pickableObject);
 	TScriptInterface<IIInventoryItemInstance> GetAmmoItemOfType(EAmmoType ammoType) const;
 	void NotifyEquippedWeapon(TScriptInterface<IPickupObject> pickableObject) const;
 	void NotifyIfPickedUpObjectIsAmmo(TScriptInterface<IPickupObject> pickableObject) const;
 	bool IsAWeapon(TScriptInterface<IPickupObject> pickableObject) const;
-	int GetTotalWeapons() const;
 	
 	UFUNCTION()
 	void OnRep_EquippedObject() const;

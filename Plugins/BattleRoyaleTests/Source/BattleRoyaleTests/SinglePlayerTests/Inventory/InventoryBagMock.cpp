@@ -4,11 +4,16 @@
 #include "InventoryBagMock.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryArrayItem.h"
 
-void UInventoryBagMock::AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value)
+TScriptInterface<IIInventoryItemInstance> UInventoryBagMock::AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value1, int value2)
 {
+	return nullptr;
 }
 
 void UInventoryBagMock::RemoveFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass)
+{
+}
+
+void UInventoryBagMock::RemoveItem(TScriptInterface<IIInventoryItemInstance> item)
 {
 }
 
@@ -16,7 +21,7 @@ bool UInventoryBagMock::ExistItemWithID(int ID) const
 {
 	for(auto&& item : mItems)
 	{
-		if(item.id == ID)
+		if(item.mId == ID)
 		{
 			return true;
 		}
@@ -30,6 +35,11 @@ void UInventoryBagMock::SetMaxItems(int max)
 }
 
 TScriptInterface<IIInventoryItemInstance> UInventoryBagMock::FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass)
+{
+	return nullptr;
+}
+
+TScriptInterface<IIInventoryItemInstance> UInventoryBagMock::FindItemWithID(int ID)
 {
 	return nullptr;
 }

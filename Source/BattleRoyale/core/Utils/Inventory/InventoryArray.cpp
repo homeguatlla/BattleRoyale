@@ -7,13 +7,15 @@
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
-void UInventoryArray::AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass, int _value)
+TScriptInterface<IIInventoryItemInstance> UInventoryArray::AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass, int value, int value2)
 {
 	//auto& item = mItems.AddDefaulted_GetRef();
 	const auto item = NewObject<UInventoryArrayItem>();
 	item->mInventoryItem = NewObject<UInventoryItemInstance>();
-	item->mInventoryItem->Initialize(itemClass, _value);
+	item->mInventoryItem->Initialize(itemClass, value, value2);
 	mItems.Add(item);
+
+	return item->mInventoryItem;
 	//MarkItemDirty(item);
 }
 
@@ -47,6 +49,18 @@ void UInventoryArray::RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticDat
 			break;
 		}
 	}*/
+}
+
+void UInventoryArray::RemoveItem(TScriptInterface<IIInventoryItemInstance> itemInstance)
+{
+	for(int i = 0; i < mItems.Num() ; ++i)
+	{
+		if(mItems[i]->mInventoryItem == itemInstance.GetObject())
+		{
+			mItems.RemoveAt(i);
+			break;
+		}
+	}
 }
 
 TScriptInterface<IIInventoryItemInstance> UInventoryArray::FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass)

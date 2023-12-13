@@ -30,13 +30,16 @@ class BATTLEROYALE_API IIInventoryBag
 	GENERATED_BODY()
 
 public:
-	virtual void AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value) = 0;
+	virtual TScriptInterface<IIInventoryItemInstance> AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value, int value2) = 0;
 	virtual void RemoveFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) = 0;
+	virtual void RemoveItem(TScriptInterface<IIInventoryItemInstance> item) = 0;
+	
 	virtual bool ExistItemWithID(int ID) const = 0;
 
 	virtual void SetMaxItems(int max) = 0;
 	virtual TScriptInterface<IIInventoryItemInstance> FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) = 0;
-
+	virtual TScriptInterface<IIInventoryItemInstance> FindItemWithID(int ID) = 0;
+	
 	virtual void PerformActionForEachItem(const std::function<bool(UInventoryArrayItem* inventoryItem)>& action) const = 0;
 	virtual int Num() const = 0;
 	virtual bool IsFull() const = 0;

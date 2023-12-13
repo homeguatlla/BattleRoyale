@@ -11,6 +11,7 @@
 class IPickupObject;
 class UInventoryItemStaticData;
 class UInventoryArrayItem;
+class UInventoryItemInstance;
 
 // This class does not need to be modified.
 UINTERFACE(NotBlueprintable, meta = (CannotImplementInterfaceInBlueprint))
@@ -28,8 +29,10 @@ class BATTLEROYALE_API IIInventoryComponent
 
 public:
 	virtual bool PickupObjectServer(TScriptInterface<IPickupObject> pickableObject) = 0;
-	virtual bool EquipItem(TScriptInterface<IPickupObject> pickableObject) = 0;
+	virtual bool EquipItem(UInventoryItemInstance* item) = 0;
+	virtual bool UnEquipItem() = 0;
 	virtual bool DropObjectServer() = 0;
+	
 	virtual TScriptInterface<IPickupObject> GetEquippedItem() const = 0;
 	virtual bool HasItemEquipped() const = 0;
 
@@ -37,9 +40,11 @@ public:
 	virtual bool HasAmmoOfType(EAmmoType ammoType) const = 0;
 	virtual bool HasLifeKid() const = 0;
 
+	virtual int GetTotalWeapons() const = 0;
 	virtual int GetTotalAmmoOfType(EAmmoType ammoType) const = 0;
-	
 	virtual int RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded) = 0;
+
+	virtual UInventoryItemInstance* GetNextWeaponDifferentThan(TScriptInterface<IPickupObject> weapon) const = 0;
 	
 	virtual void PerformActionForEachInventoryItem(const std::function<bool (UInventoryArrayItem* inventoryItem)>& callback) const = 0;
 };

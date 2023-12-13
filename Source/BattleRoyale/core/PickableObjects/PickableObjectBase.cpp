@@ -142,6 +142,7 @@ void APickableObjectBase::OnEquipped()
 {
 	ChangeState(EPickupObjectState::Equipped);
 	DoEquipped();
+	BP_OnEquipped();
 }
 
 void APickableObjectBase::OnUnEquipped()

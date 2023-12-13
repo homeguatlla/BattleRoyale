@@ -60,6 +60,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IGunComponent")
 	virtual bool CanReload(const TScriptInterface<IIInventoryComponent> inventoryComponent) const = 0;
 	virtual void Reload(const TScriptInterface<IIInventoryComponent> inventoryComponent) = 0;
+	virtual bool CanSwapWeapons(const TScriptInterface<IIInventoryComponent> inventoryComponent) const = 0;
+	virtual void SwapWeaponsServer(const TScriptInterface<IIInventoryComponent> inventoryComponent) = 0;
 	
 	virtual void SetupLeftHandSocketTransform(const ACharacterBase* character) const = 0;
 };

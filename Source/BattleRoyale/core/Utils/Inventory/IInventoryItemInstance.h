@@ -23,11 +23,11 @@ class BATTLEROYALE_API IIInventoryItemInstance
 	GENERATED_BODY()
 
 public:
-	virtual void Initialize(TSubclassOf<UInventoryItemStaticData> itemStaticClass, int value) = 0;
+	virtual void Initialize(TSubclassOf<UInventoryItemStaticData> itemStaticClass, int value1, int value2) = 0;
 	virtual const UInventoryItemStaticData* GetStaticData() const = 0;
 	virtual const TSubclassOf<UInventoryItemStaticData> GetStaticDataClass() const = 0;	
-	virtual int GetValue() const = 0;
-	virtual void UpdateValue(int newValue) = 0;
-	virtual void OnEquipped() = 0;
-	virtual void OnUnEquipped() = 0;
+	virtual int GetValue1() const = 0;
+	virtual int GetValue2() const = 0;
+	virtual void UpdateValue1(int newValue) = 0;
+	virtual void UpdateValue2(int newValue) = 0;
 };

@@ -16,5 +16,6 @@ enum class EAbilityInputID : uint8
 	PickUp,
 	Drop,
 	Aim,
-	Reload
+	Reload,
+	SwapWeapons
 };

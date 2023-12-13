@@ -49,7 +49,7 @@ void UInventoryBagVisual::Refresh(const TScriptInterface<IIInventoryBag> invento
 			
 			const auto itemVisual = FInventoryItemVisual(
 				inventoryItem->GetID(),
-				inventoryItem->mInventoryItem->GetValue(),
+				inventoryItem->mInventoryItem->GetValue1(),
 				false,
 				inventoryItem->mInventoryItem->GetStaticData()->GetItemWidgetClass());
 			

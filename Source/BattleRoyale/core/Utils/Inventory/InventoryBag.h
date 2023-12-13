@@ -19,13 +19,15 @@ class BATTLEROYALE_API UInventoryBag : public UNetworkObject, public IIInventory
 public:
 	UInventoryBag();
 
-	virtual void AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value) override;
+	virtual TScriptInterface<IIInventoryItemInstance> AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value, int value2) override;
 	virtual void RemoveFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;
+	virtual void RemoveItem(TScriptInterface<IIInventoryItemInstance> item) override;
 	
 	virtual void SetMaxItems(int max) override { mMaxItems = max; }
 	virtual TScriptInterface<IIInventoryItemInstance> FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;
 	
 	virtual bool ExistItemWithID(int ID) const override;
+	virtual TScriptInterface<IIInventoryItemInstance> FindItemWithID(int ID) override;
 	
 	virtual void PerformActionForEachItem(const std::function<bool(UInventoryArrayItem* inventoryItem)>& action) const override;
 	virtual int Num() const override { return mInventoryArray->Num(); }

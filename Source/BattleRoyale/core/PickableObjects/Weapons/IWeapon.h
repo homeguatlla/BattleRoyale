@@ -47,6 +47,9 @@ public:
 	virtual int32 GetAmmo() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
+	virtual void SetAmmo(int32 newAmmo) = 0;
+	
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")
 	virtual int32 GetMagazineCapacity() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IWeapon")

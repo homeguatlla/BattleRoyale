@@ -37,10 +37,13 @@ void AInventoryHUD::BindToDelegate()
 	}
 }
 
-void AInventoryHUD::OnShowInventoryScreen(const TScriptInterface<IIInventoryBag> inventoryBag)
+void AInventoryHUD::OnShowInventoryScreen(const TScriptInterface<IIInventoryBag> inventoryBag, TScriptInterface<IPickupObject> equippedObject)
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UIInventoryHUD::StaticClass()))
 	{
+		//TODO ver que hacemos con el equippedobject. Igual lo podemos agregar al inventoryVisual en la misma lista, o
+		//lo podemos pasar a parte sabiendo que será el equipado y por tanto podemos cargarnos el isEquipped del itemvisual
+		//Que sucede si visualmente pudieramos tener 3 armas?
 		inventoryBagVisual->Refresh(inventoryBag);
 		IIInventoryHUD::Execute_OnShowInventoryScreen(mHUDWidget, inventoryBagVisual);
 	}

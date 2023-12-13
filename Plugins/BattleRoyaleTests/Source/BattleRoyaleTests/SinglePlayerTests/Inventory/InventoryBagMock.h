@@ -10,19 +10,20 @@
 
 struct BATTLEROYALETESTS_API InventoryItemMock : public IIInventoryItemInstance
 {
-	InventoryItemMock(int _id, int _type, int _value = 0, UInventoryItemStaticData* _data = nullptr) : id(_id), type(_type), value(_value), data(_data) {}
-	virtual void Initialize(TSubclassOf<UInventoryItemStaticData> itemStaticClass, int _value) override {}
-	virtual const UInventoryItemStaticData* GetStaticData() const override { return data; }
+	InventoryItemMock(int _id, int _type, int _value1 = 0, int _value2 = 0, UInventoryItemStaticData* _data = nullptr) : mId(_id), mType(_type), mValue1(_value1), mValue2(_value2), mData(_data) {}
+	virtual void Initialize(TSubclassOf<UInventoryItemStaticData> itemStaticClass, int value1, int value2) override {}
+	virtual const UInventoryItemStaticData* GetStaticData() const override { return mData; }
 	virtual const TSubclassOf<UInventoryItemStaticData> GetStaticDataClass() const override { return nullptr; }
-	virtual int GetValue() const override { return value; }
-	virtual void UpdateValue(int newValue) override { value = newValue; }
-	virtual void OnEquipped() override {}
-	virtual void OnUnEquipped() override {}
+	virtual int GetValue1() const override { return mValue1; }
+	virtual void UpdateValue1(int newValue) override { mValue1 = newValue; }
+	virtual int GetValue2() const override { return mValue2; }
+	virtual void UpdateValue2(int newValue) override { mValue2 = newValue; }
 	
-	int id;
-	int type;
-	int value;
-	UInventoryItemStaticData* data = nullptr;
+	int mId;
+	int mType;
+	int mValue1;
+	int mValue2;
+	UInventoryItemStaticData* mData = nullptr;
 };
 /**
  * 
@@ -34,14 +35,16 @@ class BATTLEROYALETESTS_API UInventoryBagMock : public UObject, public IIInvento
 
 public:
 	void Initialize(int maxItems, int numItems) { mMaxItems = maxItems; mNumItems = numItems; }
-	void AddItem(const InventoryItemMock& item) { mItems.Add(item); }
+	TScriptInterface<IIInventoryItemInstance> AddItem(const InventoryItemMock& item) { mItems.Add(item); return nullptr;}
 	void RemoveItem(int index) { if(index >= 0 && index < mItems.Num()) mItems.RemoveAt(index); }
 
-	virtual void AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value) override;
+	virtual TScriptInterface<IIInventoryItemInstance> AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value1, int value2) override;
 	virtual void RemoveFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;
+	virtual void RemoveItem(TScriptInterface<IIInventoryItemInstance> item) override;
 	virtual bool ExistItemWithID(int ID) const override;
 	virtual void SetMaxItems(int max) override;
 	virtual TScriptInterface<IIInventoryItemInstance> FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;
+	virtual TScriptInterface<IIInventoryItemInstance> FindItemWithID(int ID) override;
 	virtual void PerformActionForEachItem(const std::function<bool(UInventoryArrayItem* inventoryItem)>& action) const override;
 	virtual int Num() const override;
 	virtual bool IsFull() const override;

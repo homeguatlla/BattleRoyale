@@ -61,7 +61,7 @@ void UInventoryComponent::InitializeComponent()
 	for(const auto item : DefaultItems)
 	{
 		const auto itemDefault = item->GetDefaultObject<UInventoryItemStaticData>();
-		mInventoryBag->AddItem(item, itemDefault->GetValue());
+		mInventoryBag->AddItem(item, itemDefault->GetValue(), itemDefault->GetValue());
 	}
 }
 
@@ -104,7 +104,12 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		{
 			const auto inventoryItemStaticData = inventoryItem->mInventoryItem->GetStaticData();
 			assert(inventoryItemStaticData);
-			GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Blue, inventoryItemStaticData->GetItemName().ToString());
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				0,
+				FColor::Blue,
+				FString::Printf(TEXT("%s"), *inventoryItemStaticData->GetItemName().ToString())
+				);
 			return false;
 		});
 	}
@@ -127,6 +132,7 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	check(pickableObject);
 	if(pickableObject->IsEquipped())
 	{
+		//This object is equipped by someone else
 		return false;
 	}
 	
@@ -136,36 +142,37 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 		return false;	
 	}
 
-	if(GetTotalWeapons() >= MaxInventoryWeapons && IsAWeapon(pickableObject))
+	if(IsAWeapon(pickableObject) && GetTotalWeapons() >= MaxInventoryWeapons)
 	{
 		return false;
 	}
 
-	//Add item into the inventory
-	mInventoryBag->AddItem(pickableObject->GetInventoryItemStaticData(), pickableObject->GetValue());
-	GetOwner()->ForceNetUpdate();
+	//GetOwner()->ForceNetUpdate();
 	ClientNotifyPickedUpObject(Cast<APickableObjectBase>(pickableObject.GetObject()));
 	
 	const auto inventoryItemStaticData = UGameplayBlueprintFunctionLibrary::GetInventoryItemStaticData(pickableObject->GetInventoryItemStaticData());
 	if(!HasItemEquipped() && inventoryItemStaticData->CanBeEquipped())
 	{
-		return EquipItem(pickableObject);
+		return EquipObject(pickableObject);
 	}
 	
 	NotifyIfPickedUpObjectIsAmmo(pickableObject);
+
+	//Add item into the inventory
+	int value2 = 0;
+	if(IsAWeapon(pickableObject))
+	{
+		const auto weapon = Cast<AWeaponBase>(pickableObject.GetObject());
+		value2 = weapon->GetAmmo();
+	}
+	
+	mInventoryBag->AddItem(pickableObject->GetInventoryItemStaticData(), pickableObject->GetValue(), value2);
 	
 	//Once the pickable object has been saved into the inventory we can remove it from the world.
-	if(const auto inventoryItemInstance = mInventoryBag->FindFirstItem(pickableObject->GetInventoryItemStaticData()))
-	{
-		inventoryItemInstance->OnUnEquipped();
-		//Destroy the pickable object actor
-		if(const auto object = Cast<APickableObjectBase>(pickableObject.GetObject()))
-		{
-			object->Destroy();
-			return true;
-		}
-	}
-	return false;
+	const auto pickableObjectActor = Cast<APickableObjectBase>(pickableObject.GetObject());
+	pickableObjectActor->Destroy();
+	
+	return true;
 }
 
 bool UInventoryComponent::DropObjectServer()
@@ -189,7 +196,8 @@ bool UInventoryComponent::DropObjectServer()
 	
 	const TScriptInterface<IPickupObject> pickupObject = GetEquippedItem();
 	check(pickupObject.GetObject());
-	
+
+	mInventoryBag->RemoveFirstItem(pickupObject->GetInventoryItemStaticData());
 	pickupObject->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	pickupObject->OnDropped();
 	mEquippedObject = nullptr;
@@ -198,7 +206,78 @@ bool UInventoryComponent::DropObjectServer()
 	return true;
 }
 
-bool UInventoryComponent::EquipItem(TScriptInterface<IPickupObject> pickableObject)
+bool UInventoryComponent::UnEquipItem()
+{
+	if(!HasItemEquipped())
+	{
+		return false;	
+	}
+	const TScriptInterface<IPickupObject> pickableObject = GetEquippedItem();
+	const auto object = Cast<APickableObjectBase>(pickableObject.GetObject());
+	check(object);
+
+	int value2 = 0;
+	if(IsAWeapon(pickableObject))
+	{
+		const auto weapon = Cast<AWeaponBase>(pickableObject.GetObject());
+		value2 = weapon->GetAmmo();
+	}
+	
+	mInventoryBag->AddItem(pickableObject->GetInventoryItemStaticData(), pickableObject->GetValue(), value2);
+	
+	//TODO esto se podría meter en un método UnEquipObject
+	pickableObject->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	pickableObject->OnUnEquipped();
+	OnUnEquippedPickableObject.Broadcast();
+	mEquippedObject = nullptr;
+	object->Destroy();
+	
+	return true;
+}
+
+bool UInventoryComponent::EquipItem(UInventoryItemInstance* item)
+{
+	if(!item)
+	{
+		return false;
+	}
+
+	if(HasItemEquipped())
+	{
+		return false;
+	}
+
+	const auto staticData = item->GetStaticData();
+	if(!staticData->CanBeEquipped())
+	{
+		return false;
+	}
+
+	const auto character = Cast<ACharacterBase>(GetOwner());
+	if(const auto pickableObject = GetWorld()->SpawnActorDeferred<APickableObjectBase>(
+		staticData->GetPickupObjectClass(),
+		FTransform(),
+		character,
+		character,
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+		))
+	{
+		if(IsAWeapon(pickableObject))
+		{
+			const auto weapon = Cast<AWeaponBase>(pickableObject);
+			weapon->SetAmmo(item->GetValue2());
+		}
+		EquipObject(pickableObject);
+		
+		pickableObject->SetValue(item->GetValue1());
+		mInventoryBag->RemoveItem(item);
+		pickableObject->FinishSpawning(FTransform());
+		return true;
+	}
+	return false;
+}
+
+bool UInventoryComponent::EquipObject(TScriptInterface<IPickupObject> pickableObject)
 {
 	const auto character = Cast<ACharacterBase>(GetOwner());
 	//attach it to hand
@@ -211,7 +290,7 @@ bool UInventoryComponent::EquipItem(TScriptInterface<IPickupObject> pickableObje
 		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::Equip] pickup object not attached to the character"), *GetName());
 		return false;
 	}
-
+	
 	pickableObject->SetCharacterOwner(character);
 	pickableObject->OnEquipped();
 	mEquippedObject = pickableObject;
@@ -263,7 +342,7 @@ int UInventoryComponent::GetTotalAmmoOfType(EAmmoType ammoType) const
 					const auto ammo = Cast<AAmmo>(defaultPickableObject);
 					if(ammo->GetAmmoType() == ammoType)
 					{
-						totalAmmo += inventoryItem->mInventoryItem->GetValue();
+						totalAmmo += inventoryItem->mInventoryItem->GetValue1();
 					}
 				}
 			}
@@ -291,6 +370,25 @@ int UInventoryComponent::GetTotalWeapons() const
 	return totalWeapons;
 }
 
+UInventoryItemInstance* UInventoryComponent::GetNextWeaponDifferentThan(TScriptInterface<IPickupObject> weapon) const
+{
+	UInventoryItemInstance* nextWeapon = nullptr;
+	
+	PerformActionForEachInventoryItem(
+	[&weapon, &nextWeapon](UInventoryArrayItem* inventoryItem) -> bool
+	{
+		nextWeapon = inventoryItem->mInventoryItem;
+		const auto itemClass = inventoryItem->mInventoryItem->GetStaticData()->GetPickupObjectClass();
+		if(itemClass->GetDefaultObject()->Implements<UWeapon>())
+		{
+			return true;
+		}
+		return false;
+	});
+	
+	return nextWeapon;
+}
+
 int UInventoryComponent::RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded)
 {
 	int ammoRemoved = 0;
@@ -298,7 +396,7 @@ int UInventoryComponent::RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded)
 
 	while(ammoRemoved < ammoNeeded && inventoryItemInstance != nullptr)
 	{
-		const auto ammoAvailable = inventoryItemInstance->GetValue();
+		const auto ammoAvailable = inventoryItemInstance->GetValue1();
 		if(ammoRemoved + ammoAvailable >= ammoNeeded)
 		{		
 			const auto newAmmoValue = ammoAvailable - (ammoNeeded - ammoRemoved);
@@ -308,7 +406,7 @@ int UInventoryComponent::RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded)
 			}
 			else
 			{
-				inventoryItemInstance->UpdateValue(newAmmoValue);
+				inventoryItemInstance->UpdateValue1(newAmmoValue);
 			}
 			ammoRemoved = ammoNeeded;
 		}
@@ -417,7 +515,8 @@ void UInventoryComponent::OnInventoryKeyPressed()
 	}
 	else
 	{
-		gameInstance->GetEventDispatcher()->OnShowInventoryScreen.Broadcast(mInventoryBag);
+		//TODO hay que pasar el equiped object para que el visual sepa pintarlo porque no está en el inventario
+		gameInstance->GetEventDispatcher()->OnShowInventoryScreen.Broadcast(mInventoryBag, mEquippedObject);
 	}
 	mIsInventoryShown = !mIsInventoryShown;
 }

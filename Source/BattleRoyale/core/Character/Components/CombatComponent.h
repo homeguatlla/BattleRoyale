@@ -86,6 +86,9 @@ public:
 
 	virtual bool CanReload(const TScriptInterface<IIInventoryComponent> inventoryComponent) const override;
 	virtual void Reload(TScriptInterface<IIInventoryComponent> inventoryComponent) override;
+	virtual bool CanSwapWeapons(const TScriptInterface<IIInventoryComponent> inventoryComponent) const override;
+	virtual void SwapWeaponsServer(const TScriptInterface<IIInventoryComponent> inventoryComponent) override;
+	
 	virtual void SetupLeftHandSocketTransform(const ACharacterBase* character) const override;
 
 protected:

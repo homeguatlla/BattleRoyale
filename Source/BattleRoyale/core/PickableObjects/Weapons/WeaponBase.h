@@ -96,6 +96,7 @@ public:
 	virtual bool IsAutomaticFireEnabled() const override { return AutomaticFire; }
 	virtual float GetAutomaticFireDelay() const override { return AutomaticFireDelay; }
 	virtual int32 GetAmmo() const override { return mAmmo; }
+	virtual void SetAmmo(int32 newAmmo) override { mAmmo = newAmmo; }
 	virtual int32 GetMagazineCapacity() const override { return MagazineCapacity; }
 	virtual EAmmoType GetAmmoType() const override;
 	virtual bool IsMagazineFull() const override { return MagazineCapacity == mAmmo; }

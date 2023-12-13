@@ -14,14 +14,19 @@ UInventoryBag::UInventoryBag()
 	mInventoryArray = NewObject<UInventoryArray>();
 }
 
-void UInventoryBag::AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value)
+TScriptInterface<IIInventoryItemInstance> UInventoryBag::AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value, int value2)
 {
-	mInventoryArray->AddItemOfClass(itemClass, value);
+	return mInventoryArray->AddItemOfClass(itemClass, value, value2);
 }
 
 void UInventoryBag::RemoveFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass)
 {
 	mInventoryArray->RemoveFirstItemOfClass(itemClass);
+}
+
+void UInventoryBag::RemoveItem(TScriptInterface<IIInventoryItemInstance> item)
+{
+	mInventoryArray->RemoveItem(item);
 }
 
 TScriptInterface<IIInventoryItemInstance> UInventoryBag::FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass)
@@ -41,6 +46,19 @@ bool UInventoryBag::ExistItemWithID(int ID) const
 	}
 	
 	return false;
+}
+
+TScriptInterface<IIInventoryItemInstance> UInventoryBag::FindItemWithID(int ID)
+{
+	for(int i = 0; i < Num(); ++i)
+	{
+		const auto item = mInventoryArray->GetItemByIndex(i);
+		if(item->GetID() == ID)
+		{
+			return item;
+		}
+	}
+	return nullptr;
 }
 
 void UInventoryBag::PerformActionForEachItem(const std::function<bool(UInventoryArrayItem* inventoryItem)>& action) const

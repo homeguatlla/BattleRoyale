@@ -24,7 +24,7 @@ private:
 	void BindToDelegate();
 	
 	UFUNCTION()
-	void OnShowInventoryScreen(const TScriptInterface<IIInventoryBag> inventoryBag);
+	void OnShowInventoryScreen(const TScriptInterface<IIInventoryBag> inventoryBag, TScriptInterface<IPickupObject> equippedObject);
 
 	UFUNCTION()
 	void OnHideInventoryScreen();

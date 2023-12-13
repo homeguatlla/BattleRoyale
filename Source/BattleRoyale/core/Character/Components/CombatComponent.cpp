@@ -184,6 +184,27 @@ void UCombatComponent::Reload(const TScriptInterface<IIInventoryComponent> inven
 	ServerReload(Cast<UInventoryComponent>(inventoryComponent.GetObject()));
 }
 
+bool UCombatComponent::CanSwapWeapons(const TScriptInterface<IIInventoryComponent> inventoryComponent) const
+{
+	return inventoryComponent->GetTotalWeapons() > 0;
+}
+
+void UCombatComponent::SwapWeaponsServer(const TScriptInterface<IIInventoryComponent> inventoryComponent)
+{
+	if(!GetOwner()->HasAuthority())
+	{
+		return;
+	}
+	const auto currentItem = inventoryComponent->GetEquippedItem();
+	const auto nextWeaponItemInstance = inventoryComponent->GetNextWeaponDifferentThan(currentItem);
+	inventoryComponent->UnEquipItem();
+	if(!inventoryComponent->EquipItem(nextWeaponItemInstance))
+	{
+		//TODO hay que ver que hacemos aquí
+		check(false);
+	}
+}
+
 void UCombatComponent::Shoot()
 {
 	//We shoot, and then if is still fire button pressed we start the timer.

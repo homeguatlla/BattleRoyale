@@ -6,10 +6,11 @@
 #include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 
-void UInventoryItemInstance::Initialize(TSubclassOf<UInventoryItemStaticData> itemStaticClass, int value)
+void UInventoryItemInstance::Initialize(TSubclassOf<UInventoryItemStaticData> itemStaticClass, int value1, int value2)
 {
 	mStaticDataClass = itemStaticClass;
-	mValue = value;
+	mValue1 = value1;
+	mValue2 = value2;
 }
 
 const UInventoryItemStaticData* UInventoryItemInstance::GetStaticData() const
@@ -22,25 +23,17 @@ void UInventoryItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	UObject::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UInventoryItemInstance, mStaticDataClass);
-	DOREPLIFETIME(UInventoryItemInstance, mIsEquipped);
-	DOREPLIFETIME(UInventoryItemInstance, mValue);
+	DOREPLIFETIME(UInventoryItemInstance, mValue1);
+	DOREPLIFETIME(UInventoryItemInstance, mValue2);
 }
 
-void UInventoryItemInstance::OnRep_IsEquipped()
+
+void UInventoryItemInstance::UpdateValue1(int newValue)
 {
+	mValue1 = newValue;
 }
 
-void UInventoryItemInstance::UpdateValue(int newValue)
+void UInventoryItemInstance::UpdateValue2(int newValue)
 {
-	mValue = newValue;
-}
-
-void UInventoryItemInstance::OnEquipped()
-{
-	mIsEquipped = true;
-}
-
-void UInventoryItemInstance::OnUnEquipped()
-{
-	mIsEquipped = false;
+	mValue2 = newValue;
 }

@@ -20,29 +20,22 @@ class BATTLEROYALE_API UInventoryItemInstance : public UObject, public IIInvento
 	virtual bool IsSupportedForNetworking() const override { return true; }
 
 public:
-	virtual void Initialize(TSubclassOf<UInventoryItemStaticData> itemStaticClass, int value) override;
+	virtual void Initialize(TSubclassOf<UInventoryItemStaticData> itemStaticClass, int value1, int value2) override;
 	virtual const UInventoryItemStaticData* GetStaticData() const override;
 	virtual const TSubclassOf<UInventoryItemStaticData> GetStaticDataClass() const override { return mStaticDataClass; }
-	virtual int GetValue() const override { return mValue; }
-	virtual void UpdateValue(int newValue) override;
-	
-	//OnEquip means to put it on hand
-	virtual void OnEquipped() override;
-	//OnUnEquip means to put it back to the inventory
-	virtual void OnUnEquipped() override;
+	virtual int GetValue1() const override { return mValue1; }
+	virtual void UpdateValue1(int newValue) override;
+	virtual int GetValue2() const override { return mValue2; }
+	virtual void UpdateValue2(int newValue) override;
 
 private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	UFUNCTION()
-	void OnRep_IsEquipped();
-
 	UPROPERTY(Replicated)
 	TSubclassOf<UInventoryItemStaticData> mStaticDataClass;
-
-	UPROPERTY(ReplicatedUsing=OnRep_IsEquipped)
-	bool mIsEquipped = false;
-
+	
 	UPROPERTY(Replicated)
-	int mValue = 0;
+	int mValue1 = 0;
+	UPROPERTY(Replicated)
+	int mValue2 = 0;
 };
