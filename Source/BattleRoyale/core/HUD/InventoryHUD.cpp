@@ -5,6 +5,7 @@
 
 #include "IInventoryHUD.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
+#include "BattleRoyale/core/PickableObjects/IPickupObject.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryBagVisual.h"
 #include "Kismet/GameplayStatics.h"
@@ -37,7 +38,7 @@ void AInventoryHUD::BindToDelegate()
 	}
 }
 
-void AInventoryHUD::OnShowInventoryScreen(const TScriptInterface<IIInventoryBag> inventoryBag, TScriptInterface<IPickupObject> equippedObject)
+void AInventoryHUD::OnShowInventoryScreen(const TScriptInterface<IIInventoryBag> inventoryBag, const TScriptInterface<IPickupObject> equippedObject)
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UIInventoryHUD::StaticClass()))
 	{
@@ -45,7 +46,7 @@ void AInventoryHUD::OnShowInventoryScreen(const TScriptInterface<IIInventoryBag>
 		//lo podemos pasar a parte sabiendo que será el equipado y por tanto podemos cargarnos el isEquipped del itemvisual
 		//Que sucede si visualmente pudieramos tener 3 armas?
 		inventoryBagVisual->Refresh(inventoryBag);
-		IIInventoryHUD::Execute_OnShowInventoryScreen(mHUDWidget, inventoryBagVisual);
+		IIInventoryHUD::Execute_OnShowInventoryOnScreen(mHUDWidget, inventoryBagVisual, equippedObject);
 	}
 }
 
@@ -53,7 +54,7 @@ void AInventoryHUD::OnHideInventoryScreen()
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UIInventoryHUD::StaticClass()))
 	{
-		IIInventoryHUD::Execute_OnHideInventoryScreen(mHUDWidget);
+		IIInventoryHUD::Execute_OnHideInventoryOnScreen(mHUDWidget);
 	}
 }
 

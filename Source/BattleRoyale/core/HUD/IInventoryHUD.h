@@ -4,11 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "BattleRoyale/core/PickableObjects/IPickupObject.h"
 #include "IInventoryHUD.generated.h"
+
+class UInventoryBagVisual;
 
 // This class does not need to be modified.
 UINTERFACE()
-class UIInventoryHUD : public UInterface
+class BATTLEROYALE_API UIInventoryHUD : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -21,10 +24,14 @@ class BATTLEROYALE_API IIInventoryHUD
 	GENERATED_BODY()
 
 public:
+	//OnShowInventoryOnScreen second parameter is an & to the tscriptinterface otherwise will not compile.
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Inventory HUD")
-	void OnShowInventoryScreen(const UInventoryBagVisual* items);
+	void OnShowInventoryOnScreen(const UInventoryBagVisual* items, const TScriptInterface<IPickupObject>& equippedObject);
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Inventory HUD")
-	void OnHideInventoryScreen();
+	void OnTest();
+	
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Inventory HUD")
+	void OnHideInventoryOnScreen();
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Inventory HUD")
 	void OnRefreshInventory(const UInventoryBagVisual* items);
 };

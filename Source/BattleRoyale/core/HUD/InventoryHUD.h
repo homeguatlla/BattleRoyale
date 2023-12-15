@@ -8,6 +8,7 @@
 #include "InventoryHUD.generated.h"
 
 class UInventoryBagVisual;
+class IPickupObject;
 struct FInventoryArray;
 /**
  * 
@@ -24,7 +25,7 @@ private:
 	void BindToDelegate();
 	
 	UFUNCTION()
-	void OnShowInventoryScreen(const TScriptInterface<IIInventoryBag> inventoryBag, TScriptInterface<IPickupObject> equippedObject);
+	void OnShowInventoryScreen(const TScriptInterface<IIInventoryBag> inventoryBag, const TScriptInterface<IPickupObject> equippedObject);
 
 	UFUNCTION()
 	void OnHideInventoryScreen();
