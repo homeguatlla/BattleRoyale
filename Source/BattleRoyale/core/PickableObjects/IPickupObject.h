@@ -24,9 +24,12 @@ class BATTLEROYALE_API IPickupObject
 public:
 	UFUNCTION(BlueprintCallable)
 	virtual TSubclassOf<UInventoryItemStaticData> GetInventoryItemStaticData() const = 0;
+	
 	virtual EPickupObjectState GetState() const = 0;
+
 	UFUNCTION(BlueprintCallable)
 	virtual int GetValue() const = 0;
+
 	virtual FVector GetLocation() const = 0;
 	virtual FName GetPickableName() const = 0;
 	virtual void SetValue(int value) = 0;

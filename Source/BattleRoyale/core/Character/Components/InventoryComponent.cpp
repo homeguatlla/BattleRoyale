@@ -359,6 +359,7 @@ int UInventoryComponent::GetTotalWeapons() const
 	PerformActionForEachInventoryItem(
 	[&totalWeapons](UInventoryArrayItem* inventoryItem) -> bool
 	{
+		check(inventoryItem);
 		const auto itemClass = inventoryItem->mInventoryItem->GetStaticData()->GetPickupObjectClass();
 		if(itemClass->GetDefaultObject()->Implements<UWeapon>())
 		{
@@ -366,7 +367,10 @@ int UInventoryComponent::GetTotalWeapons() const
 		}
 		return false;	
 	});
-
+	if(HasItemEquipped() && IsAWeapon(mEquippedObject))
+	{
+		totalWeapons++;
+	}
 	return totalWeapons;
 }
 

@@ -197,6 +197,10 @@ void UCombatComponent::SwapWeaponsServer(const TScriptInterface<IIInventoryCompo
 	}
 	const auto currentItem = inventoryComponent->GetEquippedItem();
 	const auto nextWeaponItemInstance = inventoryComponent->GetNextWeaponDifferentThan(currentItem);
+	if(!nextWeaponItemInstance)
+	{
+		return;
+	}
 	inventoryComponent->UnEquipItem();
 	if(!inventoryComponent->EquipItem(nextWeaponItemInstance))
 	{

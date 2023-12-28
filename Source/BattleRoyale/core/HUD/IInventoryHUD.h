@@ -7,6 +7,7 @@
 #include "BattleRoyale/core/PickableObjects/IPickupObject.h"
 #include "IInventoryHUD.generated.h"
 
+class APickableObjectBase;
 class UInventoryBagVisual;
 
 // This class does not need to be modified.
@@ -24,9 +25,10 @@ class BATTLEROYALE_API IIInventoryHUD
 	GENERATED_BODY()
 
 public:
-	//OnShowInventoryOnScreen second parameter is an & to the tscriptinterface otherwise will not compile.
+	//OnShowInventoryOnScreen second parameter is an & to the tscriptinterface otherwise will not compile.(not used but as example)
+	//void OnShowInventoryOnScreen(const UInventoryBagVisual* items, const TScriptInterface<IPickableObject>& equippedObject);
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Inventory HUD")
-	void OnShowInventoryOnScreen(const UInventoryBagVisual* items, const TScriptInterface<IPickupObject>& equippedObject);
+	void OnShowInventoryOnScreen(const UInventoryBagVisual* items, const APickableObjectBase* equippedObject);
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Inventory HUD")
 	void OnTest();
 	

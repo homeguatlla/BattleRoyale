@@ -37,7 +37,7 @@ class BATTLEROYALE_API APickableObjectBase : public AActor, public IPickupObject
 public:	
 	// Sets default values for this actor's properties
 	APickableObjectBase();
-
+	
 	virtual TSubclassOf<UInventoryItemStaticData> GetInventoryItemStaticData() const override { return InventoryItemStaticData; }
 	
 	UFUNCTION(BlueprintCallable, Category="PickableObject")

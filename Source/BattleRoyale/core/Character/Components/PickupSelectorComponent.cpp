@@ -174,7 +174,8 @@ void UPickupSelectorComponent::CancelPickupIndicator(const TScriptInterface<IICh
 	check(character);
 	
 	const auto abilitySystemComponent = character->GetAbilitySystemComponentBase();
-	
+	check(abilitySystemComponent);
+		
 	//Remove the ability with tag pickup indicator
 	FGameplayTagContainer cancelTags;
 	UBlueprintGameplayTagLibrary::AddGameplayTag(cancelTags, FGameplayTag::RequestGameplayTag(TAG_ABILITY_PICKUP_INDICATOR));
