@@ -117,9 +117,12 @@ FGameplayTagContainer UAbilityShootProjectileGun::GetWeaponCooldownGameplayTags(
 	if(mCharacter)
 	{
 		const auto gunComponent = mCharacter->GetGunComponent();
-		const auto weapon = gunComponent->GetEquippedWeapon();
-		check(weapon);
-		return weapon->GetCooldownTags();
+		if(gunComponent->HasWeaponEquipped())
+		{
+			const auto weapon = gunComponent->GetEquippedWeapon();
+			check(weapon);
+			return weapon->GetCooldownTags();
+		}
 	}
 	
 	return FGameplayTagContainer();

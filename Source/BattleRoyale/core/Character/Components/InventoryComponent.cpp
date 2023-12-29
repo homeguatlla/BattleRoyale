@@ -197,7 +197,6 @@ bool UInventoryComponent::DropObjectServer()
 	const TScriptInterface<IPickupObject> pickupObject = GetEquippedItem();
 	check(pickupObject.GetObject());
 
-	mInventoryBag->RemoveFirstItem(pickupObject->GetInventoryItemStaticData());
 	pickupObject->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	pickupObject->OnDropped();
 	mEquippedObject = nullptr;
@@ -379,12 +378,12 @@ UInventoryItemInstance* UInventoryComponent::GetNextWeaponDifferentThan(TScriptI
 	UInventoryItemInstance* nextWeapon = nullptr;
 	
 	PerformActionForEachInventoryItem(
-	[&weapon, &nextWeapon](UInventoryArrayItem* inventoryItem) -> bool
+	[&nextWeapon](UInventoryArrayItem* inventoryItem) -> bool
 	{
-		nextWeapon = inventoryItem->mInventoryItem;
 		const auto itemClass = inventoryItem->mInventoryItem->GetStaticData()->GetPickupObjectClass();
 		if(itemClass->GetDefaultObject()->Implements<UWeapon>())
 		{
+			nextWeapon = inventoryItem->mInventoryItem;
 			return true;
 		}
 		return false;
