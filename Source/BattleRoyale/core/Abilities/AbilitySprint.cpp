@@ -54,7 +54,7 @@ void UAbilitySprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				EGameplayCueEvent::Type::WhileActive,
 				FGameplayCueParameters());
 
-			if(SprintSpeedEffect)
+			if(ActorInfo->IsNetAuthority() && SprintSpeedEffect)
 			{
 				abilitySystemComponent->ApplyGameplayEffectToSelf(SprintSpeedEffect);
 			}
@@ -120,7 +120,7 @@ void UAbilitySprint::CancelAbility(const FGameplayAbilitySpecHandle Handle, cons
 				EGameplayCueEvent::Type::Removed,
 				FGameplayCueParameters());
 
-		if(WalkSpeedEffect)
+		if(ActorInfo->IsNetAuthority() && WalkSpeedEffect)
 		{
 			abilitySystemComponent->ApplyGameplayEffectToSelf(WalkSpeedEffect);
 		}

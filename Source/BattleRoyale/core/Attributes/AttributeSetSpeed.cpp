@@ -9,7 +9,7 @@
 
 
 UAttributeSetSpeed::UAttributeSetSpeed() :
-MaxSpeed{500.0f}
+MaxSpeed{400.0f}
 {
 }
 
@@ -24,27 +24,6 @@ void UAttributeSetSpeed::PreAttributeChange(const FGameplayAttribute& Attribute,
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 	NewValue = FMath::Clamp<float>(NewValue, 0, MaxSpeed.GetBaseValue());
-}
-
-void UAttributeSetSpeed::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
-{
-	Super::PostGameplayEffectExecute(Data);
-
-	if(Data.EvaluatedData.Attribute != GetMaxSpeedAttribute())
-	{
-		return;
-	}
-	
-	const auto playerState = Cast<APlayerStateBase>(GetOwningActor());
-	if(!playerState || !playerState->GetPawn()->Implements<UICharacter>())
-	{
-		return;
-	}
-
-	const auto character = Cast<IICharacter>(playerState->GetPawn());
-	check(character);
-
-	character->SetMaxSpeed(GetMaxSpeed());	
 }
 
 void UAttributeSetSpeed::OnRepMaxSpeed(const FGameplayAttributeData& OldMaxSpeed)

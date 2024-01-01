@@ -54,6 +54,11 @@ const UAttributeSetHealth* UAbilitySystemComponentBase::GetAttributeSetHealth() 
 	return GetSet<UAttributeSetHealth>();
 }
 
+const UAttributeSetSpeed* UAbilitySystemComponentBase::GetAttributeSetSpeed() const
+{
+	return GetSet<UAttributeSetSpeed>();
+}
+
 FOnGameplayAttributeValueChange& UAbilitySystemComponentBase::GetAttributeValueChangeDelegate(FGameplayAttribute attribute)
 {
 	return Super::GetGameplayAttributeValueChangeDelegate(attribute);

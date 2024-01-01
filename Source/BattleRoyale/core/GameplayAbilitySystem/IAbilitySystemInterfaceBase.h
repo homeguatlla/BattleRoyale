@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "GameplayEffect.h"
 #include "Abilities/GameplayAbilityTypes.h"
+#include "BattleRoyale/core/Attributes/AttributeSetSpeed.h"
 #include "IAbilitySystemInterfaceBase.generated.h"
 
 class UAbilitySystemComponentBase;
@@ -35,6 +36,7 @@ public:
 	
 	virtual void AddAttributeSet(UAttributeSet* attributeSet) = 0;
 	virtual const UAttributeSetHealth* GetAttributeSetHealth() const = 0;
+	virtual const UAttributeSetSpeed* GetAttributeSetSpeed() const = 0;
 	virtual FOnGameplayAttributeValueChange& GetAttributeValueChangeDelegate(FGameplayAttribute Attribute) = 0;
 	
 	virtual bool HasGameplayTag(const FGameplayTag& tag) const  = 0;

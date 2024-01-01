@@ -20,6 +20,7 @@
 #include "BattleRoyale/core/Attributes/AttributeSetSpeed.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
+#include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "Components/CombatComponent.h"
 #include "Components/FootstepsComponent.h"
 #include "Components/HurtComponent.h"
@@ -79,7 +80,6 @@ void ACharacterBase::BeginPlay()
 void ACharacterBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	//GEngine->AddOnScreenDebugMessage(-1, 0.1, FColor::Green, FString::Printf(TEXT("Speed %f"), GetCurrentVelocity().Size()));
 }
 
 void ACharacterBase::PossessedBy(AController* NewController)
@@ -112,6 +112,13 @@ void ACharacterBase::Initialize(bool isLocallyControlled)
 {
 	//EquipWeapon(mEquipedWeapon);
 	DoInitialize(isLocallyControlled);
+
+	if(!HasAuthority())
+	{
+		return;
+	}
+	//Only server can register to attributes changes. So it will need to notify to the clients.
+	RegisterToSpeedAttributeDelegate(std::bind(&ACharacterBase::OnSpeedChanged, this, std::placeholders::_1));
 }
 
 void ACharacterBase::InitializeGAS()
@@ -403,6 +410,27 @@ void ACharacterBase::Shoot()
 	CombatComponent->Shoot();
 }
 
+bool ACharacterBase::RegisterToSpeedAttributeDelegate(std::function<void (const FOnAttributeChangeData& data)> callback) const
+{
+	const auto abilitySystemComponentInterface = GetAbilitySystemComponentBase();
+	if(!abilitySystemComponentInterface)
+	{
+		return false;
+	}
+
+	const auto attributeSetSpeed = abilitySystemComponentInterface->GetAttributeSetSpeed();
+	if(!attributeSetSpeed)
+	{
+		return false;
+	}
+	
+	auto& delegateOnSpeedChanged = abilitySystemComponentInterface->GetAttributeValueChangeDelegate(attributeSetSpeed->GetMaxSpeedAttribute());
+	delegateOnSpeedChanged.AddLambda(callback);
+	
+	return true;
+}
+
+
 IAbilitySystemInterface* ACharacterBase::GetAbilitySystemComponent() const
 {
 	return GetPlayerStateInterface();
@@ -454,6 +482,16 @@ void ACharacterBase::OnShowInventory()
 {
 	check(InventoryComponent);
 	InventoryComponent->OnInventoryKeyPressed();
+}
+
+void ACharacterBase::OnSpeedChanged(const FOnAttributeChangeData& data)
+{
+	if(!data.GEModData)
+	{
+		return;
+	}
+	const auto attributeSetHealth = GetAbilitySystemComponent()->GetAbilitySystemComponent()->GetSet<UAttributeSetSpeed>();
+	MulticastSetMaxSpeed(attributeSetHealth->GetMaxSpeed());
 }
 
 void ACharacterBase::MoveForward(float Value)
@@ -592,6 +630,11 @@ void ACharacterBase::ServerSetCharacterControlRotation_Implementation(const FRot
 bool ACharacterBase::ServerSetCharacterControlRotation_Validate(const FRotator& rotation)
 {
 	return true;
+}
+
+void ACharacterBase::MulticastSetMaxSpeed_Implementation(float speed)
+{
+	SetMaxSpeed(speed);
 }
 
 void ACharacterBase::DisableMovement() const

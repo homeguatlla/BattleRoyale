@@ -59,7 +59,7 @@ class BATTLEROYALE_API ACharacterBase : public ACharacter, public IICharacter
 
 	/** The player's maximum walk speed.*/
 	UPROPERTY(EditDefaultsOnly, Category = "Character")
-	float MaxWalkSpeed{450.0};
+	float MaxWalkSpeed{400.0};
 
 	/** The player's minimum walk speed (when aiming for instance).*/
 	UPROPERTY(EditDefaultsOnly, Category = "Character")
@@ -211,7 +211,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool CanShoot() const override;
 	virtual void Shoot() override;
-
+	
 	virtual void DieServer() override;
 	virtual void DieClient() override;
 	
@@ -241,6 +241,7 @@ protected:
 	void OnResetVR();
 	void OnSetInvulnerable();
 	void OnShowInventory();
+	void OnSpeedChanged(const FOnAttributeChangeData& data);
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
@@ -288,6 +289,8 @@ private:
 	
 	void PlayMontage(UAnimMontage* montage, USkeletalMeshComponent* mesh) const;
 	//void UpdateHealth(const FTakeDamageData& damage);
+
+	bool RegisterToSpeedAttributeDelegate(std::function<void(const FOnAttributeChangeData& data)> callback) const;
 	
 	IIGameMode* GetGameModeServer() const;
 
@@ -302,6 +305,9 @@ private:
 
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastTakeDamage(float damage, const AActor* causer, float currentHealth);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastSetMaxSpeed(float speed);
 	
 	UFUNCTION(Unreliable, Server, WithValidation)
 	void ServerSetCharacterControlRotation(const FRotator& rotation);

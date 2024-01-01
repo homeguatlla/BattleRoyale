@@ -26,7 +26,10 @@ public:
 
 	//Add an attribute set to the gameplay ability component. It is used when attribute sets are in a different class than the gameplayabilitycompoent.
 	virtual void AddAttributeSet(UAttributeSet* attributeSet) override;
+
 	virtual const UAttributeSetHealth* GetAttributeSetHealth() const override;
+	virtual const UAttributeSetSpeed* GetAttributeSetSpeed() const override;
+	
 	virtual FOnGameplayAttributeValueChange& GetAttributeValueChangeDelegate(FGameplayAttribute attribute) override;
 
 	virtual bool HasGameplayTag(const FGameplayTag& tag) const override;
