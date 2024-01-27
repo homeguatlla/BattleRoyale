@@ -19,6 +19,7 @@ namespace BRPlayerStateFSM
 
 	bool EnterGameLoop::CanPerformTransition() const
 	{
-		return mPlayerState->GetCharacter()->IsCharacterValid();
+		const auto character = mPlayerState->GetCharacter();
+		return character && character->IsCharacterValid();
 	}	
 };

@@ -47,8 +47,9 @@ AProjectileBase::AProjectileBase()
 
 void AProjectileBase::Destroyed()
 {
+	//This method will be executed on all players, although the hit is only implemented on server
+	//The replicated proyectile will be destroyed too.
 	Super::Destroyed();
-
 	OnExplode(mImpactPhysicalMaterial);
 }
 

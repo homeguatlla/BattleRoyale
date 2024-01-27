@@ -188,6 +188,12 @@ void APickableObjectBase::OnRep_State()
 					character->GetMesh(),
 					FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 					character->GetRightHandSocketName());
+
+		if(!HasAuthority())
+		{
+			BP_OnEquipped();
+		}
+		
 		if(!isAttached)
 		{
 			UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::Equip] pickup object not attached to the character"), *GetName());

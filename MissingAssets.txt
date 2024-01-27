@@ -1,0 +1,10 @@
+
+MATERIALS
+Wood, Metal, Concrete, Foliage, Briks, Bodies
+
+SOUNDS:
+- Reload sound, 2 sounds, put magazine and reload weapon.
+- Firing with no ammo. 
+- Footsteps sounds for materials. 
+- Shoot sounds for materials.
+- Equip weapon

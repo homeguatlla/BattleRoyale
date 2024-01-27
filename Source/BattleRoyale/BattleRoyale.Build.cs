@@ -28,7 +28,8 @@ public class BattleRoyale : ModuleRules
 			"UMG",
 			"MultiplayerSessions",
 			//For inventory custom net replication
-			"NetCore"
+			"NetCore",
+			"FunctionalTesting"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]

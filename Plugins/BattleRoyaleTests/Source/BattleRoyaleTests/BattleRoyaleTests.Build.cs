@@ -13,7 +13,9 @@ public class BattleRoyaleTests : ModuleRules
                     "CoreUObject",
                     "BattleRoyale",
                     //Automation tests (in order to include AutomationEditorCommon.h)
-                    "UnrealEd"
+                    "UnrealEd",
+                    //GAS
+                    "GameplayTags"
                 });
     }
 }
