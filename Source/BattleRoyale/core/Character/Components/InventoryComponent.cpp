@@ -147,11 +147,12 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 		return false;
 	}
 
-	//GetOwner()->ForceNetUpdate();
-	ClientNotifyPickedUpObject(Cast<APickableObjectBase>(pickableObject.GetObject()));
+	if(const auto pickableObjectBase = Cast<APickableObjectBase>(pickableObject.GetObject()))
+	{
+		ClientNotifyPickedUpObject(pickableObjectBase);
+	}
 	
-	const auto inventoryItemStaticData = UGameplayBlueprintFunctionLibrary::GetInventoryItemStaticData(pickableObject->GetInventoryItemStaticData());
-	if(!HasItemEquipped() && inventoryItemStaticData->CanBeEquipped())
+	if(!HasItemEquipped() && pickableObject->CanBeEquipped())
 	{
 		return EquipObject(pickableObject);
 	}

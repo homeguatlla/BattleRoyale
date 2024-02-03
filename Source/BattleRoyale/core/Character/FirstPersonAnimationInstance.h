@@ -23,7 +23,7 @@ public:
 private:
 	void SetupCharacter();
 	void CheckEquippedToMakeLeftHandHoldsWeapon();
-	void CheckEquippedToMakeWeaponPointsToCrosshair();
+	void CheckEquippedToMakeWeaponAimsToCrosshair();
 	void CheckToEnableTurnInPlace();
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = true))

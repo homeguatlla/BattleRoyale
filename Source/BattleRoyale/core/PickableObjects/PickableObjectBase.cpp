@@ -10,6 +10,7 @@
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
 #include "BattleRoyale/BattleRoyale.h"
+#include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -97,8 +98,16 @@ void APickableObjectBase::ChangeState(EPickupObjectState state)
 	State = state;
 }
 
+bool APickableObjectBase::CanBeEquipped() const
+{
+	const auto inventoryItemStaticData = UGameplayBlueprintFunctionLibrary::GetInventoryItemStaticData(GetInventoryItemStaticData());
+	check(inventoryItemStaticData);
+	
+	return inventoryItemStaticData->CanBeEquipped();
+}
+
 bool APickableObjectBase::AttachToComponent(USkeletalMeshComponent* meshComponent,
-                                          const FAttachmentTransformRules& attachmentRules, const FName& socketName)
+                                            const FAttachmentTransformRules& attachmentRules, const FName& socketName)
 {
 	if(GetMesh() == nullptr)
 	{

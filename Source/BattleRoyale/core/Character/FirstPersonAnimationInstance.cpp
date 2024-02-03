@@ -33,6 +33,11 @@ void UFirstPersonAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		return;
 	}
+
+	if(GIsAutomationTesting)
+	{
+		return;
+	}
 	
 	const auto gunComponent = CharacterInterface->GetGunComponent();
 	check(gunComponent);
@@ -56,7 +61,7 @@ void UFirstPersonAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)
 	YawOffset = UKismetMathLibrary::NormalizedDeltaRotator(movementRotation, aimRotation).Yaw;
 
 	CheckEquippedToMakeLeftHandHoldsWeapon();
-	CheckEquippedToMakeWeaponPointsToCrosshair();
+	CheckEquippedToMakeWeaponAimsToCrosshair();
 	CheckToEnableTurnInPlace();
 }
 
@@ -80,7 +85,7 @@ void UFirstPersonAnimationInstance::CheckEquippedToMakeLeftHandHoldsWeapon()
 	}
 }
 
-void UFirstPersonAnimationInstance::CheckEquippedToMakeWeaponPointsToCrosshair()
+void UFirstPersonAnimationInstance::CheckEquippedToMakeWeaponAimsToCrosshair()
 {
 	if(!Character->IsLocallyControlled())
 	{

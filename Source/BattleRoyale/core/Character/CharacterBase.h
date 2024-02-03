@@ -30,14 +30,6 @@ class BATTLEROYALE_API ACharacterBase : public ACharacter, public IICharacter
 {
 	GENERATED_BODY()
 
-	/** Motion controller (right hand) */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	UMotionControllerComponent* R_MotionController;
-
-	/** Motion controller (left hand) */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	UMotionControllerComponent* L_MotionController;
-
 	UPROPERTY(EditDefaultsOnly, Category = Character)
 	FName RightHandSocketName;
 
@@ -238,7 +230,6 @@ protected:
 protected:
 	
 	/** Resets HMD orientation and position in VR. */
-	void OnResetVR();
 	void OnSetInvulnerable();
 	void OnShowInventory();
 	void OnSpeedChanged(const FOnAttributeChangeData& data);

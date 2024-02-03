@@ -1,5 +1,4 @@
 ﻿#include "SessionsOnlineSubsystem.h"
-#include "Public/OnlineSubsystem.h"
 
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"

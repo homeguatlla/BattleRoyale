@@ -81,7 +81,6 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FShootProjectileGunTest_When_WeaponButNoAmmo_Th
 
 bool FShootProjectileGunTest_When_WeaponButNoAmmo_Then_CanNotShoot::RunTest(const FString& Parameters)
 {
-
 	const FString mapName = TEXT("/Game/Maps/SampleTest.SampleTest");
 	if (!AutomationOpenMap(mapName))
 	{
@@ -96,10 +95,6 @@ bool FShootProjectileGunTest_When_WeaponButNoAmmo_Then_CanNotShoot::RunTest(cons
 		return false;
 	}
 	
-	//ADD_LATENT_AUTOMATION_COMMAND(FMyCommand(gameState));
-	//ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(5.0f));
-	//while(!gameState->IsGameReadyToStart()){};
-	
 	const auto character = UGameplayStatics::GetPlayerCharacter(world, 0);
 	if(!character)
 	{
@@ -107,44 +102,32 @@ bool FShootProjectileGunTest_When_WeaponButNoAmmo_Then_CanNotShoot::RunTest(cons
 		return false;
 	}
 	const auto characterBase = Cast<ACharacterBase>(character);
+	
 	//For more tests check AutomationTest.h (lines 1347 - 1639)
 	TestNotNull<ACharacterBase>(TEXT("Testing if there is a player actor in level"), characterBase);
-/*
-	//LOAD ASSET
-	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
-
-	// Create a filter to specify the directory
-	FARFilter AssetFilter;
-	AssetFilter.PackagePaths.Add(FName("/Game/Core/Blueprints/Weapons/AssaultRifle/"));
-
-	// Query the assets in the directory
-	TArray<FAssetData> AssetData;
-	AssetRegistryModule.Get().GetAssets(AssetFilter, AssetData);  
 	
-	const auto blueprintWeaponAsset = Cast<UBlueprint>(AssetData[0].GetAsset());	
-	const auto pickableObject = blueprintWeaponAsset->GeneratedClass;
-	const auto weapon = pickableObject->GetDefaultObject<AWeaponBase>();*/
-
 	const auto weapon = NewObject<AWeaponMock>();
+	weapon->Initialize(EPickupObjectState::Dropped, 0);
+
+	const auto gunComponent = characterBase->GetGunComponent();
+	check(gunComponent);
+	TestFalse(TEXT("Hasn't a weapon equipped"), gunComponent->HasWeaponEquipped());
 	
 	const auto inventoryComponent = characterBase->GetInventoryComponent();
 	inventoryComponent->PickupObjectServer(weapon);
 	
-	const auto gunComponent = characterBase->GetGunComponent();
-	check(gunComponent);
-
 	const auto hasWeaponEquipped = gunComponent->HasWeaponEquipped();
-	TestTrue(TEXT("When Weapon"), hasWeaponEquipped);
+	TestTrue(TEXT("When Weapon equipped"), hasWeaponEquipped);
 	if(!hasWeaponEquipped)
 	{
-		character->Destroy();
+		//character->Destroy();
 		return false;
 	}
 	
-	TestFalse(TEXT("When No Ammo"), gunComponent->GetEquippedWeapon()->HasAmmo());
+	TestFalse(TEXT("And No Ammo"), gunComponent->GetEquippedWeapon()->HasAmmo());
 	TestFalse(TEXT("When Weapon but No Ammo Can NOT Shoot"), characterBase->CanShoot());
 	
-	character->Destroy();
+	//character->Destroy();
 
 	return true;
 }
@@ -168,12 +151,7 @@ bool FShootProjectileGunTest_When_AbilityShootProjectileGunIsTriggered_And_HaveA
 		UE_LOG(LogTemp, Error, TEXT("Failed to retrieve world"));
 		return false;
 	}
-
-	//const auto gameState = Cast<IIGameState>(world->GetGameState());
 	
-	//while(!gameState->DidCountdownFinish()){};
-	
-	const auto playerController = world->GetFirstPlayerController();
 	const auto character = UGameplayStatics::GetPlayerCharacter(world, 0);
 	if(!character)
 	{
@@ -183,21 +161,27 @@ bool FShootProjectileGunTest_When_AbilityShootProjectileGunIsTriggered_And_HaveA
 	const auto characterBase = Cast<ACharacterBase>(character);
 	//For more tests check AutomationTest.h (lines 1347 - 1639)
 	TestNotNull<ACharacterBase>(TEXT("Testing if there is a player actor in level"), characterBase);
-
-	const auto characterMovementComponent = characterBase->GetCharacterMovement();
 	
-	characterMovementComponent->Velocity = FVector(100, 0, 0);
-	characterMovementComponent->SetMovementMode(EMovementMode::MOVE_Walking);
-	const auto maxWalkSpeedBeforeSprint = characterMovementComponent->MaxWalkSpeed;
+	const auto weapon = NewObject<AWeaponMock>();
+	weapon->Initialize(EPickupObjectState::Dropped, 1);
 
-	//Enable ability simulating key left shift (sprint) pressed.
-	const auto playerState = Cast<APlayerStateBase>(characterBase->GetPlayerState());
-	const auto gas = playerState->GetAbilitySystemComponent();
-
-	gas->AbilityLocalInputPressed(static_cast<int32>(EAbilityInputID::Sprint));
-	TestTrue(TEXT("When Character is sprinting SPRINT max walk speed increased"),characterMovementComponent->MaxWalkSpeed > maxWalkSpeedBeforeSprint);
-
-	//world->DestroyWorld(true);
+	const auto gunComponent = characterBase->GetGunComponent();
+	check(gunComponent);
+	TestFalse(TEXT("Hasn't a weapon equipped"), gunComponent->HasWeaponEquipped());
+	
+	const auto inventoryComponent = characterBase->GetInventoryComponent();
+	inventoryComponent->PickupObjectServer(weapon);
+	
+	const auto hasWeaponEquipped = gunComponent->HasWeaponEquipped();
+	TestTrue(TEXT("When Weapon equipped"), hasWeaponEquipped);
+	if(!hasWeaponEquipped)
+	{
+		//character->Destroy();
+		return false;
+	}
+	
+	TestTrue(TEXT("And Has Ammo"), gunComponent->GetEquippedWeapon()->HasAmmo());
+	TestTrue(TEXT("When Weapon and Ammo Can Shoot"), characterBase->CanShoot());
 	
 	return true;
 }

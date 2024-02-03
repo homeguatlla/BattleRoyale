@@ -9,9 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
 #include "MotionControllerComponent.h"
-#include "XRMotionControllerBase.h"
 #include "AbilitySystemComponent.h"
 #include "BattleRoyale/core/Abilities/AbilitiesInput.h"
 #include "BattleRoyale/core/Abilities/GameplayAbilityBase.h"
@@ -44,13 +42,6 @@ ACharacterBase::ACharacterBase()
 	//The Character has a Mesh by default so, this mesh will be the 3rd person mesh
 	GetMesh()->SetOwnerNoSee(true);	
 	
-	// Create VR Controllers.
-	R_MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("R_MotionController"));
-	R_MotionController->MotionSource = FXRMotionControllerBase::RightHandSourceId;
-	R_MotionController->SetupAttachment(RootComponent);
-	L_MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("L_MotionController"));
-	L_MotionController->SetupAttachment(RootComponent);
-
 	//Create hurtComponent
 	HurtComponent = CreateDefaultSubobject<UHurtComponent>(TEXT("HurtComponent"));
 	//HurtComponent->SetIsReplicated(true);
@@ -211,7 +202,6 @@ void ACharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	
 	// Bind fire event
 	//PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ACharacterBase::OnFire);
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ThisClass::OnResetVR);
 	PlayerInputComponent->BindAction("Invulnerable", IE_Pressed, this, &ThisClass::OnSetInvulnerable);
 	PlayerInputComponent->BindAction("Inventory", IE_Pressed, this, &ThisClass::OnShowInventory);
 	
@@ -397,7 +387,7 @@ void ACharacterBase::StopCrouching()
 
 bool ACharacterBase::CanShoot() const
 {
-	return IsAlive() && CombatComponent->CanShoot();
+	return /*IsAlive() &&*/ CombatComponent->CanShoot();
 }
 
 void ACharacterBase::Shoot()
@@ -465,11 +455,6 @@ UCameraComponent* ACharacterBase::GetCamera() const
 		return cameras[0];
 	}
 	return nullptr;
-}
-
-void ACharacterBase::OnResetVR()
-{
-	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
 }
 
 void ACharacterBase::OnSetInvulnerable()

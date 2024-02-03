@@ -63,7 +63,11 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
+
+	if(GIsAutomationTesting)
+	{
+		return;
+	}
 	if(mCharacter && mCharacter->IsLocallyControlled() && HasWeaponEquipped())
 	{
 		const auto spread = CalculateCrosshairSpread();

@@ -55,6 +55,7 @@ public:
 	virtual void OnDropped() override;
 	
 	virtual bool IsEquipped() const override { return State == EPickupObjectState::Equipped; }
+	virtual bool CanBeEquipped() const override;
 	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent, const FAttachmentTransformRules& attachmentRules, const FName& socketName) override;
 	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) override;
 
