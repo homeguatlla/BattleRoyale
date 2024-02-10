@@ -46,12 +46,20 @@ void UInventoryBagVisual::Refresh(const TScriptInterface<IIInventoryBag> invento
 				i++;
 			}
 			check(i <= mMaxItems);
+
+			int value = 0;
+			TSubclassOf<UUserWidget> widget = nullptr;
 			
+			if(inventoryItem->mInventoryItem)
+			{
+				value = inventoryItem->mInventoryItem->GetValue1();
+				widget = inventoryItem->mInventoryItem->GetStaticData()->GetItemWidgetClass();
+			}
 			const auto itemVisual = FInventoryItemVisual(
 				inventoryItem->GetID(),
-				inventoryItem->mInventoryItem->GetValue1(),
+				value,
 				false,
-				inventoryItem->mInventoryItem->GetStaticData()->GetItemWidgetClass());
+				widget);
 			
 			mItems[i] = itemVisual;
 		}
@@ -86,7 +94,16 @@ int UInventoryBagVisual::FindItemByID(int ID) const
 
 int UInventoryBagVisual::Num() const
 {
-	return mItems.Num();
+	int numItems = 0;
+	for(auto item : mItems)
+	{
+		if(!item.IsEmpty())
+		{
+			numItems++;
+		}
+	}
+	
+	return numItems;
 }
 
 bool UInventoryBagVisual::IsEmpty() const

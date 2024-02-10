@@ -41,6 +41,10 @@ bool FInventoryBagVisualTests_When_RefreshWithNotEmptyInventoryBag_Then_Inventor
 	TestTrue("InventoryBag has 3 elements", inventoryBag->Num() == 3);
 	
 	const auto inventoryBagVisual = NewObject<UInventoryBagVisual>();
+	inventoryBagVisual->Initialize(5);
+	
+	TestTrue("InventoryBagVisual is empty", inventoryBagVisual->IsEmpty());
+	
 	inventoryBagVisual->Refresh(inventoryBag);
 
 	TestTrue("InventoryBagVisual has 3 elements", inventoryBagVisual->Num() == 3);
@@ -63,6 +67,7 @@ bool FInventoryBagVisualTests_When_RefreshAfterRemovingElementsInTheInventoryBag
 	TestTrue("InventoryBag has 3 elements", inventoryBag->Num() == 3);
 	
 	const auto inventoryBagVisual = NewObject<UInventoryBagVisual>();
+	inventoryBagVisual->Initialize(5);
 	inventoryBagVisual->Refresh(inventoryBag);
 	TestTrue("InventoryBagVisual has 3 elements", inventoryBagVisual->Num() == 3);
 
@@ -88,6 +93,7 @@ bool FInventoryBagVisualTests_When_GivenAInventoryBagVisualAndAReorderedInventor
 	inventoryBag->AddItem(InventoryItemMock(2, 1));
 	
 	const auto inventoryBagVisual = NewObject<UInventoryBagVisual>();
+	inventoryBagVisual->Initialize(5);
 	inventoryBagVisual->Refresh(inventoryBag);
 	TestTrue("Initial state InventoryBagVisual has 3 elements", inventoryBagVisual->Num() == 3);
 
@@ -113,7 +119,7 @@ bool FInventoryBagVisualTests_When_GivenAInventoryBagVisualAndAReorderedInventor
 	return true;
 }
 
-//Añadir uno para cuando se cambia el valor de un elemento, que se cambie también en el visual
+//Añadir uno para cuando se cambia el valor de un elemento, que se cambie también en el visual. Este es dificil de hacer sin modificar mucho el código creo.
 
 //Añadir uno de swap por ids (otra operación)
 

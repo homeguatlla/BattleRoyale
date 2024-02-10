@@ -14,9 +14,10 @@ FInventoryItemVisual::FInventoryItemVisual(int _id, int _value, bool _isEquipped
 FInventoryItemVisual::FInventoryItemVisual(const UInventoryArrayItem* item)
 {
 	id = item->GetID();
-	value = item->mInventoryItem->GetValue1();
+	
 	if(item->mInventoryItem)
 	{
+		value = item->mInventoryItem->GetValue1();
 		widgetClass = item->mInventoryItem->GetStaticData()->GetItemWidgetClass();
 	}
 	//isEquipped =

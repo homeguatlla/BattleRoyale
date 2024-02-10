@@ -1,10 +1,17 @@
 ﻿#include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
+#include "AmmoMock.h"
 #include "WeaponMock.h"
+#include "AssetRegistry/AssetRegistryModule.h"
+
+#include "BattleRoyale/core/Abilities/AbilitiesInput.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
+#include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 #include "BattleRoyale/core/PickableObjects/Weapons/IWeapon.h"
 #include "BattleRoyale/core/PickableObjects/Weapons/WeaponBase.h"
 
 #include "BattleRoyaleTests/TestUtils.h"
+#include "Engine/ObjectLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
 #if WITH_EDITOR
@@ -14,36 +21,11 @@
 
 #if WITH_DEV_AUTOMATION_TESTS
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FShootProjectileGunTest_When_Spawn_Then_CanNotShoot,
-                                 "BattleRoyale.SinglePlayer.Abilities.ShootProjectileGunAbility.When_Spawn_Then_CanNotShoot",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FReloadTest_When_Spawn_Then_CanNotReload,
+                                 "BattleRoyale.SinglePlayer.Abilities.ReloadAbility.When_Spawn_Then_CanNotReload",
                                  EAutomationTestFlags::ApplicationContextMask  | EAutomationTestFlags::ProductFilter)
 
-bool FShootProjectileGunTest_When_Spawn_Then_CanNotShoot::RunTest(const FString& Parameters)
-{
-
-	UWorld* world = FAutomationEditorCommonUtils::CreateNewMap(); 
-	if (!world)
-	{
-		return false;
-	}
-	
-	const auto character = world->SpawnActor<ACharacterBase>();
-	
-	//For more tests check AutomationTest.h (lines 1347 - 1639)
-	TestNotNull<ACharacterBase>(TEXT("Testing if there is a player actor in level"), character);
-	
-	TestFalse(TEXT("When Spawning New Character Can NOT Shoot"), character->CanShoot());
-
-	character->Destroy();
-
-	return true;
-}
-
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FShootProjectileGunTest_When_NoWeapon_Then_CanNotShoot,
-								 "BattleRoyale.SinglePlayer.Abilities.ShootProjectileGunAbility.When_NoWeapon_Then_CanNotShoot",
-								 EAutomationTestFlags::ApplicationContextMask  | EAutomationTestFlags::ProductFilter)
-
-bool FShootProjectileGunTest_When_NoWeapon_Then_CanNotShoot::RunTest(const FString& Parameters)
+bool FReloadTest_When_Spawn_Then_CanNotReload::RunTest(const FString& Parameters)
 {
 
 	UWorld* world = FAutomationEditorCommonUtils::CreateNewMap(); 
@@ -58,22 +40,51 @@ bool FShootProjectileGunTest_When_NoWeapon_Then_CanNotShoot::RunTest(const FStri
 	TestNotNull<ACharacterBase>(TEXT("Testing if there is a player actor in level"), character);
 
 	const auto gunComponent = character->GetGunComponent();
-	check(gunComponent);
+	const auto inventoryComponent = character->GetInventoryComponent();
 	
-	TestFalse(TEXT("When No Weapon"), gunComponent->HasWeaponEquipped());
-	TestFalse(TEXT("When No Weapon Can NOT Shoot"), character->CanShoot());
+	TestFalse(TEXT("When Spawning New Character Can NOT Reload"), gunComponent->CanReload(inventoryComponent));
 
 	character->Destroy();
 
 	return true;
 }
 
-
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FShootProjectileGunTest_When_WeaponButNoAmmo_Then_CanNotShoot,
-								 "BattleRoyale.SinglePlayer.Abilities.ShootProjectileGunAbility.When_WeaponButNoAmmo_Then_CanNotShoot",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FReloadTest_When_NoWeapon_Then_CanNotReload,
+								 "BattleRoyale.SinglePlayer.Abilities.ReloadAbility.When_NoWeapon_Then_CanNotReload",
 								 EAutomationTestFlags::ApplicationContextMask  | EAutomationTestFlags::ProductFilter)
 
-bool FShootProjectileGunTest_When_WeaponButNoAmmo_Then_CanNotShoot::RunTest(const FString& Parameters)
+bool FReloadTest_When_NoWeapon_Then_CanNotReload::RunTest(const FString& Parameters)
+{
+
+	UWorld* world = FAutomationEditorCommonUtils::CreateNewMap(); 
+	if (!world)
+	{
+		return false;
+	}
+	
+	const auto character = world->SpawnActor<ACharacterBase>();
+	
+	//For more tests check AutomationTest.h (lines 1347 - 1639)
+	TestNotNull<ACharacterBase>(TEXT("Testing if there is a player actor in level"), character);
+
+	const auto gunComponent = character->GetGunComponent();
+
+	TestFalse(TEXT("Hasn't a weapon equipped"), gunComponent->HasWeaponEquipped());
+	
+	const auto inventoryComponent = character->GetInventoryComponent();
+	
+	TestFalse(TEXT("When Spawning New Character Can NOT Reload"), gunComponent->CanReload(inventoryComponent));
+
+	character->Destroy();
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FReloadTest_When_WeaponButNoAmmo_Then_CanNotReload,
+								 "BattleRoyale.SinglePlayer.Abilities.ReloadAbility.When_WeaponEquippedButNoAmmo_Then_CanNotReload",
+								 EAutomationTestFlags::ApplicationContextMask  | EAutomationTestFlags::ProductFilter)
+
+bool FReloadTest_When_WeaponButNoAmmo_Then_CanNotReload::RunTest(const FString& Parameters)
 {
 	const FString mapName = TEXT("/Game/Maps/SampleTest.SampleTest");
 	if (!AutomationOpenMap(mapName))
@@ -114,23 +125,21 @@ bool FShootProjectileGunTest_When_WeaponButNoAmmo_Then_CanNotShoot::RunTest(cons
 	TestTrue(TEXT("When Weapon equipped"), hasWeaponEquipped);
 	if(!hasWeaponEquipped)
 	{
-		//character->Destroy();
 		return false;
 	}
 	
 	TestFalse(TEXT("And No Ammo"), gunComponent->GetEquippedWeapon()->HasAmmo());
-	TestFalse(TEXT("When Weapon but No Ammo Can NOT Shoot"), characterBase->CanShoot());
 	
-	//character->Destroy();
-
+	TestFalse(TEXT("Can not Reload"), gunComponent->CanReload(inventoryComponent));
+	
 	return true;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FShootProjectileGunTest_When_AbilityShootProjectileGunIsTriggered_And_HaveAWeaponWithAmmo_CharacterIsShooting,
-								 "BattleRoyale.SinglePlayer.Abilities.ShootProjectileGunAbility.When_AbilityShootProjectileGunIsTriggered_And_HaveAWeaponWithAmmo_CharacterIsShooting",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FReloadTest_When_WeaponAndAmmo_Then_CanReload,
+								 "BattleRoyale.SinglePlayer.Abilities.ReloadAbility.When_WeaponEquippedAndAmmo_Then_CanReload",
 								 EAutomationTestFlags::ApplicationContextMask  | EAutomationTestFlags::ProductFilter)
 
-bool FShootProjectileGunTest_When_AbilityShootProjectileGunIsTriggered_And_HaveAWeaponWithAmmo_CharacterIsShooting::RunTest(const FString& Parameters)
+bool FReloadTest_When_WeaponAndAmmo_Then_CanReload::RunTest(const FString& Parameters)
 {
 	const FString mapName = TEXT("/Game/Maps/SampleTest.SampleTest");
 	if (!AutomationOpenMap(mapName))
@@ -153,11 +162,12 @@ bool FShootProjectileGunTest_When_AbilityShootProjectileGunIsTriggered_And_HaveA
 		return false;
 	}
 	const auto characterBase = Cast<ACharacterBase>(character);
+	
 	//For more tests check AutomationTest.h (lines 1347 - 1639)
 	TestNotNull<ACharacterBase>(TEXT("Testing if there is a player actor in level"), characterBase);
 	
 	const auto weapon = NewObject<AWeaponMock>();
-	weapon->Initialize(EPickupObjectState::Dropped, 1);
+	weapon->Initialize(EPickupObjectState::Dropped, 0);
 
 	const auto gunComponent = characterBase->GetGunComponent();
 	check(gunComponent);
@@ -170,14 +180,19 @@ bool FShootProjectileGunTest_When_AbilityShootProjectileGunIsTriggered_And_HaveA
 	TestTrue(TEXT("When Weapon equipped"), hasWeaponEquipped);
 	if(!hasWeaponEquipped)
 	{
-		//character->Destroy();
 		return false;
 	}
+
+	const auto ammo = NewObject<AAmmoMock>();
+	ammo->Initialize(EPickupObjectState::Dropped, 10);
+	inventoryComponent->PickupObjectServer(ammo);
 	
-	TestTrue(TEXT("And Has Ammo"), gunComponent->GetEquippedWeapon()->HasAmmo());
-	TestTrue(TEXT("When Weapon and Ammo Can Shoot"), characterBase->CanShoot());
+	TestTrue(TEXT("And Ammo"), gunComponent->GetEquippedWeapon()->HasAmmo());
+	
+	TestTrue(TEXT("Can Reload"), gunComponent->CanReload(inventoryComponent));
 	
 	return true;
 }
+
 #endif
 #endif

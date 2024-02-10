@@ -46,16 +46,16 @@ TScriptInterface<IIInventoryItemInstance> UInventoryBagMock::FindItemWithID(int 
 
 void UInventoryBagMock::PerformActionForEachItem(const std::function<bool(UInventoryArrayItem* inventoryItem)>& action) const
 {
-	/*for(auto&& item : mItems)
+	for(auto&& item : mItems)
 	{
-		UInventoryArrayItem* inventoryItem = NewObject<UInventoryArrayItem>();
-		inventoryItem->SetID(item.id);
-		//inventoryItem.mInventoryItem = item.data;
+		const auto inventoryItem = NewObject<UInventoryArrayItem>();
+		inventoryItem->SetID(item.mId);
+		inventoryItem->mInventoryItem = nullptr;
 		if(action(inventoryItem))
 		{
 			break;
 		}
-	}*/
+	}
 }
 
 int UInventoryBagMock::Num() const

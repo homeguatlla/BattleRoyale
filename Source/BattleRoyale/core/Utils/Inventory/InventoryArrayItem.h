@@ -11,7 +11,7 @@ class UInventoryItemStaticData;
 class IIInventoryItemInstance;
 
 UCLASS()
-class UInventoryArrayItem : public UNetworkObject //public FFastArraySerializerItem
+class BATTLEROYALE_API UInventoryArrayItem : public UNetworkObject //public FFastArraySerializerItem
 {
 	GENERATED_BODY()
 
@@ -20,7 +20,7 @@ public:
 
 	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
+
 	UPROPERTY(Replicated)
 	UInventoryItemInstance* mInventoryItem = nullptr;
 	//TScriptInterface<IIInventoryItemInstance> mInventoryItem;
