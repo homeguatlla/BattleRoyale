@@ -1,6 +1,7 @@
 ﻿#include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "AmmoMock.h"
+#include "InventoryItemStaticDataMock.h"
 #include "WeaponMock.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 
@@ -167,7 +168,7 @@ bool FReloadTest_When_WeaponAndAmmo_Then_CanReload::RunTest(const FString& Param
 	TestNotNull<ACharacterBase>(TEXT("Testing if there is a player actor in level"), characterBase);
 	
 	const auto weapon = NewObject<AWeaponMock>();
-	weapon->Initialize(EPickupObjectState::Dropped, 0);
+	weapon->Initialize(EPickupObjectState::Dropped, 1);
 
 	const auto gunComponent = characterBase->GetGunComponent();
 	check(gunComponent);
@@ -184,11 +185,13 @@ bool FReloadTest_When_WeaponAndAmmo_Then_CanReload::RunTest(const FString& Param
 	}
 
 	const auto ammo = NewObject<AAmmoMock>();
-	ammo->Initialize(EPickupObjectState::Dropped, 10);
+	
+	ammo->Initialize(TEXT("Blueprint'/Game/Core/Blueprints/Inventory/Items/BP_LightAmmoItem.BP_LightAmmoItem_C'"), EPickupObjectState::Dropped, 10);
+
 	inventoryComponent->PickupObjectServer(ammo);
-	
+
 	TestTrue(TEXT("And Ammo"), gunComponent->GetEquippedWeapon()->HasAmmo());
-	
+
 	TestTrue(TEXT("Can Reload"), gunComponent->CanReload(inventoryComponent));
 	
 	return true;

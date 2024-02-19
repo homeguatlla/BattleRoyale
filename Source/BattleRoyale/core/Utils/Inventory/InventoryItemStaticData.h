@@ -27,6 +27,7 @@ public:
 	int GetValue() const { return mValue; }
 	UFUNCTION(Blueprintable)
 	bool CanBeEquipped() const { return mCanBeEquipped; }
+	APickableObjectBase* GetPickableObject() const;
 	
 private:
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Name"))

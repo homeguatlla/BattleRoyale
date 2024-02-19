@@ -16,6 +16,7 @@ UInventoryBag::UInventoryBag()
 
 TScriptInterface<IIInventoryItemInstance> UInventoryBag::AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value, int value2)
 {
+	check(itemClass);
 	return mInventoryArray->AddItemOfClass(itemClass, value, value2);
 }
 

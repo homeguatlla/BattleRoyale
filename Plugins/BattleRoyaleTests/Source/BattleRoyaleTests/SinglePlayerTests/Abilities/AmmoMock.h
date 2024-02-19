@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BattleRoyale/core/PickableObjects/Ammo/Ammo.h"
+#include "BattleRoyale/core/PickableObjects/IPickupObject.h"
 #include "AmmoMock.generated.h"
+
+class UInventoryItemStaticDataMock;
 
 UCLASS()
 class BATTLEROYALETESTS_API AAmmoMock : public AActor, public IPickupObject
@@ -15,9 +17,9 @@ public:
 	// Sets default values for this actor's properties
 	AAmmoMock();
 
-	void Initialize(EPickupObjectState state, int value);
+	void Initialize(const FName& itemStaticDataName, EPickupObjectState state, int value);
 	
-	virtual TSubclassOf<UInventoryItemStaticData> GetInventoryItemStaticData() const override { return nullptr; }
+	virtual TSubclassOf<UInventoryItemStaticData> GetInventoryItemStaticData() const override { return mItemStaticData; }
 	virtual EPickupObjectState GetState() const override { return mState;}
 	virtual int GetValue() const override { return mValue; }
 	virtual FVector GetLocation() const override { return FVector::Zero(); }
@@ -34,6 +36,8 @@ public:
 	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) override {}
 
 private:
-	EPickupObjectState mState;
-	int mValue;
+	UPROPERTY()
+	TSubclassOf<UInventoryItemStaticData>  mItemStaticData = nullptr;
+	EPickupObjectState mState = EPickupObjectState::Initial;
+	int mValue = 0;
 };

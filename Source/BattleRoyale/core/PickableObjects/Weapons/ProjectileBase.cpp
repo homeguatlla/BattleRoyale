@@ -2,7 +2,6 @@
 
 #include "ProjectileBase.h"
 
-#include "AbilitySystemComponent.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
@@ -11,7 +10,6 @@
 #include "GameFramework/PlayerState.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/DamageType.h"
-#include "Kismet/GameplayStatics.h"
 
 AProjectileBase::AProjectileBase() 
 {

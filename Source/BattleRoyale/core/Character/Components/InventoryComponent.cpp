@@ -12,7 +12,6 @@
 #include "BattleRoyale/core/PickableObjects/PickableObjectBase.h"
 #include "BattleRoyale/core/PickableObjects/Ammo/Ammo.h"
 #include "BattleRoyale/core/PickableObjects/Weapons/WeaponBase.h"
-#include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemInstance.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryArray.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemStaticData.h"
@@ -171,8 +170,10 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	
 	//Once the pickable object has been saved into the inventory we can remove it from the world.
 	const auto pickableObjectActor = Cast<APickableObjectBase>(pickableObject.GetObject());
-	pickableObjectActor->Destroy();
-	
+	if(pickableObjectActor)
+	{
+		pickableObjectActor->Destroy();
+	}
 	return true;
 }
 
@@ -335,8 +336,7 @@ int UInventoryComponent::GetTotalAmmoOfType(EAmmoType ammoType) const
 			if(inventoryItem)
 			{
 				const auto staticData = inventoryItem->mInventoryItem->GetStaticData();
-				const auto objectClass = staticData->GetPickupObjectClass();
-				const auto defaultPickableObject = objectClass.GetDefaultObject();
+				const auto defaultPickableObject = staticData->GetPickableObject();
 				if(defaultPickableObject->IsA<AAmmo>())
 				{
 					const auto ammo = Cast<AAmmo>(defaultPickableObject);
@@ -360,8 +360,8 @@ int UInventoryComponent::GetTotalWeapons() const
 	[&totalWeapons](UInventoryArrayItem* inventoryItem) -> bool
 	{
 		check(inventoryItem);
-		const auto itemClass = inventoryItem->mInventoryItem->GetStaticData()->GetPickupObjectClass();
-		if(itemClass->GetDefaultObject()->Implements<UWeapon>())
+		const auto pickableObject = inventoryItem->mInventoryItem->GetStaticData()->GetPickableObject();
+		if(pickableObject->Implements<UWeapon>())
 		{
 			totalWeapons++;
 		}
@@ -381,8 +381,8 @@ UInventoryItemInstance* UInventoryComponent::GetNextWeaponDifferentThan(TScriptI
 	PerformActionForEachInventoryItem(
 	[&nextWeapon](UInventoryArrayItem* inventoryItem) -> bool
 	{
-		const auto itemClass = inventoryItem->mInventoryItem->GetStaticData()->GetPickupObjectClass();
-		if(itemClass->GetDefaultObject()->Implements<UWeapon>())
+		const auto pickableObject = inventoryItem->mInventoryItem->GetStaticData()->GetPickableObject();
+		if(pickableObject->Implements<UWeapon>())
 		{
 			nextWeapon = inventoryItem->mInventoryItem;
 			return true;
@@ -440,8 +440,9 @@ TScriptInterface<IIInventoryItemInstance> UInventoryComponent::GetAmmoItemOfType
 		[&ammoType, &foundAmmoInTheInventory, &inventoryItemInstanceFound](UInventoryArrayItem* inventoryItem) -> bool
 		{
 			const auto staticData = inventoryItem->mInventoryItem->GetStaticData();
-			const auto objectClass = staticData->GetPickupObjectClass();
-			const auto pickableObject = objectClass.GetDefaultObject();
+			check(staticData);
+			const auto pickableObject = staticData->GetPickableObject();
+			check(pickableObject);
 			if(pickableObject->IsA<AAmmo>())
 			{
 				const auto ammo = Cast<AAmmo>(pickableObject);
