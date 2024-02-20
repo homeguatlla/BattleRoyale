@@ -89,7 +89,8 @@ public:
 	virtual FTransform SaveLeftHandSocketTransform() override;
 	virtual FTransform GetMuzzleSocketTransform() override;
 	virtual FTransform GetCrosshairSocketTransform() override;
-	
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual bool CanBeFired() const override;
 	virtual void Fire(const FVector& targetLocation) override;
 	virtual void OnFire() override;//This method will be called from Blueprint (Gameplay cue shoot that makes the visual effects of the weapon when firing)
@@ -100,6 +101,7 @@ public:
 	virtual int32 GetMagazineCapacity() const override { return MagazineCapacity; }
 	virtual EAmmoType GetAmmoType() const override;
 	virtual bool IsMagazineFull() const override { return MagazineCapacity == mAmmo; }
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual bool HasAmmo() const override{ return mAmmo > 0; }
 	virtual void Reload(int ammoAmount) override;
 	

@@ -217,6 +217,11 @@ void UCombatComponent::Shoot()
 {
 	//We shoot, and then if is still fire button pressed we start the timer.
 	ShootOnce();
+
+	if(!CanShoot())
+	{
+		return;
+	}
 	
 	const auto weapon = mEquippedWeapon;
 	const auto playerController = Cast<APlayerController>(GetOwner()->GetInstigatorController());

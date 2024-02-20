@@ -66,21 +66,6 @@ void UAbilityShootProjectileGun::ActivateAbility(const FGameplayAbilitySpecHandl
 	}
 }
 
-bool UAbilityShootProjectileGun::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                        const FGameplayAbilityActorInfo* ActorInfo,
-                                        const FGameplayTagContainer* SourceTags,
-                                        const FGameplayTagContainer* TargetTags,
-                                        OUT FGameplayTagContainer* OptionalRelevantTags) const
-{
-	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
-	{
-		return false;
-	}
-
-	const auto character = GetCharacter(ActorInfo);
-	return character != nullptr && character->CanShoot();
-}
-
 const FGameplayTagContainer* UAbilityShootProjectileGun::GetCooldownTags() const
 {
 	const auto parentTags = Super::GetCooldownTags();

@@ -40,10 +40,12 @@ void AWeaponBase::Fire(const FVector& targetLocation)
 {
 	//Only local (to the weapon firing)
 	
-	//BP_OnFire();
+	BP_OnFire();
 	//DrawDebugSphere(GetWorld(), targetLocation, 10, 10, FColor::Green, true);
-	
-	ServerFire(GetMuzzleLocation(), targetLocation);
+	if(CanBeFired())
+	{
+		ServerFire(GetMuzzleLocation(), targetLocation);
+	}
 }
 
 EAmmoType AWeaponBase::GetAmmoType() const
