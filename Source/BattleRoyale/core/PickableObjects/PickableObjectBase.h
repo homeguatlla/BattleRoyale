@@ -61,7 +61,7 @@ public:
 
 	virtual void DoEquipped() {};
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = OnEquipped))
 	void BP_OnEquipped();
 	
 protected:

@@ -61,6 +61,7 @@ void AWeaponBase::Reload(int ammoAmount)
 	{
 		RefreshAmmoHUD(character);
 	}
+	MulticastReload();
 }
 
 void AWeaponBase::SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation)
@@ -120,6 +121,11 @@ void AWeaponBase::ServerFire_Implementation(const FVector& muzzleLocation, const
 void AWeaponBase::OnFire()
 {
 	SpawnBulletShell();
+}
+
+void AWeaponBase::MulticastReload_Implementation()
+{
+	BP_OnReload();
 }
 
 void AWeaponBase::OnRep_Ammo() const

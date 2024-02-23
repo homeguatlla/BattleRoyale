@@ -72,7 +72,9 @@ public:
 	virtual void ReleaseTrigger() override;
 	virtual UAnimMontage* GetShootingMontage() const override { return ShootingAnimation; }
 	virtual UAnimMontage* GetReloadingMontage() const override { return ReloadAnimation; }
-	
+
+	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
+	virtual bool IsReloading() const override;
 	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
 	virtual bool IsAiming() const override{ return mIsAiming; }
 	UFUNCTION(BlueprintCallable, Category = "IGunComponent")

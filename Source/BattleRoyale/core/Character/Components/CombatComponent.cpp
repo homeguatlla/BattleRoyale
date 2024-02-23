@@ -133,6 +133,11 @@ bool UCombatComponent::CanShoot() const
 	return mEquippedWeapon && mEquippedWeapon->CanBeFired();
 }
 
+bool UCombatComponent::IsReloading() const
+{
+	return mCharacter->GetAbilitySystemComponentBase()->HasGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_RELOADING));
+}
+
 void UCombatComponent::StartAiming()
 {
 	mIsAiming = true;

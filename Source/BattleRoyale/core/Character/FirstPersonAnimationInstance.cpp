@@ -50,10 +50,12 @@ void UFirstPersonAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)
 	
 	HasWeaponEquipped = gunComponent->HasWeaponEquipped();
 	IsAiming = gunComponent->IsAiming();
+	IsReloading = gunComponent->IsReloading();
 	
 	IsCrouching = CharacterInterface->IsCrouching();
 	IsDead = !CharacterInterface->IsAlive();
 	IsInAir = CharacterInterface->IsFalling();
+	
 	
 	//This two rotators are synchronized, server, autonomous and simulated.
 	const auto aimRotation = Character->GetBaseAimRotation();
