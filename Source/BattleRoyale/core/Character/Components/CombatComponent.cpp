@@ -75,7 +75,8 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		//GEngine->AddOnScreenDebugMessage(-1, 0.05, FColor::Green, shootingTargetData.targetActor ? *shootingTargetData.targetActor->GetName() : *FString("No target"));
 		//TODO igual podemos forzar aquí que el shootingTargetData.targetActor implemente una interfaz que afecte al crosshairs.
 		//también lo puede validar el blueprint.
-		GetGameInstance()->GetEventDispatcher()->OnRefreshCrosshair.Broadcast(spread, shootingTargetData.targetActor, mIsAiming);
+		const auto isMagazineAlmostEmpty = IsMagazineAlmostEmpty();
+		GetGameInstance()->GetEventDispatcher()->OnRefreshCrosshair.Broadcast(spread, shootingTargetData.targetActor, mIsAiming, isMagazineAlmostEmpty);
 
 		CalculateInterpolatedFOVAndCameraLocation(DeltaTime);
 	}
@@ -497,6 +498,20 @@ void UCombatComponent::CalculateInterpolatedFOVAndCameraLocation(float DeltaTime
 	
 	camera->SetFieldOfView(mCurrentFOV);
 	camera->SetRelativeLocation(mCurrentCameraRelativeLocation);
+}
+
+bool UCombatComponent::IsMagazineAlmostEmpty() const
+{
+	if(!HasWeaponEquipped())
+	{
+		return false;
+	}
+	
+	const auto weapon = GetEquippedWeapon();
+	const auto ammo = weapon->GetAmmo();
+	const auto magazine = weapon->GetMagazineCapacity();
+
+	return ammo <= magazine * MagazineAlmostEmptyPercentage;
 }
 
 UBattleRoyaleGameInstance* UCombatComponent::GetGameInstance() const

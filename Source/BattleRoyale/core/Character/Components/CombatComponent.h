@@ -50,7 +50,9 @@ class BATTLEROYALE_API UCombatComponent : public UActorComponent, public IGunCom
 	UPROPERTY(EditAnywhere, Category = "CombatComponent")
 	float ZoomInterpolationFOV = 20.0f;
 	
-
+	UPROPERTY(EditAnywhere, Category = "CombatComponent")
+	float MagazineAlmostEmptyPercentage = 0.2f;
+	
 public:	
 	// Sets default values for this component's properties
 	UCombatComponent();
@@ -104,7 +106,8 @@ private:
 	FShootingData CalculateShootingTargetData() const;
 	float CalculateCrosshairSpread() const;
 	void CalculateInterpolatedFOVAndCameraLocation(float DeltaTime);
-
+	bool IsMagazineAlmostEmpty() const;
+	
 	UBattleRoyaleGameInstance* GetGameInstance() const;
 	void SetCameraFOV(float fov);
 	void SetCameraRelativeLocation(const FVector& location);
