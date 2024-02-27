@@ -40,6 +40,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IGunComponent")
 	virtual bool IsAiming() const = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IGunComponent")
+	virtual bool IsReloading() const = 0;
 	
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IGunComponent")
 	virtual bool CanShoot() const = 0;

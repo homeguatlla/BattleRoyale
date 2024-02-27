@@ -75,7 +75,8 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		//GEngine->AddOnScreenDebugMessage(-1, 0.05, FColor::Green, shootingTargetData.targetActor ? *shootingTargetData.targetActor->GetName() : *FString("No target"));
 		//TODO igual podemos forzar aquí que el shootingTargetData.targetActor implemente una interfaz que afecte al crosshairs.
 		//también lo puede validar el blueprint.
-		GetGameInstance()->GetEventDispatcher()->OnRefreshCrosshair.Broadcast(spread, shootingTargetData.targetActor, mIsAiming);
+		const auto isMagazineAlmostEmpty = IsMagazineAlmostEmpty();
+		GetGameInstance()->GetEventDispatcher()->OnRefreshCrosshair.Broadcast(spread, shootingTargetData.targetActor, mIsAiming, isMagazineAlmostEmpty);
 
 		CalculateInterpolatedFOVAndCameraLocation(DeltaTime);
 	}
@@ -131,6 +132,11 @@ TScriptInterface<IWeapon> UCombatComponent::GetEquippedWeapon() const
 bool UCombatComponent::CanShoot() const
 {
 	return mEquippedWeapon && mEquippedWeapon->CanBeFired();
+}
+
+bool UCombatComponent::IsReloading() const
+{
+	return mCharacter->GetAbilitySystemComponentBase()->HasGameplayTag(FGameplayTag::RequestGameplayTag(TAG_STATE_RELOADING));
 }
 
 void UCombatComponent::StartAiming()
@@ -217,6 +223,11 @@ void UCombatComponent::Shoot()
 {
 	//We shoot, and then if is still fire button pressed we start the timer.
 	ShootOnce();
+
+	if(!CanShoot())
+	{
+		return;
+	}
 	
 	const auto weapon = mEquippedWeapon;
 	const auto playerController = Cast<APlayerController>(GetOwner()->GetInstigatorController());
@@ -487,6 +498,20 @@ void UCombatComponent::CalculateInterpolatedFOVAndCameraLocation(float DeltaTime
 	
 	camera->SetFieldOfView(mCurrentFOV);
 	camera->SetRelativeLocation(mCurrentCameraRelativeLocation);
+}
+
+bool UCombatComponent::IsMagazineAlmostEmpty() const
+{
+	if(!HasWeaponEquipped())
+	{
+		return false;
+	}
+	
+	const auto weapon = GetEquippedWeapon();
+	const auto ammo = weapon->GetAmmo();
+	const auto magazine = weapon->GetMagazineCapacity();
+
+	return ammo <= magazine * MagazineAlmostEmptyPercentage;
 }
 
 UBattleRoyaleGameInstance* UCombatComponent::GetGameInstance() const

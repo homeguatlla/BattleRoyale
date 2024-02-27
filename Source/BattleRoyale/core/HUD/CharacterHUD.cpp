@@ -69,11 +69,11 @@ void ACharacterHUD::OnUnEquippedWeapon()
 	}
 }
 
-void ACharacterHUD::OnRefreshCrosshair(float spread, AActor* targetActor, bool isAiming)
+void ACharacterHUD::OnRefreshCrosshair(float spread, AActor* targetActor, bool isAiming, bool isMagazineAlmostEmpty)
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UPlayerHUD::StaticClass()))
 	{
-		IPlayerHUD::Execute_OnRefreshCrosshair(mHUDWidget, spread, targetActor, isAiming);
+		IPlayerHUD::Execute_OnRefreshCrosshair(mHUDWidget, spread, targetActor, isAiming, isMagazineAlmostEmpty);
 	}
 }
 

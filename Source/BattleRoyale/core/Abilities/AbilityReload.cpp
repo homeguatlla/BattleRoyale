@@ -9,6 +9,7 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/Character/Components/IGunComponent.h"
+#include "BattleRoyale/core/PickableObjects/Weapons/WeaponBase.h"
 
 UAbilityReload::UAbilityReload()
 {
@@ -17,6 +18,7 @@ UAbilityReload::UAbilityReload()
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_RELOAD));
+	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_STATE_RELOADING));
 
 	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SHOOT_PROJECTILE));
 }
@@ -57,7 +59,9 @@ void UAbilityReload::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		if(const auto combatComponent = mCharacter->GetGunComponent())
 		{
-			SubscribeToEventMontageShoot(mCharacter);
+			SubscribeToEventMontageReload(mCharacter);
+			SubscribeToEventMontageAmmoIn(mCharacter);
+			SubscribeToEventMontageAmmoOut(mCharacter);
 			CreateTaskPlayMontageReloading(combatComponent, ActorInfo);
 			combatComponent->ReleaseTrigger();
 			return;
@@ -90,20 +94,52 @@ void UAbilityReload::CreateTaskPlayMontageReloading(const TScriptInterface<IGunC
 	taskPlayMontage->ReadyForActivation();
 }
 
-void UAbilityReload::SubscribeToEventMontageShoot(const IICharacter* character)
+void UAbilityReload::SubscribeToEventMontageAmmoIn(const IICharacter* character)
 {
-	if(waitGameplayEventTask)
+	if(waitAmmoInGameplayEventTask)
 	{
-		waitGameplayEventTask->EndTask();
+		waitAmmoInGameplayEventTask->EndTask();
 	}
 	
-	waitGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+	waitAmmoInGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
 			this,
-			FGameplayTag::RequestGameplayTag(TAG_EVENT_MONTAGE_RELOAD),
+			FGameplayTag::RequestGameplayTag(TAG_EVENT_MONTAGE_RELOAD_AMMO_IN),
 			nullptr,
 			true);
-	waitGameplayEventTask->EventReceived.AddDynamic(this, &ThisClass::OnEventMontageReloadReceived);
-	waitGameplayEventTask->Activate();
+	waitAmmoInGameplayEventTask->EventReceived.AddDynamic(this, &ThisClass::OnEventMontageAmmoInReceived);
+	waitAmmoInGameplayEventTask->Activate();
+}
+
+void UAbilityReload::SubscribeToEventMontageAmmoOut(const IICharacter* character)
+{
+	if(waitAmmoOutGameplayEventTask)
+	{
+		waitAmmoOutGameplayEventTask->EndTask();
+	}
+	
+	waitAmmoOutGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+			this,
+			FGameplayTag::RequestGameplayTag(TAG_EVENT_MONTAGE_RELOAD_AMMO_OUT),
+			nullptr,
+			true);
+	waitAmmoOutGameplayEventTask->EventReceived.AddDynamic(this, &ThisClass::OnEventMontageAmmoOutReceived);
+	waitAmmoOutGameplayEventTask->Activate();
+}
+
+void UAbilityReload::SubscribeToEventMontageReload(const IICharacter* character)
+{
+	if(waitReloadGameplayEventTask)
+	{
+		waitReloadGameplayEventTask->EndTask();
+	}
+	
+	waitReloadGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+			this,
+			FGameplayTag::RequestGameplayTag(TAG_EVENT_MONTAGE_RELOAD_RELOAD),
+			nullptr,
+			true);
+	waitReloadGameplayEventTask->EventReceived.AddDynamic(this, &ThisClass::OnEventMontageReloadReceived);
+	waitReloadGameplayEventTask->Activate();
 }
 
 void UAbilityReload::OnMontageCompleted()
@@ -126,4 +162,18 @@ void UAbilityReload::OnEventMontageReloadReceived(const FGameplayEventData Paylo
 			combatComponent->Reload(inventoryComponent);
 		}	
 	}
+}
+
+void UAbilityReload::OnEventMontageAmmoInReceived(const FGameplayEventData Payload)
+{
+	const auto combatComponent = mCharacter->GetGunComponent();
+	const auto weapon = Cast<AWeaponBase>(combatComponent->GetEquippedWeapon().GetObject());
+	weapon->BP_OnReloadAmmoIn();
+}
+
+void UAbilityReload::OnEventMontageAmmoOutReceived(const FGameplayEventData Payload)
+{
+	const auto combatComponent = mCharacter->GetGunComponent();
+	const auto weapon = Cast<AWeaponBase>(combatComponent->GetEquippedWeapon().GetObject());
+	weapon->BP_OnReloadAmmoOut();
 }

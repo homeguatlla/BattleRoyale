@@ -40,10 +40,12 @@ void AWeaponBase::Fire(const FVector& targetLocation)
 {
 	//Only local (to the weapon firing)
 	
-	//BP_OnFire();
+	BP_OnFire();
 	//DrawDebugSphere(GetWorld(), targetLocation, 10, 10, FColor::Green, true);
-	
-	ServerFire(GetMuzzleLocation(), targetLocation);
+	if(CanBeFired())
+	{
+		ServerFire(GetMuzzleLocation(), targetLocation);
+	}
 }
 
 EAmmoType AWeaponBase::GetAmmoType() const
@@ -59,6 +61,7 @@ void AWeaponBase::Reload(int ammoAmount)
 	{
 		RefreshAmmoHUD(character);
 	}
+	MulticastReload();
 }
 
 void AWeaponBase::SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation)
@@ -118,6 +121,11 @@ void AWeaponBase::ServerFire_Implementation(const FVector& muzzleLocation, const
 void AWeaponBase::OnFire()
 {
 	SpawnBulletShell();
+}
+
+void AWeaponBase::MulticastReload_Implementation()
+{
+	BP_OnReload();
 }
 
 void AWeaponBase::OnRep_Ammo() const

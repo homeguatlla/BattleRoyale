@@ -19,7 +19,7 @@ public:
 	void OnRefreshNumKills(int numKills);
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Player HUD")
-	void OnRefreshCrosshair(float spread, AActor* targetActor, bool isAiming);
+	void OnRefreshCrosshair(float spread, AActor* targetActor, bool isAiming, bool isMagazineAlmostEmpty);
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Player HUD")
 	void OnRefreshTotalAmmo(int32 totalAmmo);

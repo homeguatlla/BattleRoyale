@@ -26,7 +26,9 @@ public:
 
 private:
 	void CreateTaskPlayMontageReloading(const TScriptInterface<IGunComponent> combatComponent, const FGameplayAbilityActorInfo* ActorInfo);
-	void SubscribeToEventMontageShoot(const IICharacter* character);
+	void SubscribeToEventMontageReload(const IICharacter* character);
+	void SubscribeToEventMontageAmmoIn(const IICharacter* character);
+	void SubscribeToEventMontageAmmoOut(const IICharacter* character);
 	
 	UFUNCTION()
 	void OnMontageCompleted();
@@ -35,9 +37,17 @@ private:
 
 	UFUNCTION()
 	void OnEventMontageReloadReceived(const FGameplayEventData Payload);
+	UFUNCTION()
+	void OnEventMontageAmmoInReceived(const FGameplayEventData Payload);
+	UFUNCTION()
+	void OnEventMontageAmmoOutReceived(const FGameplayEventData Payload);
 
 	IICharacter* mCharacter;
 	
 	UPROPERTY()
-	class UAbilityTask_WaitGameplayEvent* waitGameplayEventTask = nullptr;
+	class UAbilityTask_WaitGameplayEvent* waitReloadGameplayEventTask = nullptr;
+	UPROPERTY()
+	class UAbilityTask_WaitGameplayEvent* waitAmmoInGameplayEventTask = nullptr;
+	UPROPERTY()
+	class UAbilityTask_WaitGameplayEvent* waitAmmoOutGameplayEventTask = nullptr;
 };

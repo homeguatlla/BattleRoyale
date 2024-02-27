@@ -18,5 +18,5 @@ class BATTLEROYALE_API ICrosshair
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Crosshair Interface")
-	void OnRefreshCrosshair(float spread, AActor* targetActor, bool isAiming);
+	void OnRefreshCrosshair(float spread, AActor* targetActor, bool isAiming, bool isMagazineAlmostEmpty);
 };

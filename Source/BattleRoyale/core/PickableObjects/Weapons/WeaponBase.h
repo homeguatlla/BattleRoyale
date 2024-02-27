@@ -89,7 +89,8 @@ public:
 	virtual FTransform SaveLeftHandSocketTransform() override;
 	virtual FTransform GetMuzzleSocketTransform() override;
 	virtual FTransform GetCrosshairSocketTransform() override;
-	
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual bool CanBeFired() const override;
 	virtual void Fire(const FVector& targetLocation) override;
 	virtual void OnFire() override;//This method will be called from Blueprint (Gameplay cue shoot that makes the visual effects of the weapon when firing)
@@ -100,6 +101,7 @@ public:
 	virtual int32 GetMagazineCapacity() const override { return MagazineCapacity; }
 	virtual EAmmoType GetAmmoType() const override;
 	virtual bool IsMagazineFull() const override { return MagazineCapacity == mAmmo; }
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual bool HasAmmo() const override{ return mAmmo > 0; }
 	virtual void Reload(int ammoAmount) override;
 	
@@ -117,13 +119,24 @@ public:
 	
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon", meta = (DisplayName = OnFire))
 	void BP_OnFire();
+	
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Weapon", meta = (DisplayName = OnReload))
+	void BP_OnReload();
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "IWeapon", meta = (DisplayName = OnReloadAmmoIn))
+	void BP_OnReloadAmmoIn();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "IWeapon", meta = (DisplayName = OnReloadAmmoOut))
+	void BP_OnReloadAmmoOut();
 	
 private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	UFUNCTION(Server, Reliable)
 	void ServerFire(const FVector& muzzleLocation, const FVector& targetLocation);
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastReload();
+	
 	UFUNCTION()
 	void OnRep_Ammo() const;
 	
