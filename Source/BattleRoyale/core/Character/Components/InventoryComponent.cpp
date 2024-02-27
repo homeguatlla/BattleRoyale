@@ -156,8 +156,6 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 		return EquipObject(pickableObject);
 	}
 	
-	NotifyIfPickedUpObjectIsAmmo(pickableObject);
-
 	//Add item into the inventory
 	int value2 = 0;
 	if(IsAWeapon(pickableObject))
@@ -167,7 +165,10 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	}
 	
 	mInventoryBag->AddItem(pickableObject->GetInventoryItemStaticData(), pickableObject->GetValue(), value2);
-	
+
+	//To make the notify we need first add the item into the inventory.
+	NotifyIfPickedUpObjectIsAmmo(pickableObject);
+
 	//Once the pickable object has been saved into the inventory we can remove it from the world.
 	const auto pickableObjectActor = Cast<APickableObjectBase>(pickableObject.GetObject());
 	if(pickableObjectActor)
