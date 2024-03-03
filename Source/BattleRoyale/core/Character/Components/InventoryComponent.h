@@ -61,8 +61,10 @@ public:
 
 	virtual int GetTotalWeapons() const override;
 	virtual UInventoryItemInstance* GetNextWeaponDifferentThan(TScriptInterface<IPickupObject> weapon) const override;
-	
-	void OnInventoryKeyPressed();
+
+	virtual void ShowHideInventory() override;
+	//void OnInventoryKeyPressed();
+	virtual bool IsInventoryVisible() const override { return mIsInventoryVisible; }
 
 protected:
 	// Called when the game starts
@@ -104,5 +106,5 @@ private:
 	UPROPERTY(ReplicatedUsing=OnRep_EquippedObject)
 	TScriptInterface<IPickupObject> mEquippedObject = nullptr;
 	
-	bool mIsInventoryShown = false;
+	bool mIsInventoryVisible = false;
 };

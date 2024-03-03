@@ -394,6 +394,23 @@ UInventoryItemInstance* UInventoryComponent::GetNextWeaponDifferentThan(TScriptI
 	return nextWeapon;
 }
 
+void UInventoryComponent::ShowHideInventory()
+{
+	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetOwner()->GetGameInstance());
+	check(gameInstance);
+
+	if(mIsInventoryVisible)
+	{
+		gameInstance->GetEventDispatcher()->OnHideInventoryScreen.Broadcast();
+	}
+	else
+	{
+		//TODO hay que pasar el equiped object para que el visual sepa pintarlo porque no está en el inventario
+		gameInstance->GetEventDispatcher()->OnShowInventoryScreen.Broadcast(mInventoryBag, mEquippedObject);
+	}
+	mIsInventoryVisible = !mIsInventoryVisible;
+}
+
 int UInventoryComponent::RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded)
 {
 	int ammoRemoved = 0;
@@ -510,19 +527,8 @@ void UInventoryComponent::NotifyIfPickedUpObjectIsAmmo(TScriptInterface<IPickupO
 	}
 }
 
+/*
 void UInventoryComponent::OnInventoryKeyPressed()
 {
-	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetOwner()->GetGameInstance());
-	check(gameInstance);
-
-	if(mIsInventoryShown)
-	{
-		gameInstance->GetEventDispatcher()->OnHideInventoryScreen.Broadcast();
-	}
-	else
-	{
-		//TODO hay que pasar el equiped object para que el visual sepa pintarlo porque no está en el inventario
-		gameInstance->GetEventDispatcher()->OnShowInventoryScreen.Broadcast(mInventoryBag, mEquippedObject);
-	}
-	mIsInventoryShown = !mIsInventoryShown;
-}
+	ShowHideInventory();
+}*/

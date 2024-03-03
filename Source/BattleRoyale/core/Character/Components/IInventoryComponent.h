@@ -47,4 +47,7 @@ public:
 	virtual UInventoryItemInstance* GetNextWeaponDifferentThan(TScriptInterface<IPickupObject> weapon) const = 0;
 	
 	virtual void PerformActionForEachInventoryItem(const std::function<bool (UInventoryArrayItem* inventoryItem)>& callback) const = 0;
+
+	virtual void ShowHideInventory() = 0;
+	virtual bool IsInventoryVisible() const = 0;
 };

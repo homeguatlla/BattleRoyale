@@ -203,7 +203,6 @@ void ACharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	// Bind fire event
 	//PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ACharacterBase::OnFire);
 	PlayerInputComponent->BindAction("Invulnerable", IE_Pressed, this, &ThisClass::OnSetInvulnerable);
-	PlayerInputComponent->BindAction("Inventory", IE_Pressed, this, &ThisClass::OnShowInventory);
 	
 	// Bind movement events
 	PlayerInputComponent->BindAxis("MoveForward", this, &ThisClass::MoveForward);
@@ -212,7 +211,7 @@ void ACharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("Turn", this, &ThisClass::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("TurnRate", this, &ThisClass::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &ThisClass::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ThisClass::LookUpAtRate);
@@ -463,12 +462,6 @@ void ACharacterBase::OnSetInvulnerable()
 	HurtComponent->SetInvulnerableServer(mIsInvulnerable);
 }
 
-void ACharacterBase::OnShowInventory()
-{
-	check(InventoryComponent);
-	InventoryComponent->OnInventoryKeyPressed();
-}
-
 void ACharacterBase::OnSpeedChanged(const FOnAttributeChangeData& data)
 {
 	if(!data.GEModData)
@@ -499,13 +492,27 @@ void ACharacterBase::MoveRight(float Value)
 
 void ACharacterBase::AddControllerPitchInput(float Rate)
 {
+	if(InventoryComponent->IsInventoryVisible())
+	{
+		return;
+	}
+
 	Super::AddControllerPitchInput(Rate);
-	
+
 	if(IsLocallyControlled())
 	{
 		//const auto rotation = mWeaponMesh->GetComponentRotation();
 		ServerSetCharacterControlRotation(GetControlRotation());
 	}	
+}
+
+void ACharacterBase::AddControllerYawInput(float Val)
+{
+	if(InventoryComponent->IsInventoryVisible())
+	{
+		return;
+	}
+	Super::AddControllerYawInput(Val);
 }
 
 void ACharacterBase::TurnAtRate(float Rate)

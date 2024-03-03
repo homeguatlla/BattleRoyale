@@ -17,5 +17,6 @@ enum class EAbilityInputID : uint8
 	Drop,
 	Aim,
 	Reload,
-	SwapWeapons
+	SwapWeapons,
+	Inventory
 };

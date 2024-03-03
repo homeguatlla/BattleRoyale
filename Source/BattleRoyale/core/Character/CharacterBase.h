@@ -231,7 +231,6 @@ protected:
 	
 	/** Resets HMD orientation and position in VR. */
 	void OnSetInvulnerable();
-	void OnShowInventory();
 	void OnSpeedChanged(const FOnAttributeChangeData& data);
 
 	/** Handles moving forward/backward */
@@ -256,7 +255,8 @@ protected:
 
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
-	
+	void AddControllerYawInput(float Val);
+
 	// End of APawn interface
 
 	//Only for TEST porposes

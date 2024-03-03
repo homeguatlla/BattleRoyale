@@ -12,6 +12,7 @@ const FName TAG_ABILITY_AIM("Ability.Aim");
 const FName TAG_ABILITY_SHOOT_PROJECTILE("Ability.Shoot.Projectile");
 const FName TAG_ABILITY_PICKUP_INDICATOR("Ability.PickupIndicator");
 const FName TAG_ABILITY_RELOAD("Ability.Reload");
+const FName TAG_ABILITY_INVENTORY("Ability.Inventory");
 
 const FName TAG_STATE_INVULNERABLE = FName("State.Invulnerable");
 const FName TAG_STATE_AIMING = FName("State.Aiming");
