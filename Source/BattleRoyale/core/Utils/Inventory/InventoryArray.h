@@ -18,7 +18,8 @@ public:
 	TScriptInterface<IIInventoryItemInstance> AddItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass, int value, int value2);
 	void RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
 	void RemoveItem(TScriptInterface<IIInventoryItemInstance> itemInstance);
-	
+	void RemoveItemByID(int ID);
+
 	TScriptInterface<IIInventoryItemInstance> FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass);
 
 	void PerformActionForEachItem(const std::function<bool(UInventoryArrayItem* inventoryItem)>& action) const;

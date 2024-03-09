@@ -30,6 +30,11 @@ void UInventoryBag::RemoveItem(TScriptInterface<IIInventoryItemInstance> item)
 	mInventoryArray->RemoveItem(item);
 }
 
+void UInventoryBag::RemoveItemByID(int ID)
+{
+	mInventoryArray->RemoveItemByID(ID);
+}
+
 TScriptInterface<IIInventoryItemInstance> UInventoryBag::FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass)
 {
 	return mInventoryArray->FindFirstItemOfClass(itemClass);
@@ -56,7 +61,7 @@ TScriptInterface<IIInventoryItemInstance> UInventoryBag::FindItemWithID(int ID)
 		const auto item = mInventoryArray->GetItemByIndex(i);
 		if(item->GetID() == ID)
 		{
-			return item;
+			return item->mInventoryItem;
 		}
 	}
 	return nullptr;

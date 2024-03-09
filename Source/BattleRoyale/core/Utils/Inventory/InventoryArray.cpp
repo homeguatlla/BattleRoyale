@@ -63,6 +63,18 @@ void UInventoryArray::RemoveItem(TScriptInterface<IIInventoryItemInstance> itemI
 	}
 }
 
+void UInventoryArray::RemoveItemByID(int ID)
+{
+	for(int i = 0; i < mItems.Num() ; ++i)
+	{
+		if(mItems[i]->GetID() == ID)
+		{
+			mItems.RemoveAt(i);
+			break;
+		}
+	}
+}
+
 TScriptInterface<IIInventoryItemInstance> UInventoryArray::FindFirstItemOfClass(TSubclassOf<UInventoryItemStaticData> itemClass)
 {
 	for(auto&& item : mItems)

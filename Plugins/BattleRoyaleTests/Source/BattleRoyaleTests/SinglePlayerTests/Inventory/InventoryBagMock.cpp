@@ -17,6 +17,10 @@ void UInventoryBagMock::RemoveItem(TScriptInterface<IIInventoryItemInstance> ite
 {
 }
 
+void UInventoryBagMock::RemoveItemByID(int ID)
+{
+}
+
 bool UInventoryBagMock::ExistItemWithID(int ID) const
 {
 	for(auto&& item : mItems)

@@ -559,7 +559,13 @@ void ACharacterBase::UpdateHealth(const FTakeDamageData& damage)
 
 void ACharacterBase::DieClient()
 {
-	GetInventoryComponent()->DropObjectServer();
+	if(const auto inventoryComponent = GetInventoryComponent())
+	{
+		if(const auto equippedItem = inventoryComponent->GetEquippedItem())
+		{
+			GetInventoryComponent()->DropObjectServer(equippedItem);
+		}
+	}
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 	

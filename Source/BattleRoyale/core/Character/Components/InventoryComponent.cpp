@@ -35,6 +35,65 @@ UInventoryComponent::UInventoryComponent()
 	//bReplicateUsingRegisteredSubObjectList = true;
 }
 
+void UInventoryComponent::OnDropInventoryItem(int id)
+{
+	if(id == -1)
+	{
+		if(const auto equippedItem = GetEquippedItem())
+		{
+			if(GetOwner()->HasAuthority())
+			{
+				DropObjectServer(equippedItem.GetObject());
+			}
+			else
+			{
+				ServerDropItem(Cast<APickableObjectBase>(equippedItem.GetObject()));
+			}
+		}
+	}
+	else
+	{
+		if(GetOwner()->HasAuthority())
+		{
+			const auto item = mInventoryBag->FindItemWithID(id);
+			const auto character = Cast<ACharacterBase>(GetOwner());
+			if(const auto pickableObject = GetWorld()->SpawnActorDeferred<APickableObjectBase>(
+				item->GetStaticData()->GetPickupObjectClass(),
+				FTransform(),
+				character,
+				character,
+				ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+				))
+			{
+				if(IsAWeapon(pickableObject))
+				{
+					const auto weapon = Cast<AWeaponBase>(pickableObject);
+					weapon->SetAmmo(item->GetValue2());
+				}
+				if(pickableObject->IsA<AAmmo>())
+				{
+					const auto ammo = Cast<AAmmo>(pickableObject);
+					const auto ammoType = ammo->GetAmmoType();
+			
+					OnPickedUpAmmoDelegate.Broadcast(ammoType, GetTotalAmmoOfType(ammoType));
+				}
+				pickableObject->SetValue(item->GetValue1());
+				pickableObject->SetActorLocation(character->GetActorLocation() + character->GetActorForwardVector() * 100);
+				pickableObject->OnDropped();
+				OnDroppedPickableObjectDelegate.Broadcast();
+				mInventoryBag->RemoveItem(item);
+				pickableObject->FinishSpawning(FTransform());
+			}
+		}
+		else
+		{
+			//TODO ServerRPC
+		}
+		
+		//TODO refresh inventory?
+	}
+}
+
 void UInventoryComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
@@ -178,7 +237,7 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	return true;
 }
 
-bool UInventoryComponent::DropObjectServer()
+bool UInventoryComponent::DropObjectServer(TScriptInterface<IPickupObject> item)
 {
 	const auto character = Cast<ACharacterBase>(GetOwner());
 	
@@ -197,11 +256,10 @@ bool UInventoryComponent::DropObjectServer()
 		return false;	
 	}
 	
-	const TScriptInterface<IPickupObject> pickupObject = GetEquippedItem();
-	check(pickupObject.GetObject());
+	check(item.GetObject());
 
-	pickupObject->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
-	pickupObject->OnDropped();
+	item->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	item->OnDropped();
 	mEquippedObject = nullptr;
 	OnDroppedPickableObjectDelegate.Broadcast();
 	
@@ -405,7 +463,7 @@ void UInventoryComponent::ShowHideInventory()
 	}
 	else
 	{
-		//TODO hay que pasar el equiped object para que el visual sepa pintarlo porque no está en el inventario
+		//Pasamos el equipped object para que el visual sepa pintarlo porque no está en el inventario
 		gameInstance->GetEventDispatcher()->OnShowInventoryScreen.Broadcast(mInventoryBag, mEquippedObject);
 	}
 	mIsInventoryVisible = !mIsInventoryVisible;
@@ -493,6 +551,11 @@ void UInventoryComponent::OnRep_EquippedObject() const
 void UInventoryComponent::OnRep_InventoryBag() const
 {
 	
+}
+
+void UInventoryComponent::ServerDropItem_Implementation(APickableObjectBase* item)
+{
+	DropObjectServer(item);
 }
 
 void UInventoryComponent::ClientNotifyPickedUpObject_Implementation(APickableObjectBase* pickedUpObject) const

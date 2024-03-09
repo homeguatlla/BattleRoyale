@@ -15,6 +15,8 @@ UAbilityInventory::UAbilityInventory()
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_INVENTORY));
 	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SHOOT_PROJECTILE));
+	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_AIM));
+	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_RELOAD));
 }
 
 void UAbilityInventory::ActivateAbility(const FGameplayAbilitySpecHandle Handle,

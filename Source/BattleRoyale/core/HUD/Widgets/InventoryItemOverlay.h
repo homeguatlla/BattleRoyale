@@ -21,13 +21,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsEmpty() const { return mIsEmpty; }
 	UFUNCTION(BlueprintCallable)
-	void SetItem(int value, const TSubclassOf<UUserWidget>& widget);
+	void SetItem(int id, int value, const TSubclassOf<UUserWidget>& widget);
 	UFUNCTION(BlueprintCallable)
 	void RemoveItem();
+
+	UFUNCTION(BlueprintCallable)
+	void DropItem();
 	
 private:
 	UPROPERTY()
 	TSubclassOf<UUserWidget> CurrentWidgetClass;
 
 	bool mIsEmpty = true;
+	int mID = -1;
 };

@@ -33,6 +33,7 @@ public:
 	virtual TScriptInterface<IIInventoryItemInstance> AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value, int value2) = 0;
 	virtual void RemoveFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) = 0;
 	virtual void RemoveItem(TScriptInterface<IIInventoryItemInstance> item) = 0;
+	virtual void RemoveItemByID(int ID) = 0;
 	
 	virtual bool ExistItemWithID(int ID) const = 0;
 

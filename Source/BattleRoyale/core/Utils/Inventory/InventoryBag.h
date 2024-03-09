@@ -22,6 +22,7 @@ public:
 	virtual TScriptInterface<IIInventoryItemInstance> AddItem(TSubclassOf<UInventoryItemStaticData> itemClass, int value, int value2) override;
 	virtual void RemoveFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;
 	virtual void RemoveItem(TScriptInterface<IIInventoryItemInstance> item) override;
+	virtual void RemoveItemByID(int ID) override;
 	
 	virtual void SetMaxItems(int max) override { mMaxItems = max; }
 	virtual TScriptInterface<IIInventoryItemInstance> FindFirstItem(TSubclassOf<UInventoryItemStaticData> itemClass) override;

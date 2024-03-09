@@ -41,7 +41,10 @@ void UAbilityDrop::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	if(const auto character = Cast<IICharacter>(ActorInfo->AvatarActor))
 	{
 		const auto inventoryComponent = character->GetInventoryComponent();
-		inventoryComponent->DropObjectServer();
+		if(const auto equippedItem = inventoryComponent->GetEquippedItem())
+		{
+			inventoryComponent->DropObjectServer(equippedItem);
+		}
 	}
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }

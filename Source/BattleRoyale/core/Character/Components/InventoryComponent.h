@@ -44,7 +44,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool PickupObjectServer(TScriptInterface<IPickupObject> pickableObject) override;
 	UFUNCTION(BlueprintCallable)
-	virtual bool DropObjectServer() override;
+	virtual bool DropObjectServer(TScriptInterface<IPickupObject> item) override;
 	virtual bool EquipItem(UInventoryItemInstance* item) override;
 	virtual bool UnEquipItem() override;
 	
@@ -65,6 +65,8 @@ public:
 	virtual void ShowHideInventory() override;
 	//void OnInventoryKeyPressed();
 	virtual bool IsInventoryVisible() const override { return mIsInventoryVisible; }
+
+	virtual void OnDropInventoryItem(int id) override;
 
 protected:
 	// Called when the game starts
@@ -87,7 +89,9 @@ private:
 
 	UFUNCTION(Client, Reliable)
 	void ClientNotifyPickedUpObject(APickableObjectBase* pickedUpObject) const;
-	
+
+	UFUNCTION(Server, Reliable)
+	void ServerDropItem(APickableObjectBase* item);
 	//void UnEquipItem();
 	//void DropItem();
 
