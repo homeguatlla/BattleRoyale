@@ -6,6 +6,7 @@
 #include "IPickupObject.h"
 #include "PickupObjectTypes.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemStaticData.h"
+#include "Engine/StaticMeshActor.h"
 #include "GameFramework/Actor.h"
 #include "PickableObjectBase.generated.h"
 
@@ -13,8 +14,12 @@ class IICharacter;
 class UInventoryItemStaticData;
 class UInventoryItemInstance;
 
+//This object couldn't be a simple Actor. We want it to simulate physics. If we want physics replicate its movement
+//We need a StaticMeshActor instead of a simple Actor and enable Static mesh replicate movement.
+
+//TODO esto no ha funcionado mirar con un objeto a piñon y probarlo a ver que más falta.
 UCLASS(Abstract)
-class BATTLEROYALE_API APickableObjectBase : public AActor, public IPickupObject
+class BATTLEROYALE_API APickableObjectBase : public AStaticMeshActor, public IPickupObject
 {
 	GENERATED_BODY()
 

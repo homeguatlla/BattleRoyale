@@ -37,14 +37,15 @@ public:
 	
 	// Sets default values for this component's properties
 	UInventoryComponent();
-	
+	void DropItem(int id);
+
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 							   FActorComponentTickFunction* ThisTickFunction) override;
 	UFUNCTION(BlueprintCallable)
 	virtual bool PickupObjectServer(TScriptInterface<IPickupObject> pickableObject) override;
 	UFUNCTION(BlueprintCallable)
-	virtual bool DropObjectServer(TScriptInterface<IPickupObject> item) override;
+	virtual bool DropEquippedObjectServer(TScriptInterface<IPickupObject> object) override;
 	virtual bool EquipItem(UInventoryItemInstance* item) override;
 	virtual bool UnEquipItem() override;
 	
@@ -91,7 +92,11 @@ private:
 	void ClientNotifyPickedUpObject(APickableObjectBase* pickedUpObject) const;
 
 	UFUNCTION(Server, Reliable)
-	void ServerDropItem(APickableObjectBase* item);
+	void ServerDropEquippedObject(APickableObjectBase* item);
+
+	UFUNCTION(Server, Reliable)
+	void ServerDropItem(int id);
+	
 	//void UnEquipItem();
 	//void DropItem();
 

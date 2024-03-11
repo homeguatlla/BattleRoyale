@@ -31,7 +31,7 @@ public:
 	virtual bool PickupObjectServer(TScriptInterface<IPickupObject> pickableObject) = 0;
 	virtual bool EquipItem(UInventoryItemInstance* item) = 0;
 	virtual bool UnEquipItem() = 0;
-	virtual bool DropObjectServer(TScriptInterface<IPickupObject> item) = 0;
+	virtual bool DropEquippedObjectServer(TScriptInterface<IPickupObject> item) = 0;
 	
 	virtual TScriptInterface<IPickupObject> GetEquippedItem() const = 0;
 	virtual bool HasItemEquipped() const = 0;

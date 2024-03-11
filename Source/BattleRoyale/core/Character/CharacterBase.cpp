@@ -563,7 +563,7 @@ void ACharacterBase::DieClient()
 	{
 		if(const auto equippedItem = inventoryComponent->GetEquippedItem())
 		{
-			GetInventoryComponent()->DropObjectServer(equippedItem);
+			GetInventoryComponent()->DropEquippedObjectServer(equippedItem);
 		}
 	}
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
