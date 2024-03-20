@@ -2,6 +2,8 @@
 
 
 #include "InventoryItemWidget.h"
+
+#include "ContentBrowserPluginFilters.h"
 #include "InventoryItemOverlay.h"
 
 
@@ -20,4 +22,18 @@ FReply UInventoryItemWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 	}
 	
 	return FReply::Unhandled();
+}
+
+void UInventoryItemWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+
+	BP_OnMouseEnter();
+}
+
+void UInventoryItemWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseLeave(InMouseEvent);
+
+	BP_OnMouseLeave();
 }

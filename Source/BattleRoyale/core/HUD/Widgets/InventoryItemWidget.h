@@ -16,4 +16,12 @@ class BATTLEROYALE_API UInventoryItemWidget : public UUserWidget
 
 public:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+	
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = OnMouseEnter))
+	void BP_OnMouseEnter();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = OnMouseLeave))
+	void BP_OnMouseLeave();
 };
