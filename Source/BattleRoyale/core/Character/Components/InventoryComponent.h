@@ -17,9 +17,10 @@ class UMyReplicatedObject;
 //TODO create a delegate to know when something is equipped, unequipped or dropped
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEquippedPickableObject, TScriptInterface<IPickupObject> object);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnEquippedItemWeapon, TScriptInterface<IWeapon> weapon, int32 totalAmmo);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPickedUpAmmo, EAmmoType type, int32 totalAmmo);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPickedUpOrDroppedAmmo, EAmmoType type, int32 totalAmmo);
 
 DECLARE_MULTICAST_DELEGATE(FOnDroppedPickableObject);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDroppedItemWeapon, bool isEquipped);
 DECLARE_MULTICAST_DELEGATE(FOnUnEquippedPickableObject);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -31,8 +32,9 @@ public:
 	FOnEquippedPickableObject OnEquippedPickableObjectDelegate;
 	FOnEquippedItemWeapon OnEquippedWeaponDelegate;
 	FOnUnEquippedPickableObject OnUnEquippedPickableObject;
-	FOnPickedUpAmmo OnPickedUpAmmoDelegate;
+	FOnPickedUpOrDroppedAmmo OnPickedUpOrDroppedAmmoDelegate;
 	FOnDroppedPickableObject OnDroppedPickableObjectDelegate;
+	FOnDroppedItemWeapon OnDroppedItemWeaponDelegate;
 	
 	
 	// Sets default values for this component's properties

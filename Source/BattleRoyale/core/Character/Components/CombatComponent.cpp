@@ -38,8 +38,9 @@ void UCombatComponent::InitializeComponent()
 	if(const auto inventoryComponent = Cast<UInventoryComponent>(mCharacter->GetInventoryComponent().GetObject()))
 	{
 		inventoryComponent->OnEquippedWeaponDelegate.AddUObject(this, &ThisClass::OnEquippedWeapon);
-		inventoryComponent->OnPickedUpAmmoDelegate.AddUObject(this, &ThisClass::OnPickedUpAmmo);
+		inventoryComponent->OnPickedUpOrDroppedAmmoDelegate.AddUObject(this, &ThisClass::OnPickedOrDroppedUpAmmo);
 		inventoryComponent->OnDroppedPickableObjectDelegate.AddUObject(this, &ThisClass::OnDroppedPickableObject);
+		inventoryComponent->OnDroppedItemWeaponDelegate.AddUObject(this, &ThisClass::OnDroppedWeapon);
 	}
 }
 
@@ -116,11 +117,7 @@ bool UCombatComponent::UnEquipWeapon()
 	//mEquippedWeapon->SetCharacterOwner(nullptr);
 	//Reset the equipped weapon
 	mEquippedWeapon = TScriptInterface<IWeapon>();
-	if(mCharacter->IsLocallyControlled())
-	{
-		GetGameInstance()->GetEventDispatcher()->OnRefreshAmmo.Broadcast(0, 0);
-	}
-
+	
 	return true;
 }
 
@@ -262,7 +259,7 @@ void UCombatComponent::OnEquippedWeapon(TScriptInterface<IWeapon> weapon, int32 
 	}
 }
 
-void UCombatComponent::OnPickedUpAmmo(EAmmoType type, int32 totalAmmo)
+void UCombatComponent::OnPickedOrDroppedUpAmmo(EAmmoType type, int32 totalAmmo)
 {
 	if(!mCharacter->IsLocallyControlled())
 	{
@@ -282,8 +279,13 @@ void UCombatComponent::OnPickedUpAmmo(EAmmoType type, int32 totalAmmo)
 
 void UCombatComponent::OnDroppedPickableObject()
 {
-	if(UnEquipWeapon())
+}
+
+void UCombatComponent::OnDroppedWeapon(bool isEquipped)
+{
+	if(isEquipped)
 	{
+		UnEquipWeapon();
 		if(mCharacter->IsLocallyControlled())
 		{
 			const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());

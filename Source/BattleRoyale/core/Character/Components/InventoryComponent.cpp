@@ -52,17 +52,27 @@ void UInventoryComponent::DropItem(int id)
 			const auto weapon = Cast<AWeaponBase>(pickableObject);
 			weapon->SetAmmo(item->GetValue2());
 		}
+		pickableObject->SetValue(item->GetValue1());
 		if(pickableObject->IsA<AAmmo>())
 		{
-			const auto ammo = Cast<AAmmo>(pickableObject);
-			const auto ammoType = ammo->GetAmmoType();
-			
-			OnPickedUpAmmoDelegate.Broadcast(ammoType, GetTotalAmmoOfType(ammoType));
+			const auto ammoItem = Cast<AAmmo>(pickableObject);
+			const auto ammoType = ammoItem->GetAmmoType();
+			const auto totalAmmo = GetTotalAmmoOfType(ammoType);
+			const auto ammo = ammoItem->GetValue();
+			OnPickedUpOrDroppedAmmoDelegate.Broadcast(ammoType,  totalAmmo - ammo);
 		}
-		pickableObject->SetValue(item->GetValue1());
+		
 		pickableObject->SetActorLocation(character->GetActorLocation() + character->GetActorForwardVector() * 100);
 		pickableObject->OnDropped();
-		OnDroppedPickableObjectDelegate.Broadcast();
+		if(IsAWeapon(pickableObject))
+		{
+			OnDroppedItemWeaponDelegate.Broadcast(id == -1);
+		}
+		else
+		{
+			OnDroppedPickableObjectDelegate.Broadcast();
+		}
+		
 		mInventoryBag->RemoveItem(item);
 		pickableObject->FinishSpawning(FTransform());
 	}
@@ -270,7 +280,7 @@ bool UInventoryComponent::DropEquippedObjectServer(TScriptInterface<IPickupObjec
 	object->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	object->OnDropped();
 	mEquippedObject = nullptr;
-	OnDroppedPickableObjectDelegate.Broadcast();
+	OnDroppedItemWeaponDelegate.Broadcast(true);
 	
 	return true;
 }
@@ -548,7 +558,7 @@ void UInventoryComponent::OnRep_EquippedObject() const
 {
 	if(mEquippedObject == nullptr)
 	{
-		OnDroppedPickableObjectDelegate.Broadcast();	
+		OnDroppedItemWeaponDelegate.Broadcast(true);	
 	}
 	else
 	{
@@ -580,7 +590,7 @@ void UInventoryComponent::ClientNotifyPickedUpObject_Implementation(APickableObj
 	if(pickedUpObject->IsA<AAmmo>())
 	{
 		const auto ammo = Cast<AAmmo>(pickedUpObject);
-		OnPickedUpAmmoDelegate.Broadcast(ammo->GetAmmoType(), GetTotalAmmoOfType(ammo->GetAmmoType()) + ammo->GetValue());
+		OnPickedUpOrDroppedAmmoDelegate.Broadcast(ammo->GetAmmoType(), GetTotalAmmoOfType(ammo->GetAmmoType()) + ammo->GetValue());
 	}
 }
 
@@ -600,7 +610,7 @@ void UInventoryComponent::NotifyIfPickedUpObjectIsAmmo(TScriptInterface<IPickupO
 	if(pickableObject.GetObject()->IsA<AAmmo>())
 	{
 		const auto ammo = Cast<AAmmo>(pickableObject.GetObject());
-		OnPickedUpAmmoDelegate.Broadcast(ammo->GetAmmoType(), GetTotalAmmoOfType(ammo->GetAmmoType()));
+		OnPickedUpOrDroppedAmmoDelegate.Broadcast(ammo->GetAmmoType(), GetTotalAmmoOfType(ammo->GetAmmoType()));
 	}
 }
 

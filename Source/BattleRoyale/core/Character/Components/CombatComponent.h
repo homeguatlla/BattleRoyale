@@ -118,8 +118,9 @@ private:
 
 	bool EquipWeapon(TScriptInterface<IWeapon> weapon);
 	void OnEquippedWeapon(TScriptInterface<IWeapon> weapon, int32 totalAmmo);
-	void OnPickedUpAmmo(EAmmoType type, int32 totalAmmo);
+	void OnPickedOrDroppedUpAmmo(EAmmoType type, int32 totalAmmo);
 	void OnDroppedPickableObject();
+	void OnDroppedWeapon(bool isEquipped);
 
 	//RPCs don't support TScriptInterfaces as a parameter
 	UFUNCTION(Server, Reliable)
