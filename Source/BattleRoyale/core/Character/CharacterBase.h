@@ -15,6 +15,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CharacterBase.generated.h"
 
+class UInputMappingContextWithBindings;
 class UPickupSelectorComponent;
 class IWeapon;
 class IIPlayerState;
@@ -44,6 +45,9 @@ class BATTLEROYALE_API ACharacterBase : public ACharacter, public IICharacter
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS Effects", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class UGameplayEffect> DefaultAttributeEffect;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	UInputMappingContextWithBindings* DefaultMappingContext;
 	
 	/** The player's maximum health. This is the highest that their health can be, and the value that their health starts at when spawned.*/
 	UPROPERTY(EditDefaultsOnly, Category = "Character")
@@ -92,7 +96,7 @@ public:
 	
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
-
+	
 	UFUNCTION(BlueprintCallable)
 	virtual FVector GetLocation() const override { return GetActorLocation(); }
 	
@@ -222,6 +226,10 @@ public:
 
 	//virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	//                         AActor* DamageCauser) override;
+
+
+	UFUNCTION()
+	void OnInputActionJump();
 	
 protected:
 	virtual void BeginPlay() override;

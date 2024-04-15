@@ -132,9 +132,9 @@ bool FJumpTest_WhenAbilityJumpIsTriggered_And_CanJump_CharacterIsJumping::RunTes
 	
 	//Enable ability simulating key left shift (sprint) pressed.
 	const auto playerState = Cast<APlayerStateBase>(characterBase->GetPlayerState());
-	const auto gas = playerState->GetAbilitySystemComponent();
 
-	gas->AbilityLocalInputPressed(static_cast<int32>(EAbilityInputID::Jump));
+	characterBase->OnInputActionJump();
+	//gas->AbilityLocalInputPressed(static_cast<int32>(EAbilityInputID::Jump));
 
 	characterBase->GetCharacterMovement()->DoJump(false);
 	

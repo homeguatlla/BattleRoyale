@@ -10,15 +10,20 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AbilitySystemComponent.h"
+#include "EnhancedInputComponent.h"
+#include "InputMappingContext.h"
 #include "BattleRoyale/core/Abilities/AbilitiesInput.h"
 #include "BattleRoyale/core/Abilities/GameplayAbilityBase.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "BattleRoyale/BattleRoyale.h"
+#include "BattleRoyale/core/Abilities/GameplayTagsList.h"
 #include "BattleRoyale/core/Attributes/AttributeSetSpeed.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
+#include "BattleRoyale/core/Utils/Input/InputMappingContextWithBindings.h"
 #include "Components/CombatComponent.h"
+#include "Components/EnhancedInputComponentBase.h"
 #include "Components/FootstepsComponent.h"
 #include "Components/HurtComponent.h"
 #include "Components/InventoryComponent.h"
@@ -216,6 +221,13 @@ void ACharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ThisClass::LookUpAtRate);
 	
 	BindAbilityActivationToInputComponent();
+
+	if(const auto enhancedInputComponent = Cast<UEnhancedInputComponentBase>(PlayerInputComponent))
+	{
+		const auto playerController = Cast<APlayerController>(GetController());
+		enhancedInputComponent->Initialize(DefaultMappingContext, playerController);
+		enhancedInputComponent->BindInputs(this);
+	}
 }
 
 void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -436,6 +448,16 @@ IIAbilitySystemInterfaceBase* ACharacterBase::GetAbilitySystemComponentBase() co
 ELifetimeCondition ACharacterBase::AllowActorComponentToReplicate(const UActorComponent* ComponentToReplicate) const
 {
 	return Super::AllowActorComponentToReplicate(ComponentToReplicate);
+}
+
+void ACharacterBase::OnInputActionJump()
+{
+	FGameplayEventData data;
+	data.EventTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_JUMP);
+	data.Instigator = this;
+
+	const auto abilitySystem = GetAbilitySystemComponentBase();
+	abilitySystem->SendGameplayEvent(data.EventTag, data);
 }
 
 IIGameMode* ACharacterBase::GetGameModeServer() const

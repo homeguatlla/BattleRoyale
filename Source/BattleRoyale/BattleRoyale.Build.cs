@@ -29,7 +29,9 @@ public class BattleRoyale : ModuleRules
 			"MultiplayerSessions",
 			//For inventory custom net replication
 			"NetCore",
-			"FunctionalTesting"
+			"FunctionalTesting",
+			//Enhanced input
+			"EnhancedInput"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]
