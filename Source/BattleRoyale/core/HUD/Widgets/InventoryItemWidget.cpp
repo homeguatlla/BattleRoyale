@@ -2,8 +2,6 @@
 
 
 #include "InventoryItemWidget.h"
-
-#include "ContentBrowserPluginFilters.h"
 #include "InventoryItemOverlay.h"
 
 

@@ -450,14 +450,16 @@ ELifetimeCondition ACharacterBase::AllowActorComponentToReplicate(const UActorCo
 	return Super::AllowActorComponentToReplicate(ComponentToReplicate);
 }
 
-void ACharacterBase::OnInputActionJump()
+void ACharacterBase::OnInputActionJump() const
 {
-	FGameplayEventData data;
-	data.EventTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_JUMP);
-	data.Instigator = this;
-
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(data.EventTag, data);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_JUMP), this);
+}
+
+void ACharacterBase::OnInputActionCrouch() const
+{
+	const auto abilitySystem = GetAbilitySystemComponentBase();
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_CROUCH), this);
 }
 
 IIGameMode* ACharacterBase::GetGameModeServer() const

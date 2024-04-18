@@ -33,6 +33,7 @@ const FName TAG_EVENT_MONTAGE_RELOAD_AMMO_IN("Event.Montage.Reload.AmmoIn");
 const FName TAG_EVENT_SET_OBJECT_TO_PICKUP_INDICATOR("Event.PickupIndicator.Set");
 const FName TAG_EVENT_PICKUP("Event.Pickup");
 const FName TAG_EVENT_JUMP("Event.Jump");
+const FName TAG_EVENT_CROUCH("Event.Crouch");
 
 
 const FName TAG_EFFECTS_WEAPON("Effects.Weapon.Cooldown");

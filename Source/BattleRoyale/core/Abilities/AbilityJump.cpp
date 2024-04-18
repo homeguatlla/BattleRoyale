@@ -8,7 +8,6 @@
 
 UAbilityJump::UAbilityJump()
 {
-	//AbilityInputID = EAbilityInputID::Jump;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
 
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_JUMP));

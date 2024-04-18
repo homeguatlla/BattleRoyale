@@ -9,10 +9,14 @@
 
 UAbilityCrouch::UAbilityCrouch()
 {
-	AbilityInputID = EAbilityInputID::Crouch;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
 
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_CROUCH));
+
+	FAbilityTriggerData triggerDataToAdd;
+	triggerDataToAdd.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_CROUCH);
+	triggerDataToAdd.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
+	AbilityTriggers.Add(triggerDataToAdd);
 }
 
 bool UAbilityCrouch::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,

@@ -37,6 +37,7 @@ public:
 	virtual void RemoveGameplayTag(const FGameplayTag& tag) override;
 	
 	virtual void SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad) override;
+	virtual void SendGameplayEvent(const FGameplayTag& tag, const AActor* instigator) override;
 
 	virtual void CancelAbilitiesWithTags(const FGameplayTagContainer& tags) override;
 	

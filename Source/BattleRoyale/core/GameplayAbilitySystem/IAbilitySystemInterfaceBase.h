@@ -44,6 +44,7 @@ public:
 	virtual void RemoveGameplayTag(const FGameplayTag& tag)  = 0;
 	
 	virtual void SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad) = 0;
+	virtual void SendGameplayEvent(const FGameplayTag& tag, const AActor* instigator) = 0;
 
 	virtual void CancelAbilitiesWithTags(const FGameplayTagContainer& tags) = 0;
 };

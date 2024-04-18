@@ -17,11 +17,6 @@ AProjectileBase::AProjectileBase()
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(5.0f);
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
-
-	if(HasAuthority())
-	{
-		CollisionComp->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);		// set up a notification for when this component hits something blocking
-	}
 	
 	// Players can't walk on it
 	CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
@@ -43,6 +38,16 @@ AProjectileBase::AProjectileBase()
 	bReplicates = true;
 }
 
+void AProjectileBase::BeginPlay()
+{
+	Super::BeginPlay();
+	//this doesn't work on constructor because in constructor the Projectile has the authority. Later it is changed if is not the server.
+	if(HasAuthority())
+	{
+		CollisionComp->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);		// set up a notification for when this component hits something blocking
+	}
+}
+
 void AProjectileBase::Destroyed()
 {
 	//This method will be executed on all players, although the hit is only implemented on server
@@ -53,6 +58,8 @@ void AProjectileBase::Destroyed()
 
 void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	ensureMsgf(HasAuthority(), TEXT("Only Server can Receive OnHit for projectiles"));
+	
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
 	{
 		// Only add impulse and destroy projectile if we hit a physics

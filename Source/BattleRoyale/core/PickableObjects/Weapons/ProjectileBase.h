@@ -50,6 +50,7 @@ protected:
 public:
 	AProjectileBase();
 
+	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
 	
 	virtual UParticleSystem* GetExplosionEffect() const override { return ExplosionEffect; }

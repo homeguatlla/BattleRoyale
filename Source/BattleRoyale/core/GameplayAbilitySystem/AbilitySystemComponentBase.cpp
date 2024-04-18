@@ -85,6 +85,15 @@ void UAbilitySystemComponentBase::SendGameplayEvent(const FGameplayTag& tag, con
 	HandleGameplayEvent(tag, &payLoad);
 }
 
+void UAbilitySystemComponentBase::SendGameplayEvent(const FGameplayTag& tag, const AActor* instigator)
+{
+	FGameplayEventData data;
+	data.EventTag = tag;
+	data.Instigator = instigator;
+
+	HandleGameplayEvent(tag, &data);
+}
+
 void UAbilitySystemComponentBase::CancelAbilitiesWithTags(const FGameplayTagContainer& tags)
 {
 	CancelAbilities(&tags);

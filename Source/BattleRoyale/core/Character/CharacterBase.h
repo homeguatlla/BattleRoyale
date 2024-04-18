@@ -229,8 +229,10 @@ public:
 
 
 	UFUNCTION()
-	void OnInputActionJump();
-	
+	void OnInputActionJump() const;
+	UFUNCTION()
+	void OnInputActionCrouch() const;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
