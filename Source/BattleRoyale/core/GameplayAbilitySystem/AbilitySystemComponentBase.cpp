@@ -80,6 +80,18 @@ void UAbilitySystemComponentBase::RemoveGameplayTag(const FGameplayTag& tag)
 	RemoveLooseGameplayTag(tag);
 }
 
+FOnGameplayEffectTagCountChanged&  UAbilitySystemComponentBase::RegisterGameplayTagChange(const FGameplayTag& tag,
+	EGameplayTagEventType::Type eventType)
+{
+	return RegisterGameplayTagEvent(tag, eventType);
+}
+
+FDelegateHandle UAbilitySystemComponentBase::RegisterGameplayEvent(const FGameplayTagContainer& TagFilter,
+	const FGameplayEventTagMulticastDelegate::FDelegate& Delegate)
+{
+	return AddGameplayEventTagContainerDelegate(TagFilter, Delegate);
+}
+
 void UAbilitySystemComponentBase::SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad)
 {
 	HandleGameplayEvent(tag, &payLoad);

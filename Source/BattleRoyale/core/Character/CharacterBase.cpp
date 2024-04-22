@@ -461,6 +461,11 @@ void ACharacterBase::OnInputActionCrouch() const
 	const auto abilitySystem = GetAbilitySystemComponentBase();
 	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_CROUCH), this);
 }
+void ACharacterBase::OnInputActionStandUp() const
+{
+	const auto abilitySystem = GetAbilitySystemComponentBase();
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_STANDUP), this);
+}
 
 IIGameMode* ACharacterBase::GetGameModeServer() const
 {

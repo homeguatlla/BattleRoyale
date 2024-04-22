@@ -42,7 +42,9 @@ public:
 	virtual bool HasGameplayTag(const FGameplayTag& tag) const  = 0;
 	virtual void AddGameplayTag(const FGameplayTag& tag)  = 0;
 	virtual void RemoveGameplayTag(const FGameplayTag& tag)  = 0;
-	
+	virtual FOnGameplayEffectTagCountChanged&  RegisterGameplayTagChange(const FGameplayTag& tag, EGameplayTagEventType::Type eventType) = 0;
+
+	virtual FDelegateHandle RegisterGameplayEvent(const FGameplayTagContainer& TagFilter, const FGameplayEventTagMulticastDelegate::FDelegate& Delegate) = 0;
 	virtual void SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad) = 0;
 	virtual void SendGameplayEvent(const FGameplayTag& tag, const AActor* instigator) = 0;
 

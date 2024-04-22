@@ -6,10 +6,11 @@
 #include "AbilityJump.h"
 #include "GameplayTagsList.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
+#include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 
 UAbilityCrouch::UAbilityCrouch()
 {
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_CROUCH));
 
@@ -50,11 +51,16 @@ void UAbilityCrouch::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		const auto character = GetCharacter(ActorInfo);
 		if (character != nullptr)
 		{
+			const auto abilitySystemComponent = character->GetAbilitySystemComponentBase();
+			check(abilitySystemComponent);
+			abilitySystemComponent->RegisterGameplayEvent(
+				FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_EVENT_STANDUP)),
+				FGameplayEventTagMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnStandUp));
 			character->StartCrouching();
 		}
 	}
 }
-
+/*
 void UAbilityCrouch::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                    const FGameplayAbilityActivationInfo ActivationInfo)
 {
@@ -62,7 +68,7 @@ void UAbilityCrouch::InputReleased(const FGameplayAbilitySpecHandle Handle, cons
 	{
 		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 	}
-}
+}*/
 
 // Epic's comment
 /**
@@ -88,4 +94,13 @@ void UAbilityCrouch::CancelAbility(const FGameplayAbilitySpecHandle Handle, cons
 	{
 		character->StopCrouching();
 	}
+}
+
+void UAbilityCrouch::OnStandUp(FGameplayTag MatchingTag, const FGameplayEventData* Payload)
+{
+	//To make this to work, we need the ability InstancingPolicy be instancedPerActor
+	//Because once activated the ability needs to remain in order to be canceled.
+	//if we set NonInstanced it will crash here because the ability won't have state and
+	//when cancelling the actorinfo is null.
+	K2_CancelAbility();
 }

@@ -232,6 +232,8 @@ public:
 	void OnInputActionJump() const;
 	UFUNCTION()
 	void OnInputActionCrouch() const;
+	UFUNCTION()
+	void OnInputActionStandUp() const;
 
 protected:
 	virtual void BeginPlay() override;
