@@ -9,11 +9,15 @@
 
 UAbilityDrop::UAbilityDrop()
 {
-	AbilityInputID = EAbilityInputID::Drop;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerOnly;
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_DROP));
+
+	FAbilityTriggerData triggerDataToAdd;
+	triggerDataToAdd.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_DROP);
+	triggerDataToAdd.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
+	AbilityTriggers.Add(triggerDataToAdd);
 }
 
 bool UAbilityDrop::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,

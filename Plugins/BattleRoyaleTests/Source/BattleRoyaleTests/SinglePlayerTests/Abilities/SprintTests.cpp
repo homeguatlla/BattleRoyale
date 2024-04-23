@@ -112,9 +112,7 @@ bool FSprintTest_WhenAbilitySprintIsTriggered_And_CanSprint_CharacterIsSprinting
 	const auto maxWalkSpeedBeforeSprint = characterMovementComponent->MaxWalkSpeed;
 
 	//Enable ability simulating key left shift (sprint) pressed.
-	const auto playerState = Cast<APlayerStateBase>(characterBase->GetPlayerState());
-	const auto gas = playerState->GetAbilitySystemComponent();
-	gas->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_SPRINT), nullptr);
+	characterBase->OnInputActionSprint();
 	//gas->AbilityLocalInputPressed(static_cast<int32>(EAbilityInputID::Sprint));
 	TestTrue(TEXT("When Character is sprinting SPRINT max walk speed increased"),characterMovementComponent->MaxWalkSpeed > maxWalkSpeedBeforeSprint);
 

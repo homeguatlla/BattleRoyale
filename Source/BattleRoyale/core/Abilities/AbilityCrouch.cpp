@@ -15,7 +15,7 @@ UAbilityCrouch::UAbilityCrouch()
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_CROUCH));
 
 	FAbilityTriggerData triggerDataToAdd;
-	triggerDataToAdd.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_CROUCH);
+	triggerDataToAdd.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_CROUCH);
 	triggerDataToAdd.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
 	AbilityTriggers.Add(triggerDataToAdd);
 }
@@ -54,7 +54,7 @@ void UAbilityCrouch::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			const auto abilitySystemComponent = character->GetAbilitySystemComponentBase();
 			check(abilitySystemComponent);
 			abilitySystemComponent->RegisterGameplayEvent(
-				FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_EVENT_STANDUP)),
+				FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STANDUP)),
 				FGameplayEventTagMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnStandUp));
 			character->StartCrouching();
 		}

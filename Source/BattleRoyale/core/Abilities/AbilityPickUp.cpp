@@ -13,11 +13,15 @@
 
 UAbilityPickUp::UAbilityPickUp()
 {
-	AbilityInputID = EAbilityInputID::PickUp;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerOnly;
 	
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_PICKUP));
+
+	FAbilityTriggerData triggerDataToAdd;
+	triggerDataToAdd.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_PICKUP);
+	triggerDataToAdd.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
+	AbilityTriggers.Add(triggerDataToAdd);
 }
 
 bool UAbilityPickUp::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,

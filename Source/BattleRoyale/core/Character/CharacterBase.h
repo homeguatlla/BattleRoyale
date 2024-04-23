@@ -247,6 +247,10 @@ public:
 	void OnInputActionSprint() const;
 	UFUNCTION()
 	void OnInputActionWalk() const;
+	UFUNCTION()
+	void OnInputActionPickUp() const;
+	UFUNCTION()
+	void OnInputActionDrop() const;
 
 protected:
 	virtual void BeginPlay() override;

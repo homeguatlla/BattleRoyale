@@ -10,8 +10,6 @@ enum class EAbilityInputID : uint8
 	Confirm,
 	Cancel,
 	Fire,
-	PickUp,
-	Drop,
 	Aim,
 	Reload,
 	SwapWeapons,

@@ -31,12 +31,13 @@ const FName TAG_EVENT_MONTAGE_RELOAD_AMMO_OUT("Event.Montage.Reload.AmmoOut");
 const FName TAG_EVENT_MONTAGE_RELOAD_AMMO_IN("Event.Montage.Reload.AmmoIn");
 
 const FName TAG_EVENT_SET_OBJECT_TO_PICKUP_INDICATOR("Event.PickupIndicator.Set");
-const FName TAG_EVENT_PICKUP("Event.Pickup");
-const FName TAG_EVENT_JUMP("Event.Jump");
-const FName TAG_EVENT_CROUCH("Event.Crouch");
-const FName TAG_EVENT_STANDUP("Event.StandUp");
-const FName TAG_EVENT_SPRINT("Event.Sprint");
-const FName TAG_EVENT_WALK("Event.Walk");
+const FName TAG_EVENT_INPUT_PICKUP("Event.Input.PickUp");
+const FName TAG_EVENT_INPUT_JUMP("Event.Input.Jump");
+const FName TAG_EVENT_INPUT_CROUCH("Event.Input.Crouch");
+const FName TAG_EVENT_INPUT_STANDUP("Event.Input.StandUp");
+const FName TAG_EVENT_INPUT_SPRINT("Event.Input.Sprint");
+const FName TAG_EVENT_INPUT_WALK("Event.Input.Walk");
+const FName TAG_EVENT_INPUT_DROP("Event.Input.Drop");
 
 
 const FName TAG_EFFECTS_WEAPON("Effects.Weapon.Cooldown");

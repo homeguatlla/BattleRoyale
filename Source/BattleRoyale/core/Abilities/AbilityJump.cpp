@@ -13,7 +13,7 @@ UAbilityJump::UAbilityJump()
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_JUMP));
 
 	FAbilityTriggerData triggerDataToAdd;
-	triggerDataToAdd.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_JUMP);
+	triggerDataToAdd.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_JUMP);
 	triggerDataToAdd.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
 	AbilityTriggers.Add(triggerDataToAdd);
 }

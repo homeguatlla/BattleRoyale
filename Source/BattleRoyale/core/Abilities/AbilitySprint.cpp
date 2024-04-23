@@ -19,7 +19,7 @@ UAbilitySprint::UAbilitySprint()
 	
 	//To enable sprint ability from a trigger
 	FAbilityTriggerData triggerData;
-	triggerData.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_SPRINT);
+	triggerData.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SPRINT);
 	triggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
 	AbilityTriggers.Add(triggerData);
 }
@@ -58,7 +58,7 @@ void UAbilitySprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			}
 			
 			abilitySystemComponent->RegisterGameplayEvent(
-				FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_EVENT_WALK)),
+				FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_WALK)),
 				FGameplayEventTagMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnWalk));
 			character->StartSprinting();
 				

@@ -466,30 +466,42 @@ void ACharacterBase::OnInputActionLookUp(const FInputActionValue& value)
 void ACharacterBase::OnInputActionJump() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_JUMP), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_JUMP), this);
 }
 
 void ACharacterBase::OnInputActionCrouch() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_CROUCH), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_CROUCH), this);
 }
 void ACharacterBase::OnInputActionStandUp() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_STANDUP), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STANDUP), this);
 }
 
 void ACharacterBase::OnInputActionSprint() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_SPRINT), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SPRINT), this);
 }
 
 void ACharacterBase::OnInputActionWalk() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_WALK), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_WALK), this);
+}
+
+void ACharacterBase::OnInputActionPickUp() const
+{
+	const auto abilitySystem = GetAbilitySystemComponentBase();
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_PICKUP), this);
+}
+
+void ACharacterBase::OnInputActionDrop() const
+{
+	const auto abilitySystem = GetAbilitySystemComponentBase();
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_DROP), this);
 }
 
 IIGameMode* ACharacterBase::GetGameModeServer() const
