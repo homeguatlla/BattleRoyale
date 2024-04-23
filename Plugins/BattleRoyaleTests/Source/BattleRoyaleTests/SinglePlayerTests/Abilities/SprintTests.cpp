@@ -2,6 +2,7 @@
 #include "AbilitySystemComponent.h"
 
 #include "BattleRoyale/core/Abilities/AbilitiesInput.h"
+#include "BattleRoyale/core/Abilities/GameplayTagsList.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameMode/IGameState.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
@@ -113,8 +114,8 @@ bool FSprintTest_WhenAbilitySprintIsTriggered_And_CanSprint_CharacterIsSprinting
 	//Enable ability simulating key left shift (sprint) pressed.
 	const auto playerState = Cast<APlayerStateBase>(characterBase->GetPlayerState());
 	const auto gas = playerState->GetAbilitySystemComponent();
-
-	gas->AbilityLocalInputPressed(static_cast<int32>(EAbilityInputID::Sprint));
+	gas->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_SPRINT), nullptr);
+	//gas->AbilityLocalInputPressed(static_cast<int32>(EAbilityInputID::Sprint));
 	TestTrue(TEXT("When Character is sprinting SPRINT max walk speed increased"),characterMovementComponent->MaxWalkSpeed > maxWalkSpeedBeforeSprint);
 
 	//world->DestroyWorld(true);

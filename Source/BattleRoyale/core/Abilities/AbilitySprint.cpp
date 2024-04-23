@@ -1,7 +1,6 @@
 
 #include "BattleRoyale/core/Abilities/AbilitySprint.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
-#include "AbilitiesInput.h"
 #include "AbilitySystemGlobals.h"
 #include "GameplayCueManager.h"
 #include "GameplayTagsList.h"
@@ -9,8 +8,7 @@
 
 UAbilitySprint::UAbilitySprint()
 {
-	AbilityInputID = EAbilityInputID::Sprint;
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SPRINT));
 	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_STATE_SPRINTING));
@@ -20,10 +18,10 @@ UAbilitySprint::UAbilitySprint()
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_STATE_AIMING));
 	
 	//To enable sprint ability from a trigger
-	/*FAbilityTriggerData triggerData;
-	triggerData.TriggerTag = FGameplayTag::RequestGameplayTag(FName("Trigger.Sprint"));
+	FAbilityTriggerData triggerData;
+	triggerData.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_SPRINT);
 	triggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
-	AbilityTriggers.Add(triggerData);*/
+	AbilityTriggers.Add(triggerData);
 }
 
 void UAbilitySprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -58,6 +56,10 @@ void UAbilitySprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			{
 				abilitySystemComponent->ApplyGameplayEffectToSelf(SprintSpeedEffect);
 			}
+			
+			abilitySystemComponent->RegisterGameplayEvent(
+				FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_EVENT_WALK)),
+				FGameplayEventTagMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnWalk));
 			character->StartSprinting();
 				
 			return;
@@ -81,7 +83,7 @@ bool UAbilitySprint::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	return character != nullptr && character->CanSprint();
 }
-
+/*
 void UAbilitySprint::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                    const FGameplayAbilityActivationInfo ActivationInfo)
 {
@@ -89,7 +91,7 @@ void UAbilitySprint::InputReleased(const FGameplayAbilitySpecHandle Handle, cons
 	{
 		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 	}
-}
+}*/
 
 // Epic's comment
 /**
@@ -126,4 +128,9 @@ void UAbilitySprint::CancelAbility(const FGameplayAbilitySpecHandle Handle, cons
 		}
 		character->StopSprinting();
 	}
+}
+
+void UAbilitySprint::OnWalk(FGameplayTag gameplayTag, const FGameplayEventData* playload)
+{
+	K2_CancelAbility();
 }

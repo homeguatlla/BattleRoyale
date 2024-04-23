@@ -243,6 +243,10 @@ public:
 	void OnInputActionCrouch() const;
 	UFUNCTION()
 	void OnInputActionStandUp() const;
+	UFUNCTION()
+	void OnInputActionSprint() const;
+	UFUNCTION()
+	void OnInputActionWalk() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -330,4 +334,3 @@ private:
 	//UFUNCTION()
 	//void OnRep_TakeDamageData();
 };
-

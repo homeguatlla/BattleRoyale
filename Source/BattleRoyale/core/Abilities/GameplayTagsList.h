@@ -35,6 +35,8 @@ const FName TAG_EVENT_PICKUP("Event.Pickup");
 const FName TAG_EVENT_JUMP("Event.Jump");
 const FName TAG_EVENT_CROUCH("Event.Crouch");
 const FName TAG_EVENT_STANDUP("Event.StandUp");
+const FName TAG_EVENT_SPRINT("Event.Sprint");
+const FName TAG_EVENT_WALK("Event.Walk");
 
 
 const FName TAG_EFFECTS_WEAPON("Effects.Weapon.Cooldown");
