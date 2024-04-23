@@ -15,6 +15,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CharacterBase.generated.h"
 
+struct FInputActionValue;
 class UInputMappingContextWithBindings;
 class UPickupSelectorComponent;
 class IWeapon;
@@ -228,6 +229,14 @@ public:
 	//                         AActor* DamageCauser) override;
 
 
+	UFUNCTION()
+	void OnInputActionMoveForward(const FInputActionValue& value);
+	UFUNCTION()
+	void OnInputActionMoveRight(const FInputActionValue& value);
+	UFUNCTION()
+	void OnInputActionTurn(const FInputActionValue& value);
+	UFUNCTION()
+	void OnInputActionLookUp(const FInputActionValue& value);
 	UFUNCTION()
 	void OnInputActionJump() const;
 	UFUNCTION()

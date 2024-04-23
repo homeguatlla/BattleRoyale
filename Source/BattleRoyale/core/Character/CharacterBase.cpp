@@ -209,15 +209,15 @@ void ACharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("Invulnerable", IE_Pressed, this, &ThisClass::OnSetInvulnerable);
 	
 	// Bind movement events
-	PlayerInputComponent->BindAxis("MoveForward", this, &ThisClass::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ThisClass::MoveRight);
+	//PlayerInputComponent->BindAxis("MoveForward", this, &ThisClass::MoveForward);
+	//PlayerInputComponent->BindAxis("MoveRight", this, &ThisClass::MoveRight);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	PlayerInputComponent->BindAxis("Turn", this, &ThisClass::AddControllerYawInput);
+	//PlayerInputComponent->BindAxis("Turn", this, &ThisClass::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("TurnRate", this, &ThisClass::TurnAtRate);
-	PlayerInputComponent->BindAxis("LookUp", this, &ThisClass::AddControllerPitchInput);
+	//PlayerInputComponent->BindAxis("LookUp", this, &ThisClass::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ThisClass::LookUpAtRate);
 	
 	BindAbilityActivationToInputComponent();
@@ -448,6 +448,26 @@ IIAbilitySystemInterfaceBase* ACharacterBase::GetAbilitySystemComponentBase() co
 ELifetimeCondition ACharacterBase::AllowActorComponentToReplicate(const UActorComponent* ComponentToReplicate) const
 {
 	return Super::AllowActorComponentToReplicate(ComponentToReplicate);
+}
+
+void ACharacterBase::OnInputActionMoveForward(const FInputActionValue& value)
+{
+	MoveForward(value.GetMagnitude());
+}
+
+void ACharacterBase::OnInputActionMoveRight(const FInputActionValue& value)
+{
+	MoveRight(value.GetMagnitude());
+}
+
+void ACharacterBase::OnInputActionTurn(const FInputActionValue& value)
+{
+	AddControllerYawInput(value.GetMagnitude());
+}
+
+void ACharacterBase::OnInputActionLookUp(const FInputActionValue& value)
+{
+	AddControllerPitchInput(value.GetMagnitude());
 }
 
 void ACharacterBase::OnInputActionJump() const
