@@ -64,7 +64,7 @@ bool UAbilityJump::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	return character != nullptr && character->CanJump();
 }
-
+/*
 void UAbilityJump::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                    const FGameplayAbilityActivationInfo ActivationInfo)
 {
@@ -72,7 +72,7 @@ void UAbilityJump::InputReleased(const FGameplayAbilitySpecHandle Handle, const 
 	{
 		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 	}
-}
+}*/
 
 // Epic's comment
 /**

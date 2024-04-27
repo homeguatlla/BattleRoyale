@@ -13,7 +13,6 @@
 
 UAbilityReload::UAbilityReload()
 {
-	AbilityInputID = EAbilityInputID::Reload;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	
@@ -21,6 +20,11 @@ UAbilityReload::UAbilityReload()
 	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_STATE_RELOADING));
 
 	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SHOOT_PROJECTILE));
+
+	FAbilityTriggerData triggerDataToAdd;
+	triggerDataToAdd.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_RELOAD);
+	triggerDataToAdd.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
+	AbilityTriggers.Add(triggerDataToAdd);
 }
 
 bool UAbilityReload::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,

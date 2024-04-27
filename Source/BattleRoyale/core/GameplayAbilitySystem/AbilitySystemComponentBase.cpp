@@ -2,6 +2,9 @@
 
 
 #include "AbilitySystemComponentBase.h"
+
+#include <wrl/implements.h>
+
 #include "AbilitySystemInterface.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/Attributes/AttributeSetHealth.h"
@@ -90,6 +93,11 @@ FDelegateHandle UAbilitySystemComponentBase::RegisterGameplayEvent(const FGamepl
 	const FGameplayEventTagMulticastDelegate::FDelegate& Delegate)
 {
 	return AddGameplayEventTagContainerDelegate(TagFilter, Delegate);
+}
+
+void UAbilitySystemComponentBase::UnRegisterGameplayEvent(const FGameplayTagContainer& TagFilter, FDelegateHandle DelegateHandle)
+{
+	RemoveGameplayEventTagContainerDelegate(TagFilter, DelegateHandle);
 }
 
 void UAbilitySystemComponentBase::SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad)

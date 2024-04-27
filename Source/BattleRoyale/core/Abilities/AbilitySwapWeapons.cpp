@@ -9,7 +9,6 @@
 
 UAbilitySwapWeapons::UAbilitySwapWeapons()
 {
-	AbilityInputID = EAbilityInputID::SwapWeapons;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 
@@ -18,6 +17,11 @@ UAbilitySwapWeapons::UAbilitySwapWeapons()
 	
 	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_RELOAD));
 	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SHOOT_PROJECTILE));
+
+	FAbilityTriggerData triggerDataToAdd;
+	triggerDataToAdd.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SWAP_WEAPONS);
+	triggerDataToAdd.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
+	AbilityTriggers.Add(triggerDataToAdd);
 }
 
 bool UAbilitySwapWeapons::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -56,7 +60,7 @@ void UAbilitySwapWeapons::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	{
 		return;
 	}
-	
+
 	const auto combatComponent = character->GetGunComponent();
 	const auto inventoryComponent = character->GetInventoryComponent();
 	if(!combatComponent || !inventoryComponent)

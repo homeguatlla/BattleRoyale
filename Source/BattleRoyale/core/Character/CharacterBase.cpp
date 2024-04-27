@@ -504,6 +504,55 @@ void ACharacterBase::OnInputActionDrop() const
 	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_DROP), this);
 }
 
+void ACharacterBase::OnInputActionStartFiring() const
+{
+	const auto abilitySystem = GetAbilitySystemComponentBase();
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_START_FIRING), this);
+}
+
+void ACharacterBase::OnInputActionStopFiring() const
+{
+	const auto abilitySystem = GetAbilitySystemComponentBase();
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STOP_FIRING), this);
+}
+
+void ACharacterBase::OnInputActionStartAiming() const
+{
+	const auto abilitySystem = GetAbilitySystemComponentBase();
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_START_AIMING), this);
+}
+
+void ACharacterBase::OnInputActionStopAiming() const
+{
+	const auto abilitySystem = GetAbilitySystemComponentBase();
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STOP_AIMING), this);
+}
+
+void ACharacterBase::OnInputActionReload() const
+{
+	const auto abilitySystem = GetAbilitySystemComponentBase();
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_RELOAD), this);
+}
+
+void ACharacterBase::OnInputActionInventory() const
+{
+	const auto abilitySystem = GetAbilitySystemComponentBase();
+	if(GetInventoryComponent()->IsInventoryVisible())
+	{
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_HIDE_INVENTORY), this);	
+	}
+	else
+	{
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SHOW_INVENTORY), this);
+	}
+}
+
+void ACharacterBase::OnInputActionSwapWeapons() const
+{
+	const auto abilitySystem = GetAbilitySystemComponentBase();
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SWAP_WEAPONS), this);
+}
+
 IIGameMode* ACharacterBase::GetGameModeServer() const
 {
 	return Cast<IIGameMode>(GetWorld()->GetAuthGameMode<ABattleRoyaleGameMode>());

@@ -45,6 +45,7 @@ public:
 	virtual FOnGameplayEffectTagCountChanged&  RegisterGameplayTagChange(const FGameplayTag& tag, EGameplayTagEventType::Type eventType) = 0;
 
 	virtual FDelegateHandle RegisterGameplayEvent(const FGameplayTagContainer& TagFilter, const FGameplayEventTagMulticastDelegate::FDelegate& Delegate) = 0;
+	virtual void UnRegisterGameplayEvent(const FGameplayTagContainer& TagFilter, FDelegateHandle DelegateHandle) = 0;
 	virtual void SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad) = 0;
 	virtual void SendGameplayEvent(const FGameplayTag& tag, const AActor* instigator) = 0;
 

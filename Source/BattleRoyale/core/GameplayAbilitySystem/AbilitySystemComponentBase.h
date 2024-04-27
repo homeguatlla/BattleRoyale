@@ -36,8 +36,9 @@ public:
 	virtual void AddGameplayTag(const FGameplayTag& tag) override;
 	virtual void RemoveGameplayTag(const FGameplayTag& tag) override;
 	virtual FOnGameplayEffectTagCountChanged&  RegisterGameplayTagChange(const FGameplayTag& tag, EGameplayTagEventType::Type eventType) override;
-
-	virtual FDelegateHandle RegisterGameplayEvent(const FGameplayTagContainer& TagFilter, const FGameplayEventTagMulticastDelegate::FDelegate& Delegate);
+	
+	virtual FDelegateHandle RegisterGameplayEvent(const FGameplayTagContainer& TagFilter, const FGameplayEventTagMulticastDelegate::FDelegate& Delegate) override;
+	virtual void UnRegisterGameplayEvent(const FGameplayTagContainer& TagFilter, FDelegateHandle DelegateHandle) override;
 	virtual void SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad) override;
 	virtual void SendGameplayEvent(const FGameplayTag& tag, const AActor* instigator) override;
 

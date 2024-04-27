@@ -16,7 +16,7 @@ class UAbilityShootProjectileGun : public UGameplayAbilityBase
 
 public:
 	UAbilityShootProjectileGun();
-	
+
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
 	virtual const FGameplayTagContainer* GetCooldownTags() const override;
@@ -39,6 +39,7 @@ private:
 	float GetWeaponCooldownDuration() const;
 	void SubscribeToEventMontageShoot(const IICharacter* character);
 	void CreateTaskPlayMontageShooting(const IICharacter* character, const FGameplayAbilityActorInfo* ActorInfo);
+	void OnStopShooting(FGameplayTag gameplayTag, const FGameplayEventData* payload);
 	
 	IICharacter* mCharacter;
 	//METHOD FDelegateHandle mEventMontageShootHandle;
@@ -48,4 +49,6 @@ private:
 
 	UPROPERTY()
 	class UAbilityTask_WaitGameplayEvent* waitGameplayEventTask;
+
+	FDelegateHandle m_StopShootingHandle;
 };

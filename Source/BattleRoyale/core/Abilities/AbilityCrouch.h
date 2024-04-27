@@ -28,4 +28,5 @@ public:
 
 private:
 	void OnStandUp(FGameplayTag MatchingTag, const FGameplayEventData* Payload);
+	FDelegateHandle m_StandUpHandle;
 };

@@ -9,9 +9,4 @@ enum class EAbilityInputID : uint8
 	None,
 	Confirm,
 	Cancel,
-	Fire,
-	Aim,
-	Reload,
-	SwapWeapons,
-	Inventory
 };

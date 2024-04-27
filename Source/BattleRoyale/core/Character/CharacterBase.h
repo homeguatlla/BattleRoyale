@@ -251,7 +251,21 @@ public:
 	void OnInputActionPickUp() const;
 	UFUNCTION()
 	void OnInputActionDrop() const;
-
+	UFUNCTION()
+	void OnInputActionStartFiring() const;
+	UFUNCTION()
+	void OnInputActionStopFiring() const;
+	UFUNCTION()
+	void OnInputActionStartAiming() const;
+	UFUNCTION()
+	void OnInputActionStopAiming() const;
+	UFUNCTION()
+	void OnInputActionReload() const;
+	UFUNCTION()
+	void OnInputActionInventory() const;
+	UFUNCTION()
+	void OnInputActionSwapWeapons() const;
+		
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;

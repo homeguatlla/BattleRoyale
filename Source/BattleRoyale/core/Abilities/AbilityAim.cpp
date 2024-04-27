@@ -6,15 +6,20 @@
 #include "GameplayTagsList.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/Character/Components/IGunComponent.h"
+#include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 
 UAbilityAim::UAbilityAim()
 {
-	AbilityInputID = EAbilityInputID::Aim;
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_AIM));
 
-	CancelAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SPRINT));	
+	CancelAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SPRINT));
+
+	FAbilityTriggerData triggerDataToAdd;
+	triggerDataToAdd.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_START_AIMING);
+	triggerDataToAdd.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
+	AbilityTriggers.Add(triggerDataToAdd);
 }
 
 bool UAbilityAim::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -52,17 +57,17 @@ void UAbilityAim::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 		if(const auto gunComponent = GetGunComponent(ActorInfo))
 		{
-			gunComponent->StartAiming();
+			const auto character = GetCharacter(ActorInfo);
+			if (character != nullptr)
+			{
+				const auto abilitySystemComponent = character->GetAbilitySystemComponentBase();
+				check(abilitySystemComponent);
+				m_StopAimingHandle = abilitySystemComponent->RegisterGameplayEvent(
+						FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STOP_AIMING)),
+						FGameplayEventTagMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnStopAiming));
+				gunComponent->StartAiming();
+			}
 		}
-	}
-}
-
-void UAbilityAim::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-                                   const FGameplayAbilityActivationInfo ActivationInfo)
-{
-	if (ActorInfo != NULL && ActorInfo->AvatarActor != NULL)
-	{
-		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 	}
 }
 
@@ -82,6 +87,13 @@ void UAbilityAim::CancelAbility(const FGameplayAbilitySpecHandle Handle, const F
 		                                                      ActivationInfo, bReplicateCancelAbility));
 		return;
 	}
+	const auto character = GetCharacter(ActorInfo);
+	if(character)
+	{
+		const auto abilitySystemComponent = character->GetAbilitySystemComponentBase();
+		check(abilitySystemComponent);
+		abilitySystemComponent->UnRegisterGameplayEvent(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STOP_AIMING)), m_StopAimingHandle);
+	}
 	
 	if(const auto gunComponent = GetGunComponent(ActorInfo))
 	{
@@ -99,4 +111,9 @@ TScriptInterface<IGunComponent> UAbilityAim::GetGunComponent(const FGameplayAbil
 	}
 	
 	return character->GetGunComponent();
+}
+
+void UAbilityAim::OnStopAiming(FGameplayTag gameplayTag, const FGameplayEventData* payload)
+{
+	K2_CancelAbility();
 }

@@ -38,7 +38,14 @@ const FName TAG_EVENT_INPUT_STANDUP("Event.Input.StandUp");
 const FName TAG_EVENT_INPUT_SPRINT("Event.Input.Sprint");
 const FName TAG_EVENT_INPUT_WALK("Event.Input.Walk");
 const FName TAG_EVENT_INPUT_DROP("Event.Input.Drop");
-
+const FName TAG_EVENT_INPUT_START_FIRING("Event.Input.StartFiring");
+const FName TAG_EVENT_INPUT_STOP_FIRING("Event.Input.StopFiring");
+const FName TAG_EVENT_INPUT_SWAP_WEAPONS("Event.Input.SwapWeapons");
+const FName TAG_EVENT_INPUT_SHOW_INVENTORY("Event.Input.ShowInventory");
+const FName TAG_EVENT_INPUT_HIDE_INVENTORY("Event.Input.HideInventory");
+const FName TAG_EVENT_INPUT_START_AIMING("Event.Input.StartAiming");
+const FName TAG_EVENT_INPUT_STOP_AIMING("Event.Input.StopAiming");
+const FName TAG_EVENT_INPUT_RELOAD("Event.Input.Reload");
 
 const FName TAG_EFFECTS_WEAPON("Effects.Weapon.Cooldown");
 const FName TAG_EFFECTS_DISSOLVE("Effects.Dissolve");

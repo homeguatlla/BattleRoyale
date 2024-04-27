@@ -7,6 +7,8 @@
 #include "BattleRoyale/core/Character/Components/IInventoryComponent.h"
 #include "AbilityInventory.generated.h"
 
+struct FGameplayEventData;
+
 /**
  * 
  */
@@ -17,10 +19,12 @@ class BATTLEROYALE_API UAbilityInventory : public UGameplayAbilityBase
 
 public:
 	UAbilityInventory();
-	
+
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-	virtual void InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 
 private:
 	TScriptInterface<IIInventoryComponent> GetInventoryComponent(const FGameplayAbilityActorInfo* ActorInfo);
+	void OnHideInventory(FGameplayTag gameplayTag, const FGameplayEventData* payload);
+	
+	FDelegateHandle m_HideInventoryHandle;
 };

@@ -7,12 +7,12 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
+#include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "BattleRoyale/core/GameplayEffects/CooldownGameplayEffect.h"
 #include "BattleRoyale/core/PickableObjects/Weapons/IWeapon.h"
 
 UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 {
-	AbilityInputID = EAbilityInputID::Fire;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	//Esto estaba pensado para que fuera LocalOnly. Pero si es LocalOnly, el cooldown no funciona
@@ -27,6 +27,11 @@ UAbilityShootProjectileGun::UAbilityShootProjectileGun()
 	CancelAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SPRINT));
 
 	CooldownGameplayEffectClass = UCooldownGameplayEffect::StaticClass();
+
+	FAbilityTriggerData triggerDataToAdd;
+	triggerDataToAdd.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_START_FIRING);
+	triggerDataToAdd.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
+	AbilityTriggers.Add(triggerDataToAdd);
 }
 
 void UAbilityShootProjectileGun::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -50,6 +55,11 @@ void UAbilityShootProjectileGun::ActivateAbility(const FGameplayAbilitySpecHandl
 
 		if (mCharacter != nullptr)
 		{
+			const auto abilitySystemComponent = mCharacter->GetAbilitySystemComponentBase();
+			check(abilitySystemComponent);
+			m_StopShootingHandle = abilitySystemComponent->RegisterGameplayEvent(
+					FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STOP_FIRING)),
+					FGameplayEventTagMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnStopShooting));
 			if (mCharacter->GetGunComponent()->IsAiming())
 			{
 				//if aiming we don't want to play shooting montage
@@ -193,6 +203,16 @@ void UAbilityShootProjectileGun::CreateTaskPlayMontageShooting(const IICharacter
 	taskPlayMontage->OnCompleted.AddDynamic(this, &ThisClass::OnMontageCompleted);
 	taskPlayMontage->OnBlendOut.AddDynamic(this, &ThisClass::OnMontageCompleted);
 	taskPlayMontage->ReadyForActivation();
+}
+
+void UAbilityShootProjectileGun::OnStopShooting(FGameplayTag gameplayTag, const FGameplayEventData* payload)
+{
+	const auto abilitySystemComponent = mCharacter->GetAbilitySystemComponentBase();
+	check(abilitySystemComponent);
+	abilitySystemComponent->UnRegisterGameplayEvent(
+		FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STOP_FIRING)),
+		m_StopShootingHandle);
+	K2_CancelAbility();
 }
 
 void UAbilityShootProjectileGun::OnMontageCompleted()
