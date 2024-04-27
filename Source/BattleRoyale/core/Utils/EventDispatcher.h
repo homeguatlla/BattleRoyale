@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "BattleRoyale/core/Utils/Stats/PlayerStatsData.h"
 #include "Inventory/InventoryBag.h"
+#include "BattleRoyale/core/PickableObjects/IPickupObject.h"
 #include "Delegates/DelegateCombinations.h"
 #include "EventDispatcher.generated.h"
 

@@ -10,8 +10,6 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AbilitySystemComponent.h"
-#include "EnhancedInputComponent.h"
-#include "InputMappingContext.h"
 #include "BattleRoyale/core/Abilities/AbilitiesInput.h"
 #include "BattleRoyale/core/Abilities/GameplayAbilityBase.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
@@ -21,7 +19,6 @@
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
-#include "BattleRoyale/core/Utils/Input/InputMappingContextWithBindings.h"
 #include "Components/CombatComponent.h"
 #include "Components/EnhancedInputComponentBase.h"
 #include "Components/FootstepsComponent.h"
@@ -99,7 +96,7 @@ void ACharacterBase::OnRep_PlayerState()
 
 	//only for clients
 	InitializeGAS();
-	BindAbilityActivationToInputComponent();
+	//BindAbilityActivationToInputComponent();
 	Initialize(IsLocallyControlled());
 }
 
@@ -213,7 +210,7 @@ void ACharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAxis("TurnRate", this, &ThisClass::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ThisClass::LookUpAtRate);
 	
-	BindAbilityActivationToInputComponent();
+	//BindAbilityActivationToInputComponent();
 
 	if(const auto enhancedInputComponent = Cast<UEnhancedInputComponentBase>(PlayerInputComponent))
 	{

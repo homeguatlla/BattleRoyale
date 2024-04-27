@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "BattleRoyale/core/PickableObjects/IPickupObject.h"
 #include "IInventoryHUD.generated.h"
 
 class APickableObjectBase;
