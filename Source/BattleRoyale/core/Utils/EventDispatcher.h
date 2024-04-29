@@ -29,7 +29,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetVisibilityCountDown, bool, vis
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowStatsScreen, const FPlayerStatsData&, statsData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHideStatsScreen);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnShowInventoryScreen, const TScriptInterface<IIInventoryBag>, inventoryBag, const TScriptInterface<IPickupObject>, equippedObject);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnShowInventoryScreen, const TScriptInterface<IIInventoryBag>, inventoryBag, const TScriptInterface<IPickupObject>&, equippedObject);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHideInventoryScreen);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRefreshInventory, const TScriptInterface<IIInventoryBag>, inventoryBag);
 

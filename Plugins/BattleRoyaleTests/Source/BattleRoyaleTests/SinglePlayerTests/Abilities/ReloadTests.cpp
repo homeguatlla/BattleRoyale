@@ -186,7 +186,7 @@ bool FReloadTest_When_WeaponAndAmmo_Then_CanReload::RunTest(const FString& Param
 
 	const auto ammo = NewObject<AAmmoMock>();
 	
-	ammo->Initialize(TEXT("Blueprint'/Game/Core/Blueprints/Inventory/Items/BP_LightAmmoItem.BP_LightAmmoItem_C'"), EPickupObjectState::Dropped, 10);
+	ammo->Initialize(TEXT("Blueprint'/Game/Core/Blueprints/Inventory/Items/SD_LightAmmoItem.SD_LightAmmoItem_C'"), EPickupObjectState::Dropped, 10);
 
 	inventoryComponent->PickupObjectServer(ammo);
 

@@ -51,7 +51,7 @@ void UInventoryArray::RemoveFirstItemOfClass(TSubclassOf<UInventoryItemStaticDat
 	}*/
 }
 
-void UInventoryArray::RemoveItem(const TScriptInterface<IIInventoryItemInstance>& itemInstance)
+void UInventoryArray::RemoveItem(const TScriptInterface<IIInventoryItemInstance> itemInstance)
 {
 	for(int i = 0; i < mItems.Num() ; ++i)
 	{
