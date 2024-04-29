@@ -92,10 +92,11 @@ void UAbilityCrouch::CancelAbility(const FGameplayAbilitySpecHandle Handle, cons
 	const auto character = GetCharacter(ActorInfo);
 	if (character != nullptr)
 	{
-		const auto abilitySystemComponent = character->GetAbilitySystemComponentBase();
-		check(abilitySystemComponent);
-		abilitySystemComponent->UnRegisterGameplayEvent(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STANDUP)), m_StandUpHandle);
-        character->StopCrouching();
+		if(const auto abilitySystemComponent = character->GetAbilitySystemComponentBase())
+		{
+			abilitySystemComponent->UnRegisterGameplayEvent(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STANDUP)), m_StandUpHandle);
+		}
+		character->StopCrouching();
 	}
 }
 

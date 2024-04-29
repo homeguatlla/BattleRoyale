@@ -2,7 +2,7 @@
 
 
 #include "InventoryHUD.h"
-
+#include "EngineMinimal.h"
 #include "IInventoryHUD.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/PickableObjects/IPickupObject.h"
