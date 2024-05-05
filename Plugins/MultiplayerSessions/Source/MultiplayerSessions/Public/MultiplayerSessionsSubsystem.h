@@ -38,6 +38,7 @@ public:
 	void DestroySession();
 	void StartSession();
 	EOnlineAsyncTaskState::Type GetFindSessionsStatus() const;
+	int GetSessionPing() const;
 	
 	//Our own custom delegates for the Menu class to bind callbacks to
 	FMultiplayerOnCreateSessionComplete MultiplayerOnCreateSessionComplete;

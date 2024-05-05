@@ -26,6 +26,7 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 
 private:
+	
 	UFUNCTION(Client, Reliable)
 	void ClientEnableInput(bool enable);
 
@@ -41,6 +42,7 @@ private:
 	UFUNCTION(Client, Reliable)
 	void ClientReportServerTime(float timeOfClientRequest, float timeServerReceivedClientRequest);
 	void CheckTimeSync(float DeltaSeconds);
+	void CheckConnectivity() const;
 	
 	float mClientServerDelta = 0.0f; //Difference between Client and Server time.
 

@@ -39,11 +39,14 @@ public:
 	
 	virtual FDelegateHandle RegisterGameplayEvent(const FGameplayTagContainer& TagFilter, const FGameplayEventTagMulticastDelegate::FDelegate& Delegate) override;
 	virtual void UnRegisterGameplayEvent(const FGameplayTagContainer& TagFilter, FDelegateHandle DelegateHandle) override;
-	virtual void SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad) override;
-	virtual void SendGameplayEvent(const FGameplayTag& tag, const AActor* instigator) override;
+	virtual void SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad, bool toServer = false) override;
+	virtual void SendGameplayEvent(const FGameplayTag& tag, const AActor* instigator, bool toServer = false) override;
 
 	virtual void CancelAbilitiesWithTags(const FGameplayTagContainer& tags) override;
 	
 	/*virtual float PlayMontage(UGameplayAbility* AnimatingAbility, FGameplayAbilityActivationInfo ActivationInfo, UAnimMontage* Montage, float InPlayRate, FName StartSectionName = NAME_None, float StartTimeSeconds = 0.0f) override;
 	virtual float PlayMontageSimulated(UAnimMontage* Montage, float InPlayRate, FName StartSectionName = NAME_None) override;*/
+private:
+	UFUNCTION(Server, Reliable)
+	void ServerHandleGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& data);
 };

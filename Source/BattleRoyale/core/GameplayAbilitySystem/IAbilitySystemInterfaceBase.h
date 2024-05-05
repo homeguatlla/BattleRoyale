@@ -46,8 +46,8 @@ public:
 
 	virtual FDelegateHandle RegisterGameplayEvent(const FGameplayTagContainer& TagFilter, const FGameplayEventTagMulticastDelegate::FDelegate& Delegate) = 0;
 	virtual void UnRegisterGameplayEvent(const FGameplayTagContainer& TagFilter, FDelegateHandle DelegateHandle) = 0;
-	virtual void SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad) = 0;
-	virtual void SendGameplayEvent(const FGameplayTag& tag, const AActor* instigator) = 0;
-
+	virtual void SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad, bool toServer) = 0;
+	virtual void SendGameplayEvent(const FGameplayTag& tag, const AActor* instigator, bool toServer) = 0;
+	
 	virtual void CancelAbilitiesWithTags(const FGameplayTagContainer& tags) = 0;
 };

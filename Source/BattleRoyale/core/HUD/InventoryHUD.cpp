@@ -2,7 +2,6 @@
 
 
 #include "InventoryHUD.h"
-#include "EngineMinimal.h"
 #include "IInventoryHUD.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/PickableObjects/IPickupObject.h"
@@ -39,7 +38,7 @@ void AInventoryHUD::BindToDelegate()
 	}
 }
 
-void AInventoryHUD::OnShowInventoryScreen(const TScriptInterface<IIInventoryBag> inventoryBag, const TScriptInterface<IPickupObject>& equippedObject)
+void AInventoryHUD::OnShowInventoryScreen(const TScriptInterface<IIInventoryBag> inventoryBag, const TScriptInterface<IPickupObject> equippedObject)
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UIInventoryHUD::StaticClass()))
 	{

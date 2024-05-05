@@ -100,23 +100,28 @@ void UAbilitySystemComponentBase::UnRegisterGameplayEvent(const FGameplayTagCont
 	RemoveGameplayEventTagContainerDelegate(TagFilter, DelegateHandle);
 }
 
-void UAbilitySystemComponentBase::SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad)
+void UAbilitySystemComponentBase::SendGameplayEvent(const FGameplayTag& tag, const FGameplayEventData& payLoad, bool toServer)
 {
-	HandleGameplayEvent(tag, &payLoad);
+	toServer ? ServerHandleGameplayEvent(tag, payLoad) : HandleGameplayEvent(tag, &payLoad);
 }
 
-void UAbilitySystemComponentBase::SendGameplayEvent(const FGameplayTag& tag, const AActor* instigator)
+void UAbilitySystemComponentBase::SendGameplayEvent(const FGameplayTag& tag, const AActor* instigator, bool toServer)
 {
 	FGameplayEventData data;
 	data.EventTag = tag;
 	data.Instigator = instigator;
 
-	HandleGameplayEvent(tag, &data);
+	toServer ? ServerHandleGameplayEvent(tag, data) : HandleGameplayEvent(tag, &data);
 }
 
 void UAbilitySystemComponentBase::CancelAbilitiesWithTags(const FGameplayTagContainer& tags)
 {
 	CancelAbilities(&tags);
+}
+
+void UAbilitySystemComponentBase::ServerHandleGameplayEvent_Implementation(const FGameplayTag& tag, const FGameplayEventData& data)
+{
+	HandleGameplayEvent(tag, &data);
 }
 
 /*

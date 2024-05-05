@@ -29,10 +29,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetVisibilityCountDown, bool, vis
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowStatsScreen, const FPlayerStatsData&, statsData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHideStatsScreen);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnShowInventoryScreen, const TScriptInterface<IIInventoryBag>, inventoryBag, const TScriptInterface<IPickupObject>&, equippedObject);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnShowInventoryScreen, const TScriptInterface<IIInventoryBag>, inventoryBag, const TScriptInterface<IPickupObject>, equippedObject);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHideInventoryScreen);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRefreshInventory, const TScriptInterface<IIInventoryBag>, inventoryBag);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowConnectivity, int, ping);
 
 UCLASS(Blueprintable)
 class BATTLEROYALE_API UEventDispatcher : public UObject
@@ -105,4 +106,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="Inventory")
 	FOnRefreshInventory OnRefreshInventory;
+
+	UPROPERTY(BlueprintAssignable, Category="Network")
+	FOnShowConnectivity OnShowConnectivity;
 };

@@ -345,7 +345,7 @@ private:
 	
 	UFUNCTION(Unreliable, Server, WithValidation)
 	void ServerSetCharacterControlRotation(const FRotator& rotation);
-
+	
 	void DisableMovement() const;
 	void DisableCollision() const;
 	

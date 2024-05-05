@@ -463,72 +463,76 @@ void ACharacterBase::OnInputActionLookUp(const FInputActionValue& value)
 void ACharacterBase::OnInputActionJump() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_JUMP), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_JUMP), this, false);
 }
 
 void ACharacterBase::OnInputActionCrouch() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_CROUCH), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_CROUCH), this, false);
 }
 void ACharacterBase::OnInputActionStandUp() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STANDUP), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STANDUP), this, false);
 }
 
 void ACharacterBase::OnInputActionSprint() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SPRINT), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SPRINT), this, false);
 }
 
 void ACharacterBase::OnInputActionWalk() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_WALK), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_WALK), this, false);
 }
 
 void ACharacterBase::OnInputActionPickUp() const
 {
+	//TODO se tiene que enviar un serverRPC porque son serverOnly y por tanto en cliente se envia el mensaje que nunca
+	//activará la habilidad
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_PICKUP), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_PICKUP), this, true);
 }
 
 void ACharacterBase::OnInputActionDrop() const
 {
+	//TODO se tiene que enviar un serverRPC porque son serverOnly y por tanto en cliente se envia el mensaje que nunca
+	//activará la habilidad
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_DROP), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_DROP), this, true);
 }
 
 void ACharacterBase::OnInputActionStartFiring() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_START_FIRING), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_START_FIRING), this, false);
 }
 
 void ACharacterBase::OnInputActionStopFiring() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STOP_FIRING), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STOP_FIRING), this, false);
 }
 
 void ACharacterBase::OnInputActionStartAiming() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_START_AIMING), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_START_AIMING), this, false);
 }
 
 void ACharacterBase::OnInputActionStopAiming() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STOP_AIMING), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STOP_AIMING), this, false);
 }
 
 void ACharacterBase::OnInputActionReload() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_RELOAD), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_RELOAD), this, false);
 }
 
 void ACharacterBase::OnInputActionInventory() const
@@ -536,18 +540,18 @@ void ACharacterBase::OnInputActionInventory() const
 	const auto abilitySystem = GetAbilitySystemComponentBase();
 	if(GetInventoryComponent()->IsInventoryVisible())
 	{
-		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_HIDE_INVENTORY), this);	
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_HIDE_INVENTORY), this, false);	
 	}
 	else
 	{
-		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SHOW_INVENTORY), this);
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SHOW_INVENTORY), this, false);
 	}
 }
 
 void ACharacterBase::OnInputActionSwapWeapons() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SWAP_WEAPONS), this);
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SWAP_WEAPONS), this, false);
 }
 
 IIGameMode* ACharacterBase::GetGameModeServer() const

@@ -258,7 +258,7 @@ class BATTLEROYALE_API UtilsLibrary
 			data.TargetData.Add(targetData);
 		}
 
-		target->GetAbilitySystemComponentBase()->SendGameplayEvent(eventTag, data);
+		target->GetAbilitySystemComponentBase()->SendGameplayEvent(eventTag, data, false);
 	}
 	
 	static AProjectileBase* LaunchProjectile(const UObject* worldContextObject, TSubclassOf<class AProjectileBase> projectileClass, const FTransform& transform, AActor* owner, APawn* instigator)

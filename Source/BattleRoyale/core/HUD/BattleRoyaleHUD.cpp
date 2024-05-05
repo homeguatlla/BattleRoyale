@@ -5,7 +5,6 @@
 //#include "AutomationBlueprintFunctionLibrary.h"
 #include "AnnouncementsHUD.h"
 #include "CharacterHUD.h"
-#include "Kismet/GameplayStatics.h"
 #include "Logging/LogMacros.h"
 
 
@@ -26,4 +25,5 @@ void ABattleRoyaleHUD::BeginPlay()
 	mAnnouncementsHUD = CreateHUD<AAnnouncementsHUD>(AnnouncementsHUDWidgetClasses);
 	mMenuHUD = CreateHUD<AMenuHUD>(MenuHUDWidgetClasses);
 	mInventoryHUD = CreateHUD<AInventoryHUD>(MaxInventoryItems, InventoryHUDWidgetClasses);
+	mNetworkHUD = CreateHUD<ANetworkHUD>(NetworkHUDWidgetClasses);
 }

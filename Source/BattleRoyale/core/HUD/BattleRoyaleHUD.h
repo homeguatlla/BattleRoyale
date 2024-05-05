@@ -8,6 +8,7 @@
 #include "CharacterHUD.h"
 #include "AnnouncementsHUD.h"
 #include "InventoryHUD.h"
+#include "NetworkHUD.h"
 #include "BattleRoyaleHUD.generated.h"
 
 
@@ -31,6 +32,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Inventory HUDs")
 	TArray<TSubclassOf<UUserWidget>> InventoryHUDWidgetClasses;
 
+	UPROPERTY(EditAnywhere, Category = "Network HUDs")
+	TArray<TSubclassOf<UUserWidget>> NetworkHUDWidgetClasses;
+
 	UPROPERTY(EditAnywhere, Category= "Inventory HUD")
 	int MaxInventoryItems = 7;
 	
@@ -43,6 +47,9 @@ public:
 	UPROPERTY()
 	UUserWidget* mMenuHUDWidget;
 
+	UPROPERTY()
+	UUserWidget* mNetworkWidget;
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -61,6 +68,9 @@ private:
 
 	UPROPERTY()
 	AInventoryHUD* mInventoryHUD = nullptr;
+
+	UPROPERTY()
+	ANetworkHUD* mNetworkHUD = nullptr;
 };
 
 template<class THUDClass>
