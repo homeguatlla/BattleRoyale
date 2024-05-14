@@ -72,11 +72,18 @@ class BATTLEROYALE_API AWeaponBase : public APickableObjectBase, public IWeapon
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	float ZoomInterpolationSpeed = 20.0f;
 
-	UPROPERTY(EditDefaultsOnly, ReplicatedUsing=OnRep_Ammo, Category = "Weapon")
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	int32 mAmmo;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	int32 MagazineCapacity;
+
+	//Number of rpcs recieved from Server decrementing ammo
+	//Lag Compensation. So, we will decrement the ammo on client and increment this counter.
+	//Each decrement on server will send an RPC to the client so the client will know the ammo the server has.
+	//We will set the ammo the server has on client and we will decrement the value the sequence has that means,
+	//shots already done by client but still pending to be executed on server.
+	int32 mPendingAmmoRPCACKs = 0;
 	
 public:	
 	AWeaponBase();
@@ -130,18 +137,18 @@ public:
 	void BP_OnReloadAmmoOut();
 	
 private:
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	UFUNCTION(Server, Reliable)
 	void ServerFire(const FVector& muzzleLocation, const FVector& targetLocation);
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastReload();
-	
-	UFUNCTION()
-	void OnRep_Ammo() const;
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastReload(int32 serverAmmo);
+
+	UFUNCTION(Client, Reliable)
+	void UpdateAmmo(int32 serverAmmo);
 	
 	bool SpawnProjectileServer(const FVector& muzzleLocation, const FVector& shootingDirection) const;
 	FVector GetProjectileSpawnLocation(const FVector& location, const FVector& direction, float distanceFromMuzzleLocation) const;
+	void ConsumeAmmo();
 	void RefreshAmmoHUD(const ACharacterBase* character) const;
 
 	FTransform GetSocketMeshTransformBySocketName(const FName& socketName) const;

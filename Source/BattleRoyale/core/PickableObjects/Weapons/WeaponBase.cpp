@@ -24,13 +24,6 @@ AWeaponBase::AWeaponBase()
 	mAmmo = MagazineCapacity;
 }
 
-void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AWeaponBase, mAmmo);
-}
-
 bool AWeaponBase::CanBeFired() const
 {
 	return !IsMagazineEmpty();
@@ -45,6 +38,12 @@ void AWeaponBase::Fire(const FVector& targetLocation)
 	if(CanBeFired())
 	{
 		ServerFire(GetMuzzleLocation(), targetLocation);
+		if(!HasAuthority())
+		{
+			//Consume ammo also in clients so they can see how ammo goes down event with lag.
+			ConsumeAmmo();
+			mPendingAmmoRPCACKs++;
+		}
 	}
 }
 
@@ -61,7 +60,12 @@ void AWeaponBase::Reload(int ammoAmount)
 	{
 		RefreshAmmoHUD(character);
 	}
-	MulticastReload();
+	MulticastReload(mAmmo);
+}
+
+void AWeaponBase::ConsumeAmmo()
+{
+	mAmmo = FMath::Clamp(mAmmo-1, 0, MagazineCapacity);
 }
 
 void AWeaponBase::SetupLeftHandSocketTransform(const FVector& newLocation, const FRotator& newRotation)
@@ -106,7 +110,8 @@ void AWeaponBase::ServerFire_Implementation(const FVector& muzzleLocation, const
 		return;
 	}
 
-	mAmmo = FMath::Clamp(mAmmo-1, 0, MagazineCapacity);
+	ConsumeAmmo();
+	UpdateAmmo(mAmmo);
 	if(const auto character = Cast<ACharacterBase>(GetOwner()))
 	{
 		if(MuzzleGameplayEffectClass)
@@ -123,18 +128,27 @@ void AWeaponBase::OnFire()
 	SpawnBulletShell();
 }
 
-void AWeaponBase::MulticastReload_Implementation()
+void AWeaponBase::MulticastReload_Implementation(int32 serverAmmo)
 {
+	if(const auto character = Cast<ACharacterBase>(GetOwner()))
+	{
+		if(character->IsLocallyControlled())
+		{
+			mAmmo = serverAmmo;
+			RefreshAmmoHUD(character);
+		}
+	}
 	BP_OnReload();
 }
 
+/*
 void AWeaponBase::OnRep_Ammo() const
 {
 	if(const auto character = Cast<ACharacterBase>(GetOwner()))
 	{
 		RefreshAmmoHUD(character);
 	}
-}
+}*/
 
 void AWeaponBase::StartAiming(const FVector& location, const FRotator& rotation)
 {
@@ -149,6 +163,25 @@ FVector AWeaponBase::GetForwardVector() const
 {
 	return GetSocketMeshTransformBySocketName(MuzzleSocketName).GetRotation().GetForwardVector();
 	//return GetActorTransform().GetRotation().GetForwardVector(); 
+}
+
+void AWeaponBase::UpdateAmmo_Implementation(int32 serverAmmo)
+{
+	if(HasAuthority())
+		return;
+
+	//LAG COMPENSATION
+	//We set the ammo the server has
+	mAmmo = serverAmmo;
+	//decrement rpc sequence because we just recieve a rpc response
+	mPendingAmmoRPCACKs--;
+	//finally remove the pendingAmmoRPCACKs because are other shots client did but still pending to process by server
+	mAmmo -= mPendingAmmoRPCACKs;
+	
+	if(const auto character = Cast<ACharacterBase>(GetOwner()))
+	{
+		RefreshAmmoHUD(character);
+	}
 }
 
 bool AWeaponBase::SpawnProjectileServer(const FVector& muzzleLocation, const FVector& shootingDirection) const
