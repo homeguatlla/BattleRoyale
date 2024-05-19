@@ -55,7 +55,7 @@ class BATTLEROYALE_API AWeaponBase : public APickableObjectBase, public IWeapon
 	FName LeftHandSocketName;
 
 	UPROPERTY(EditDefaultsOnly, Category="Weapon")
-	UAnimationAsset* ShootingAnimation;
+	UAnimationAsset* ShootingAnimation = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	bool AutomaticFire = false;
@@ -73,10 +73,10 @@ class BATTLEROYALE_API AWeaponBase : public APickableObjectBase, public IWeapon
 	float ZoomInterpolationSpeed = 20.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	int32 mAmmo;
+	int32 mAmmo = 0;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	int32 MagazineCapacity;
+	int32 MagazineCapacity = 0;
 
 	//Number of rpcs recieved from Server decrementing ammo
 	//Lag Compensation. So, we will decrement the ammo on client and increment this counter.

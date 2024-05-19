@@ -141,15 +141,6 @@ void AWeaponBase::MulticastReload_Implementation(int32 serverAmmo)
 	BP_OnReload();
 }
 
-/*
-void AWeaponBase::OnRep_Ammo() const
-{
-	if(const auto character = Cast<ACharacterBase>(GetOwner()))
-	{
-		RefreshAmmoHUD(character);
-	}
-}*/
-
 void AWeaponBase::StartAiming(const FVector& location, const FRotator& rotation)
 {
 	SetActorRotation(rotation);
