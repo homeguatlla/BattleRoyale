@@ -13,7 +13,7 @@ class ICounterDownMenuHUD
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Menu Countdown HUD")
-	void OnRefreshCountDown(uint8 counter);
+	void OnRefreshCountDown(float counter);
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Menu Countdown HUD")
 	void OnFinishCountDown();
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Menu Countdown HUD")

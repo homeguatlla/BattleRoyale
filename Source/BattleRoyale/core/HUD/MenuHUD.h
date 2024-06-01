@@ -29,7 +29,7 @@ private:
 	UFUNCTION()
 	void OnGameOver();
 	UFUNCTION()
-	void OnRefreshCountDown(uint8 counter);
+	void OnRefreshCountDown(float time);
 	UFUNCTION()
 	void OnFinishCountDown();
 	UFUNCTION()

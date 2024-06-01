@@ -64,11 +64,11 @@ void AMenuHUD::OnGameOver()
 	}
 }
 
-void AMenuHUD::OnRefreshCountDown(uint8 counter)
+void AMenuHUD::OnRefreshCountDown(float time)
 {
 	if(mHUDWidget->GetClass()->ImplementsInterface(UCounterDownMenuHUD::StaticClass()))
 	{
-		ICounterDownMenuHUD::Execute_OnRefreshCountDown(mHUDWidget, counter);
+		ICounterDownMenuHUD::Execute_OnRefreshCountDown(mHUDWidget, time);
 	}
 }
 

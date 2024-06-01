@@ -2,9 +2,6 @@
 
 
 #include "BattleRoyaleGameState.h"
-
-#include <set>
-
 #include "BattleRoyaleGameMode.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Utils/FSM/StatesMachineFactory.h"
@@ -12,23 +9,19 @@
 
 
 ABattleRoyaleGameState::ABattleRoyaleGameState() :
-mRemainingCounts{0}
+mCountDownTime{0}, mInitialCountdownTime{0}
 {
 }
 
 void ABattleRoyaleGameState::StartCountdownServer(int duration)
 {
 	mDidCountdownStart = true;
-	mRemainingCounts = duration;
+	mInitialCountdownTime = duration + GetServerWorldTimeSeconds();
+	mCountDownTime = mInitialCountdownTime;
 	
-	if(HasAuthority())
-	{
-		GetWorld()->GetTimerManager().SetTimer(mCountdownTimerHandle, this, &ABattleRoyaleGameState::OnCountdownFinishedServer, 1, true);
-
-		//Refreshing initial countdown
-		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-		gameInstance->GetEventDispatcher()->OnRefreshCountDown.Broadcast(mRemainingCounts);
-	}
+	//Refreshing initial countdown
+	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+	gameInstance->GetEventDispatcher()->OnRefreshCountDown.Broadcast(mCountDownTime);
 }
 
 bool ABattleRoyaleGameState::IsGameReadyToStart() const
@@ -41,31 +34,25 @@ bool ABattleRoyaleGameState::CanStartCountDown(uint8 numTeamsToStartCountDown) c
 	return !DidCountdownStart() && GetNumTeams() >= numTeamsToStartCountDown;
 }
 
+void ABattleRoyaleGameState::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if(GetNetMode() == NM_Client)
+	{
+		int kk = 0;
+	}
+	if(DidCountdownStart())
+	{
+		UpdateCountDownTime(DeltaSeconds);
+		CheckIfCountDownFinished();
+	}
+}
 
 void ABattleRoyaleGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ABattleRoyaleGameState, mRemainingCounts);
-}
-
-void ABattleRoyaleGameState::OnCountdownFinishedServer()
-{
-	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
-		
-	mRemainingCounts--; 
-	if(mRemainingCounts <= 0)
-	{
-		GetWorld()->GetTimerManager().ClearTimer(mCountdownTimerHandle);
-
-		gameInstance->GetEventDispatcher()->OnFinishCountDown.Broadcast();
-
-		UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameStateBase::OnCountdownFinished Countdown finished"));
-	}
-	else
-	{
-		UE_LOG(LogGameMode, Log, TEXT("ABattleRoyaleGameStateBase::OnCountdownFinished %d"), mRemainingCounts);
-	}
-	gameInstance->GetEventDispatcher()->OnRefreshCountDown.Broadcast(mRemainingCounts);
+	DOREPLIFETIME(ABattleRoyaleGameState, mInitialCountdownTime);
 }
 
 void ABattleRoyaleGameState::AddStatesMachineServer(
@@ -88,15 +75,40 @@ void ABattleRoyaleGameState::AddStatesMachineServer(
 			fsmContext)));
 }
 
-void ABattleRoyaleGameState::OnRep_RemainingCount() const
+void ABattleRoyaleGameState::UpdateCountDownTime(float delta_seconds)
 {
-	//Este método no se ejecuta en servidor. Por eso hay que poner la llamada cuando se modifica
-	//la variable replicada
-	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+	const auto serverWorldTimeSeconds = GetServerWorldTimeSeconds();
+	const auto secondsLeft = FMath::CeilToInt(mCountDownTime - serverWorldTimeSeconds);
 	
-	gameInstance->GetEventDispatcher()->OnRefreshCountDown.Broadcast(mRemainingCounts);
-	if(mRemainingCounts <= 0)
+	//if(mRemainingSeconds != secondsLeft)
 	{
+		//Has passed one second: update UI
+		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+		auto remainingTime = FMath::Max(0.0f, mCountDownTime - serverWorldTimeSeconds );
+		//mInitialCountdownTime -= serverWorldTimeSeconds;
+		UE_LOG(LogGameState, Log, TEXT("ABattleRoyaleGameState::UpdateCountDownTime Countdown %f"), remainingTime);
+		gameInstance->GetEventDispatcher()->OnRefreshCountDown.Broadcast(remainingTime);
+	}
+	mRemainingSeconds = secondsLeft;
+}
+
+void ABattleRoyaleGameState::CheckIfCountDownFinished()
+{
+	if(mRemainingSeconds <= 0)
+	{
+		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
 		gameInstance->GetEventDispatcher()->OnFinishCountDown.Broadcast();
+	}
+}
+
+void ABattleRoyaleGameState::OnRep_InitialCountdownTime()
+{
+	//Lo que tenemos que hacer es actualizar el timer en el playercontroller.
+	//Cuando se crea el player controller este pilla el gamestate y inicializa el countdowntime
+	//y el game state no tiene que actualizar nada, solo iniciar y ver cuando termina.
+	if(!mDidCountdownStart)
+	{
+		mDidCountdownStart = true;
+		mCountDownTime = mInitialCountdownTime;
 	}
 }

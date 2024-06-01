@@ -18,7 +18,7 @@ public class BattleRoyale : ModuleRules
 			"HeadMountedDisplay",
 			//online subsystem
 			"OnlineSubsystem",
-			//"OnlineSubsystemUtils",
+			"OnlineSubsystemUtils",
 			"OnlineSubsystemSteam",
 			//GAS
 			"GameplayAbilities",

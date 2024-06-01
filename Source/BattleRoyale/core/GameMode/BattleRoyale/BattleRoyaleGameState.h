@@ -20,23 +20,28 @@ public:
 	void StartCountdownServer(int duration);	
 	virtual bool IsGameReadyToStart() const override;
 	bool CanStartCountDown(uint8 numTeamsToStartCountDown) const;
+	bool DidCountdownStart() const { return mDidCountdownStart; }
+	float GetCountDownTimeLeft() const { return mCountDownTime; }
 	
 private:
-	
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	void OnCountdownFinishedServer();
+	
 	virtual void AddStatesMachineServer(
 		StatesMachineController<BRModeFSM::BattleRoyaleState, BRModeFSM::BattleRoyaleContext>& fsmController,
 		std::shared_ptr<BRModeFSM::BattleRoyaleContext>& fsmContext) override;
-	bool DidCountdownStart() const { return mDidCountdownStart; }
-	bool DidCountdownFinish() const  { return mRemainingCounts <= 0; }
 	
-	UFUNCTION()
-	void OnRep_RemainingCount() const;
-	
-	bool mDidCountdownStart = false;
-	FTimerHandle mCountdownTimerHandle;
+	bool DidCountdownFinish() const  { return mRemainingSeconds <= 0; }
+	void UpdateCountDownTime(float delta_seconds);
+	void CheckIfCountDownFinished();
 
-	UPROPERTY(ReplicatedUsing=OnRep_RemainingCount)
-	int mRemainingCounts;
+	UFUNCTION()
+	void OnRep_InitialCountdownTime();
+	bool mDidCountdownStart = false;
+	
+	
+	float mCountDownTime;
+	int mRemainingSeconds = 0;
+	UPROPERTY(ReplicatedUsing=OnRep_InitialCountdownTime)
+	int mInitialCountdownTime;
 };

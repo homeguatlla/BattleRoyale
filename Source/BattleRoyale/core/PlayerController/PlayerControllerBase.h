@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "PlayerControllerBase.generated.h"
 
+class ABattleRoyaleGameState;
 /**
  * 
  */
@@ -43,11 +44,20 @@ private:
 	void ClientReportServerTime(float timeOfClientRequest, float timeServerReceivedClientRequest);
 	void CheckTimeSync(float DeltaSeconds);
 	void CheckConnectivity() const;
-	
+	void UpdateCountDownTime(float deltaSeconds);
+
 	float mClientServerDelta = 0.0f; //Difference between Client and Server time.
 
 	UPROPERTY(EditAnywhere, Category = Time)
 	float mTimeSyncFrequency = 5.0f;
 
 	float mTimeSyncRunningTime = 0.0f;
+
+	//Count down
+	float mCountDownTime = 0.0f;
+	int mInitialCountdownTime = 0;
+	int mRemainingSeconds = 0;
+
+	UPROPERTY()
+	ABattleRoyaleGameState* mGameState;
 };

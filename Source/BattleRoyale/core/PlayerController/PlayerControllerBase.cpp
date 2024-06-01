@@ -1,9 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "PlayerControllerBase.h"
 
-#include "MultiplayerSessionsSubsystem.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
+#include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameState.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
+#include "GameFramework/GameStateBase.h"
+#include "Kismet/GameplayStatics.h"
 
 
 class UMultiplayerSessionsSubsystem;
@@ -46,16 +48,34 @@ void APlayerControllerBase::ReceivedPlayer()
 void APlayerControllerBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	const auto gameState = UGameplayStatics::GetGameState(GetWorld());
+	check(gameState);
+	mGameState = Cast<ABattleRoyaleGameState>(gameState);
 }
 
 void APlayerControllerBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
+	
 	CheckTimeSync(DeltaSeconds);
 	if(IsLocalController())
 	{
 		CheckConnectivity();
+	}
+
+	if(HasAuthority())
+	{
+		return;
+	}
+	
+	if(mGameState && mGameState->DidCountdownStart())
+	{
+		if(mCountDownTime == 0)
+		{
+			mCountDownTime = mGameState->GetCountDownTimeLeft();
+		}
+		UpdateCountDownTime(DeltaSeconds);
 	}
 }
 
@@ -86,6 +106,23 @@ void APlayerControllerBase::CheckConnectivity() const
 	check(eventDispatcher);
 	
 	eventDispatcher->OnShowConnectivity.Broadcast(ping);
+}
+
+void APlayerControllerBase::UpdateCountDownTime(float deltaSeconds)
+{
+	const auto serverWorldTimeSeconds = mGameState->GetServerWorldTimeSeconds();
+	const auto secondsLeft = FMath::CeilToInt(mCountDownTime - serverWorldTimeSeconds);
+
+	UE_LOG(LogGameState, Log, TEXT("APlayerControllerBase::UpdateCountDownTime Countdown %f"), mCountDownTime - serverWorldTimeSeconds);
+	if(mRemainingSeconds != secondsLeft)
+	{
+		//Has passed one second: update UI
+		const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+		auto remainingTime = FMath::Max(0.0f, mCountDownTime - serverWorldTimeSeconds );
+		mInitialCountdownTime -= serverWorldTimeSeconds;
+		gameInstance->GetEventDispatcher()->OnRefreshCountDown.Broadcast(remainingTime);
+	}
+	mRemainingSeconds = secondsLeft;
 }
 
 void APlayerControllerBase::ServerRequestServerTime_Implementation(float timeOfClientRequest)
