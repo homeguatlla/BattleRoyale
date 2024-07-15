@@ -2,7 +2,6 @@
 
 
 #include "InventoryArray.h"
-#include "EngineMinimal.h"
 #include "InventoryArrayItem.h"
 #include "InventoryItemInstance.h"
 #include "Engine/ActorChannel.h"

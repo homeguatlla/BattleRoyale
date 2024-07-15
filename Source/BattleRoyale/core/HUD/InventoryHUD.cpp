@@ -49,7 +49,7 @@ void AInventoryHUD::OnShowInventoryScreen(const TScriptInterface<IIInventoryBag>
 
 		if(const auto object = equippedObject.GetObject())
 		{
-			const auto pickableObject = Cast<APickableObjectBase>(equippedObject.GetObject());
+			const auto pickableObject = Cast<APickableObjectBase>(object);
 			IIInventoryHUD::Execute_OnShowInventoryOnScreen(mHUDWidget, inventoryBagVisual, pickableObject);
 		}
 	}

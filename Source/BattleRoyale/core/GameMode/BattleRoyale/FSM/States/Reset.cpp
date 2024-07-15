@@ -19,5 +19,8 @@ namespace BRModeFSM
 	void Reset::OnEnter(float deltaTime)
 	{
 		mGameState->CloseAllPlayersGameSessionServer();
+
+		//Quizá sería mejor hacer un RestartGame
+		//GameMode restartGame.
 	}
 };

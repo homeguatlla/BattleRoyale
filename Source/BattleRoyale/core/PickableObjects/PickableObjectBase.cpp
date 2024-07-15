@@ -3,12 +3,8 @@
 
 #include "PickableObjectBase.h"
 
-#include "BlueprintGameplayTagLibrary.h"
-#include "BattleRoyale/core/Abilities/GameplayTagsList.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
-#include "BattleRoyale/core/Utils/UtilsLibrary.h"
-#include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
 #include "Components/SphereComponent.h"
