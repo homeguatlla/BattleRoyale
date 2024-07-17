@@ -14,6 +14,9 @@ const FName TAG_ABILITY_PICKUP_INDICATOR("Ability.PickupIndicator");
 const FName TAG_ABILITY_RELOAD("Ability.Reload");
 const FName TAG_ABILITY_INVENTORY("Ability.Inventory");
 
+const FName TAG_SKILL_SMOKE("Skill.Smoke");
+const FName TAG_SKILL_CROSS_WALLS("Skill.CrossWalls");
+
 const FName TAG_STATE_INVULNERABLE = FName("State.Invulnerable");
 const FName TAG_STATE_AIMING = FName("State.Aiming");
 const FName TAG_STATE_DEAD = FName("State.Dead");
@@ -46,6 +49,10 @@ const FName TAG_EVENT_INPUT_HIDE_INVENTORY("Event.Input.HideInventory");
 const FName TAG_EVENT_INPUT_START_AIMING("Event.Input.StartAiming");
 const FName TAG_EVENT_INPUT_STOP_AIMING("Event.Input.StopAiming");
 const FName TAG_EVENT_INPUT_RELOAD("Event.Input.Reload");
+const FName TAG_EVENT_INPUT_SKILL_1("Event.Input.Skill1");
+const FName TAG_EVENT_INPUT_SKILL_2("Event.Input.Skill2");
 
 const FName TAG_EFFECTS_WEAPON("Effects.Weapon.Cooldown");
 const FName TAG_EFFECTS_DISSOLVE("Effects.Dissolve");
+const FName TAG_EFFECTS_SKILL1("Effects.Skill1.Cooldown");
+const FName TAG_EFFECTS_SKILL2("Effects.Skill2.Cooldown");

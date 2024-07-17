@@ -15,6 +15,7 @@
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/Abilities/GameplayTagsList.h"
+#include "BattleRoyale/core/Abilities/Skills/SkillBase.h"
 #include "BattleRoyale/core/Attributes/AttributeSetSpeed.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
@@ -81,7 +82,7 @@ void ACharacterBase::PossessedBy(AController* NewController)
 	//Only Server
 	//MulticastSpawnWeapon();
 	InitializeGAS();
-	GiveAbilitiesServer();
+	GiveAbilitiesAndSkillsServer();
 	Initialize(IsLocallyControlled());
 }
 
@@ -246,7 +247,7 @@ void ACharacterBase::BindAbilityActivationToInputComponent() const
 }
 
 //Only server can give abilities.
-void ACharacterBase::GiveAbilitiesServer()
+void ACharacterBase::GiveAbilitiesAndSkillsServer()
 {
 	if(!HasAuthority())
 	{
@@ -259,12 +260,18 @@ void ACharacterBase::GiveAbilitiesServer()
 		const auto abilitySystemComponent = playerState->GetAbilitySystemComponent();
 		if(abilitySystemComponent)
 		{
-			//Asign abilities to the ability system component. As Ability system component is replicated, we are
+			//Asign abilities and skills (they are abilities too) to the ability system component. As Ability system component is replicated, we are
 			//asigning also to the clients.
 			for(TSubclassOf<UGameplayAbilityBase>& startupAbility : mDefaultAbilities)
 			{
 				abilitySystemComponent->GiveAbility(
 					FGameplayAbilitySpec(startupAbility, 1, static_cast<int32>(startupAbility.GetDefaultObject()->AbilityInputID), this)
+				);
+			}
+			for(TSubclassOf<USkillBase>& startupSkill : mDefaultSkills)
+			{
+				abilitySystemComponent->GiveAbility(
+					FGameplayAbilitySpec(startupSkill, 1, static_cast<int32>(startupSkill.GetDefaultObject()->AbilityInputID), this)
 				);
 			}
 		}
@@ -552,6 +559,18 @@ void ACharacterBase::OnInputActionSwapWeapons() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
 	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SWAP_WEAPONS), this, false);
+}
+
+void ACharacterBase::OnInputActionSkill1() const
+{
+	const auto abilitySystem = GetAbilitySystemComponentBase();
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SKILL_1), this, false);
+}
+
+void ACharacterBase::OnInputActionSkill2() const
+{
+	const auto abilitySystem = GetAbilitySystemComponentBase();
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SKILL_2), this, false);
 }
 
 IIGameMode* ACharacterBase::GetGameModeServer() const

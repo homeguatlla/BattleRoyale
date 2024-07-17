@@ -44,6 +44,9 @@ class BATTLEROYALE_API ACharacterBase : public ACharacter, public IICharacter
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Character", meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<class UGameplayAbilityBase>> mDefaultAbilities;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	TArray<TSubclassOf<class USkillBase>> mDefaultSkills;
+	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GAS Effects", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class UGameplayEffect> DefaultAttributeEffect;
 
@@ -265,6 +268,10 @@ public:
 	void OnInputActionInventory() const;
 	UFUNCTION()
 	void OnInputActionSwapWeapons() const;
+	UFUNCTION()
+	void OnInputActionSkill1() const;
+	UFUNCTION()
+	void OnInputActionSkill2() const;
 		
 protected:
 	virtual void BeginPlay() override;
@@ -315,7 +322,7 @@ private:
 	void InitializeAttributes() const;
 	//void OnHealthChanged(const FOnAttributeChangeData& OnAttributeChangeData) const;
 	void BindAbilityActivationToInputComponent() const;
-	void GiveAbilitiesServer();
+	void GiveAbilitiesAndSkillsServer();
 
 	IIPlayerState* GetPlayerStateInterface() const;
 	
