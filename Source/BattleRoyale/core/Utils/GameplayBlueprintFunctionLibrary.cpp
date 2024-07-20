@@ -59,3 +59,16 @@ const UInventoryItemStaticData* UGameplayBlueprintFunctionLibrary::GetInventoryI
 
 	return GetDefault<UInventoryItemStaticData>(inventoryItemStaticDataClass);
 }
+
+FVector UGameplayBlueprintFunctionLibrary::GenerateRandomPointAtDistanceOf(const FVector& origin, float distance, bool upSemiSector)
+{
+	const auto radius = FMath::RandRange(0.0f, distance);
+	const auto u = FMath::RandRange(0.0f, PI * 2.0f);
+	auto minorVRange = upSemiSector ? 0.0f : -PI * 0.5f;
+	const auto v = FMath::RandRange(minorVRange, PI * 0.5f);
+
+	return origin + FVector(
+		radius * FMath::Cos(v) * FMath::Cos(u),
+		radius * FMath::Cos(v) * FMath::Sin(u),
+		radius * FMath::Sin(v));
+}

@@ -26,5 +26,8 @@ public:
 	static void SetMaterialColor(UMaterialInstanceDynamic* dynamicMaterial, const FName& parameterName, const FColor& color);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	static const UInventoryItemStaticData* GetInventoryItemStaticData(TSubclassOf<UInventoryItemStaticData> inventoryItemStaticDataClass); 
+	static const UInventoryItemStaticData* GetInventoryItemStaticData(TSubclassOf<UInventoryItemStaticData> inventoryItemStaticDataClass);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static FVector GenerateRandomPointAtDistanceOf(const FVector& origin, float distance, bool upSemiSector);
 };

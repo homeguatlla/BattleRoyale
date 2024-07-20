@@ -55,7 +55,7 @@ void UInventoryArray::RemoveItem(const TScriptInterface<IIInventoryItemInstance>
 {
 	for(int i = 0; i < mItems.Num() ; ++i)
 	{
-		if(auto inventoryItem = itemInstance.GetObject())
+		if(const auto inventoryItem = itemInstance.GetObject())
 		{
 			const auto inventoryItemInstance = Cast<UInventoryItemInstance>(inventoryItem);
 			if(mItems[i]->mInventoryItem == inventoryItemInstance)
