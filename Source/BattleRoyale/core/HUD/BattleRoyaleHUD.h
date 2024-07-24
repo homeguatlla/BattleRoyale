@@ -9,6 +9,7 @@
 #include "AnnouncementsHUD.h"
 #include "InventoryHUD.h"
 #include "NetworkHUD.h"
+#include "SkillsHUD.h"
 #include "BattleRoyaleHUD.generated.h"
 
 
@@ -32,6 +33,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Inventory HUDs")
 	TArray<TSubclassOf<UUserWidget>> InventoryHUDWidgetClasses;
 
+	UPROPERTY(EditAnywhere, Category = "Skills HUDs")
+	TArray<TSubclassOf<UUserWidget>> SkillsHUDWidgetClasses;
+	
 	UPROPERTY(EditAnywhere, Category = "Network HUDs")
 	TArray<TSubclassOf<UUserWidget>> NetworkHUDWidgetClasses;
 
@@ -68,6 +72,9 @@ private:
 
 	UPROPERTY()
 	AInventoryHUD* mInventoryHUD = nullptr;
+
+	UPROPERTY()
+	ASkillsHUD* mSkillsHUD = nullptr;
 
 	UPROPERTY()
 	ANetworkHUD* mNetworkHUD = nullptr;

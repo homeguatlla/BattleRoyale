@@ -35,6 +35,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRefreshInventory, const TScriptIn
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowConnectivity, int, ping);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRefreshSkillsCooldowns);
+
 UCLASS(Blueprintable)
 class BATTLEROYALE_API UEventDispatcher : public UObject
 {
@@ -109,4 +111,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="Network")
 	FOnShowConnectivity OnShowConnectivity;
+
+	UPROPERTY(BlueprintAssignable, Category="Skills")
+	FOnRefreshSkillsCooldowns OnRefreshSkillsCooldowns;
 };

@@ -47,7 +47,7 @@ void AInventoryHUD::OnShowInventoryScreen(const TScriptInterface<IIInventoryBag>
 		//Que sucede si visualmente pudieramos tener 3 armas?
 		inventoryBagVisual->Refresh(inventoryBag);
 
-		if(const auto object = equippedObject.GetObject())
+		if(auto object = equippedObject.GetObject())
 		{
 			const auto pickableObject = Cast<APickableObjectBase>(object);
 			IIInventoryHUD::Execute_OnShowInventoryOnScreen(mHUDWidget, inventoryBagVisual, pickableObject);
