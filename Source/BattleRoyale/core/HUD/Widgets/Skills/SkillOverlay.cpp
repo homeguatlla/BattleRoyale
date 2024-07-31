@@ -3,19 +3,28 @@
 
 #include "SkillOverlay.h"
 
-void USkillOverlay::SetItem(int cooldownTime, const TSubclassOf<UUserWidget>& widget)
+#include "SkillWidget.h"
+
+void USkillOverlay::SetItem(float cooldownTime, const TSubclassOf<USkillWidget>& widget)
 {
 	if(!widget->IsValidLowLevel())
 	{
 		return;
 	}
-	const auto itemWidget = CreateWidget<UUserWidget>(this, widget);
-	if(!itemWidget)
+	mWidget = CreateWidget<USkillWidget>(this, widget);
+	if(!mWidget)
 	{
 		return;
 	}
 	mCooldownTime = cooldownTime;
 	CurrentWidgetClass = widget;
 	RemoveChildAt(0);
-	AddChild(itemWidget);
+	AddChild(mWidget);
+}
+
+void USkillOverlay::StartCooldown()
+{
+	check(mWidget);
+	
+	mWidget->BP_OnStartCooldown(mCooldownTime);
 }

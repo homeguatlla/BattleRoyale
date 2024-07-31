@@ -41,6 +41,12 @@ private:
 	void OnRefreshNumKills(int numKills);
 	UFUNCTION()
 	void OnGameStarted();
+	UFUNCTION()
+	void OnInitializeSkills(const TArray<FSkillData>& skills);
+	UFUNCTION()
+	void OnStartSkillCoolDown(const FGameplayTag& skillTag);
+	UFUNCTION()
+	void OnStopSkillCoolDown(const FGameplayTag& skillTag);
 	
 public:
 	UPROPERTY()

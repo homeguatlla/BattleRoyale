@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "BattleRoyale/core/Utils/Stats/PlayerStatsData.h"
 #include "Inventory/InventoryBag.h"
 #include "BattleRoyale/core/PickableObjects/IPickupObject.h"
@@ -35,7 +36,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRefreshInventory, const TScriptIn
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowConnectivity, int, ping);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRefreshSkillsCooldowns);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStartSkillCooldown, const FGameplayTag&, skillTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStopSkillCooldown, const FGameplayTag&, skillTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInitializeSkills, const TArray<FSkillData>&, skills);
 
 UCLASS(Blueprintable)
 class BATTLEROYALE_API UEventDispatcher : public UObject
@@ -113,5 +116,11 @@ public:
 	FOnShowConnectivity OnShowConnectivity;
 
 	UPROPERTY(BlueprintAssignable, Category="Skills")
-	FOnRefreshSkillsCooldowns OnRefreshSkillsCooldowns;
+	FOnStartSkillCooldown OnStartSkillCooldown;
+
+	UPROPERTY(BlueprintAssignable, Category="Skills")
+	FOnStopSkillCooldown OnStopSkillCooldown;
+
+	UPROPERTY(BlueprintAssignable, Category="Skills")
+	FOnInitializeSkills OnInitializeSkills;
 };

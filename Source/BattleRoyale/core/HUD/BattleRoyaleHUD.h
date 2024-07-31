@@ -9,7 +9,6 @@
 #include "AnnouncementsHUD.h"
 #include "InventoryHUD.h"
 #include "NetworkHUD.h"
-#include "SkillsHUD.h"
 #include "BattleRoyaleHUD.generated.h"
 
 
@@ -72,9 +71,6 @@ private:
 
 	UPROPERTY()
 	AInventoryHUD* mInventoryHUD = nullptr;
-
-	UPROPERTY()
-	ASkillsHUD* mSkillsHUD = nullptr;
 
 	UPROPERTY()
 	ANetworkHUD* mNetworkHUD = nullptr;

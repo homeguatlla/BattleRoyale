@@ -8,16 +8,22 @@
 
 
 UINTERFACE()
-class UISkillsHUD : public UInterface
+class USkillsHUD : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class BATTLEROYALE_API IISkillsHUD
+class BATTLEROYALE_API ISkillsHUD
 {
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Inventory HUD")
-	void OnRefreshSkillsCooldowns();
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Skills HUD")
+	void OnInitializeSkills(const TArray<FSkillData>& skills);
+	
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Skills HUD")
+	void OnStartSkillCooldown(const FGameplayTag& skillTag);
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Skills HUD")
+	void OnStopSkillCooldown(const FGameplayTag& skillTag);
 };

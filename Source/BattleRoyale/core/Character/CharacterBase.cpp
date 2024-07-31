@@ -14,8 +14,10 @@
 #include "BattleRoyale/core/Abilities/GameplayAbilityBase.h"
 #include "BattleRoyale/core/GameMode/IPlayerState.h"
 #include "BattleRoyale/BattleRoyale.h"
+#include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Abilities/GameplayTagsList.h"
 #include "BattleRoyale/core/Abilities/Skills/SkillBase.h"
+#include "BattleRoyale/core/Abilities/Skills/SkillData.h"
 #include "BattleRoyale/core/Attributes/AttributeSetSpeed.h"
 #include "BattleRoyale/core/GameMode/IGameMode.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
@@ -67,6 +69,8 @@ void ACharacterBase::BeginPlay()
 {
 	// Call the base class
 	Super::BeginPlay();
+	
+	NotifySkillsToHUD();
 	UE_LOG(LogCharacter, Log, TEXT("ACharacterBase::BeginPlay"));
 }
 
@@ -268,10 +272,12 @@ void ACharacterBase::GiveAbilitiesAndSkillsServer()
 					FGameplayAbilitySpec(startupAbility, 1, static_cast<int32>(startupAbility.GetDefaultObject()->AbilityInputID), this)
 				);
 			}
+			
 			for(TSubclassOf<USkillBase>& startupSkill : mDefaultSkills)
 			{
+				const auto defaultSkill = startupSkill.GetDefaultObject();
 				abilitySystemComponent->GiveAbility(
-					FGameplayAbilitySpec(startupSkill, 1, static_cast<int32>(startupSkill.GetDefaultObject()->AbilityInputID), this)
+					FGameplayAbilitySpec(startupSkill, 1, static_cast<int32>(defaultSkill->AbilityInputID), this)
 				);
 			}
 		}
@@ -714,6 +720,23 @@ void ACharacterBase::DieClient()
 void ACharacterBase::NotifyTakeDamage(float damage, const AActor* causer, float currentHealth)
 {
 	MulticastTakeDamage(damage, causer, currentHealth);
+}
+
+void ACharacterBase::NotifySkillsToHUD()
+{
+	TArray<FSkillData> widgetsSkills;
+    			
+    for(TSubclassOf<USkillBase>& startupSkill : mDefaultSkills)
+    {
+    	const auto defaultSkill = startupSkill.GetDefaultObject();
+    	if(const auto skill = Cast<USkillBase>(defaultSkill))
+    	{
+    		widgetsSkills.Add(FSkillData(skill->GetWidgetHUD(), skill->AbilityTags.First(), skill->GetCooldownDuration()));
+    	}
+    }
+    	
+	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetGameInstance());
+	gameInstance->GetEventDispatcher()->OnInitializeSkills.Broadcast(widgetsSkills);
 }
 
 void ACharacterBase::DieServer()

@@ -355,6 +355,8 @@ private:
 	
 	void DisableMovement() const;
 	void DisableCollision() const;
+
+	void NotifySkillsToHUD();
 	
 	//UFUNCTION()
 	//void OnRep_TakeDamageData();

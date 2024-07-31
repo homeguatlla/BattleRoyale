@@ -5,6 +5,7 @@
 #include "IGameHUD.h"
 #include "IHealthHUD.h"
 #include "IPlayerHUD.h"
+#include "ISkillsHUD.h"
 #include "IWeaponHUD.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
@@ -12,7 +13,7 @@
 
 const FString CHARACTER_HUD_NAME("CharacterHUD");
 
-ACharacterHUD::ACharacterHUD()
+ACharacterHUD::ACharacterHUD() : mHUDWidget(nullptr)
 {
 
 }
@@ -50,6 +51,10 @@ void ACharacterHUD::BindToDelegate()
 		eventDispatcher->OnRefreshNumKills.AddDynamic(this, &ThisClass::OnRefreshNumKills);
 
 		eventDispatcher->OnGameStarted.AddDynamic(this, &ThisClass::OnGameStarted);
+
+		eventDispatcher->OnInitializeSkills.AddDynamic(this, &ThisClass::OnInitializeSkills);
+		eventDispatcher->OnStartSkillCooldown.AddDynamic(this, &ThisClass::OnStartSkillCoolDown);
+		eventDispatcher->OnStopSkillCooldown.AddDynamic(this, &ThisClass::OnStopSkillCoolDown);
 	}
 }
 
@@ -126,6 +131,30 @@ void ACharacterHUD::OnGameStarted()
 	if(mHUDWidget->GetClass()->ImplementsInterface(UGameHUD::StaticClass()))
 	{
 		IGameHUD::Execute_OnGameStarted(mHUDWidget);
+	}
+}
+
+void ACharacterHUD::OnInitializeSkills(const TArray<FSkillData>& skills)
+{
+	if(mHUDWidget->GetClass()->ImplementsInterface(USkillsHUD::StaticClass()))
+	{
+		ISkillsHUD::Execute_OnInitializeSkills(mHUDWidget, skills);
+	}
+}
+
+void ACharacterHUD::OnStartSkillCoolDown(const FGameplayTag& skillTag)
+{
+	if(mHUDWidget->GetClass()->ImplementsInterface(USkillsHUD::StaticClass()))
+	{
+		ISkillsHUD::Execute_OnStartSkillCooldown(mHUDWidget, skillTag);
+	}
+}
+
+void ACharacterHUD::OnStopSkillCoolDown(const FGameplayTag& skillTag)
+{
+	if(mHUDWidget->GetClass()->ImplementsInterface(USkillsHUD::StaticClass()))
+	{
+		ISkillsHUD::Execute_OnStopSkillCooldown(mHUDWidget, skillTag);
 	}
 }
 
