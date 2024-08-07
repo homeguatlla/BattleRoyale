@@ -32,8 +32,10 @@ bool AWeaponBase::CanBeFired() const
 void AWeaponBase::Fire(const FVector& targetLocation)
 {
 	//Only local (to the weapon firing)
+	//Removed local only, we are setting a multicast so the fire has to be done on all characters (server-clients)
+	//This way sound can be listened for every player.
+	//BP_OnFire();
 	
-	BP_OnFire();
 	//DrawDebugSphere(GetWorld(), targetLocation, 10, 10, FColor::Green, true);
 	if(CanBeFired())
 	{
@@ -109,7 +111,7 @@ void AWeaponBase::ServerFire_Implementation(const FVector& muzzleLocation, const
 	{
 		return;
 	}
-
+	MulticastFire();
 	ConsumeAmmo();
 	UpdateAmmo(mAmmo);
 	if(const auto character = Cast<ACharacterBase>(GetOwner()))
@@ -173,6 +175,11 @@ void AWeaponBase::UpdateAmmo_Implementation(int32 serverAmmo)
 	{
 		RefreshAmmoHUD(character);
 	}
+}
+
+void AWeaponBase::MulticastFire_Implementation()
+{
+	BP_OnFire();
 }
 
 bool AWeaponBase::SpawnProjectileServer(const FVector& muzzleLocation, const FVector& shootingDirection) const

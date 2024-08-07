@@ -143,6 +143,9 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastReload(int32 serverAmmo);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastFire();
+
 	UFUNCTION(Client, Reliable)
 	void UpdateAmmo(int32 serverAmmo);
 	

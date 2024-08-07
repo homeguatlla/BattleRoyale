@@ -21,8 +21,8 @@ public:
 	float GetCooldownDuration() const;
 	
 private:
-	void NotifyOnStartSkillCooldown(const TWeakObjectPtr<AActor> avatarActor);
-	void NotifyOnStopSkillCooldown(const TWeakObjectPtr<AActor> avatarActor);
+	void NotifyOnStartSkillCooldown(const TWeakObjectPtr<AActor> avatarActor) const;
+	void NotifyOnStopSkillCooldown(const TWeakObjectPtr<AActor> avatarActor) const;
 	
 
 	UPROPERTY(EditDefaultsOnly)

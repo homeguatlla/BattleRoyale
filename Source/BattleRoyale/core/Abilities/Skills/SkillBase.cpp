@@ -17,23 +17,29 @@ void USkillBase::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const 
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	NotifyOnStartSkillCooldown(ActorInfo->AvatarActor);
+    if(IsLocallyControlled())
+    {
+	    NotifyOnStartSkillCooldown(ActorInfo->AvatarActor);
+    }
 }
 
 void USkillBase::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	NotifyOnStopSkillCooldown(ActorInfo->AvatarActor);
+	if(IsLocallyControlled())
+	{
+		NotifyOnStopSkillCooldown(ActorInfo->AvatarActor);
+	}
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-void USkillBase::NotifyOnStartSkillCooldown(const TWeakObjectPtr<AActor> avatarActor)
+void USkillBase::NotifyOnStartSkillCooldown(const TWeakObjectPtr<AActor> avatarActor) const
 {
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(avatarActor->GetGameInstance());
 	gameInstance->GetEventDispatcher()->OnStartSkillCooldown.Broadcast(AbilityTags.First());
 }
 
-void USkillBase::NotifyOnStopSkillCooldown(const TWeakObjectPtr<AActor> avatarActor)
+void USkillBase::NotifyOnStopSkillCooldown(const TWeakObjectPtr<AActor> avatarActor) const
 {
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(avatarActor->GetGameInstance());
 	gameInstance->GetEventDispatcher()->OnStopSkillCooldown.Broadcast(AbilityTags.First());
