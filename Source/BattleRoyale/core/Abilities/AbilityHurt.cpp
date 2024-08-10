@@ -10,13 +10,15 @@
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/Character/Components/HurtComponent.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
+#include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
+#include "GameFramework/PlayerState.h"
 
 
 UAbilityHurt::UAbilityHurt()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	//Like a passive ability: will be granted by an gameplay effect, GE_AddHurtAbility
-	//Esta habilidad si es LocalOnly, no funcionará cuando dispare el servidor!!? no se modifica la vida. Averiguar porque.
+	//Esta habilidad si es LocalOnly no funcionará cuando dispare el servidor!!? no se modifica la vida. Averiguar porque.
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerOnly;
 	//and will be activated when granted(added)
 	ActivateAbilityOnGranted = true;
