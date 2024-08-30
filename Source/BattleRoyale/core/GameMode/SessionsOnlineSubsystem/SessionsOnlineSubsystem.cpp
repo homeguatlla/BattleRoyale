@@ -3,6 +3,7 @@
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Online/OnlineSessionNames.h"
 
 SessionsOnlineSubsystem::SessionsOnlineSubsystem(UWorld* world) :
 m_World{world}

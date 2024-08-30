@@ -9,13 +9,6 @@
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/Attributes/AttributeSetHealth.h"
 
-void UAbilitySystemComponentBase::SetSimulatedMontage(UAnimMontage* montage)
-{
-	FGameplayAbilityRepAnimMontage animMontage;
-	animMontage.AnimMontage = montage;
-	
-	SetRepAnimMontageInfo(animMontage);
-}
 
 FActiveGameplayEffectHandle UAbilitySystemComponentBase::ApplyGameplayEffectToTarget(const TSubclassOf<UGameplayEffect>& effect, const IICharacter* target)
 {

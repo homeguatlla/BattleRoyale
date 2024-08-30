@@ -149,7 +149,7 @@ class BATTLEROYALE_API UtilsLibrary
 				rayEnd,
 				ECollisionChannel::ECC_Visibility,
 				params);
-			//DrawDebugLine(world, rayStart, rayEnd, FColor::Blue);
+			//DrawDebugLine(world, rayStart, rayEnd, FColor::Blue, false, 10);
 			
 			return hitResult;
 		}

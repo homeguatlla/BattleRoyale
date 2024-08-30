@@ -18,8 +18,6 @@ class BATTLEROYALE_API UAbilitySystemComponentBase : public UAbilitySystemCompon
 
 public:
 
-	virtual void SetSimulatedMontage(UAnimMontage* montage) override;
-
 	virtual FActiveGameplayEffectHandle ApplyGameplayEffectToTarget(const TSubclassOf<UGameplayEffect>& effect, const IICharacter* target) override;
 	virtual FActiveGameplayEffectHandle ApplyGameplayEffectToSelf(const TSubclassOf<UGameplayEffect>& effectClass) override;
 	virtual bool RemoveGameplayEffect(FActiveGameplayEffectHandle handle) override;

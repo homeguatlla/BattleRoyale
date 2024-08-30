@@ -28,8 +28,6 @@ class BATTLEROYALE_API IIAbilitySystemInterfaceBase
 	GENERATED_BODY()
 
 public:
-	virtual void SetSimulatedMontage(UAnimMontage* montage) = 0;
-
 	virtual FActiveGameplayEffectHandle ApplyGameplayEffectToTarget(const TSubclassOf<UGameplayEffect>& effect, const IICharacter* target) = 0;
 	virtual FActiveGameplayEffectHandle ApplyGameplayEffectToSelf(const TSubclassOf<UGameplayEffect>& effectClass) = 0;
 	virtual bool RemoveGameplayEffect(FActiveGameplayEffectHandle handle) = 0;

@@ -10,5 +10,6 @@ public class BattleRoyaleTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.Add("BattleRoyale");
+		bOverrideBuildEnvironment = true;
 	}
 }
