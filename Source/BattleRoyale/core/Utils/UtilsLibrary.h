@@ -268,7 +268,7 @@ class BATTLEROYALE_API UtilsLibrary
 		{
 			return nullptr;
 		}
-		if(const auto projectile = world->SpawnActorDeferred<AProjectileBase>(projectileClass, transform, owner, instigator, ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
+		if(const auto projectile = world->SpawnActorDeferred<AProjectileBase>(projectileClass, transform, owner, instigator, ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding))
 		{
 			projectile->FinishSpawning(transform);
 			return projectile;

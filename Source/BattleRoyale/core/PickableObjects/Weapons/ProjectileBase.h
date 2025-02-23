@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameplayEffect.h"
 #include "IProjectile.h"
+#include "BattleRoyale/core/PickableObjects/Ammo/AmmoTypes.h"
 #include "GameFramework/Actor.h"
 #include "ProjectileBase.generated.h"
 
+class UPhysicalMaterialBase;
 class USphereComponent;
 class UProjectileMovementComponent;
 class IICharacter;
@@ -52,6 +54,8 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
+
+	virtual void Tick(float DeltaSeconds) override;
 	
 	virtual UParticleSystem* GetExplosionEffect() const override { return ExplosionEffect; }
 	virtual USoundBase* GetExplosionSound() const override { return ExplosionSound; }
@@ -81,5 +85,8 @@ protected:
 private:
 	UPROPERTY()
 	UPhysicalMaterialBase* mImpactPhysicalMaterial = nullptr;
+
+	UPROPERTY()
+	FTransform m_Transform;
 };
 

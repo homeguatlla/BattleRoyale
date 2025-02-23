@@ -52,6 +52,9 @@ class BATTLEROYALE_API UCombatComponent : public UActorComponent, public IGunCom
 	
 	UPROPERTY(EditAnywhere, Category = "CombatComponent")
 	float MagazineAlmostEmptyPercentage = 0.2f;
+
+	static const float CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON_STANDUP;
+	static const float CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON_CROUCH;
 	
 public:	
 	// Sets default values for this component's properties

@@ -13,7 +13,6 @@
 #include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "BattleRoyale/core/Utils/TargetDatas/TargetDataPickupObject.h"
 #include "Engine/SkeletalMeshSocket.h"
-#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AWeaponBase::AWeaponBase()
@@ -104,9 +103,7 @@ void AWeaponBase::ServerFire_Implementation(const FVector& muzzleLocation, const
 	{
 		return;
 	}
-
-	//DrawDebugSphere(GetWorld(), targetLocation, 5, 10, FColor::Blue, true);
-	//DrawDebugLine(GetWorld(), muzzleLocation, targetLocation, FColor::Red, true);
+	
 	if(!SpawnProjectileServer(muzzleLocation, targetLocation - muzzleLocation))
 	{
 		return;
@@ -188,10 +185,14 @@ bool AWeaponBase::SpawnProjectileServer(const FVector& muzzleLocation, const FVe
 	{
 		return false;
 	}
-	const auto location = GetProjectileSpawnLocation(muzzleLocation, shootingDirection, DistanceFromMuzzleLocation);
+	auto location = GetProjectileSpawnLocation(muzzleLocation, shootingDirection, DistanceFromMuzzleLocation);
+	//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Black, FString::Printf(TEXT("location %s"), *location.ToString()));
+	
+	//DrawDebugSphere(GetWorld(), location, 3, 10, FColor::Yellow, false, 5);
 	FTransform transform;
 	transform.SetLocation(location);
 	transform.SetRotation(shootingDirection.Rotation().Quaternion());
+
 	const auto projectile = utils::UtilsLibrary::LaunchProjectile(GetWorld(), ProjectileClass, transform, GetOwner(), Cast<APawn>(GetOwner()));
 	return projectile != nullptr;
 }

@@ -31,7 +31,7 @@ AProjectileBase::AProjectileBase()
 	ProjectileMovement->InitialSpeed = 3000.f;
 	ProjectileMovement->MaxSpeed = 3000.f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
-	ProjectileMovement->bShouldBounce = true;
+	ProjectileMovement->bShouldBounce = false;
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
@@ -41,11 +41,15 @@ AProjectileBase::AProjectileBase()
 void AProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
+
 	//this doesn't work on constructor because in constructor the Projectile has the authority. Later it is changed if is not the server.
 	if(HasAuthority())
 	{
+		//IF we remove this line the bullet will bounce the walls :)
 		CollisionComp->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);		// set up a notification for when this component hits something blocking
 	}
+	const auto location = GetActorLocation();
+	m_Transform = GetActorTransform();
 }
 
 void AProjectileBase::Destroyed()
@@ -56,10 +60,18 @@ void AProjectileBase::Destroyed()
 	OnExplode(mImpactPhysicalMaterial);
 }
 
+void AProjectileBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	const auto location = GetActorLocation();
+	//Automatic fire delay de 0.15 tiene el BP_AssaultRifle
+	//Ahora está a 1.0 para poder dejar el disparo automático y hacer F8 para ver de donde sale la bala.
+}
+
 void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	ensureMsgf(HasAuthority(), TEXT("Only Server can Receive OnHit for projectiles"));
-	
+	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, FString::Printf(TEXT("OnHit against: %s - object: %s"), *OtherComp->GetName(), *Hit.HitObjectHandle.GetName()));
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
 	{
 		// Only add impulse and destroy projectile if we hit a physics

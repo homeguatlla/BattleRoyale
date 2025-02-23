@@ -17,8 +17,8 @@
 #include "GameFramework/InputSettings.h"
 #include "Kismet/KismetMathLibrary.h"
 
-#define CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON_STANDUP 16.7f
-#define CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON_CROUCH 5.8f
+const float UCombatComponent::CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON_STANDUP = 16.7f;
+const float UCombatComponent::CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON_CROUCH = 5.8f;
 
 // Sets default values for this component's properties
 UCombatComponent::UCombatComponent()
@@ -69,6 +69,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		return;
 	}
+	
 	if(mCharacter && mCharacter->IsLocallyControlled() && HasWeaponEquipped())
 	{
 		const auto spread = CalculateCrosshairSpread();
@@ -247,6 +248,7 @@ void UCombatComponent::ShootOnce() const
 	const auto shootingTargetData = CalculateShootingTargetData();
 	const auto weapon = mEquippedWeapon;
 
+	//DrawDebugSphere(GetWorld(), shootingTargetData.targetLocation, 10, 10, FColor::Yellow, false, 5, 0, 1);
 	weapon->Fire(shootingTargetData.targetLocation);
 }
 
