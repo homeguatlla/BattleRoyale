@@ -272,6 +272,9 @@ public:
 	void OnInputActionSkill1() const;
 	UFUNCTION()
 	void OnInputActionSkill2() const;
+	UFUNCTION()
+	void OnInputActionHeal() const;
+	
 		
 protected:
 	virtual void BeginPlay() override;

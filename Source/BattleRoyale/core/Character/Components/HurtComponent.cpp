@@ -17,30 +17,34 @@ UHurtComponent::UHurtComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
+	bWantsInitializeComponent = true;
 }
 
-void UHurtComponent::InitializeServer() const
+void UHurtComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	CacheAbilitySystemComponent();
+}
+
+void UHurtComponent::InitializeServer()
 {
 	if(!GetOwner()->HasAuthority())
 	{
 		return;
 	}
-	
-	const auto abilitySystemComponentInterface = GetAbilitySystemComponent();
-	if(!abilitySystemComponentInterface)
-	{
-		return;
-	}
+
+	CacheAbilitySystemComponent();
 	
 	const auto owner = Cast<ACharacterBase>(GetOwner());
 	const auto playerState = owner->GetPlayerState();
 	
-	abilitySystemComponentInterface->AddAttributeSet(NewObject<UAttributeSetHealth>(playerState));
+	mAbilitySystemComponent->AddAttributeSet(NewObject<UAttributeSetHealth>(playerState));
 
 	//Play a gameplay effect to add the ability
 	if(InitializeHurtEffect)
 	{
-		if(!abilitySystemComponentInterface->ApplyGameplayEffectToSelf(InitializeHurtEffect).WasSuccessfullyApplied())
+		if(!mAbilitySystemComponent->ApplyGameplayEffectToSelf(InitializeHurtEffect).WasSuccessfullyApplied())
 		{
 			UE_LOG(LogCharacter, Warning, TEXT("[%s][UHurtComponent::InitializeServer] hurt initializing effect was not successfully applied"), *GetName());
 		}
@@ -49,19 +53,13 @@ void UHurtComponent::InitializeServer() const
 
 bool UHurtComponent::RegisterToHealthAttributeDelegate(std::function<void (const FOnAttributeChangeData& data)> callback) const
 {
-	const auto abilitySystemComponentInterface = GetAbilitySystemComponent();
-	if(!abilitySystemComponentInterface)
-	{
-		return false;
-	}
-
-	const auto attributeSetHealth = abilitySystemComponentInterface->GetAttributeSetHealth();
+	const auto attributeSetHealth = mAbilitySystemComponent->GetAttributeSetHealth();
 	if(!attributeSetHealth)
 	{
 		return false;
 	}
 	
-	auto& delegateOnHealthChanged = abilitySystemComponentInterface->GetAttributeValueChangeDelegate(attributeSetHealth->GetHealthAttribute());
+	auto& delegateOnHealthChanged = mAbilitySystemComponent->GetAttributeValueChangeDelegate(attributeSetHealth->GetHealthAttribute());
 	delegateOnHealthChanged.AddLambda(callback);
 	
 	return true;
@@ -74,69 +72,68 @@ void UHurtComponent::SetInvulnerableServer(bool isInvulnerable)
 
 float UHurtComponent::GetCurrentHealth() const
 {
-	if(const auto abilitySystemComponentInterface = GetAbilitySystemComponent())
+	check(mAbilitySystemComponent);
+	
+	if(const auto attributeSetHealth = mAbilitySystemComponent->GetAttributeSetHealth())
 	{
-		if(const auto attributeSetHealth = abilitySystemComponentInterface->GetAttributeSetHealth())
-		{
-			return attributeSetHealth->GetHealth();
-		}
+		return attributeSetHealth->GetHealth();
 	}
-
+	
 	ensureMsgf(false, TEXT("UHurtComponent::GetCurrentHealth error calling GetCurrentHealth before HurtComponent properly initialized and replicated"));
 	return 0.0f;
 }
 
+bool UHurtComponent::IsCurrentHealthMax() const
+{
+	return false;
+}
+
 bool UHurtComponent::IsReady() const
 {
-	const auto abilitySystem = GetAbilitySystemComponent();
-	if(!abilitySystem)
-	{
-		return false;
-	}
-	
-	return abilitySystem->GetAttributeSetHealth() != nullptr;
+	return mAbilitySystemComponent ? mAbilitySystemComponent->GetAttributeSetHealth() != nullptr : false;
 }
 
 void UHurtComponent::Dissolve() const
 {
-	const auto abilitySystem = GetAbilitySystemComponent();
-	if(!abilitySystem)
-	{
-		return;
-	}
+	check(mAbilitySystemComponent);
 	if(!DissolveEffect)
 	{
 		return;
 	}
 	
-	abilitySystem->ApplyGameplayEffectToSelf(DissolveEffect);
+	mAbilitySystemComponent->ApplyGameplayEffectToSelf(DissolveEffect);
 }
 
 IIAbilitySystemInterfaceBase* UHurtComponent::GetAbilitySystemComponent() const
 {
-	const auto character = Cast<IICharacter>(GetOwner());
-	if(!character)
-	{
-		return nullptr;
-	}
-
-	return character->GetAbilitySystemComponentBase();
+	check(mAbilitySystemComponent);
+	return mAbilitySystemComponent.GetInterface();
 }
 
 void UHurtComponent::ServerSetInvulnerable_Implementation(bool isInvulnerable)
 {
-	const auto abilitySystemComponentInterface = GetAbilitySystemComponent();
-	if(!abilitySystemComponentInterface)
-	{
-		return;
-	}
+	check(mAbilitySystemComponent);
+	
 	if(!isInvulnerable && mInvulnerableEffectHandle.IsValid())
 	{
-		abilitySystemComponentInterface->RemoveGameplayEffect(mInvulnerableEffectHandle);
+		mAbilitySystemComponent->RemoveGameplayEffect(mInvulnerableEffectHandle);
 	}
-	else if(isInvulnerable && !mInvulnerableEffectHandle.IsValid())
+	else if(isInvulnerable && !mInvulnerableEffectHandle.IsValid() && InvulnerableEffect)
 	{
-		
-		mInvulnerableEffectHandle = abilitySystemComponentInterface->ApplyGameplayEffectToSelf(InvulnerableEffect);
+		mInvulnerableEffectHandle = mAbilitySystemComponent->ApplyGameplayEffectToSelf(InvulnerableEffect);
 	}
+}
+
+void UHurtComponent::CacheAbilitySystemComponent()
+{
+	const auto character = Cast<ACharacterBase>(GetOwner());
+	if (!character)
+		return;
+	
+	const auto abilitySystemComponent = character->GetAbilitySystemComponentBase();
+	if (!abilitySystemComponent || mAbilitySystemComponent)
+		return ;
+	
+	mAbilitySystemComponent.SetInterface(abilitySystemComponent);
+	mAbilitySystemComponent.SetObject(Cast<UObject>(abilitySystemComponent));
 }

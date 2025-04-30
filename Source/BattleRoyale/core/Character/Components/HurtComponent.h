@@ -18,12 +18,14 @@ class BATTLEROYALE_API UHurtComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UHurtComponent();
-
-	void InitializeServer() const;
+	
+	virtual void BeginPlay() override;
+	void InitializeServer();
 	bool RegisterToHealthAttributeDelegate(std::function<void(const FOnAttributeChangeData& data)> callback) const;
 	void SetInvulnerableServer(bool isInvulnerable);
 	virtual bool IsAlive() const { return GetCurrentHealth() > 0.0f; }
 	float GetCurrentHealth() const;
+	bool IsCurrentHealthMax() const;
 	bool IsReady() const;
 	void Dissolve() const;
 	
@@ -36,7 +38,8 @@ public:
 private:
 	// Implement IAbilitySystemInterface
 	virtual class IIAbilitySystemInterfaceBase* GetAbilitySystemComponent() const;
-
+	void CacheAbilitySystemComponent();
+	
 	UFUNCTION(Server, Reliable)
 	void ServerSetInvulnerable(bool isInvulnerable);
 	
@@ -44,4 +47,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Hurt")
 	TSubclassOf<UGameplayEffect> InvulnerableEffect;
+
+	UPROPERTY()
+	TScriptInterface<IIAbilitySystemInterfaceBase> mAbilitySystemComponent = nullptr;
 };

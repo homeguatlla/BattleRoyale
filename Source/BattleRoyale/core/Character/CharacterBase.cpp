@@ -579,6 +579,12 @@ void ACharacterBase::OnInputActionSkill2() const
 	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SKILL_2), this, false);
 }
 
+void ACharacterBase::OnInputActionHeal() const
+{
+	const auto abilitySystem = GetAbilitySystemComponentBase();
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_HEAL), this, false);
+}
+
 IIGameMode* ACharacterBase::GetGameModeServer() const
 {
 	return Cast<IIGameMode>(GetWorld()->GetAuthGameMode<ABattleRoyaleGameMode>());
