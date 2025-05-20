@@ -83,11 +83,6 @@ float UHurtComponent::GetCurrentHealth() const
 	return 0.0f;
 }
 
-bool UHurtComponent::IsCurrentHealthMax() const
-{
-	return false;
-}
-
 bool UHurtComponent::IsReady() const
 {
 	return mAbilitySystemComponent ? mAbilitySystemComponent->GetAttributeSetHealth() != nullptr : false;
@@ -102,6 +97,13 @@ void UHurtComponent::Dissolve() const
 	}
 	
 	mAbilitySystemComponent->ApplyGameplayEffectToSelf(DissolveEffect);
+}
+
+bool UHurtComponent::IsHealthFull() const
+{
+	check(mAbilitySystemComponent);
+
+	return mAbilitySystemComponent->GetAttributeSetHealth()->IsHealthFull();
 }
 
 IIAbilitySystemInterfaceBase* UHurtComponent::GetAbilitySystemComponent() const

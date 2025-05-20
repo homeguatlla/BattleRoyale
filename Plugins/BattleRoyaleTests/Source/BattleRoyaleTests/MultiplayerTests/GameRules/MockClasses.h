@@ -1,7 +1,5 @@
 ﻿
 #pragma once
-#include <functional>
-
 #include "CoreMinimal.h"
 #include "BattleRoyale/core/Character/CharacterBase.h"
 #include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"

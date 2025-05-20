@@ -25,9 +25,9 @@ public:
 	void SetInvulnerableServer(bool isInvulnerable);
 	virtual bool IsAlive() const { return GetCurrentHealth() > 0.0f; }
 	float GetCurrentHealth() const;
-	bool IsCurrentHealthMax() const;
 	bool IsReady() const;
 	void Dissolve() const;
+	bool IsHealthFull() const;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Hurt")
 	TSubclassOf<UGameplayEffect> InitializeHurtEffect;

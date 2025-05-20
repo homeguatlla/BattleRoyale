@@ -14,12 +14,27 @@ class BATTLEROYALE_API UAbilityHeal : public UGameplayAbilityBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UInventoryItemStaticData> InventoryItemStaticData;
+	TSubclassOf<UInventoryItemStaticData> InventoryItemStaticData = nullptr;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> HealEffectClass = nullptr;
+	/** AnimMontage to play each time we heal */
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* HealAnimation = nullptr;
 	
 public:
 	UAbilityHeal();
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	void CreateTaskPlayMontageHealing(const FGameplayAbilityActorInfo* ActorInfo);
+	void SubscribeToEventMontageHealFinished();
+	UFUNCTION()
+	void OnMontageCompleted();
+	UFUNCTION()
+	void OnMontageCancelled();
+	UFUNCTION()
+	void OnEventMontageHealFinishedReceived(FGameplayEventData Payload);
 
+	UPROPERTY()
+	class UAbilityTask_WaitGameplayEvent* waitHealFinishedGameplayEventTask = nullptr;
 };

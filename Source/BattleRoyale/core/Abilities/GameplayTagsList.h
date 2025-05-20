@@ -14,6 +14,7 @@ const FName TAG_ABILITY_PICKUP_INDICATOR("Ability.PickupIndicator");
 const FName TAG_ABILITY_RELOAD("Ability.Reload");
 const FName TAG_ABILITY_INVENTORY("Ability.Inventory");
 const FName TAG_ABILITY_HEAL("Ability.Heal");
+const FName TAG_ABILITY_EQUIP("Ability.Equip");
 
 const FName TAG_SKILL_SMOKE("Skill.Smoke");
 const FName TAG_SKILL_CROSS_WALLS("Skill.CrossWalls");
@@ -24,6 +25,7 @@ const FName TAG_STATE_DEAD = FName("State.Dead");
 const FName TAG_STATE_SPRINTING = FName("State.Sprinting");
 const FName TAG_STATE_RELOADING = FName("State.Reloading");
 const FName TAG_STATE_HEALING = FName("State.Healing");
+const FName TAG_STATE_EQUIPPING = FName("State.Equipping");
 
 const FName TAG_GAMEPLAYCUE_JUMP("GameplayCue.Jump");
 const FName TAG_GAMEPLAYCUE_SPRINT("GameplayCue.Sprint");
@@ -34,6 +36,8 @@ const FName TAG_EVENT_MONTAGE_SHOOT("Event.Montage.Shoot");
 const FName TAG_EVENT_MONTAGE_RELOAD_RELOAD("Event.Montage.Reload.Reload");
 const FName TAG_EVENT_MONTAGE_RELOAD_AMMO_OUT("Event.Montage.Reload.AmmoOut");
 const FName TAG_EVENT_MONTAGE_RELOAD_AMMO_IN("Event.Montage.Reload.AmmoIn");
+const FName TAG_EVENT_MONTAGE_HEAL_FINISHED("Event.Montage.Heal.Finished");
+const FName TAG_EVENT_MONTAGE_EQUIP_ITEM_BACK("Event.Montage.Equip.Item.Back");
 
 const FName TAG_EVENT_SET_OBJECT_TO_PICKUP_INDICATOR("Event.PickupIndicator.Set");
 const FName TAG_EVENT_INPUT_PICKUP("Event.Input.PickUp");
@@ -54,6 +58,7 @@ const FName TAG_EVENT_INPUT_RELOAD("Event.Input.Reload");
 const FName TAG_EVENT_INPUT_SKILL_1("Event.Input.Skill1");
 const FName TAG_EVENT_INPUT_SKILL_2("Event.Input.Skill2");
 const FName TAG_EVENT_INPUT_HEAL("Event.Input.Heal");
+const FName TAG_EVENT_INPUT_EQUIP_ITEM_TO_HEAL("Event.Input.Equip.Item.Heal");
 
 const FName TAG_EFFECTS_WEAPON("Effects.Weapon.Cooldown");
 const FName TAG_EFFECTS_DISSOLVE("Effects.Dissolve");

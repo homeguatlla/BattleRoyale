@@ -33,3 +33,12 @@ IICharacter* UGameplayAbilityBase::GetCharacter(const FGameplayAbilityActorInfo*
 	}
 	return nullptr;
 }
+
+IICharacter* UGameplayAbilityBase::GetCharacter(AActor* actor) const
+{
+	if(actor != nullptr && actor->Implements<UICharacter>())
+	{
+		return Cast<IICharacter>(actor);
+	}
+	return nullptr;
+}

@@ -23,7 +23,8 @@ public:
 	virtual void OnAvatarSet(const FGameplayAbilityActorInfo* actorInfo, const FGameplayAbilitySpec& spec) override;
 
 	IICharacter* GetCharacter(const FGameplayAbilityActorInfo* actorInfo) const;
-	
+	IICharacter* GetCharacter(AActor* actor) const;
+
 	// Abilities with this set will automatically activate when the input is pressed
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
 	EAbilityInputID AbilityInputID = EAbilityInputID::None;

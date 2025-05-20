@@ -8,6 +8,7 @@
 #include "GameplayEffectExtension.h"
 #include "BattleRoyale/core/Abilities/GameplayTagsList.h"
 #include "BattleRoyale/core/GameMode/BattleRoyale/BattleRoyaleGameMode.h"
+#include "BattleRoyale/core/GameMode/PlayerState/PlayerStateBase.h"
 
 
 UAttributeSetHealth::UAttributeSetHealth() :

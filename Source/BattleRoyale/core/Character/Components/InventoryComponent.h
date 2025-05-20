@@ -18,6 +18,7 @@ class UMyReplicatedObject;
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEquippedPickableObject, TScriptInterface<IPickupObject> object);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnEquippedItemWeapon, TScriptInterface<IWeapon> weapon, int32 totalAmmo);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPickedUpOrDroppedAmmo, EAmmoType type, int32 totalAmmo);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnUnEquippedItemWeapon, TScriptInterface<IWeapon> weapon);
 
 DECLARE_MULTICAST_DELEGATE(FOnDroppedPickableObject);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnDroppedItemWeapon, bool isEquipped);
@@ -32,6 +33,7 @@ public:
 	FOnEquippedPickableObject OnEquippedPickableObjectDelegate;
 	FOnEquippedItemWeapon OnEquippedWeaponDelegate;
 	FOnUnEquippedPickableObject OnUnEquippedPickableObject;
+	FOnUnEquippedItemWeapon OnUnEquippedWeaponDelegate;
 	FOnPickedUpOrDroppedAmmo OnPickedUpOrDroppedAmmoDelegate;
 	FOnDroppedPickableObject OnDroppedPickableObjectDelegate;
 	FOnDroppedItemWeapon OnDroppedItemWeaponDelegate;

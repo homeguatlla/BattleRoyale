@@ -12,9 +12,9 @@ struct BATTLEROYALE_API FSkillData
 	FSkillData(const TSubclassOf<USkillWidget>& userWidget, const FGameplayTag& tag, float cooldown) : WidgetHUD(userWidget), Tag(tag), Cooldown(cooldown) {}
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FGameplayTag Tag;
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TSubclassOf<USkillWidget> WidgetHUD;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FGameplayTag Tag;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	float Cooldown {0.0f};
 };

@@ -62,8 +62,6 @@ public:
 	
 	virtual void InitializeComponent() override;
 	
-	virtual bool UnEquipWeapon() override;
-
 	UFUNCTION(BlueprintCallable, Category = "IGunComponent")
 	virtual TScriptInterface<IWeapon> GetEquippedWeapon() const override;
 
@@ -119,12 +117,14 @@ private:
 	void OnAutomaticFire() ;
 	void ShootOnce() const;
 
+	virtual bool UnEquipWeapon() override;
 	bool EquipWeapon(TScriptInterface<IWeapon> weapon);
 	void OnEquippedWeapon(TScriptInterface<IWeapon> weapon, int32 totalAmmo);
 	void OnPickedOrDroppedUpAmmo(EAmmoType type, int32 totalAmmo);
 	void OnDroppedPickableObject();
 	void OnDroppedWeapon(bool isEquipped);
-
+	void OnUnEquipWeapon(TScriptInterface<IWeapon> weapon);
+	
 	//RPCs don't support TScriptInterfaces as a parameter
 	UFUNCTION(Server, Reliable)
 	void ServerReload(UInventoryComponent* inventoryComponent);

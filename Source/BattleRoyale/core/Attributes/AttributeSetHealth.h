@@ -33,6 +33,7 @@ public:
 	ATTRIBUTE_ACCESSORS(UAttributeSetHealth, Health)
 
 	UAttributeSetHealth();
+	bool IsHealthFull() const { return Health.GetCurrentValue() >= MaxHealth.GetCurrentValue(); }
 	
 private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

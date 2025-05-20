@@ -274,7 +274,8 @@ public:
 	void OnInputActionSkill2() const;
 	UFUNCTION()
 	void OnInputActionHeal() const;
-	
+	UFUNCTION()
+	void OnInputActionEquipHealItem() const;
 		
 protected:
 	virtual void BeginPlay() override;

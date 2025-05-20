@@ -41,6 +41,7 @@ void UCombatComponent::InitializeComponent()
 		inventoryComponent->OnPickedUpOrDroppedAmmoDelegate.AddUObject(this, &ThisClass::OnPickedOrDroppedUpAmmo);
 		inventoryComponent->OnDroppedPickableObjectDelegate.AddUObject(this, &ThisClass::OnDroppedPickableObject);
 		inventoryComponent->OnDroppedItemWeaponDelegate.AddUObject(this, &ThisClass::OnDroppedWeapon);
+		inventoryComponent->OnUnEquippedWeaponDelegate.AddUObject(this, &ThisClass::OnUnEquipWeapon);
 	}
 }
 
@@ -297,6 +298,11 @@ void UCombatComponent::OnDroppedWeapon(bool isEquipped)
 			eventDispatcher->OnRefreshTotalAmmo.Broadcast(0);
 		}
 	}
+}
+
+void UCombatComponent::OnUnEquipWeapon(TScriptInterface<IWeapon> weapon)
+{
+	OnDroppedWeapon(HasWeaponEquipped() && GetEquippedWeapon() == weapon);
 }
 
 void UCombatComponent::ServerReload_Implementation(UInventoryComponent* inventoryComponent)

@@ -585,6 +585,12 @@ void ACharacterBase::OnInputActionHeal() const
 	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_HEAL), this, false);
 }
 
+void ACharacterBase::OnInputActionEquipHealItem() const
+{
+	const auto abilitySystem = GetAbilitySystemComponentBase();
+	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_EQUIP_ITEM_TO_HEAL), this, false);
+}
+
 IIGameMode* ACharacterBase::GetGameModeServer() const
 {
 	return Cast<IIGameMode>(GetWorld()->GetAuthGameMode<ABattleRoyaleGameMode>());

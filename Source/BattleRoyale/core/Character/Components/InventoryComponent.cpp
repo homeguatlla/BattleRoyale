@@ -307,7 +307,10 @@ bool UInventoryComponent::UnEquipItem()
 	//TODO esto se podría meter en un método UnEquipObject
 	pickableObject->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	pickableObject->OnUnEquipped();
-	OnUnEquippedPickableObject.Broadcast();
+	if (IsAWeapon(pickableObject))
+		OnUnEquippedWeaponDelegate.Broadcast(Cast<AWeaponBase>(pickableObject.GetObject()));
+	else
+		OnUnEquippedPickableObject.Broadcast();
 	mEquippedObject = nullptr;
 	object->Destroy();
 	
