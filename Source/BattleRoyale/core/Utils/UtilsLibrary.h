@@ -329,5 +329,27 @@ class BATTLEROYALE_API UtilsLibrary
 			}
 		}
 	}
+
+	static void AttachComponentsSocketToSocket(USceneComponent* Target, USceneComponent* Parent, FName TargetSocketName, FName ParentSocketName, bool bScaleToParentSocket)
+		{
+			// Rotate in such a way that TargetSocket rotation becomes the same with ParentSocket rotation
+			FVector OriginalTargetSocketLocation = Target->GetSocketLocation(TargetSocketName);
+			FQuat DeltaRootQuat = Parent->GetSocketQuaternion(ParentSocketName) * Target->GetSocketQuaternion(TargetSocketName).Inverse();
+			Target->SetWorldRotation(DeltaRootQuat * Target->GetComponentQuat(), false, nullptr, ETeleportType::TeleportPhysics);
+			FVector RotationLocationOffset = OriginalTargetSocketLocation - Target->GetSocketLocation(TargetSocketName);
+			Target->AddWorldOffset(RotationLocationOffset, false, nullptr, ETeleportType::TeleportPhysics);
+
+			// Set location in such a way that TargetSocket location becomes the same with ParentSocket location
+			Target->AddWorldOffset(Parent->GetSocketLocation(ParentSocketName) - Target->GetSocketLocation(TargetSocketName));
+
+			// If scaling is needed, scale Target as specified by ParentSocket
+			if (bScaleToParentSocket)
+			{
+				Target->SetWorldScale3D(Parent->GetSocketTransform(ParentSocketName, RTS_World).GetScale3D());
+			}
+
+			// Attach target to parent
+			Target->AttachToComponent(Parent, FAttachmentTransformRules::KeepWorldTransform, ParentSocketName);
+		}
 };
 }

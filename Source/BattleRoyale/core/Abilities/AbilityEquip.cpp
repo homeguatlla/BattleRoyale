@@ -6,9 +6,11 @@
 #include "GameplayTagsList.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/Character/Components/HurtComponent.h"
 #include "BattleRoyale/core/Character/Components/IInventoryComponent.h"
+#include "BattleRoyale/core/Utils/Inventory/InventoryItemStaticData.h"
 
 UAbilityEquip::UAbilityEquip()
 {
@@ -46,8 +48,6 @@ void UAbilityEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		return;
 	}
 	
-	TSubclassOf<UInventoryItemStaticData> itemStaticDataToEquip = nullptr;
-	
 	if (TriggerEventData->EventTag == FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_EQUIP_ITEM_TO_HEAL))
 	{
 		if (!CanIHeal(character))
@@ -56,15 +56,17 @@ void UAbilityEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			return;
 		}
 		
-		itemStaticDataToEquip = InventoryItemHealStaticData;
+		mItemStaticDataToEquip = InventoryItemHealStaticData;
 	}
 	/*if (TriggerEventData->EventTag == FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_EQUIP_ITEM_TO_HEAL))
 	{
 		// 0) find weapon to equip if it has 
 		
 	}*/
-	
-	SubscribeToEventMontageItemBack();
+
+	if(ActorInfo->IsNetAuthority())
+		SubscribeToEventMontageItemBack();
+
 	CreateTaskPlayMontage(ActorInfo, UnEquipAnimation);
 }
 
@@ -76,11 +78,12 @@ void UAbilityEquip::EndAbility(const FGameplayAbilitySpecHandle Handle, const FG
 
 void UAbilityEquip::OnMontageCancelled()
 {
+	K2_CancelAbility();
 }
 
 void UAbilityEquip::OnMontageCompleted()
 {
-	
+	K2_EndAbility();
 }
 
 void UAbilityEquip::OnEventMontageItemBackReceived(FGameplayEventData payload)
@@ -88,20 +91,34 @@ void UAbilityEquip::OnEventMontageItemBackReceived(FGameplayEventData payload)
 	const auto character = GetCharacter(GetAvatarActorFromActorInfo());
 	if (!character)
 	{
-		K2_EndAbility();
+		K2_CancelAbility();
 		return;
 	}
 	
 	const auto inventoryComponent = character->GetInventoryComponent();
 	if (!inventoryComponent)
 	{
-		K2_EndAbility();
+		K2_CancelAbility();
 		return;
 	}
 
 	if (inventoryComponent->HasItemEquipped())
 	{
 		inventoryComponent->UnEquipItem();
+	}
+
+	if (const auto itemToEquip = inventoryComponent->GetFirstItemOfType(mItemStaticDataToEquip))
+	{
+		inventoryComponent->EquipItem(itemToEquip);
+	}
+	else
+	{
+		const auto itemStaticData = mItemStaticDataToEquip.GetDefaultObject();
+		UE_LOG(
+			LogCharacter,
+			Warning,
+			TEXT("UAbilityEquip::OnEventMontageItemBackReceived No item %s to equip found"),
+			*itemStaticData->GetItemName().ToString());
 	}
 }
 
@@ -124,18 +141,18 @@ void UAbilityEquip::CreateTaskPlayMontage(const FGameplayAbilityActorInfo* Actor
 
 void UAbilityEquip::SubscribeToEventMontageItemBack()
 {
-	if(waitItemBackGameplayEventTask)
+	if(mWaitItemBackGameplayEventTask)
 	{
-		waitItemBackGameplayEventTask->EndTask();
+		mWaitItemBackGameplayEventTask->EndTask();
 	}
 	
-	waitItemBackGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+	mWaitItemBackGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
 			this,
 			FGameplayTag::RequestGameplayTag(TAG_EVENT_MONTAGE_EQUIP_ITEM_BACK),
 			nullptr,
 			true);
-	waitItemBackGameplayEventTask->EventReceived.AddDynamic(this, &ThisClass::OnEventMontageItemBackReceived);
-	waitItemBackGameplayEventTask->Activate();
+	mWaitItemBackGameplayEventTask->EventReceived.AddDynamic(this, &ThisClass::OnEventMontageItemBackReceived);
+	mWaitItemBackGameplayEventTask->Activate();
 }
 
 bool UAbilityEquip::CanIHeal(const IICharacter* character) const

@@ -12,6 +12,7 @@
 #include "BattleRoyale/core/PickableObjects/PickableObjectBase.h"
 #include "BattleRoyale/core/PickableObjects/Ammo/Ammo.h"
 #include "BattleRoyale/core/PickableObjects/Weapons/WeaponBase.h"
+#include "BattleRoyale/core/Utils/UtilsLibrary.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemInstance.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryArray.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemStaticData.h"
@@ -362,6 +363,9 @@ bool UInventoryComponent::EquipItem(UInventoryItemInstance* item)
 bool UInventoryComponent::EquipObject(TScriptInterface<IPickupObject> pickableObject)
 {
 	const auto character = Cast<ACharacterBase>(GetOwner());
+
+	//TODO replace the normal attach for this one
+	//utils::UtilsLibrary::AttachComponentsSocketToSocket()
 	//attach it to hand
 	const auto isAttached = pickableObject->AttachToComponent(
 				character->GetMesh(),
@@ -378,7 +382,7 @@ bool UInventoryComponent::EquipObject(TScriptInterface<IPickupObject> pickableOb
 	mEquippedObject = pickableObject;
 	OnEquippedPickableObjectDelegate.Broadcast(pickableObject);
 	
-	NotifyEquippedWeapon(mEquippedObject);
+	NotifyEquippedObject(mEquippedObject);
 
 	return true;
 }
@@ -474,6 +478,28 @@ UInventoryItemInstance* UInventoryComponent::GetNextWeaponDifferentThan(TScriptI
 	return nextWeapon;
 }
 
+UInventoryItemInstance* UInventoryComponent::GetFirstItemOfType(TSubclassOf<UInventoryItemStaticData> itemStaticData) const
+{
+	UInventoryItemInstance* firstItem = nullptr;
+
+	const auto staticDataToFind = itemStaticData->GetDefaultObject<UInventoryItemStaticData>();
+	check(staticDataToFind);
+	
+	PerformActionForEachInventoryItem(
+	[&firstItem, &staticDataToFind](UInventoryArrayItem* inventoryItem) -> bool
+	{
+		const auto staticData = inventoryItem->mInventoryItem->GetStaticData();
+		if(staticData->GetItemName() == staticDataToFind->GetItemName())
+		{
+			firstItem = inventoryItem->mInventoryItem;
+			return true;
+		}
+		return false;
+	});
+	
+	return firstItem;
+}
+
 void UInventoryComponent::ShowHideInventory()
 {
 	const auto gameInstance = Cast<UBattleRoyaleGameInstance>(GetOwner()->GetGameInstance());
@@ -566,7 +592,7 @@ void UInventoryComponent::OnRep_EquippedObject() const
 	else
 	{
 		OnEquippedPickableObjectDelegate.Broadcast(mEquippedObject);
-		NotifyEquippedWeapon(mEquippedObject);
+		NotifyEquippedObject(mEquippedObject);
 	}
 }
 
@@ -597,7 +623,7 @@ void UInventoryComponent::ClientNotifyPickedUpObject_Implementation(APickableObj
 	}
 }
 
-void UInventoryComponent::NotifyEquippedWeapon(TScriptInterface<IPickupObject> pickableObject) const
+void UInventoryComponent::NotifyEquippedObject(TScriptInterface<IPickupObject> pickableObject) const
 {
 	//Specific case, when weapon we notify a delegate for weapons.
 	if(pickableObject.GetObject()->Implements<UWeapon>())

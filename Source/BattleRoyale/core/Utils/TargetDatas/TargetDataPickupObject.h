@@ -22,6 +22,7 @@ struct BATTLEROYALE_API FTargetDataPickupObject : public FGameplayAbilityTargetD
 	TScriptInterface<IPickupObject> GetPickableObject() const { return mPickableObject; }
 	virtual UScriptStruct* GetScriptStruct() const override
 	{
+		
 		return FTargetDataPickupObject::StaticStruct();
 	}
 

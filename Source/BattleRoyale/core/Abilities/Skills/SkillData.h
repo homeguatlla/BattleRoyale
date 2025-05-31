@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "BattleRoyale/core/HUD/Widgets/Skills/SkillWidget.h"
+#include "GameplayTags/Classes/GameplayTagContainer.h"
 #include "SkillData.generated.h"
 
 USTRUCT(BlueprintType)

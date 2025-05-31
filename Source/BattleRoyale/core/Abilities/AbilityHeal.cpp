@@ -10,6 +10,8 @@
 #include "BattleRoyale/core/Character/Components/IGunComponent.h"
 #include "BattleRoyale/core/Character/Components/IInventoryComponent.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
+#include "BattleRoyale/core/PickableObjects/IPickupObject.h"
+#include "BattleRoyale/core/Utils/Inventory/InventoryItemStaticData.h"
 
 UAbilityHeal::UAbilityHeal()
 {
@@ -47,8 +49,14 @@ bool UAbilityHeal::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return false;
 	
 	const auto inventoryComponent = character->GetInventoryComponent();
+	if (!inventoryComponent->HasItemEquipped())
+		return false;
 
-	return inventoryComponent->HasItemOfType(InventoryItemStaticData);
+	const auto equippedItem = inventoryComponent->GetEquippedItem();
+	const auto itemStaticData = equippedItem->GetInventoryItemStaticData();
+	check(itemStaticData);
+	
+	return InventoryItemStaticData == itemStaticData;
 }
 
 void UAbilityHeal::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -68,24 +76,6 @@ void UAbilityHeal::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 		K2_EndAbility();
 		return;
 	}
-	
-	//TODO 1) probablemente lo ideal sería si tienes arma equipada, guardar-la ejecutando animación de unequip
-	//curarse, y luego reequipar el arma.
-	if (const auto combatComponent = character->GetGunComponent())
-	{
-		if (combatComponent->HasWeaponEquipped())
-		{
-			//TODO esto hay que pensarlo bien, porque requiere de lanzar una animación y esto no lo puede hacer el combat component porque
-			//no lanza animaciones. Así que probablemente requiera de una habilidad. Y de alguna manera de saber que la habilidad a terminado
-			//quizá esperando un evento.
-			
-			//combatComponent->PutAwayEquippedWeapon();
-		}
-	}
-	
-	//Si no tienes arma tal cual.
-	//2) Además habría que poner el battery cell en la mano antes de ejecutar la animación
-	//3) Eliminar la cell del inventario.
 	
 	SubscribeToEventMontageHealFinished();
 	CreateTaskPlayMontageHealing(ActorInfo);
@@ -133,12 +123,12 @@ void UAbilityHeal::SubscribeToEventMontageHealFinished()
 
 void UAbilityHeal::OnMontageCompleted()
 {
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	K2_EndAbility();
 }
 
 void UAbilityHeal::OnMontageCancelled()
 {
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+	K2_CancelAbility();
 }
 
 void UAbilityHeal::OnEventMontageHealFinishedReceived(const FGameplayEventData Payload)
@@ -150,12 +140,14 @@ void UAbilityHeal::OnEventMontageHealFinishedReceived(const FGameplayEventData P
 	const auto abilitySystemComponent = character->GetAbilitySystemComponentBase();
 	if (!abilitySystemComponent)
 		return;
-	
+
+	//TODO agregar un gameplay effect por código para que podamos asignar la cantidad de vida.
 	abilitySystemComponent->ApplyGameplayEffectToSelf(HealEffectClass);
 	
 	const auto inventoryComponent = character->GetInventoryComponent();
 	check(inventoryComponent);
-	
+
+	//TODO implementar el consume del elemento equipado
 	//inventoryComponent->Consume(InventoryItemStaticData);
 	
 	//TODO agregar algun efecto visual al character a través de algún componente?

@@ -66,6 +66,7 @@ public:
 
 	virtual int GetTotalWeapons() const override;
 	virtual UInventoryItemInstance* GetNextWeaponDifferentThan(TScriptInterface<IPickupObject> weapon) const override;
+	virtual UInventoryItemInstance* GetFirstItemOfType(TSubclassOf<UInventoryItemStaticData> itemStaticData) const override;
 
 	virtual void ShowHideInventory() override;
 	//void OnInventoryKeyPressed();
@@ -83,7 +84,7 @@ protected:
 private:
 	bool EquipObject(TScriptInterface<IPickupObject> pickableObject);
 	TScriptInterface<IIInventoryItemInstance> GetAmmoItemOfType(EAmmoType ammoType) const;
-	void NotifyEquippedWeapon(TScriptInterface<IPickupObject> pickableObject) const;
+	void NotifyEquippedObject(TScriptInterface<IPickupObject> pickableObject) const;
 	void NotifyIfPickedUpObjectIsAmmo(TScriptInterface<IPickupObject> pickableObject) const;
 	bool IsAWeapon(TScriptInterface<IPickupObject> pickableObject) const;
 	

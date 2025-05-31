@@ -16,8 +16,9 @@ UCLASS()
 class BATTLEROYALE_API UAbilityEquip : public UGameplayAbilityBase
 {
 	GENERATED_BODY()
+	
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UInventoryItemStaticData> InventoryItemHealStaticData = nullptr;
+	TSubclassOf<UInventoryItemStaticData> InventoryItemHealStaticData;
 
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* UnEquipAnimation = nullptr;
@@ -45,5 +46,7 @@ private:
 	bool CanIHeal(const IICharacter* character) const;
 
 	UPROPERTY()
-	class UAbilityTask_WaitGameplayEvent* waitItemBackGameplayEventTask = nullptr;
+	class UAbilityTask_WaitGameplayEvent* mWaitItemBackGameplayEventTask = nullptr;
+
+	TSubclassOf<UInventoryItemStaticData> mItemStaticDataToEquip = nullptr;
 };

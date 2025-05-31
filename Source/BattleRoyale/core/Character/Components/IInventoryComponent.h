@@ -45,6 +45,7 @@ public:
 	virtual int RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded) = 0;
 
 	virtual UInventoryItemInstance* GetNextWeaponDifferentThan(TScriptInterface<IPickupObject> weapon) const = 0;
+	virtual UInventoryItemInstance* GetFirstItemOfType(TSubclassOf<UInventoryItemStaticData> itemStaticData) const = 0;
 	
 	virtual void PerformActionForEachInventoryItem(const std::function<bool (UInventoryArrayItem* inventoryItem)>& callback) const = 0;
 
