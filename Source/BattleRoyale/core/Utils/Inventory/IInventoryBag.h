@@ -15,16 +15,12 @@ class UInventoryItemInstance;
 class IIInventoryItemInstance;
 struct FInventoryArrayItem;
 
-// This class does not need to be modified.
 UINTERFACE()
 class BATTLEROYALE_API UIInventoryBag : public UInterface
 {
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
 class BATTLEROYALE_API IIInventoryBag
 {
 	GENERATED_BODY()
