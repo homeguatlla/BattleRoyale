@@ -42,17 +42,13 @@ void AInventoryHUD::OnShowInventoryScreen(const TScriptInterface<IIInventoryBag>
 {
 	if (mHUDWidget->GetClass()->ImplementsInterface(UIInventoryHUD::StaticClass()))
 	{
-		//TODO ver que hacemos con el equippedobject. Igual lo podemos agregar al inventoryVisual en la misma lista, o
-		//lo podemos pasar a parte sabiendo que será el equipado y por tanto podemos cargarnos el isEquipped del itemvisual
-		//Que sucede si visualmente pudieramos tener 3 armas?
 		inventoryBagVisual->Refresh(inventoryBag);
 
+		APickableObjectBase* pickableObject = nullptr;
 		if(const auto object = equippedObject.GetObject())
-		{
-			
-			const auto pickableObject = Cast<APickableObjectBase>(object);
-			IIInventoryHUD::Execute_OnShowInventoryOnScreen(mHUDWidget, inventoryBagVisual, pickableObject);
-		}
+			pickableObject = Cast<APickableObjectBase>(object);
+		
+		IIInventoryHUD::Execute_OnShowInventoryOnScreen(mHUDWidget, inventoryBagVisual, pickableObject);
 	}
 }
 
