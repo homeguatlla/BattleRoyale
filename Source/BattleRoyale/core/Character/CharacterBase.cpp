@@ -206,7 +206,11 @@ void ACharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	// set up gameplay key bindings
 	check(PlayerInputComponent);
 	
+#if !UE_BUILD_SHIPPING
+	//Only debug not shipping
+	//TODO when we add cheat plugin remove this code
 	PlayerInputComponent->BindAction("Invulnerable", IE_Pressed, this, &ThisClass::OnSetInvulnerable);
+#endif
 	
 	// Bind movement events
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently

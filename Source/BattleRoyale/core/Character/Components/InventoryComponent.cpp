@@ -39,6 +39,9 @@ UInventoryComponent::UInventoryComponent()
 void UInventoryComponent::DropItem(int id)
 {
 	const auto item = mInventoryBag->FindItemWithID(id);
+	if(!item)
+		return;
+	
 	const auto character = Cast<ACharacterBase>(GetOwner());
 	if(const auto pickableObject = GetWorld()->SpawnActorDeferred<APickableObjectBase>(
 		item->GetStaticData()->GetPickupObjectClass(),
@@ -204,9 +207,7 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	const auto character = Cast<ACharacterBase>(GetOwner());
 	
 	if(!character->HasAuthority())
-	{
 		return false;
-	}
 	
 	check(pickableObject);
 	if(pickableObject->IsEquipped())
@@ -217,14 +218,10 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	
 	//Save picked up object to the inventory.
 	if(mInventoryBag->IsFull())
-	{
-		return false;	
-	}
+		return false;
 
 	if(IsAWeapon(pickableObject) && GetTotalWeapons() >= MaxInventoryWeapons)
-	{
 		return false;
-	}
 
 	if(const auto pickableObjectBase = Cast<APickableObjectBase>(pickableObject.GetObject()))
 	{
@@ -232,9 +229,7 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	}
 	
 	if(!HasItemEquipped() && pickableObject->CanBeEquipped())
-	{
 		return EquipObject(pickableObject);
-	}
 	
 	//Add item into the inventory
 	int value2 = 0;
@@ -252,9 +247,8 @@ bool UInventoryComponent::PickupObjectServer(TScriptInterface<IPickupObject> pic
 	//Once the pickable object has been saved into the inventory we can remove it from the world.
 	const auto pickableObjectActor = Cast<APickableObjectBase>(pickableObject.GetObject());
 	if(pickableObjectActor)
-	{
 		pickableObjectActor->Destroy();
-	}
+	
 	return true;
 }
 
@@ -263,21 +257,18 @@ bool UInventoryComponent::DropEquippedObjectServer(TScriptInterface<IPickupObjec
 	const auto character = Cast<ACharacterBase>(GetOwner());
 	
 	if(!character->HasAuthority())
-	{
 		return false;
-	}
 
 	//Si hacemos un unequip se irá de la mano a la mochila.
 	//Si hacemos equip, irá de la mochila a la mano o del suelo a la mano
 	//Si hacemos drop, irá de la mano al suelo y quizá de la mochila al suelo para evitar tener que pasar por la mano
 	//ya que si ya tienes un objeto en la mano, no podrías hacer drop.
 	if(!HasItemEquipped())
-	{
 		return false;	
-	}
 	
-	check(object.GetObject());
-
+	if(object.GetObject() != mEquippedObject.GetObject())
+		return false;
+	
 	object->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	object->OnDropped();
 	mEquippedObject = nullptr;

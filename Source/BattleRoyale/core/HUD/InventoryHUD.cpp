@@ -46,6 +46,7 @@ void AInventoryHUD::OnShowInventoryScreen(const TScriptInterface<IIInventoryBag>
 
 		APickableObjectBase* pickableObject = nullptr;
 		
+		
 		if(const auto object = equippedObject.GetObject())
 			pickableObject = Cast<APickableObjectBase>(object);
 		
