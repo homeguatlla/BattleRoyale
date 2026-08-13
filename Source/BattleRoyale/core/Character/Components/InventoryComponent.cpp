@@ -157,7 +157,7 @@ bool UInventoryComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch*
 void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UInventoryComponent, mInventoryBag);
+	DOREPLIFETIME_CONDITION(UInventoryComponent, mInventoryBag, COND_OwnerOnly);
 	DOREPLIFETIME(UInventoryComponent, mEquippedObject);
 }
 
@@ -598,7 +598,10 @@ void UInventoryComponent::OnRep_EquippedObject() const
 
 void UInventoryComponent::OnRep_InventoryBag() const
 {
-	
+	//This onrep won't be executed because the mInventoryBag is only owner so other clients won't receive replication
+	//If we need other clients to get informed we need to change the DOREPLIFETIME_
+	//for DOREPLIFETIME_CONDITION_NOTIFY(UInventoryComponent, mInventoryBag, COND_OwnerOnly, REPNOTIFY_Always);
+	//this will preserve onwner only but with notification to other clients
 }
 
 void UInventoryComponent::ServerDropItem_Implementation(int id)

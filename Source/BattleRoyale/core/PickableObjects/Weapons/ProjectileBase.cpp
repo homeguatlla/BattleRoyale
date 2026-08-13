@@ -112,7 +112,11 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 
 void AProjectileBase::ApplyDamageToCharacter(const IICharacter* character) const
 {
-	if(const auto instigatorPlayerState = Cast<IIPlayerState>(GetInstigator()->GetPlayerState()))
+	const auto instigatorPawn = GetInstigator();
+	if (!ensureMsgf(instigatorPawn, TEXT("AProjectileBase::ApplyDamageToCharacter: Instigator null")))
+		return;
+	
+	if(const auto instigatorPlayerState = Cast<IIPlayerState>(instigatorPawn->GetPlayerState()))
 	{
 		//On instant effects, the handle returned is always not valid. So don't check if the effect has been properly applied.
 		instigatorPlayerState->GetAbilitySystemComponentInterface()->ApplyGameplayEffectToTarget(DamageEffect, character);

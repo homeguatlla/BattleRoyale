@@ -85,6 +85,8 @@ class BATTLEROYALE_API AWeaponBase : public APickableObjectBase, public IWeapon
 	//shots already done by client but still pending to be executed on server.
 	int32 mPendingAmmoRPCACKs = 0;
 	
+	float mLastFireTime = -1.0f;
+	
 public:	
 	AWeaponBase();
 
@@ -139,7 +141,7 @@ public:
 private:
 	
 	UFUNCTION(Server, Reliable)
-	void ServerFire(const FVector& muzzleLocation, const FVector& targetLocation);
+	void ServerFire(const FVector& targetLocation);
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastReload(int32 serverAmmo);
 

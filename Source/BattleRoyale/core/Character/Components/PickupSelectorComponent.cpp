@@ -114,7 +114,7 @@ void UPickupSelectorComponent::SelectPickupObject()
 void UPickupSelectorComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UPickupSelectorComponent, mSelectedPickableObject);
+	DOREPLIFETIME_CONDITION(UPickupSelectorComponent, mSelectedPickableObject, COND_OwnerOnly);
 }
 
 void UPickupSelectorComponent::OnCapsuleBeginOverlapServer(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

@@ -38,7 +38,7 @@ void AWeaponBase::Fire(const FVector& targetLocation)
 	//DrawDebugSphere(GetWorld(), targetLocation, 10, 10, FColor::Green, true);
 	if(CanBeFired())
 	{
-		ServerFire(GetMuzzleLocation(), targetLocation);
+		ServerFire(targetLocation);
 		if(!HasAuthority())
 		{
 			//Consume ammo also in clients so they can see how ammo goes down event with lag.
@@ -97,17 +97,25 @@ FVector AWeaponBase::GetProjectileSpawnLocation(const FVector& location, const F
 	return location + normalizedDirection * distanceFromMuzzleLocation;
 }
 
-void AWeaponBase::ServerFire_Implementation(const FVector& muzzleLocation, const FVector& targetLocation)
+void AWeaponBase::ServerFire_Implementation(const FVector& targetLocation)
 {
 	if(!HasAuthority())
-	{
 		return;
-	}
 	
-	if(!SpawnProjectileServer(muzzleLocation, targetLocation - muzzleLocation))
-	{
+	//Checking on server if has ammo
+	if (!CanBeFired())
 		return;
-	}
+	//Checking if cooldown correct
+	const auto minTimeBetweenShots = IsAutomaticFireEnabled() ? GetAutomaticFireDelay() : GetCooldownTime();
+	const auto currentTime = GetWorld()->GetTimeSeconds();
+	if(mLastFireTime >= 0.0f && currentTime - mLastFireTime < minTimeBetweenShots)
+		return;
+	
+	mLastFireTime = currentTime;
+	
+	if(!SpawnProjectileServer(GetMuzzleLocation(), targetLocation - GetMuzzleLocation()))
+		return;
+	
 	MulticastFire();
 	ConsumeAmmo();
 	UpdateAmmo(mAmmo);

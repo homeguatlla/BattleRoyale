@@ -131,7 +131,7 @@ void APlayerStateBase::NotifyNumTeamsAndPlayersAlive(uint8 numTeams, uint8 numPl
 
 void APlayerStateBase::ShowVictoryScreen() const
 {
-	if(GetPawn()->IsLocallyControlled())
+	if(GetPlayerController()->IsLocalController())
 	{
 		GetEventDispatcher()->OnAnnouncePlayerWon.Broadcast();
 	}
@@ -139,9 +139,7 @@ void APlayerStateBase::ShowVictoryScreen() const
 
 void APlayerStateBase::ShowDeathScreen() const
 {
-	check(GetPawn());
-	
-	if(GetPawn()->IsLocallyControlled())
+	if(GetPlayerController()->IsLocalController())
 	{
 		GetEventDispatcher()->OnPlayerDead.Broadcast();
 	}
@@ -173,7 +171,7 @@ void APlayerStateBase::ClientNotifyGameOver_Implementation(bool isWinner)
 
 void APlayerStateBase::ShowStatsScreen() const
 {
-	if(!GetPawn()->IsLocallyControlled())
+	if(!GetPlayerController()->IsLocalController())
 	{
 		return;
 	}
@@ -190,7 +188,7 @@ void APlayerStateBase::ShowStatsScreen() const
 
 void APlayerStateBase::HideStatsScreen() const
 {
-	if(!GetPawn()->IsLocallyControlled())
+	if(!GetPlayerController()->IsLocalController())
 	{
 		return;
 	}
@@ -271,13 +269,9 @@ void APlayerStateBase::MulticastCreateStatesMachine_Implementation()
 
 APlayerController* APlayerStateBase::GetPlayerController() const
 {
-	if(GetPawn())
-	{
-		if(auto controller = GetPawn()->GetController())
-		{
-			return Cast<APlayerController>(controller);
-		}
-	}
+	if(auto controller = GetOwningController())
+		return Cast<APlayerController>(controller);
+	
 	return nullptr;
 }
 

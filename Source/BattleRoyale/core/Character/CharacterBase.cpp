@@ -475,82 +475,84 @@ void ACharacterBase::OnInputActionLookUp(const FInputActionValue& value)
 
 void ACharacterBase::OnInputActionJump() const
 {
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_JUMP), this, false);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_JUMP), this, false);
 }
 
 void ACharacterBase::OnInputActionCrouch() const
 {
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_CROUCH), this, false);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_CROUCH), this, false);
 }
 void ACharacterBase::OnInputActionStandUp() const
 {
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STANDUP), this, false);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STANDUP), this, false);
 }
 
 void ACharacterBase::OnInputActionSprint() const
 {
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SPRINT), this, false);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SPRINT), this, false);
 }
 
 void ACharacterBase::OnInputActionWalk() const
 {
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_WALK), this, false);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_WALK), this, false);
 }
 
 void ACharacterBase::OnInputActionPickUp() const
 {
 	//TODO se tiene que enviar un serverRPC porque son serverOnly y por tanto en cliente se envia el mensaje que nunca
 	//activará la habilidad
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_PICKUP), this, true);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_PICKUP), this, true);
 }
 
 void ACharacterBase::OnInputActionDrop() const
 {
 	//TODO se tiene que enviar un serverRPC porque son serverOnly y por tanto en cliente se envia el mensaje que nunca
 	//activará la habilidad
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_DROP), this, true);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_DROP), this, true);
 }
 
 void ACharacterBase::OnInputActionStartFiring() const
 {
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_START_FIRING), this, false);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_START_FIRING), this, false);
 }
 
 void ACharacterBase::OnInputActionStopFiring() const
 {
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STOP_FIRING), this, false);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STOP_FIRING), this, false);
 }
 
 void ACharacterBase::OnInputActionStartAiming() const
 {
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_START_AIMING), this, false);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_START_AIMING), this, false);
 }
 
 void ACharacterBase::OnInputActionStopAiming() const
 {
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STOP_AIMING), this, false);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_STOP_AIMING), this, false);
 }
 
 void ACharacterBase::OnInputActionReload() const
 {
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_RELOAD), this, false);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_RELOAD), this, false);
 }
 
 void ACharacterBase::OnInputActionInventory() const
 {
 	const auto abilitySystem = GetAbilitySystemComponentBase();
+	if (!abilitySystem)
+		return;
 	if(GetInventoryComponent()->IsInventoryVisible())
 	{
 		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_HIDE_INVENTORY), this, false);	
@@ -563,32 +565,32 @@ void ACharacterBase::OnInputActionInventory() const
 
 void ACharacterBase::OnInputActionSwapWeapons() const
 {
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SWAP_WEAPONS), this, false);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SWAP_WEAPONS), this, false);
 }
 
 void ACharacterBase::OnInputActionSkill1() const
 {
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SKILL_1), this, false);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SKILL_1), this, false);
 }
 
 void ACharacterBase::OnInputActionSkill2() const
 {
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SKILL_2), this, false);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SKILL_2), this, false);
 }
 
 void ACharacterBase::OnInputActionHeal() const
 {
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_HEAL), this, false);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_HEAL), this, false);
 }
 
 void ACharacterBase::OnInputActionEquipHealItem() const
 {
-	const auto abilitySystem = GetAbilitySystemComponentBase();
-	abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_EQUIP_ITEM_TO_HEAL), this, false);
+	if (const auto abilitySystem = GetAbilitySystemComponentBase())
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_EQUIP_ITEM_TO_HEAL), this, false);
 }
 
 IIGameMode* ACharacterBase::GetGameModeServer() const
@@ -771,8 +773,12 @@ void ACharacterBase::NotifyRefreshHealth(float health) const
 
 void ACharacterBase::MulticastTakeDamage_Implementation(float damage, const AActor* causer, float currentHealth)
 {
+	if (!causer)
+		return;
+	
 	const bool isNotLocallyControlledAndCauserIsAutonomousProxy = !IsLocallyControlled() && causer && causer->GetLocalRole() == ROLE_AutonomousProxy;
-	const bool isAuthorityAndCauserIsLocallyControlled = HasAuthority() && Cast<ACharacter>(causer)->IsLocallyControlled();
+	const auto causerCharacter = Cast<ACharacter>(causer);
+	const bool isAuthorityAndCauserIsLocallyControlled = HasAuthority() && causerCharacter && causerCharacter->IsLocallyControlled();
 	const bool hasToShowDamagePoints = isNotLocallyControlledAndCauserIsAutonomousProxy || isAuthorityAndCauserIsLocallyControlled;
 
 	//Give all instances of the damaged character the opportunity to show something (at least the hit reaction animation)
