@@ -20,6 +20,21 @@ StartSessionCompleteDelegate(FOnStartSessionCompleteDelegate::CreateUObject(this
 	}
 }
 
+void UMultiplayerSessionsSubsystem::Deinitialize()
+{
+	if(mSessionInterface.IsValid())
+	{
+		mSessionInterface->ClearOnCreateSessionCompleteDelegate_Handle(mCreateSessionCompleteDelegateHandle);
+		mSessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(mFindSessionCompleteDelegateHandle);
+		mSessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(mJoinSessionCompleteDelegateHandle);
+		mSessionInterface->ClearOnDestroySessionCompleteDelegate_Handle(mDestroySessionCompleteDelegateHandle);
+		mSessionInterface->ClearOnStartSessionCompleteDelegate_Handle(mStartSessionCompleteDelegateHandle);
+		mSessionInterface = nullptr;
+	}
+
+	Super::Deinitialize();
+}
+
 void UMultiplayerSessionsSubsystem::CreateSession(int numPublicConnections, const FString& matchType)
 {
 	if(!mSessionInterface.IsValid())

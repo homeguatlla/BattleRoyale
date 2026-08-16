@@ -31,6 +31,8 @@ class MULTIPLAYERSESSIONS_API UMultiplayerSessionsSubsystem : public UGameInstan
 public:
 	UMultiplayerSessionsSubsystem();
 
+	virtual void Deinitialize() override;
+
 	//Go handle session functionality. The Menu class will call these
 	void CreateSession(int numPublicConnections, const FString& matchType);
 	void FindSessions(int maxSearchResults);
