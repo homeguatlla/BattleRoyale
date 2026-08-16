@@ -45,8 +45,10 @@ void AInventoryHUD::OnShowInventoryScreen(const TScriptInterface<IIInventoryBag>
 		inventoryBagVisual->Refresh(inventoryBag);
 
 		APickableObjectBase* pickableObject = nullptr;
-		
-		
+
+		// GetObject collides with the Windows GDI macro (GetObjectA/W) leaked into this
+		// unity build block via OnlineSubsystemSteam headers; undef it before calling.
+#undef GetObject
 		if(const auto object = equippedObject.GetObject())
 			pickableObject = Cast<APickableObjectBase>(object);
 		

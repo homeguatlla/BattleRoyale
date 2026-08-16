@@ -9,7 +9,6 @@
 #include "MultiplayerGameSession.generated.h"
 
 class AMultiplayerGameMode;
-class SessionsOnlineSubsystem;
 
 UCLASS()
 class AMultiplayerGameSession : public AGameSession
@@ -65,7 +64,6 @@ private:
 	FDelegateHandle OnFindSessionsCompleteDelegateHandle;
 	FDelegateHandle OnJoinSessionCompleteDelegateHandle;
 	
-	//TSharedPtr<SessionsOnlineSubsystem> m_OnlineSubsystem;
 	UPROPERTY()
 	class UMultiplayerSessionsSubsystem* mMultiplayerSessionsSubsystem;
 	bool m_IsLAN;
