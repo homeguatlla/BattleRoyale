@@ -31,8 +31,6 @@ class MULTIPLAYERSESSIONS_API UMultiplayerSessionsSubsystem : public UGameInstan
 public:
 	UMultiplayerSessionsSubsystem();
 
-	virtual void Deinitialize() override;
-
 	//Go handle session functionality. The Menu class will call these
 	void CreateSession(int numPublicConnections, const FString& matchType);
 	void FindSessions(int maxSearchResults);
@@ -59,7 +57,11 @@ protected:
 	void OnStartOnlineGameComplete(FName sessionName, bool wasSuccessful);
 	
 private:
-	IOnlineSessionPtr mSessionInterface;
+	//Resolves the session interface for the current World's online subsystem instance.
+	//Fetched fresh on every use instead of cached, so we never hold a stale reference
+	//across the Editor's default subsystem being destroyed/recreated when PIE (re)starts.
+	IOnlineSessionPtr GetSessionInterface() const;
+
 	TSharedPtr<FOnlineSessionSettings> mLastSessionSettings;
 	TSharedPtr<FOnlineSessionSearch> mLastSessionSearch;
 	bool mShouldCreateSessionOnDestroy{false};
