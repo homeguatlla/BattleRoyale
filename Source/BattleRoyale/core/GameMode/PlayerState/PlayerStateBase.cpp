@@ -131,7 +131,8 @@ void APlayerStateBase::NotifyNumTeamsAndPlayersAlive(uint8 numTeams, uint8 numPl
 
 void APlayerStateBase::ShowVictoryScreen() const
 {
-	if(GetPlayerController()->IsLocalController())
+	const auto playerController = GetPlayerController();
+	if(playerController && playerController->IsLocalController())
 	{
 		GetEventDispatcher()->OnAnnouncePlayerWon.Broadcast();
 	}
@@ -139,7 +140,8 @@ void APlayerStateBase::ShowVictoryScreen() const
 
 void APlayerStateBase::ShowDeathScreen() const
 {
-	if(GetPlayerController()->IsLocalController())
+	const auto playerController = GetPlayerController();
+	if(playerController && playerController->IsLocalController())
 	{
 		GetEventDispatcher()->OnPlayerDead.Broadcast();
 	}
@@ -171,7 +173,8 @@ void APlayerStateBase::ClientNotifyGameOver_Implementation(bool isWinner)
 
 void APlayerStateBase::ShowStatsScreen() const
 {
-	if(!GetPlayerController()->IsLocalController())
+	const auto playerController = GetPlayerController();
+	if(!playerController || !playerController->IsLocalController())
 	{
 		return;
 	}
@@ -188,7 +191,8 @@ void APlayerStateBase::ShowStatsScreen() const
 
 void APlayerStateBase::HideStatsScreen() const
 {
-	if(!GetPlayerController()->IsLocalController())
+	const auto playerController = GetPlayerController();
+	if(!playerController || !playerController->IsLocalController())
 	{
 		return;
 	}
