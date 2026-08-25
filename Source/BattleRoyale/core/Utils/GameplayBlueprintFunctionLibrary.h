@@ -7,6 +7,7 @@
 #include "GameplayBlueprintFunctionLibrary.generated.h"
 
 class UInventoryItemStaticData;
+class IICharacter;
 /**
  * 
  */
@@ -30,4 +31,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static FVector GenerateRandomPointAtDistanceOf(const FVector& origin, float distance, bool upSemiSector);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static bool CanCharacterHealWith(const TScriptInterface<IICharacter>& character, TSubclassOf<UInventoryItemStaticData> InventoryItemHealStaticData);
 };

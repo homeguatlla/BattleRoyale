@@ -43,7 +43,6 @@ private:
 	void CreateTaskPlayMontage(const FGameplayAbilityActorInfo* ActorInfo, UAnimMontage* montage);
 	
 	void SubscribeToEventMontageItemBack();
-	bool CanIHeal(const IICharacter* character) const;
 
 	UPROPERTY()
 	class UAbilityTask_WaitGameplayEvent* mWaitItemBackGameplayEventTask = nullptr;

@@ -10,6 +10,7 @@
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/Character/Components/HurtComponent.h"
 #include "BattleRoyale/core/Character/Components/IInventoryComponent.h"
+#include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemStaticData.h"
 
 UAbilityEquip::UAbilityEquip()
@@ -40,17 +41,11 @@ void UAbilityEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		K2_EndAbility();
 		return;
 	}
-
-	const auto character = GetCharacter(ActorInfo);
-	if (!character)
-	{
-		K2_EndAbility();
-		return;
-	}
 	
 	if (TriggerEventData->EventTag == FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_EQUIP_ITEM_TO_HEAL))
 	{
-		if (!CanIHeal(character))
+		const auto avatarActor = ActorInfo->AvatarActor.Get();
+		if (!UGameplayBlueprintFunctionLibrary::CanCharacterHealWith(TScriptInterface<IICharacter>(avatarActor), InventoryItemHealStaticData))
 		{
 			K2_EndAbility();
 			return;
@@ -153,23 +148,4 @@ void UAbilityEquip::SubscribeToEventMontageItemBack()
 			true);
 	mWaitItemBackGameplayEventTask->EventReceived.AddDynamic(this, &ThisClass::OnEventMontageItemBackReceived);
 	mWaitItemBackGameplayEventTask->Activate();
-}
-
-bool UAbilityEquip::CanIHeal(const IICharacter* character) const
-{
-	const auto hurtComponent = character->GetHurtComponent();
-	if (!hurtComponent)
-		return false;
-
-	if (hurtComponent->IsHealthFull())
-		return false;
-
-	const auto inventoryComponent = character->GetInventoryComponent();
-	if (!inventoryComponent)
-		return false;
-	
-	if (!inventoryComponent->HasItemOfType(InventoryItemHealStaticData))
-		return false;
-	
-	return true;
 }

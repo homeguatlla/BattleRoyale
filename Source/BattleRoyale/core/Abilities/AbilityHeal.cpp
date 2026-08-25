@@ -7,7 +7,6 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/Character/Components/HurtComponent.h"
-#include "BattleRoyale/core/Character/Components/IGunComponent.h"
 #include "BattleRoyale/core/Character/Components/IInventoryComponent.h"
 #include "BattleRoyale/core/GameplayAbilitySystem/IAbilitySystemInterfaceBase.h"
 #include "BattleRoyale/core/PickableObjects/IPickupObject.h"

@@ -4,6 +4,9 @@
 #include "GameplayBlueprintFunctionLibrary.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Inventory/InventoryItemStaticData.h"
+#include "BattleRoyale/core/Character/ICharacter.h"
+#include "BattleRoyale/core/Character/Components/HurtComponent.h"
+#include "BattleRoyale/core/Character/Components/IInventoryComponent.h"
 
 
 UMaterialInstanceDynamic* UGameplayBlueprintFunctionLibrary::CreateAndAssignMaterialInstanceDynamicToMeshFromActor(AActor* actor)
@@ -71,4 +74,26 @@ FVector UGameplayBlueprintFunctionLibrary::GenerateRandomPointAtDistanceOf(const
 		radius * FMath::Cos(v) * FMath::Cos(u),
 		radius * FMath::Cos(v) * FMath::Sin(u),
 		radius * FMath::Sin(v));
+}
+
+bool UGameplayBlueprintFunctionLibrary::CanCharacterHealWith(const TScriptInterface<IICharacter>& character, TSubclassOf<UInventoryItemStaticData> InventoryItemHealStaticData)
+{
+	if (!character)
+		return false;
+
+	const auto hurtComponent = character->GetHurtComponent();
+	if (!hurtComponent)
+		return false;
+
+	if (hurtComponent->IsHealthFull())
+		return false;
+
+	const auto inventoryComponent = character->GetInventoryComponent();
+	if (!inventoryComponent)
+		return false;
+	
+	if (!inventoryComponent->HasItemOfType(InventoryItemHealStaticData))
+		return false;
+	
+	return true;
 }
