@@ -64,3 +64,5 @@ const FName TAG_EFFECTS_WEAPON("Effects.Weapon.Cooldown");
 const FName TAG_EFFECTS_DISSOLVE("Effects.Dissolve");
 const FName TAG_EFFECTS_SKILL1("Effects.Skill1.Cooldown");
 const FName TAG_EFFECTS_SKILL2("Effects.Skill2.Cooldown");
+
+const FName TAG_DATA_HEAL_AMOUNT("Data.Heal.Amount");

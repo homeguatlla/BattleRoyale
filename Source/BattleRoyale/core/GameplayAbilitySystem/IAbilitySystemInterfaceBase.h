@@ -30,6 +30,7 @@ class BATTLEROYALE_API IIAbilitySystemInterfaceBase
 public:
 	virtual FActiveGameplayEffectHandle ApplyGameplayEffectToTarget(const TSubclassOf<UGameplayEffect>& effect, const IICharacter* target) = 0;
 	virtual FActiveGameplayEffectHandle ApplyGameplayEffectToSelf(const TSubclassOf<UGameplayEffect>& effectClass) = 0;
+	virtual FActiveGameplayEffectHandle ApplyGameplayEffectSpecToSelf(const FGameplayEffectSpec &Spec, FPredictionKey PredictionKey) = 0;
 	virtual bool RemoveGameplayEffect(FActiveGameplayEffectHandle handle) = 0;
 	
 	virtual void AddAttributeSet(UAttributeSet* attributeSet) = 0;

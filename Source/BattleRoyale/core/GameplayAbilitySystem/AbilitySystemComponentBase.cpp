@@ -35,6 +35,12 @@ FActiveGameplayEffectHandle UAbilitySystemComponentBase::ApplyGameplayEffectToSe
 	return UAbilitySystemComponent::ApplyGameplayEffectToSelf(effectClass->GetDefaultObject<UGameplayEffect>(), 0, effectContext);
 }
 
+FActiveGameplayEffectHandle UAbilitySystemComponentBase::ApplyGameplayEffectSpecToSelf(
+	const FGameplayEffectSpec& GameplayEffect, FPredictionKey PredictionKey)
+{
+	return UAbilitySystemComponent::ApplyGameplayEffectSpecToSelf(GameplayEffect, PredictionKey);
+}
+
 bool UAbilitySystemComponentBase::RemoveGameplayEffect(FActiveGameplayEffectHandle handle)
 {
 	return UAbilitySystemComponent::RemoveActiveGameplayEffect(handle);

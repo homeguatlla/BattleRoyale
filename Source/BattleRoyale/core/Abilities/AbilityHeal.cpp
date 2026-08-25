@@ -140,8 +140,27 @@ void UAbilityHeal::OnEventMontageHealFinishedReceived(const FGameplayEventData P
 	if (!abilitySystemComponent)
 		return;
 
-	//TODO agregar un gameplay effect por código para que podamos asignar la cantidad de vida.
-	abilitySystemComponent->ApplyGameplayEffectToSelf(HealEffectClass);
+	if (!HealEffectClass)
+		return;
+
+	if (!InventoryItemStaticData)
+		return;
+	
+	const auto inventoryItem = InventoryItemStaticData->GetDefaultObject<UInventoryItemStaticData>();
+	if (!inventoryItem)
+		return;
+		
+	//Prepare a gameplay effect of type HealEffectClass to set using a TAG_DATA_HEAL_AMOUNT the amount of life to add
+	//we need to prepare the GE_Heal to use the tag inside
+	//Setting the Magnitude Calculation type = Set By Caller
+	//and in the set by caller magnitude data tag = TAG_DATA_HEAL_AMOUNT
+	const auto specHandle = MakeOutgoingGameplayEffectSpec(HealEffectClass, GetAbilityLevel());
+	if (specHandle.IsValid())
+	{
+		const float healAmount = inventoryItem->GetValue();
+		specHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(TAG_DATA_HEAL_AMOUNT), healAmount);
+		abilitySystemComponent->ApplyGameplayEffectSpecToSelf(*specHandle.Data.Get(), {});
+	}
 	
 	const auto inventoryComponent = character->GetInventoryComponent();
 	check(inventoryComponent);
