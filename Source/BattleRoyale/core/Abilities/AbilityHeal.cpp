@@ -150,6 +150,22 @@ void UAbilityHeal::OnEventMontageHealFinishedReceived(const FGameplayEventData P
 	if (!inventoryItem)
 		return;
 		
+	if (!ApplyHealGameplayEffect(abilitySystemComponent, inventoryItem))
+		return;
+	
+	const auto inventoryComponent = character->GetInventoryComponent();
+	check(inventoryComponent);
+
+	//TODO implementar el consume del elemento equipado
+	//inventoryComponent->Consume(InventoryItemStaticData);
+	
+	//TODO agregar algun efecto visual al character a través de algún componente?
+	
+	K2_EndAbility();
+}
+
+bool UAbilityHeal::ApplyHealGameplayEffect(IIAbilitySystemInterfaceBase* const abilitySystemComponent, UInventoryItemStaticData* const inventoryItem)
+{
 	//Prepare a gameplay effect of type HealEffectClass to set using a TAG_DATA_HEAL_AMOUNT the amount of life to add
 	//we need to prepare the GE_Heal to use the tag inside
 	//Setting the Magnitude Calculation type = Set By Caller
@@ -160,13 +176,7 @@ void UAbilityHeal::OnEventMontageHealFinishedReceived(const FGameplayEventData P
 		const float healAmount = inventoryItem->GetValue();
 		specHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(TAG_DATA_HEAL_AMOUNT), healAmount);
 		abilitySystemComponent->ApplyGameplayEffectSpecToSelf(*specHandle.Data.Get(), {});
+		return true;
 	}
-	
-	const auto inventoryComponent = character->GetInventoryComponent();
-	check(inventoryComponent);
-
-	//TODO implementar el consume del elemento equipado
-	//inventoryComponent->Consume(InventoryItemStaticData);
-	
-	//TODO agregar algun efecto visual al character a través de algún componente?
+	return false;
 }
