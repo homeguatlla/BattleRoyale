@@ -279,6 +279,13 @@ bool UInventoryComponent::DropEquippedObjectServer(TScriptInterface<IPickupObjec
 
 bool UInventoryComponent::UnEquipItem()
 {
+	//UnEquipItem is executed from AbilityEquip now which is localPredicted.
+	//That means the animation will be executed in local and in server. So, 
+	//this code will be executed en both server and local we only need to execute it on server.
+	const auto character = Cast<ACharacterBase>(GetOwner());
+	if (!character->HasAuthority())
+		return false;
+	
 	if(!HasItemEquipped())
 	{
 		return false;	
@@ -311,6 +318,13 @@ bool UInventoryComponent::UnEquipItem()
 
 bool UInventoryComponent::ConsumeEquippedItem()
 {
+	//ConsumeEquippedItem is executed from AbilityHeal now which is localPredicted.
+	//That means the animation will be executed in local and in server. So, 
+	//this code will be executed en both server and local we only need to execute it on server.
+	const auto character = Cast<ACharacterBase>(GetOwner());
+	if (!character->HasAuthority())
+		return false;
+	
 	if(!HasItemEquipped())
 		return false;	
 	

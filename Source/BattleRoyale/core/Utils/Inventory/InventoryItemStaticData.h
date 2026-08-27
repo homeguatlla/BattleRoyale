@@ -29,7 +29,10 @@ public:
 	bool CanBeEquipped() const { return mCanBeEquipped; }
 	UFUNCTION(Blueprintable)
 	bool CanBeConsumed() const { return mCanBeConsumed; }
+	UFUNCTION(Blueprintable)
 	APickableObjectBase* GetPickableObject() const;
+	UFUNCTION(Blueprintable)
+	TSubclassOf<UGameplayEffect> GetEffectOnConsume() const { return mEffectOnConsume; }
 	
 private:
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Name"))
@@ -50,6 +53,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName = "Value"))
 	int mValue = 0;
 
+	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Effect on consume"))
+	TSubclassOf<UGameplayEffect> mEffectOnConsume;
+	
 	//TODO maybe here or in a subclass
 	//we can add new abilities, so could be a property array of GameplayAbility.
 };

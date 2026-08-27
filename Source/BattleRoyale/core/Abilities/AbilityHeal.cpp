@@ -175,8 +175,8 @@ bool UAbilityHeal::ApplyHealGameplayEffect(IIAbilitySystemInterfaceBase* const a
 	{
 		const float healAmount = inventoryItem->GetValue();
 		specHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(TAG_DATA_HEAL_AMOUNT), healAmount);
-		abilitySystemComponent->ApplyGameplayEffectSpecToSelf(*specHandle.Data.Get(), {});
-		return true;
+		const auto activeEffectHandle = abilitySystemComponent->ApplyGameplayEffectSpecToSelf(*specHandle.Data.Get(), {});
+		return activeEffectHandle.WasSuccessfullyApplied();
 	}
 	return false;
 }
