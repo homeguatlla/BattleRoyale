@@ -8,6 +8,7 @@
 
 
 class APickableObjectBase;
+class UGameplayEffect;
 
 UCLASS(Blueprintable, BlueprintType)
 class BATTLEROYALE_API UInventoryItemStaticData : public UObject

@@ -585,10 +585,10 @@ void ACharacterBase::OnInputActionSkill2() const
 		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_SKILL_2), this, false);
 }
 
-void ACharacterBase::OnInputActionHeal() const
+void ACharacterBase::OnInputActionConsume() const
 {
 	if (const auto abilitySystem = GetAbilitySystemComponentBase())
-		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_HEAL), this, false);
+		abilitySystem->SendGameplayEvent(FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_CONSUME), this, false);
 }
 
 void ACharacterBase::OnInputActionEquipHealItem() const

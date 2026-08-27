@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AbilityHeal.h"
+#include "AbilityConsume.h"
 #include "GameplayTagsList.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
@@ -12,24 +12,24 @@
 #include "BattleRoyale/core/PickableObjects/IPickupObject.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemStaticData.h"
 
-UAbilityHeal::UAbilityHeal()
+UAbilityConsume::UAbilityConsume()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_HEAL));
-	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_STATE_HEALING));
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_CONSUME));
+	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag(TAG_STATE_CONSUMING));
 
 	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SHOOT_PROJECTILE));
 	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_RELOAD));
 
 	FAbilityTriggerData triggerDataToAdd;
-	triggerDataToAdd.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_HEAL);
+	triggerDataToAdd.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_CONSUME);
 	triggerDataToAdd.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
 	AbilityTriggers.Add(triggerDataToAdd);
 }
 
-bool UAbilityHeal::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+bool UAbilityConsume::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 									  const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
 									  const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
@@ -40,30 +40,21 @@ bool UAbilityHeal::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	if (!character)
 		return false;
 	
-	const auto hurtComponent = character->GetHurtComponent();
-	if (!hurtComponent)
-		return false;
-
-	if (hurtComponent->IsHealthFull())
-		return false;
-	
 	const auto inventoryComponent = character->GetInventoryComponent();
 	if (!inventoryComponent->HasItemEquipped())
 		return false;
 
 	const auto equippedItem = inventoryComponent->GetEquippedItem();
-	const auto itemStaticData = equippedItem->GetInventoryItemStaticData();
-	check(itemStaticData);
 	
-	return InventoryItemStaticData == itemStaticData;
+	return equippedItem->CanBeConsumed();
 }
 
-void UAbilityHeal::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+void UAbilityConsume::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	if (!HealAnimation)
+	if (!ConsumeAnimation)
 	{
 		K2_EndAbility();
 		return;
@@ -76,23 +67,23 @@ void UAbilityHeal::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 		return;
 	}
 	
-	SubscribeToEventMontageHealFinished();
-	CreateTaskPlayMontageHealing(ActorInfo);
+	SubscribeToEventMontageConsumeFinished();
+	CreateTaskPlayMontageConsuming(ActorInfo);
 }
 
-void UAbilityHeal::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+void UAbilityConsume::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-void UAbilityHeal::CreateTaskPlayMontageHealing(const FGameplayAbilityActorInfo* ActorInfo)
+void UAbilityConsume::CreateTaskPlayMontageConsuming(const FGameplayAbilityActorInfo* ActorInfo)
 {
-	const auto sectionName = FName("Heal");
+	const auto sectionName = FName("Consume");
 	const auto taskPlayMontage = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this,
 		NAME_None,
-		HealAnimation,
+		ConsumeAnimation,
 		1.0,
 		sectionName,
 		true);
@@ -104,33 +95,33 @@ void UAbilityHeal::CreateTaskPlayMontageHealing(const FGameplayAbilityActorInfo*
 	taskPlayMontage->ReadyForActivation();
 }
 
-void UAbilityHeal::SubscribeToEventMontageHealFinished()
+void UAbilityConsume::SubscribeToEventMontageConsumeFinished()
 {
-	if(waitHealFinishedGameplayEventTask)
+	if(waitConsumeFinishedGameplayEventTask)
 	{
-		waitHealFinishedGameplayEventTask->EndTask();
+		waitConsumeFinishedGameplayEventTask->EndTask();
 	}
 	
-	waitHealFinishedGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+	waitConsumeFinishedGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
 			this,
-			FGameplayTag::RequestGameplayTag(TAG_EVENT_MONTAGE_HEAL_FINISHED),
+			FGameplayTag::RequestGameplayTag(TAG_EVENT_MONTAGE_CONSUME_FINISHED),
 			nullptr,
 			true);
-	waitHealFinishedGameplayEventTask->EventReceived.AddDynamic(this, &ThisClass::OnEventMontageHealFinishedReceived);
-	waitHealFinishedGameplayEventTask->Activate();
+	waitConsumeFinishedGameplayEventTask->EventReceived.AddDynamic(this, &ThisClass::OnEventMontageConsumeFinishedReceived);
+	waitConsumeFinishedGameplayEventTask->Activate();
 }
 
-void UAbilityHeal::OnMontageCompleted()
+void UAbilityConsume::OnMontageCompleted()
 {
 	K2_EndAbility();
 }
 
-void UAbilityHeal::OnMontageCancelled()
+void UAbilityConsume::OnMontageCancelled()
 {
 	K2_CancelAbility();
 }
 
-void UAbilityHeal::OnEventMontageHealFinishedReceived(const FGameplayEventData Payload)
+void UAbilityConsume::OnEventMontageConsumeFinishedReceived(const FGameplayEventData Payload)
 {
 	const auto character = GetCharacter(GetAvatarActorFromActorInfo());
 	if (!character)
@@ -139,22 +130,25 @@ void UAbilityHeal::OnEventMontageHealFinishedReceived(const FGameplayEventData P
 	const auto abilitySystemComponent = character->GetAbilitySystemComponentBase();
 	if (!abilitySystemComponent)
 		return;
-
-	if (!HealEffectClass)
-		return;
-
-	if (!InventoryItemStaticData)
-		return;
-	
-	const auto inventoryItem = InventoryItemStaticData->GetDefaultObject<UInventoryItemStaticData>();
-	if (!inventoryItem)
-		return;
-		
-	if (!ApplyHealGameplayEffect(abilitySystemComponent, inventoryItem))
-		return;
 	
 	const auto inventoryComponent = character->GetInventoryComponent();
 	check(inventoryComponent);
+	
+	if (!inventoryComponent->HasItemEquipped())
+		return;
+	
+	const auto itemEquipped = inventoryComponent->GetEquippedItem();
+	if (!itemEquipped)
+		return;
+	
+	const auto inventoryItem = itemEquipped->GetInventoryItemStaticData()->GetDefaultObject<UInventoryItemStaticData>();
+	if (!inventoryItem)
+		return;
+		
+	if (!ApplyConsumeGameplayEffect(abilitySystemComponent, inventoryItem))
+		return;
+	
+	
 	
 	//TODO implementar el consume del elemento equipado que se supone que está en la mano. Igual podríamos hacer que lo tira.
 	inventoryComponent->ConsumeEquippedItem();
@@ -164,17 +158,17 @@ void UAbilityHeal::OnEventMontageHealFinishedReceived(const FGameplayEventData P
 	K2_EndAbility();
 }
 
-bool UAbilityHeal::ApplyHealGameplayEffect(IIAbilitySystemInterfaceBase* const abilitySystemComponent, UInventoryItemStaticData* const inventoryItem)
+bool UAbilityConsume::ApplyConsumeGameplayEffect(IIAbilitySystemInterfaceBase* const abilitySystemComponent, UInventoryItemStaticData* const inventoryItem)
 {
-	//Prepare a gameplay effect of type HealEffectClass to set using a TAG_DATA_HEAL_AMOUNT the amount of life to add
-	//we need to prepare the GE_Heal to use the tag inside
+	//Prepare a gameplay effect of type ConsumeEffectClass to set using a TAG_DATA_CONSUME_AMOUNT the amount of whatever to add
+	//we need to prepare the GE_Heal for heal or another one to use the tag inside
 	//Setting the Magnitude Calculation type = Set By Caller
-	//and in the set by caller magnitude data tag = TAG_DATA_HEAL_AMOUNT
-	const auto specHandle = MakeOutgoingGameplayEffectSpec(HealEffectClass, GetAbilityLevel());
+	//and in the set by caller magnitude data tag = TAG_DATA_CONSUME_AMOUNT
+	const auto specHandle = MakeOutgoingGameplayEffectSpec(inventoryItem->GetEffectOnConsume(), GetAbilityLevel());
 	if (specHandle.IsValid())
 	{
-		const float healAmount = inventoryItem->GetValue();
-		specHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(TAG_DATA_HEAL_AMOUNT), healAmount);
+		const float amount = inventoryItem->GetValue();
+		specHandle.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(TAG_DATA_CONSUME_AMOUNT), amount);
 		const auto activeEffectHandle = abilitySystemComponent->ApplyGameplayEffectSpecToSelf(*specHandle.Data.Get(), {});
 		return activeEffectHandle.WasSuccessfullyApplied();
 	}

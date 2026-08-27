@@ -15,7 +15,7 @@ struct FInputBindingData
 {
 	GENERATED_BODY()
 	UPROPERTY(EditDefaultsOnly, Category = "Binding")
-	ETriggerEvent TriggerEvent;
+	ETriggerEvent TriggerEvent = ETriggerEvent::None;
 	UPROPERTY(EditDefaultsOnly, Category = "Binding")
 	FName FunctionName;
 };

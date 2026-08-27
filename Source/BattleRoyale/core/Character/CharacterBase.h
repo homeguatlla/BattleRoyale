@@ -273,7 +273,7 @@ public:
 	UFUNCTION()
 	void OnInputActionSkill2() const;
 	UFUNCTION()
-	void OnInputActionHeal() const;
+	void OnInputActionConsume() const;
 	UFUNCTION()
 	void OnInputActionEquipHealItem() const;
 		
