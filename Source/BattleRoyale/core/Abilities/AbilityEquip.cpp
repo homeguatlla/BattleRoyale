@@ -8,7 +8,6 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
-#include "BattleRoyale/core/Character/Components/HurtComponent.h"
 #include "BattleRoyale/core/Character/Components/IInventoryComponent.h"
 #include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemStaticData.h"
