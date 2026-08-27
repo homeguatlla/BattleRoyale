@@ -309,6 +309,25 @@ bool UInventoryComponent::UnEquipItem()
 	return true;
 }
 
+bool UInventoryComponent::ConsumeEquippedItem()
+{
+	if(!HasItemEquipped())
+		return false;	
+	
+	const TScriptInterface<IPickupObject> pickableObject = GetEquippedItem();
+	const auto object = Cast<APickableObjectBase>(pickableObject.GetObject());
+	check(object);
+
+	if (!pickableObject->CanBeConsumed())
+		return false;
+	
+	pickableObject->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	mEquippedObject = nullptr;
+	object->Destroy();
+	
+	return true;
+}
+
 bool UInventoryComponent::EquipItem(UInventoryItemInstance* item)
 {
 	if(!item)

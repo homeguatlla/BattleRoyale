@@ -102,6 +102,14 @@ bool APickableObjectBase::CanBeEquipped() const
 	return inventoryItemStaticData->CanBeEquipped();
 }
 
+bool APickableObjectBase::CanBeConsumed() const
+{
+	const auto inventoryItemStaticData = UGameplayBlueprintFunctionLibrary::GetInventoryItemStaticData(GetInventoryItemStaticData());
+	check(inventoryItemStaticData);
+	
+	return inventoryItemStaticData->CanBeConsumed();
+}
+
 bool APickableObjectBase::AttachToComponent(USkeletalMeshComponent* meshComponent,
                                             const FAttachmentTransformRules& attachmentRules, const FName& socketName)
 {

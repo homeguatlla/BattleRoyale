@@ -27,6 +27,8 @@ public:
 	int GetValue() const { return mValue; }
 	UFUNCTION(Blueprintable)
 	bool CanBeEquipped() const { return mCanBeEquipped; }
+	UFUNCTION(Blueprintable)
+	bool CanBeConsumed() const { return mCanBeConsumed; }
 	APickableObjectBase* GetPickableObject() const;
 	
 private:
@@ -42,6 +44,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Can be equipped"))
 	bool mCanBeEquipped = false;
 
+	UPROPERTY(EditDefaultsOnly, meta=(DisplayName="Can be consumed"))
+	bool mCanBeConsumed = false;
+	
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName = "Value"))
 	int mValue = 0;
 

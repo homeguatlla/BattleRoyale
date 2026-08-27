@@ -27,6 +27,7 @@ public:
 	virtual void OnDropped() override{}
 	virtual bool IsEquipped() const override{return false;}
 	virtual bool CanBeEquipped() const override { return true; }
+	virtual bool CanBeConsumed() const override { return true; }
 	virtual bool AttachToComponent(USkeletalMeshComponent* meshComponent,
 		const FAttachmentTransformRules& attachmentRules, const FName& socketName) override{ return true;}
 	virtual void DetachFromComponent(const FDetachmentTransformRules& rules) override{}

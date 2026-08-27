@@ -155,9 +155,9 @@ void UAbilityHeal::OnEventMontageHealFinishedReceived(const FGameplayEventData P
 	
 	const auto inventoryComponent = character->GetInventoryComponent();
 	check(inventoryComponent);
-
-	//TODO implementar el consume del elemento equipado
-	//inventoryComponent->Consume(InventoryItemStaticData);
+	
+	//TODO implementar el consume del elemento equipado que se supone que está en la mano. Igual podríamos hacer que lo tira.
+	inventoryComponent->ConsumeEquippedItem();
 	
 	//TODO agregar algun efecto visual al character a través de algún componente?
 	

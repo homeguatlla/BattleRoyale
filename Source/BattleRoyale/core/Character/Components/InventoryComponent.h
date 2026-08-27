@@ -27,6 +27,7 @@ DECLARE_MULTICAST_DELEGATE(FOnUnEquippedPickableObject);
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class BATTLEROYALE_API UInventoryComponent : public UActorComponent, public IIInventoryComponent
 {
+private:
 	GENERATED_BODY()
 
 public:
@@ -52,6 +53,7 @@ public:
 	virtual bool DropEquippedObjectServer(TScriptInterface<IPickupObject> object) override;
 	virtual bool EquipItem(UInventoryItemInstance* item) override;
 	virtual bool UnEquipItem() override;
+	virtual bool ConsumeEquippedItem() override;
 	
 	virtual TScriptInterface<IPickupObject> GetEquippedItem() const override;
 	virtual bool HasItemEquipped() const override { return mEquippedObject != nullptr; }
