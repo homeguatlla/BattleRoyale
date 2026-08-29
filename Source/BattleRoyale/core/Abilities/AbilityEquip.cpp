@@ -9,7 +9,6 @@
 #include "BattleRoyale/BattleRoyale.h"
 #include "BattleRoyale/core/Character/ICharacter.h"
 #include "BattleRoyale/core/Character/Components/IInventoryComponent.h"
-#include "BattleRoyale/core/Utils/GameplayBlueprintFunctionLibrary.h"
 #include "BattleRoyale/core/Utils/Inventory/InventoryItemStaticData.h"
 
 UAbilityEquip::UAbilityEquip()
@@ -23,11 +22,6 @@ UAbilityEquip::UAbilityEquip()
 	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_SHOOT_PROJECTILE));
 	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_RELOAD));
 	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TAG_ABILITY_CONSUME));
-
-	FAbilityTriggerData triggerDataToAdd;
-	triggerDataToAdd.TriggerTag = FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_EQUIP_ITEM_TO_HEAL);
-	triggerDataToAdd.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
-	AbilityTriggers.Add(triggerDataToAdd);
 }
 
 void UAbilityEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -41,23 +35,26 @@ void UAbilityEquip::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		return;
 	}
 	
-	if (TriggerEventData->EventTag == FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_EQUIP_ITEM_TO_HEAL))
+	if (!UnEquipAnimation)
 	{
-		const auto avatarActor = ActorInfo->AvatarActor.Get();
-		if (!UGameplayBlueprintFunctionLibrary::CanCharacterHealWith(TScriptInterface<IICharacter>(avatarActor), InventoryItemHealStaticData))
-		{
-			K2_EndAbility();
-			return;
-		}
-		
-		mItemStaticDataToEquip = InventoryItemHealStaticData;
+		UE_LOG(
+			LogCharacter,
+			Warning,
+			TEXT("UAbilityEquip::ActivateAbility No unequip animation found. Ending Ability"));
+		K2_EndAbility();
+		return;
 	}
-	/*if (TriggerEventData->EventTag == FGameplayTag::RequestGameplayTag(TAG_EVENT_INPUT_EQUIP_ITEM_TO_HEAL))
+	
+	const auto character = GetCharacter(ActorInfo);
+	const auto inventoryComponent = character ? character->GetInventoryComponent() : nullptr;
+	if (!inventoryComponent || !inventoryComponent->HasItemOfType(InventoryItemStaticData))
 	{
-		// 0) find weapon to equip if it has 
-		
-	}*/
-
+		K2_EndAbility();
+		return;
+	}
+	
+	mItemStaticDataToEquip = InventoryItemStaticData;
+	
 	if(ActorInfo->IsNetAuthority())
 		SubscribeToEventMontageItemBack();
 
