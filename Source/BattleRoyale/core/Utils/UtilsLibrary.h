@@ -284,7 +284,8 @@ class BATTLEROYALE_API UtilsLibrary
 		const TArray<TSubclassOf<class UGameplayEffect>>& damageEffects, const TArray<TEnumAsByte<EObjectTypeQuery>>& objectTypes, ETraceTypeQuery traceChannel)
 	{
 		TArray<AActor*> foundActors;
-		const TArray<AActor*> actorsToIgnore = {damageCauser};
+		//damageCauser will recieve damage also. We can change it later.	
+		const TArray<AActor*> actorsToIgnore;// = {damageCauser};
 
 		//Find all actors arround	
 		UKismetSystemLibrary::SphereOverlapActors(worldContextObject, location, radius, objectTypes, nullptr, actorsToIgnore, foundActors);
