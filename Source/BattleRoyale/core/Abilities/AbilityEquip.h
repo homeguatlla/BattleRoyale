@@ -18,13 +18,12 @@ class BATTLEROYALE_API UAbilityEquip : public UGameplayAbilityBase
 	GENERATED_BODY()
 	
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UInventoryItemStaticData> InventoryItemHealStaticData;
-
-	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* UnEquipAnimation = nullptr;
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* EquipAnimation = nullptr;
-	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UInventoryItemStaticData> InventoryItemStaticData;
+
 public:
 	UAbilityEquip();
 	

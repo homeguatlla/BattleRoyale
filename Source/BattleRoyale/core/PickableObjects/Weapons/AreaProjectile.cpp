@@ -9,7 +9,14 @@ void AAreaProjectile::DoApplyDamageFrom(AActor* hitActor, const FVector& center)
 	TArray<TEnumAsByte<EObjectTypeQuery>> traceObjectTypes;
 	traceObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
 	
-	utils::UtilsLibrary::ApplyRadialDamage(GetWorld(), GetInstigator(), center, ExplosionRadius, {DamageEffect}, traceObjectTypes, UEngineTypes::ConvertToTraceType(ECC_Visibility));
+	utils::UtilsLibrary::ApplyRadialDamage(
+		GetWorld(), 
+		GetInstigator(), 
+		center, 
+		ExplosionRadius, 
+		{DamageEffect}, 
+		traceObjectTypes, 
+		UEngineTypes::ConvertToTraceType(ECC_Visibility));
 	/*
 	TArray<AActor*> charactersFound;
 	UKismetSystemLibrary::SphereOverlapActors(
