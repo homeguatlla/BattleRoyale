@@ -280,50 +280,62 @@ class BATTLEROYALE_API UtilsLibrary
 		return nullptr;
 	}
 
-	static void ApplyRadialDamage(const UObject* worldContextObject, AActor* damageCauser, const FVector& location, float radius,
+	static void ApplyRadialDamage(const UObject* worldContextObject, AActor* damageCauser, AActor* hitActor, const FVector& location, float radius,
 		const TArray<TSubclassOf<class UGameplayEffect>>& damageEffects, const TArray<TEnumAsByte<EObjectTypeQuery>>& objectTypes, ETraceTypeQuery traceChannel)
 	{
 		TArray<AActor*> foundActors;
-		//damageCauser will recieve damage also. We can change it later.	
-		const TArray<AActor*> actorsToIgnore;// = {damageCauser};
 
-		//Find all actors arround	
-		UKismetSystemLibrary::SphereOverlapActors(worldContextObject, location, radius, objectTypes, nullptr, actorsToIgnore, foundActors);
+		//Find all actors arround, including damageCauser and hitActor
+		UKismetSystemLibrary::SphereOverlapActors(worldContextObject, location, radius, objectTypes, nullptr, {}, foundActors);
+
 		for(const auto actor : foundActors)
 		{
+			//location is the projectile's impact point, so it sits right on top of damageCauser/hitActor's own
+			//collision. Ignore whichever of them isn't the current target, otherwise the trace towards other
+			//actors immediately blocks against that surface (Time=0 hit) instead of reaching them.
+			TArray<AActor*> actorsToIgnore;
+			if(damageCauser != actor)
+			{
+				actorsToIgnore.Add(damageCauser);
+			}
+			if(hitActor && hitActor != actor)
+			{
+				actorsToIgnore.Add(hitActor);
+			}
+
 			FHitResult hitResult;
 
-			//Trace from location to actor to know if there is no blocker between
-			if(UKismetSystemLibrary::LineTraceSingle(worldContextObject, location, actor->GetActorLocation(), traceChannel, true, actorsToIgnore, EDrawDebugTrace::None, hitResult, true))
-			{
-				const auto target = hitResult.GetActor();
-				if(target == actor)
-				{
-					const auto character = Cast<ACharacterBase>(target);
-					if(!character)
-					{
-						continue;
-					}
+			//Trace from location to actor: a blocking hit that isn't the actor itself means something
+			//(a wall) is in the way. No hit at all, or a hit ON the actor, both mean clear line of sight -
+			//characters don't necessarily block this trace channel, so "hit nothing" is a valid clear path.
+			const bool bBlocked = UKismetSystemLibrary::LineTraceSingle(worldContextObject, location, actor->GetActorLocation(), traceChannel, true, actorsToIgnore, EDrawDebugTrace::None, hitResult, true);
 
-					const auto abilitySystemComponent = character->GetAbilitySystemComponent()->GetAbilitySystemComponent();
-					if(!abilitySystemComponent)
+			if(!bBlocked || hitResult.GetActor() == actor)
+			{
+				const auto character = Cast<ACharacterBase>(actor);
+				if(!character)
+				{
+					continue;
+				}
+
+				const auto abilitySystemComponent = character->GetAbilitySystemComponent()->GetAbilitySystemComponent();
+				if(!abilitySystemComponent)
+				{
+					continue;
+				}
+				FGameplayEffectContextHandle effectContext = abilitySystemComponent->MakeEffectContext();
+
+				effectContext.AddInstigator(damageCauser, damageCauser);
+				effectContext.AddSourceObject(damageCauser);
+				for(auto effect : damageEffects)
+				{
+					const auto specHandle = abilitySystemComponent->MakeOutgoingSpec(effect, 1, effectContext);
+					if(specHandle.IsValid())
 					{
-						continue;
-					}
-					FGameplayEffectContextHandle effectContext = abilitySystemComponent->MakeEffectContext();
-					
-					effectContext.AddInstigator(damageCauser, damageCauser);
-					effectContext.AddSourceObject(damageCauser);
-					for(auto effect : damageEffects)
-					{
-						const auto specHandle = abilitySystemComponent->MakeOutgoingSpec(effect, 1, effectContext);
-						if(specHandle.IsValid())
+						const auto activeGEHandle = abilitySystemComponent->ApplyGameplayEffectSpecToSelf(*specHandle.Data.Get());
+						if(!activeGEHandle.WasSuccessfullyApplied())
 						{
-							const auto activeGEHandle = abilitySystemComponent->ApplyGameplayEffectSpecToSelf(*specHandle.Data.Get());
-							if(!activeGEHandle.WasSuccessfullyApplied())
-							{
-								UE_LOG(LogWeapon, Error, TEXT("[ApplyRadialDamage] Couldn't apply GE to target %s"), *target->GetName());
-							}
+							UE_LOG(LogWeapon, Error, TEXT("[ApplyRadialDamage] Couldn't apply GE to target %s"), *actor->GetName());
 						}
 					}
 				}
