@@ -301,13 +301,13 @@ class BATTLEROYALE_API UtilsLibrary
 					const auto character = Cast<ACharacterBase>(target);
 					if(!character)
 					{
-						return;
+						continue;
 					}
-					
+
 					const auto abilitySystemComponent = character->GetAbilitySystemComponent()->GetAbilitySystemComponent();
 					if(!abilitySystemComponent)
 					{
-						return;
+						continue;
 					}
 					FGameplayEffectContextHandle effectContext = abilitySystemComponent->MakeEffectContext();
 					
