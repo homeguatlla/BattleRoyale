@@ -26,27 +26,9 @@ void AAreaProjectile::DoApplyDamageFrom(AActor* hitActor, const FVector& center)
 		{DamageEffect},
 		traceObjectTypes,
 		UEngineTypes::ConvertToTraceType(ECC_Visibility));
-	/*
-	TArray<AActor*> charactersFound;
-	UKismetSystemLibrary::SphereOverlapActors(
-		GetWorld(),
-		center,
-		ExplosionRadius,
-		traceObjectTypes,
-		ACharacterBase::StaticClass(),
-		{},
-		charactersFound);
-*/
+	
 	if(IsDebugEnabled)
 	{
 		DrawDebugSphere(GetWorld(), center, ExplosionRadius, 20, FColor::Green, false, 3);
 	}
-	/*
-	for(auto&& character : charactersFound)
-	{
-		if(const auto hurtCharacter = Cast<IICharacter>(character))
-		{
-			ApplyDamageToCharacter(hurtCharacter);
-		}
-	}*/
 }
