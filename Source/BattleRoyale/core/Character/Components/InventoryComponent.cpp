@@ -397,7 +397,7 @@ bool UInventoryComponent::EquipObject(TScriptInterface<IPickupObject> pickableOb
 				character->GetRightHandSocketName());
 	if(!isAttached)
 	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][ACharacterBase::Equip] pickup object not attached to the character"), *GetName());
+		UE_LOG(LogCharacter, Error, TEXT("[%s][EquipObject] pickup object not attached to the character"), *GetName());
 		return false;
 	}
 	
@@ -576,6 +576,8 @@ int UInventoryComponent::RemoveEnoughAmmo(EAmmoType ammoType, int ammoNeeded)
 void UInventoryComponent::PerformActionForEachInventoryItem(
 	const std::function<bool (UInventoryArrayItem* inventoryItem)>& action) const
 {
+	if (!mInventoryBag)
+		UE_LOG(LogCharacter, Error, TEXT("[%s][PerformActionForEachInventoryItem] inventoryBag = nullptr"), *GetName());
 	mInventoryBag->PerformActionForEachItem(action);
 }
 
