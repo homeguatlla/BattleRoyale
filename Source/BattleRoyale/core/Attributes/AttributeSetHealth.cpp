@@ -88,8 +88,8 @@ void UAttributeSetHealth::PostGameplayEffectExecute(const FGameplayEffectModCall
 
 		if(instigatorPlayerState && receptorPlayerState)
 		{
-			const auto gameMode = GetGameModeServer();
-			gameMode->OnNewKill(instigatorPlayerState, receptorPlayerState);
+			if (const auto gameMode = GetGameModeServer())
+				gameMode->OnNewKill(instigatorPlayerState, receptorPlayerState);
 		}
 	}
 }

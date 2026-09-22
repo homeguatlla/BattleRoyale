@@ -150,7 +150,7 @@ void AWeaponBase::MulticastReload_Implementation(int32 serverAmmo)
 
 void AWeaponBase::StartAiming(const FVector& location, const FRotator& rotation)
 {
-	SetActorRotation(rotation);
+	//SetActorRotation(rotation);
 }
 
 void AWeaponBase::StopAiming()
