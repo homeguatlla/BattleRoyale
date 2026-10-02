@@ -1,1 +1,60 @@
-{"v":3,"createdOnFiles":{"v":1,"at":"2026-10-02T10:00:00Z"},"title":"BattleRoyale UI Mockups","launch":{"view":"canvas"},"pages":[],"boards":{"MainMenu.dc.html":{"x":0,"y":0,"w":1600,"h":900,"title":"Menú principal"},"Lobby.dc.html":{"x":1680,"y":0,"w":1600,"h":900,"title":"Lobby / Sala de espera"},"Main.dc.html":{"x":3360,"y":0,"w":1600,"h":900,"title":"HUD en partida"}},"order":["MainMenu.dc.html","Lobby.dc.html","Main.dc.html"],"notes":{"flow":{"x":0,"y":-280,"text":"Flujo: Menú principal → Lobby → Partida","kind":"title1","maxW":4960}},"designSystems":[]}
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Lobby.dc.html": {
+      "h": 900,
+      "title": "Lobby / Sala de espera",
+      "w": 1600,
+      "x": 1680,
+      "y": 0
+    },
+    "Main.dc.html": {
+      "h": 900,
+      "title": "HUD en partida",
+      "w": 1600,
+      "x": 3360,
+      "y": 0
+    },
+    "MainMenu.dc.html": {
+      "h": 900,
+      "title": "Menú principal",
+      "w": 1600,
+      "x": 0,
+      "y": 0
+    },
+    "HUD_Escenario1.dc.html": {
+      "x": 3360,
+      "y": 1020,
+      "w": 1600,
+      "h": 900,
+      "title": "HUD sobre escenario 1 (pradera)"
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-10-02T10:00:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "flow": {
+      "kind": "title1",
+      "maxW": 4960,
+      "text": "Flujo: Menú principal → Lobby → Partida",
+      "w": 240,
+      "x": 0,
+      "y": -280
+    }
+  },
+  "order": [
+    "MainMenu.dc.html",
+    "Lobby.dc.html",
+    "Main.dc.html",
+    "HUD_Escenario1.dc.html"
+  ],
+  "pages": [],
+  "title": "BattleRoyale UI Mockups"
+}
