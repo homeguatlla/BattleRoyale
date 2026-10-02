@@ -577,7 +577,10 @@ void UInventoryComponent::PerformActionForEachInventoryItem(
 	const std::function<bool (UInventoryArrayItem* inventoryItem)>& action) const
 {
 	if (!mInventoryBag)
+	{
 		UE_LOG(LogCharacter, Error, TEXT("[%s][PerformActionForEachInventoryItem] inventoryBag = nullptr"), *GetName());
+		return;
+	}
 	mInventoryBag->PerformActionForEachItem(action);
 }
 
