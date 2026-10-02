@@ -130,47 +130,30 @@ a{color:#38E1FF}a:hover{color:#A6F3FF}
 </div>
 
 <sc-if value="{{showChips}}" hint-placeholder-val="{{ true }}">
-<div style="position: absolute; left: 676px; top: 822px; width: 248px; height: 48px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 22px; background: {{panelFill}}; border-radius: 18px; box-shadow: inset 0 2px 0 {{accent}}">
-<div style="position: relative; width: 38px; height: 38px; flex-shrink: 0; background: #2B6F8A; border-radius: 50%">
-<div style="position: absolute; inset: 2px; background: #06263F; border-radius: 50%">
-<div style="position: absolute; inset: 0; background: conic-gradient({{accent}} 0 100deg, transparent 100deg); opacity: 0.55"></div>
-<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Chakra Petch', sans-serif; font-size: 17px; font-weight: 700">8</div>
-</div>
-</div>
-<div style="display: flex; flex-direction: column; line-height: 1.15">
-<span style="font-size: 14px; font-weight: 700">Atravesar muros</span>
-<span style="font-size: 12px; font-weight: 600; color: #D2F1FF">Q · RECARGANDO</span>
+<div style="position: absolute; left: 774px; top: 812px; display: flex; gap: 16px">
+<div style="position: relative; width: 52px; height: 52px; box-sizing: border-box; border-radius: 50%; border: 2px solid #2B6F8A; background: rgba(6,38,63,0.75); display: flex; align-items: center; justify-content: center">
+<div style="position: absolute; inset: 0; border-radius: 50%; background: conic-gradient({{accent}} 0 100deg, transparent 100deg); opacity: 0.55"></div>
+<div style="position: relative; font-family: 'Chakra Petch', sans-serif; font-size: 20px; font-weight: 700">8</div>
+<div style="position: absolute; left: 50%; bottom: -9px; transform: translateX(-50%); padding: 0 5px; border-radius: 4px; white-space: nowrap; background: #E6FBFF; color: #04182C; text-shadow: none; font-family: 'Chakra Petch', sans-serif; font-size: 11px; font-weight: 700">Q</div>
 </div>
 </div>
 <div style="position: absolute; left: 0; top: 880px; width: 1600px; text-align: center; font-family: 'Chakra Petch', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; color: #D2F1FF">[TAB] HABILIDADES</div>
 </sc-if>
 
 <sc-if value="{{skillsPanel}}" hint-placeholder-val="{{ false }}">
-<div style="position: absolute; left: 560px; top: 746px; width: 480px; height: 124px; box-sizing: border-box; padding: 12px 20px 0; display: flex; justify-content: center; align-items: flex-start; gap: 22px; background: {{panelFill}}; border-radius: 18px; box-shadow: inset 0 3px 0 {{accent}}">
-<div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
-<div style="position: relative; width: 66px; height: 66px; background: #2B6F8A; border-radius: 50%">
-<div style="position: absolute; inset: 2px; background: #06263F; border-radius: 50%">
-<div style="position: absolute; inset: 0; background: conic-gradient({{accent}} 0 100deg, transparent 100deg); opacity: 0.55"></div>
-<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Chakra Petch', sans-serif; font-size: 24px; font-weight: 700">8</div>
+<div style="position: absolute; left: 0; top: 800px; width: 1600px; display: flex; justify-content: center; gap: 22px">
+<div style="position: relative; width: 64px; height: 64px; box-sizing: border-box; border-radius: 50%; border: 2px solid #2B6F8A; background: rgba(6,38,63,0.75); display: flex; align-items: center; justify-content: center">
+<div style="position: absolute; inset: 0; border-radius: 50%; background: conic-gradient({{accent}} 0 100deg, transparent 100deg); opacity: 0.55"></div>
+<div style="position: relative; font-family: 'Chakra Petch', sans-serif; font-size: 24px; font-weight: 700">8</div>
+<div style="position: absolute; left: 50%; bottom: -9px; transform: translateX(-50%); padding: 0 5px; border-radius: 4px; white-space: nowrap; background: #E6FBFF; color: #04182C; text-shadow: none; font-family: 'Chakra Petch', sans-serif; font-size: 11px; font-weight: 700">Q</div>
 </div>
+<div style="position: relative; width: 64px; height: 64px; box-sizing: border-box; border-radius: 50%; border: 2px solid {{accent}}; background: rgba(6,38,63,0.75); box-shadow: 0 0 12px {{accent}}; display: flex; align-items: center; justify-content: center">
+<svg width="28" height="28" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true" style="color: {{accent}}"><circle cx="17" cy="17" r="12"></circle><path d="M17 9v16M9 17h16"></path></svg>
+<div style="position: absolute; left: 50%; bottom: -9px; transform: translateX(-50%); padding: 0 5px; border-radius: 4px; white-space: nowrap; background: {{accent}}; color: #04182C; text-shadow: none; font-family: 'Chakra Petch', sans-serif; font-size: 11px; font-weight: 700">E</div>
 </div>
-<div style="display: flex; gap: 6px; align-items: center; font-size: 13px; font-weight: 600; color: #D2F1FF"><span style="padding: 0 5px; background: #E6FBFF; color: #04182C; text-shadow: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700">Q</span>Atravesar muros</div>
-</div>
-<div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
-<div style="position: relative; width: 66px; height: 66px; background: {{accent}}; border-radius: 50%">
-<div style="position: absolute; inset: 3px; background: #06263F; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: {{accent}}">
-<svg width="30" height="30" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="17" cy="17" r="12"></circle><path d="M17 9v16M9 17h16"></path></svg>
-</div>
-</div>
-<div style="display: flex; gap: 6px; align-items: center; font-size: 13px; font-weight: 600"><span style="padding: 0 5px; background: {{accent}}; color: #04182C; text-shadow: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700">E</span>[Habilidad 2]</div>
-</div>
-<div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
-<div style="position: relative; width: 66px; height: 66px; background: #2B6F8A; border-radius: 50%">
-<div style="position: absolute; inset: 2px; background: #06263F; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #7CE0A0">
-<svg width="24" height="24" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M9 2h8v7h7v8h-7v7H9v-7H2V9h7z"></path></svg>
-</div>
-</div>
-<div style="display: flex; gap: 6px; align-items: center; font-size: 13px; font-weight: 600; color: #D2F1FF"><span style="padding: 0 5px; background: #E6FBFF; color: #04182C; text-shadow: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700">H</span>Curación ×2</div>
+<div style="position: relative; width: 64px; height: 64px; box-sizing: border-box; border-radius: 50%; border: 2px solid #2B6F8A; background: rgba(6,38,63,0.75); display: flex; align-items: center; justify-content: center">
+<svg width="24" height="24" viewBox="0 0 26 26" fill="none" stroke="#7CE0A0" stroke-width="2.4" aria-hidden="true"><path d="M9 2h8v7h7v8h-7v7H9v-7H2V9h7z"></path></svg>
+<div style="position: absolute; left: 50%; bottom: -9px; transform: translateX(-50%); padding: 0 5px; border-radius: 4px; white-space: nowrap; background: #E6FBFF; color: #04182C; text-shadow: none; font-family: 'Chakra Petch', sans-serif; font-size: 11px; font-weight: 700">H ×2</div>
 </div>
 </div>
 <div style="position: absolute; left: 0; top: 880px; width: 1600px; text-align: center; font-family: 'Chakra Petch', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; color: #D2F1FF">[TAB] OCULTAR</div>
