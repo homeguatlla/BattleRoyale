@@ -180,7 +180,7 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	//DEBUG purposes only
-	if(ConsoleShowInventory.GetValueOnGameThread() != 0)
+	if(ConsoleShowInventory.GetValueOnGameThread() != 0 && mInventoryBag)
 	{
 		mInventoryBag->PerformActionForEachItem([](UInventoryArrayItem* inventoryItem) -> bool
 		{
@@ -425,7 +425,7 @@ bool UInventoryComponent::HasAmmoOfType(EAmmoType ammoType) const
 
 bool UInventoryComponent::HasItemOfType(TSubclassOf<UInventoryItemStaticData> itemStaticDataClassToFind) const
 {
-	return mInventoryBag->FindFirstItem(itemStaticDataClassToFind) != nullptr;
+	return mInventoryBag && mInventoryBag->FindFirstItem(itemStaticDataClassToFind) != nullptr;
 }
 
 bool UInventoryComponent::HasLifeKid() const
@@ -578,7 +578,8 @@ void UInventoryComponent::PerformActionForEachInventoryItem(
 {
 	if (!mInventoryBag)
 	{
-		UE_LOG(LogCharacter, Error, TEXT("[%s][PerformActionForEachInventoryItem] inventoryBag = nullptr"), *GetName());
+		UE_LOG(LogCharacter, Error, TEXT("[%s][%s][PerformActionForEachInventoryItem] inventoryBag = nullptr"),
+			*GetNameSafe(GetOwner()), *UEnum::GetValueAsString(GetOwnerRole()));
 		return;
 	}
 	mInventoryBag->PerformActionForEachItem(action);
@@ -662,7 +663,10 @@ void UInventoryComponent::NotifyEquippedObject(TScriptInterface<IPickupObject> p
 	{
 		const TScriptInterface<IWeapon> weapon = pickableObject.GetObject();
 		const auto ammoType = weapon->GetAmmoType();
-		OnEquippedWeaponDelegate.Broadcast(weapon , GetTotalAmmoOfType(ammoType));
+		//mInventoryBag is replicated COND_OwnerOnly, so simulated proxies don't have it (OnRep_EquippedObject
+		//is executed on all clients). Total ammo is only needed by the locally controlled character.
+		const auto totalAmmo = mInventoryBag ? GetTotalAmmoOfType(ammoType) : 0;
+		OnEquippedWeaponDelegate.Broadcast(weapon , totalAmmo);
 	}
 }
 
