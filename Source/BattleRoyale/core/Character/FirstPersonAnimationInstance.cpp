@@ -99,6 +99,19 @@ void UFirstPersonAnimationInstance::CheckEquippedToMakeWeaponAimsToCrosshair()
 	const auto gunComponent = CharacterInterface->GetGunComponent();
 	if(gunComponent->HasWeaponEquipped())
 	{
+		if(gunComponent->IsAiming())
+		{
+			//While aiming, point hand_r at the controller's look direction instead of the raycast target below.
+			//We read Character->GetControlRotation() rather than the camera's GetForwardVector(): with
+			//bUsePawnControlRotation, the camera component only copies the pawn's control rotation inside
+			//GetCameraView(), called by the PlayerCameraManager, which isn't guaranteed to run before this
+			//animation update - so GetForwardVector() could still return last frame's rotation. The controller's
+			//own rotation updates synchronously the instant mouse input is processed, with no such delay.
+			const auto cameraDirection = Character->GetControlRotation().Vector();
+			RightHandRotation = UKismetMathLibrary::MakeRotFromY(-cameraDirection);
+			return;
+		}
+
 		const auto rightHandSocketTransform = CharacterInterface->GetRightHandSocketTransform();
 		const auto shootingTarget = gunComponent->GetShootingTargetLocation();
 

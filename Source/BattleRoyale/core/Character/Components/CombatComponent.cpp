@@ -33,7 +33,7 @@ void UCombatComponent::InitializeComponent()
 
 	mCharacter = Cast<ACharacterBase>(GetOwner());
 	check(mCharacter);
-	
+
 	//Subscribe to pickup delegate
 	if(const auto inventoryComponent = Cast<UInventoryComponent>(mCharacter->GetInventoryComponent().GetObject()))
 	{
@@ -437,24 +437,26 @@ void UCombatComponent::CalculateInterpolatedFOVAndCameraLocation(float DeltaTime
 	if(mIsAiming)
 	{
 		float relativeYOffsetToAlignCameraAndWeapon = 0.0f;
-		float upCameraVectorSign = -1.0f;
 		if(mCharacter->IsCrouching())
 		{
 			relativeYOffsetToAlignCameraAndWeapon = CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON_CROUCH;
-			upCameraVectorSign = -1.0f;
 		}
 		else
 		{
 			relativeYOffsetToAlignCameraAndWeapon = CAMERA_RELATIVE_Y_OFFSET_TO_ALIGN_CAMERA_WITH_WEAPON_STANDUP;
-			upCameraVectorSign = 1.0f;
 		}
 		
 		mCurrentFOV = FMath::FInterpTo(mCurrentFOV, weapon->GetZoomedFOV(), DeltaTime, weapon->GetZoomInterpolationSpeed());
 	
-		const auto cameraDirection = camera->GetForwardVector();
-		
+		//Read the Controller's rotation directly instead of camera->GetComponentRotation(): with
+		//bUsePawnControlRotation, the camera component only copies the pawn's control rotation inside
+		//GetCameraView(), called by the PlayerCameraManager - not guaranteed to happen before this tick reads it.
+		//That meant we could be reading last frame's camera rotation, a constant one-frame lag that was
+		//invisible at normal speed but showed up as the weapon stepping to catch up to the crosshair in slomo.
+		const auto rotator = mCharacter->GetControlRotation();
+		const auto cameraDirection = rotator.Vector();
+
 		//Rotate weapon to make camera direction and weapon direction both the same direction
-		const auto rotator = camera->GetComponentRotation();
 		const auto result = UKismetMathLibrary::ComposeRotators(FRotator(0.0f, -90.0f, 0.0f), rotator);
 		weapon->StartAiming(FVector::Zero(), result);
 
@@ -472,21 +474,48 @@ void UCombatComponent::CalculateInterpolatedFOVAndCameraLocation(float DeltaTime
 		//Camera line
 		//DrawDebugLine(GetWorld(), cameraLocation , cameraLocation + cameraDirection * 1000, FColor::Green);
 
-		const auto weaponCrosshairTransform = weapon->GetCrosshairSocketTransform();
-		
-		//Crosshair UP line
-		//DrawDebugLine(GetWorld(), weaponCrosshairTransform.GetLocation(), weaponCrosshairTransform.GetLocation() + weaponCrosshairTransform.GetRotation().GetUpVector() * 100, FColor::Cyan);
+		//GetCrosshairSocketTransform() reads the mesh's CURRENT socket transform, which depends on whichever
+		//hand_r rotation the arms AnimBP last evaluated - that may not be this frame's yet (animation and this
+		//component tick independently), and any such staleness gets amplified by the lever arm out to the crosshair,
+		//showing up as vertical vibration/lag while actively looking around. To avoid that race, we compute the
+		//crosshair's expected world location ourselves: read hand_r's position (translation changes slowly, from
+		//locomotion, so staleness there is imperceptible) but use OUR OWN freshly computed rotation (the same one
+		//the AnimBP applies to hand_r this frame - see FirstPersonAnimationInstance::CheckEquippedToMakeWeaponAimsToCrosshair)
+		//instead of reading a rotation back. The crosshair's offset from hand_r is fixed (the weapon is rigidly
+		//attached to it), so converting its current world location into hand_r's bone space gives that constant offset.
+		const auto handRWorldPosition = mCharacter->GetMesh()->GetSocketLocation(FName("hand_r"));
+		FVector crosshairLocalOffsetFromHandR;
+		FRotator unusedRotator;
+		mCharacter->GetMesh()->TransformToBoneSpace(
+			FName("hand_r"),
+			weapon->GetCrosshairSocketTransform().GetLocation(),
+			FRotator::ZeroRotator,
+			crosshairLocalOffsetFromHandR,
+			unusedRotator);
+		const auto expectedHandRRotation = UKismetMathLibrary::MakeRotFromY(-cameraDirection);
+		const auto expectedCrosshairWorldLocation = handRWorldPosition + expectedHandRRotation.RotateVector(crosshairLocalOffsetFromHandR);
 
-		//Calculate the distance from the crosshair to the camera line (once aligned with the weapon)
-		const auto distanceCrosshairToCameraLine = FMath::PointDistToLine(weaponCrosshairTransform.GetLocation(), cameraDirection, cameraLocation);
-		//We have to move camera relative position in z, up to distanceCrosshairToCameraLine. But, camera can be rotated because of pitch.
-		//So we cannot add relative z = distanceCrosshairToCameraLine because camera up vector can not be 1.
-		//To calculate the distance to move we know that upvector.z * newDistance = distanceCrosshairToCameraLine, so newDistance = distanceCrosshairToCameraLine/cameraUp.z
+		//Signed perpendicular distance from the crosshair to the camera line (once aligned with the weapon).
+		//FMath::PointDistToLine returns an unsigned magnitude, which forced upCameraVectorSign below to guess
+		//which side to correct towards; near the line that guess is often wrong, which showed up as the weapon
+		//randomly landing above or below screen center. Projecting onto the camera's own up vector (not world Z,
+		//which is only correct at zero pitch) gives the real sign while keeping the same magnitude/scale PointDistToLine used.
 		const auto cameraUpVector = camera->GetComponentTransform().GetRotation().GetUpVector();
-		const auto relativeUpZ = distanceCrosshairToCameraLine / cameraUpVector.Z;
+		const auto closestPointOnCameraLine = FMath::ClosestPointOnInfiniteLine(cameraLocation, cameraLocation + cameraDirection, expectedCrosshairWorldLocation);
+		const auto perpendicularOffsetToCameraLine = expectedCrosshairWorldLocation - closestPointOnCameraLine;
+		const auto signedDistanceCrosshairToCameraLine = FVector::DotProduct(perpendicularOffsetToCameraLine, cameraUpVector);
+		//We have to move camera relative position in z, up to signedDistanceCrosshairToCameraLine. But, camera can be rotated because of pitch.
+		//So we cannot add relative z = signedDistanceCrosshairToCameraLine because camera up vector can not be 1.
+		//To calculate the distance to move we know that upvector.z * newDistance = signedDistanceCrosshairToCameraLine, so newDistance = signedDistanceCrosshairToCameraLine/cameraUp.z
+		const auto relativeUpZ = signedDistanceCrosshairToCameraLine / cameraUpVector.Z;
+		//relativeUpZ changes every frame with pitch, so it can't go through the same Lerp as the Y offset below:
+		//lerping toward a continuously moving target never catches up while you're still moving, only once you stop
+		//(that showed up as vertical lag while looking up/down). Only the Y offset (crouch/standup, a discrete
+		//state) benefits from being smoothed; the vertical crosshair alignment is applied directly instead.
 		mCurrentCameraRelativeLocation = FMath::Lerp(mCurrentCameraRelativeLocation,
-															 mDefaultCameraRelativeLocation + FVector(0.0f, relativeYOffsetToAlignCameraAndWeapon, upCameraVectorSign * relativeUpZ),
+															 mDefaultCameraRelativeLocation + FVector(0.0f, relativeYOffsetToAlignCameraAndWeapon, 0.0f),
 															 DeltaTime * weapon->GetZoomInterpolationSpeed());
+		mCurrentCameraRelativeLocation.Z = mDefaultCameraRelativeLocation.Z + relativeUpZ;
 		
 	
 		

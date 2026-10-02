@@ -661,7 +661,7 @@ void ACharacterBase::AddControllerPitchInput(float Rate)
 	{
 		//const auto rotation = mWeaponMesh->GetComponentRotation();
 		ServerSetCharacterControlRotation(GetControlRotation());
-	}	
+	}
 }
 
 void ACharacterBase::AddControllerYawInput(float Val)

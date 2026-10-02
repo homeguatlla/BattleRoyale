@@ -49,7 +49,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "IGunComponent")
 	virtual FVector GetShootingTargetLocation() const = 0;
-	
+
 	/**
 	 * Shoot is aim and try to hit something
 	 **/
