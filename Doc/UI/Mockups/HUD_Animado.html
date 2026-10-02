@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HUD animado</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;family=Barlow+Semi+Condensed:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#38E1FF}a:hover{color:#A6F3FF}
+</style>
+
+<style>
+@property --accent{syntax:'<color>';inherits:true;initial-value:#000}
+@property --highlight{syntax:'<color>';inherits:true;initial-value:#000}
+@property --panelFill{syntax:'<color>';inherits:true;initial-value:#000}
+@property --healthFill{syntax:'<color>';inherits:true;initial-value:#000}
+@property --glow{syntax:'<color>';inherits:true;initial-value:#000}
+@property --edge{syntax:'<color>';inherits:true;initial-value:#000}
+@property --textMain{syntax:'<color>';inherits:true;initial-value:#000}
+@property --textSub{syntax:'<color>';inherits:true;initial-value:#000}
+@property --critical{syntax:'<color>';inherits:true;initial-value:#000}
+@property --dim{syntax:'<number>';inherits:true;initial-value:1}
+@property --bright{syntax:'<number>';inherits:true;initial-value:1}
+@property --sat{syntax:'<number>';inherits:true;initial-value:1}
+@property --strokeW{syntax:'<length>';inherits:true;initial-value:2px}
+
+html,body{margin:0;background:#05080c;color:#E6EEF5;font-family:'Barlow Semi Condensed',sans-serif}
+.wrap{display:flex;flex-direction:column;align-items:stretch;gap:14px;padding:16px;box-sizing:border-box;width:100%;max-width:1632px;margin:0 auto}
+.stagebox{width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;border-radius:8px}
+#stage{position:absolute;left:0;top:0;width:1600px;height:900px;transform-origin:0 0}
+#stage>div{transition:--accent .7s ease, --highlight .7s ease, --panelFill .7s ease, --healthFill .7s ease, --glow .7s ease, --edge .7s ease, --textMain .7s ease, --textSub .7s ease, --critical .7s ease, --dim .7s ease, --bright .7s ease, --sat .7s ease, --strokeW .7s ease}
+.agg,.kb{transition:opacity .5s ease}
+.m-normal .kb{opacity:0}
+body:not(.m-combate) .agg{opacity:0}
+.m-combate .agg{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+.m-combate.hit .agg{animation:hit .6s ease-out}
+@keyframes hit{0%{opacity:1;filter:brightness(2.4) saturate(1.8)}100%{opacity:.7;filter:none}}
+.hudlayer.flick{animation:flick .5s steps(1,end)}
+@keyframes flick{0%{opacity:1}8%{opacity:.15;transform:translateX(3px) skewX(-2deg)}16%{opacity:.9;transform:none}26%{opacity:.35;transform:translateX(-2px)}36%{opacity:1}50%{opacity:.6;filter:blur(1px)}64%,100%{opacity:1;filter:none;transform:none}}
+.scan{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px);mix-blend-mode:overlay}
+.controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+.controls button{font-family:'Chakra Petch',sans-serif;font-weight:700;letter-spacing:.08em;font-size:14px;min-height:44px;padding:0 16px;border-radius:10px;border:1px solid #2a3a4a;background:#0e1620;color:#E6EEF5;cursor:pointer}
+.controls button[aria-pressed="true"]{border-color:#E6EEF5;background:#1c2a38}
+.controls label{font-size:14px}
+.controls select{min-height:44px;border-radius:10px;background:#0e1620;color:#E6EEF5;border:1px solid #2a3a4a;padding:0 10px}
+</style></head>
+<body class="m-normal">
+<div class="wrap">
+<div class="stagebox" id="box"><div id="stage">
+
+<div style="width: 1600px; height: 900px; position: relative; overflow: hidden; background: #121A17; font-family: 'Barlow Semi Condensed', sans-serif; color: var(--textMain); text-shadow: 0 1px 2px rgba(0,0,0,0.85), 0 0 10px var(--glow)">
+
+<img id="scene" src="../Screenshots/Escenario5_Bosque.jpg" alt="Escena de juego" style="position: absolute; left: 0; top: 0; width: 1600px; height: 900px; object-fit: cover; filter: brightness(var(--bright)) saturate(var(--sat))">
+<div class="hudlayer">
+
+<div style="position: absolute; left: 10px; top: 10px; width: 1580px; height: 880px; box-sizing: border-box; border: 1px solid var(--accent); border-radius: 160px / 110px; opacity: 0.14"></div>
+<div class="agg">
+<div style="position: absolute; left: 0; top: 0; width: 1600px; height: 900px; background: radial-gradient(ellipse at center, transparent 52%, rgba(255,20,20,0.10) 75%, rgba(255,20,20,0.32) 100%)"></div>
+<div style="position: absolute; left: 40px; top: 40px; width: 46px; height: 46px; border-left: 3px solid var(--accent); border-top: 3px solid var(--accent); transform: rotate(0deg); filter: drop-shadow(0 0 6px var(--accent))"></div>
+<div style="position: absolute; left: 1514px; top: 40px; width: 46px; height: 46px; border-left: 3px solid var(--accent); border-top: 3px solid var(--accent); transform: rotate(90deg); filter: drop-shadow(0 0 6px var(--accent))"></div>
+<div style="position: absolute; left: 1514px; top: 814px; width: 46px; height: 46px; border-left: 3px solid var(--accent); border-top: 3px solid var(--accent); transform: rotate(180deg); filter: drop-shadow(0 0 6px var(--accent))"></div>
+<div style="position: absolute; left: 40px; top: 814px; width: 46px; height: 46px; border-left: 3px solid var(--accent); border-top: 3px solid var(--accent); transform: rotate(270deg); filter: drop-shadow(0 0 6px var(--accent))"></div>
+<div style="position: absolute; left: 744px; top: 394px; width: 112px; height: 112px; box-sizing: border-box; border: 2px solid var(--accent); border-radius: 50%; border-left-color: transparent; border-right-color: transparent; transform: rotate(45deg); filter: drop-shadow(0 0 6px var(--accent))"></div>
+<div style="position: absolute; left: 660px; top: 82px; width: 280px; height: 7px; background: repeating-linear-gradient(-45deg, var(--accent) 0 7px, transparent 7px 14px); filter: drop-shadow(0 0 4px var(--accent))"></div>
+<div style="position: absolute; left: 30px; top: 46px; padding: 1px 8px; background: var(--accent); color: #FFFFFF; text-shadow: none; font-family: 'Chakra Petch', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.2em; box-shadow: 0 0 12px var(--accent)">COMBATE</div>
+</div>
+
+<div style="position: absolute; left: 30px; top: 24px; display: flex; align-items: center; gap: 8px; font-family: 'Chakra Petch', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: var(--textSub); opacity: var(--dim)">
+<svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="var(--strokeW)" aria-hidden="true"><line x1="2" y1="13" x2="2" y2="10"></line><line x1="7" y1="13" x2="7" y2="7"></line><line x1="12" y1="13" x2="12" y2="4"></line><line x1="17" y1="13" x2="17" y2="1" opacity="0.35"></line></svg>
+<span>32 MS</span>
+</div>
+
+<div style="position: absolute; left: 0; top: 0; width: 1600px; height: 100px; opacity: var(--dim); transform: perspective(700px) rotateX(24deg); transform-origin: 50% 0%">
+<svg width="360" height="84" viewBox="0 0 360 84" aria-hidden="true" style="position: absolute; left: 620px; top: 0; filter: drop-shadow(0 0 4px var(--accent)) drop-shadow(0 0 16px var(--glow))"><path d="M19 6 H341 A18 18 0 0 1 359 24 V56 A18 18 0 0 1 341 74 H19 A18 18 0 0 1 1 56 V24 A18 18 0 0 1 19 6 Z" style="fill: var(--panelFill); stroke: var(--accent); stroke-width: var(--strokeW)"></path><rect x="140" y="69" width="80" height="4" style="fill: var(--accent)"></rect></svg>
+<div style="position: absolute; left: 640px; top: 10px; width: 320px; height: 58px; display: flex; align-items: center; font-family: 'Chakra Petch', sans-serif">
+<div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center">
+<div style="font-size: 30px; font-weight: 700; line-height: 1">37</div>
+<div style="font-size: 11px; font-weight: 600; letter-spacing: 0.16em; color: var(--textSub)">VIVOS</div>
+</div>
+<div style="width: 1px; height: 38px; background: var(--accent); opacity: 0.6; transform: skewX(-25deg)"></div>
+<div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center">
+<div style="font-size: 30px; font-weight: 700; line-height: 1">12</div>
+<div style="font-size: 11px; font-weight: 600; letter-spacing: 0.16em; color: var(--textSub)">EQUIPOS</div>
+</div>
+<div style="width: 1px; height: 38px; background: var(--accent); opacity: 0.6; transform: skewX(-25deg)"></div>
+<div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center">
+<div style="font-size: 30px; font-weight: 700; line-height: 1; color: var(--highlight)">3</div>
+<div style="font-size: 11px; font-weight: 600; letter-spacing: 0.16em; color: var(--textSub)">BAJAS</div>
+</div>
+</div>
+</div>
+
+<div style="position: absolute; right: 24px; top: 16px; width: 370px; height: 112px; opacity: var(--dim); transform: perspective(900px) rotateY(-22deg) rotateX(6deg); transform-origin: 100% 0%">
+<div style="position: absolute; right: 0; top: 0; width: 3px; height: 108px; background: var(--accent); box-shadow: 0 0 8px var(--accent), 0 0 20px var(--accent)"></div>
+<div style="position: absolute; right: 7px; top: 0; width: 360px; display: flex; flex-direction: column; gap: 6px; font-size: 16px; filter: drop-shadow(0 0 3px var(--accent)) drop-shadow(0 0 12px var(--glow))">
+<div style="height: 32px; display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 0 12px 0 22px; background: linear-gradient(90deg, transparent 0%, var(--panelFill) 45%); box-shadow: inset 0 -2px 0 var(--highlight); clip-path: polygon(18px 0, 100% 0, 100% 100%, 0 100%)">
+<div style="width: 6px; height: 18px; background: var(--highlight); transform: skewX(-20deg); margin-right: auto"></div>
+<span style="font-weight: 700; color: var(--highlight)">Jugador_07</span>
+<svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M1 5h14l3-3h3v4h-3l-2 2H8l-1 5H4l1-5H1z"></path></svg>
+<span style="font-weight: 500">Jugador_03</span>
+</div>
+<div style="height: 32px; display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 0 12px 0 22px; background: linear-gradient(90deg, transparent 0%, var(--panelFill) 45%); box-shadow: inset 0 -2px 0 var(--edge); clip-path: polygon(18px 0, 100% 0, 100% 100%, 0 100%)">
+<span style="font-weight: 700">Jugador_21</span>
+<svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M1 5h14l3-3h3v4h-3l-2 2H8l-1 5H4l1-5H1z"></path></svg>
+<span style="color: var(--textSub)">Jugador_15</span>
+</div>
+<div style="height: 32px; display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 0 12px 0 22px; background: linear-gradient(90deg, transparent 0%, var(--panelFill) 45%); box-shadow: inset 0 -2px 0 var(--edge); clip-path: polygon(18px 0, 100% 0, 100% 100%, 0 100%); opacity: 0.7">
+<span style="font-weight: 700">Jugador_09</span>
+<svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M1 5h14l3-3h3v4h-3l-2 2H8l-1 5H4l1-5H1z"></path></svg>
+<span style="color: var(--textSub)">Jugador_44</span>
+</div>
+</div>
+</div>
+
+<div class="kb">
+<div style="position: absolute; left: 0; top: 0; width: 1600px; height: 900px; transform: perspective(900px) rotateX(14deg); transform-origin: 50% 0%">
+<svg width="520" height="76" viewBox="0 0 520 76" aria-hidden="true" style="position: absolute; left: 540px; top: 140px; filter: drop-shadow(0 0 4px var(--accent)) drop-shadow(0 0 18px var(--glow))"><path d="M26 0 H494 L520 38 L494 76 H26 L0 38 Z" style="fill: var(--panelFill); stroke: var(--accent); stroke-width: var(--strokeW)"></path><path d="M70 1.5 H450" stroke-width="3" style="stroke: var(--highlight)"></path></svg>
+<div style="position: absolute; left: 540px; top: 140px; width: 520px; height: 76px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-family: 'Chakra Petch', sans-serif">
+<div style="font-size: 13px; font-weight: 700; letter-spacing: 0.3em; color: var(--highlight)">+1 BAJA</div>
+<div style="font-size: 25px; font-weight: 700; letter-spacing: 0.06em">HAS ELIMINADO A JUGADOR_03</div>
+</div>
+</div>
+</div>
+
+<div style="position: absolute; left: 776px; top: 426px; width: 46px; height: 46px; box-sizing: border-box; border-radius: 50%; border: 1px solid var(--accent); opacity: 0.85; box-shadow: 0 0 6px var(--accent), inset 0 0 6px var(--glow)"></div>
+<div style="position: absolute; left: 798px; top: 448px; width: 4px; height: 4px; background: #FFFFFF; box-shadow: 0 0 0 1px rgba(0,0,0,0.8)"></div>
+<div style="position: absolute; left: 799px; top: 424px; width: 2px; height: 14px; background: #FFFFFF; box-shadow: 0 0 0 1px rgba(0,0,0,0.8)"></div>
+<div style="position: absolute; left: 799px; top: 462px; width: 2px; height: 14px; background: #FFFFFF; box-shadow: 0 0 0 1px rgba(0,0,0,0.8)"></div>
+<div style="position: absolute; left: 774px; top: 449px; width: 14px; height: 2px; background: #FFFFFF; box-shadow: 0 0 0 1px rgba(0,0,0,0.8)"></div>
+<div style="position: absolute; left: 812px; top: 449px; width: 14px; height: 2px; background: #FFFFFF; box-shadow: 0 0 0 1px rgba(0,0,0,0.8)"></div>
+
+<div style="position: absolute; left: 850px; top: 512px; display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 22px 0 8px; background: var(--panelFill); border-radius: 12px; box-shadow: inset 0 0 0 1px var(--accent), 0 0 8px var(--accent), 0 0 22px var(--glow)">
+<div style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; background: var(--textMain); color: #04182C; text-shadow: none; border-radius: 50%; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">F</div>
+<div style="font-size: 17px; font-weight: 500">Recoger <span style="font-weight: 700; color: var(--highlight)">Rifle de asalto</span></div>
+</div>
+
+<div style="position: absolute; left: 0; top: 0; width: 1600px; height: 900px; transform: perspective(1100px) rotateY(20deg) rotateX(-4deg); transform-origin: 0% 85%">
+
+<div style="position: absolute; left: 0; top: 0; width: 1600px; height: 900px; opacity: var(--dim)">
+<svg width="1600" height="900" viewBox="0 0 1600 900" aria-hidden="true" style="position: absolute; left: 0; top: 0; filter: drop-shadow(0 0 4px var(--accent)) drop-shadow(0 0 18px var(--glow))"><path d="M42 656 H306 A18 18 0 0 1 324 674 V758 A18 18 0 0 1 306 776 H42 A18 18 0 0 1 24 758 V674 A18 18 0 0 1 42 656 Z" style="fill: var(--panelFill); stroke: var(--accent); stroke-width: var(--strokeW)"></path><path d="M60 657.5 H170" stroke-width="3" style="stroke: var(--accent)"></path></svg>
+<div style="position: absolute; left: 36px; top: 664px; width: 276px; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; padding-right: 28px; font-family: 'Chakra Petch', sans-serif">
+<span style="font-size: 13px; font-weight: 700; letter-spacing: 0.24em">ESCUADRA</span>
+<span style="font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: var(--textSub)">3 / 4 VIVOS</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; align-items: center; gap: 10px; height: 26px">
+<div style="width: 24px; height: 24px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #FF8F6B; color: #04182C; text-shadow: none; border-radius: 50%; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">2</div>
+<span style="flex-grow: 1; font-size: 15px; font-weight: 700">Jugador_12</span>
+<span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 17px">85</span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; height: 26px">
+<div style="width: 24px; height: 24px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #C49BFF; color: #04182C; text-shadow: none; border-radius: 50%; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">3</div>
+<span style="flex-grow: 1; font-size: 15px; font-weight: 700">Jugador_31</span>
+<span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 17px; color: var(--critical)">24</span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; height: 26px">
+<div style="width: 24px; height: 24px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #6EE7B7; color: #04182C; text-shadow: none; border-radius: 50%; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; opacity: 0.5">4</div>
+<span style="flex-grow: 1; font-size: 15px; font-weight: 700; color: var(--textSub); text-decoration: line-through">Jugador_58</span>
+<span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.12em; color: var(--critical)">MUERTO</span>
+</div>
+</div>
+</div>
+</div>
+
+
+<svg width="1600" height="900" viewBox="0 0 1600 900" aria-hidden="true" style="position: absolute; left: 0; top: 0; filter: drop-shadow(0 0 5px var(--accent)) drop-shadow(0 0 22px var(--glow))"><path d="M42 784 H406 A18 18 0 0 1 424 802 V858 A18 18 0 0 1 406 876 H42 A18 18 0 0 1 24 858 V802 A18 18 0 0 1 42 784 Z" style="fill: var(--healthFill); stroke: var(--accent); stroke-width: var(--strokeW)"></path><path d="M150 785.5 H330" stroke-width="3" style="stroke: var(--accent)"></path></svg>
+<div style="position: absolute; left: 40px; top: 798px; width: 368px; display: flex; align-items: center; gap: 12px">
+<div style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--accent); box-shadow: 0 0 0 3px #04182C, 0 0 0 4px var(--accent), 0 0 14px var(--accent), 0 0 28px var(--glow); color: #04182C; text-shadow: none; border-radius: 50%; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px">1</div>
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: baseline; gap: 10px">
+<span style="font-family: 'Chakra Petch', sans-serif; font-size: 18px; font-weight: 700">Jugador_07</span>
+
+<span style="margin-left: auto; font-family: 'Chakra Petch', sans-serif; font-size: 26px; font-weight: 700; line-height: 1; color: var(--textMain)">72</span>
+</div>
+<div style="position: relative; height: 16px; background: rgba(0,0,0,0.5); border-radius: 8px; overflow: hidden; margin-left: 6px">
+<div style="position: absolute; left: 0; top: 0; height: 16px; width: 82%; background: var(--highlight)"></div>
+<div style="position: absolute; left: 0; top: 0; height: 16px; width: 72%; background: var(--textMain); box-shadow: 0 0 10px var(--textMain)"></div>
+<div style="position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 3px), #04182C calc(10% - 3px) 10%)"></div>
+</div>
+</div>
+</div>
+</div>
+
+
+<div style="position: absolute; left: 0; top: 0; width: 1600px; height: 900px; transform: perspective(900px) rotateX(-18deg); transform-origin: 50% 100%">
+<div style="position: absolute; left: 774px; top: 812px; display: flex; gap: 16px; opacity: var(--dim)">
+<div style="position: relative; width: 52px; height: 52px; box-sizing: border-box; border-radius: 50%; border: 2px solid var(--edge); background: rgba(4,20,36,0.6); display: flex; align-items: center; justify-content: center">
+<div style="position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--accent) 0 100deg, transparent 100deg); opacity: 0.55"></div>
+<div style="position: relative; font-family: 'Chakra Petch', sans-serif; font-size: 20px; font-weight: 700">8</div>
+<div style="position: absolute; left: 50%; bottom: -9px; transform: translateX(-50%); padding: 0 5px; border-radius: 4px; white-space: nowrap; background: var(--textMain); color: #04182C; text-shadow: none; font-family: 'Chakra Petch', sans-serif; font-size: 11px; font-weight: 700">Q</div>
+</div>
+</div>
+<div style="position: absolute; left: 0; top: 880px; width: 1600px; text-align: center; font-family: 'Chakra Petch', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; color: var(--textSub); opacity: var(--dim)">[TAB] HABILIDADES</div>
+</div>
+
+
+
+
+<div style="position: absolute; left: 0; top: 0; width: 1600px; height: 900px; opacity: var(--dim); transform: perspective(1100px) rotateY(-20deg) rotateX(-4deg); transform-origin: 100% 85%">
+<svg width="1600" height="900" viewBox="0 0 1600 900" aria-hidden="true" style="position: absolute; left: 0; top: 0; filter: drop-shadow(0 0 4px var(--accent)) drop-shadow(0 0 18px var(--glow))"><path d="M1254 790 H1558 A18 18 0 0 1 1576 808 V858 A18 18 0 0 1 1558 876 H1254 A18 18 0 0 1 1236 858 V808 A18 18 0 0 1 1254 790 Z" style="fill: var(--panelFill); stroke: var(--accent); stroke-width: var(--strokeW)"></path><path d="M1300 791.5 H1512" stroke-width="3" style="stroke: var(--accent)"></path></svg>
+<div style="position: absolute; left: 1256px; top: 798px; width: 300px; display: flex; flex-direction: column; gap: 4px">
+<div style="display: flex; justify-content: space-between; align-items: center; font-family: 'Chakra Petch', sans-serif">
+<span style="font-size: 14px; font-weight: 700; letter-spacing: 0.06em">RIFLE DE ASALTO</span>
+<span style="font-size: 12px; font-weight: 600; color: var(--textSub)">2 · PISTOLA</span>
+</div>
+<div style="display: flex; align-items: baseline; gap: 6px; font-family: 'Chakra Petch', sans-serif">
+<span style="font-size: 36px; font-weight: 700; line-height: 1; color: var(--textMain)">24</span>
+<span style="font-size: 17px; font-weight: 600; color: var(--textSub)">/ 30</span>
+
+<span style="margin-left: auto; font-size: 17px; font-weight: 600">120</span>
+</div>
+<div style="position: relative; height: 6px; margin-top: 2px; background: rgba(255,255,255,0.15); border-radius: 8px; overflow: hidden">
+<div style="position: absolute; left: 0; top: 0; height: 6px; width: 80%; background: var(--textMain)"></div>
+<div style="position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 calc(3.3333% - 2px), #04182C calc(3.3333% - 2px) 3.3333%)"></div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="scan"></div>
+</div></div>
+<div class="controls">
+<button type="button" data-mode="normal" aria-pressed="false">NORMAL</button><button type="button" data-mode="combate" aria-pressed="false">COMBATE</button><button type="button" data-mode="noche" aria-pressed="false">NOCHE</button><button type="button" data-mode="sigilo" aria-pressed="false">SIGILO</button><button type="button" data-mode="alerta" aria-pressed="false">ALERTA</button>
+<button type="button" id="hit">RECIBIR DAÑO</button>
+<button type="button" id="auto" aria-pressed="false">AUTO</button>
+<label for="scn">Escena</label><select id="scn">
+<option value="Escenario5_Bosque">Bosque</option><option value="Escenario2_Canon">Cañón</option><option value="Escenario3_CanonPuente">Cañón y puente</option><option value="Escenario4_Lago">Lago</option></select>
+</div>
+</div>
+<script>
+const MODES={"normal": {"accent": "#38E1FF", "highlight": "#FFC94A", "panelFill": "rgba(30,150,255,0.16)", "healthFill": "rgba(30,150,255,0.30)", "dim": 0.6, "glow": "#38E1FFDD", "edge": "#38E1FF88", "textMain": "#E6FBFF", "textSub": "#CFEFFF", "critical": "#FF6B78", "strokeW": "2px", "aggressive": false, "showKillBanner": false, "bright": 1, "sat": 1}, "combate": {"accent": "#FF2A2A", "highlight": "#FFFFFF", "panelFill": "rgba(70,0,0,0.6)", "healthFill": "rgba(95,0,0,0.72)", "dim": 1, "glow": "#FF2A2AFF", "edge": "#FF2A2AAA", "textMain": "#FFF1F1", "textSub": "#FFD0D0", "critical": "#FFE14D", "strokeW": "3px", "aggressive": true, "showKillBanner": true, "bright": 1, "sat": 1}, "noche": {"accent": "#FFB23F", "highlight": "#FFFFFF", "panelFill": "rgba(60,32,0,0.45)", "healthFill": "rgba(80,42,0,0.6)", "dim": 0.8, "glow": "#FFB23FEE", "edge": "#FFB23F99", "textMain": "#FFF4E2", "textSub": "#FFE1B5", "critical": "#FF5A5A", "strokeW": "2px", "aggressive": false, "showKillBanner": true, "bright": 0.32, "sat": 0.5}, "sigilo": {"accent": "#39FF88", "highlight": "#E9FF5A", "panelFill": "rgba(0,50,22,0.42)", "healthFill": "rgba(0,70,30,0.58)", "dim": 0.7, "glow": "#39FF88EE", "edge": "#39FF8899", "textMain": "#EBFFF2", "textSub": "#C4FFD9", "critical": "#FF5A5A", "strokeW": "2px", "aggressive": false, "showKillBanner": true, "bright": 1, "sat": 1}, "alerta": {"accent": "#FFE600", "highlight": "#FFFFFF", "panelFill": "rgba(60,50,0,0.5)", "healthFill": "rgba(80,66,0,0.65)", "dim": 0.9, "glow": "#FFE600EE", "edge": "#FFE60099", "textMain": "#FFFCE0", "textSub": "#FFF3A8", "critical": "#FF4A4A", "strokeW": "2px", "aggressive": false, "showKillBanner": true, "bright": 1, "sat": 1}};
+const ORDER=["normal", "combate", "noche", "sigilo", "alerta"];
+const root=document.querySelector('#stage>div'), hud=document.querySelector('.hudlayer');
+let cur=null, timer=null;
+function setMode(k,instant){
+  const m=MODES[k]; if(!m||k===cur) return;
+  for(const [p,v] of Object.entries(m)) if(typeof v!=='boolean') root.style.setProperty('--'+p, v);
+  document.body.className='m-'+k;
+  document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.mode===k));
+  if(!instant){hud.classList.remove('flick'); void hud.offsetWidth; hud.classList.add('flick');}
+  cur=k;
+}
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+document.getElementById('hit').onclick=()=>{
+  if(cur!=='combate') setMode('combate');
+  document.body.classList.remove('hit'); void document.body.offsetWidth; document.body.classList.add('hit');
+  setTimeout(()=>document.body.classList.remove('hit'),600);
+};
+document.getElementById('auto').onclick=e=>{
+  const on=!timer; e.target.setAttribute('aria-pressed',on);
+  if(on) timer=setInterval(()=>setMode(ORDER[(ORDER.indexOf(cur)+1)%ORDER.length]),2800);
+  else {clearInterval(timer); timer=null;}
+};
+document.getElementById('scn').onchange=e=>document.getElementById('scene').src='../Screenshots/'+e.target.value+'.jpg';
+function fit(){const w=document.getElementById('box').clientWidth; document.getElementById('stage').style.transform='scale('+(w/1600)+')';}
+addEventListener('resize',fit); fit(); setMode('normal',true);
+const q=new URLSearchParams(location.search).get('mode'); if(q) setMode(q,true);
+</script>
+</body></html>

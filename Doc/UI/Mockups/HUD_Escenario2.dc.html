@@ -208,14 +208,15 @@ a{color:#38E1FF}a:hover{color:#A6F3FF}
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","default":"normal","options":["normal","combate","noche","sigilo"]},"teamMode":{"editor":"boolean","default":true},"skillsPanel":{"editor":"boolean","default":false},"health":{"editor":"range","default":72,"min":0,"max":100,"step":1},"lowAmmo":{"editor":"boolean","default":false},"$preview":{"width":1600,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","default":"normal","options":["normal","combate","noche","sigilo","alerta"]},"teamMode":{"editor":"boolean","default":true},"skillsPanel":{"editor":"boolean","default":false},"health":{"editor":"range","default":72,"min":0,"max":100,"step":1},"lowAmmo":{"editor":"boolean","default":false},"$preview":{"width":1600,"height":900}}'>
 class Component extends DCLogic {
   renderVals() {
     const MODES = {
       normal: { accent: '#38E1FF', highlight: '#FFC94A', panelFill: 'rgba(30,150,255,0.16)', healthFill: 'rgba(30,150,255,0.30)', dim: 0.6, glow: '#38E1FFDD', edge: '#38E1FF88', textMain: '#E6FBFF', textSub: '#CFEFFF', critical: '#FF6B78', sceneFilter: 'none', strokeW: 2, aggressive: false, showKillBanner: false },
       combate: { accent: '#FF2A2A', highlight: '#FFFFFF', panelFill: 'rgba(70,0,0,0.6)', healthFill: 'rgba(95,0,0,0.72)', dim: 1, glow: '#FF2A2AFF', edge: '#FF2A2AAA', textMain: '#FFF1F1', textSub: '#FFD0D0', critical: '#FFE14D', sceneFilter: 'none', strokeW: 3, aggressive: true, showKillBanner: true },
       noche: { accent: '#FFB23F', highlight: '#FFFFFF', panelFill: 'rgba(60,32,0,0.45)', healthFill: 'rgba(80,42,0,0.6)', dim: 0.8, glow: '#FFB23FEE', edge: '#FFB23F99', textMain: '#FFF4E2', textSub: '#FFE1B5', critical: '#FF5A5A', sceneFilter: 'brightness(0.32) saturate(0.5)', strokeW: 2, aggressive: false, showKillBanner: true },
-      sigilo: { accent: '#39FF88', highlight: '#E9FF5A', panelFill: 'rgba(0,50,22,0.42)', healthFill: 'rgba(0,70,30,0.58)', dim: 0.7, glow: '#39FF88EE', edge: '#39FF8899', textMain: '#EBFFF2', textSub: '#C4FFD9', critical: '#FF5A5A', sceneFilter: 'none', strokeW: 2, aggressive: false, showKillBanner: true }
+      sigilo: { accent: '#39FF88', highlight: '#E9FF5A', panelFill: 'rgba(0,50,22,0.42)', healthFill: 'rgba(0,70,30,0.58)', dim: 0.7, glow: '#39FF88EE', edge: '#39FF8899', textMain: '#EBFFF2', textSub: '#C4FFD9', critical: '#FF5A5A', sceneFilter: 'none', strokeW: 2, aggressive: false, showKillBanner: true },
+      alerta: { accent: '#FFE600', highlight: '#FFFFFF', panelFill: 'rgba(60,50,0,0.5)', healthFill: 'rgba(80,66,0,0.65)', dim: 0.9, glow: '#FFE600EE', edge: '#FFE60099', textMain: '#FFFCE0', textSub: '#FFF3A8', critical: '#FF4A4A', sceneFilter: 'none', strokeW: 2, aggressive: false, showKillBanner: true }
     };
     const m = MODES[this.props.mode ?? 'normal'] ?? MODES.normal;
     const teamMode = this.props.teamMode ?? true;
