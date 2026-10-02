@@ -43,6 +43,13 @@
       "w": 1600,
       "h": 900,
       "title": "HUD sobre escenario 3 (cañón y puente)"
+    },
+    "HUD_Escenario4.dc.html": {
+      "x": 3360,
+      "y": 4080,
+      "w": 1600,
+      "h": 900,
+      "title": "HUD sobre escenario 4 (lago)"
     }
   },
   "createdOnFiles": {
@@ -69,7 +76,8 @@
     "Main.dc.html",
     "HUD_Escenario1.dc.html",
     "HUD_Escenario2.dc.html",
-    "HUD_Escenario3.dc.html"
+    "HUD_Escenario3.dc.html",
+    "HUD_Escenario4.dc.html"
   ],
   "pages": [],
   "title": "BattleRoyale UI Mockups"
