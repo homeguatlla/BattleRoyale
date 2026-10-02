@@ -20,14 +20,24 @@ a{color:#38E1FF}a:hover{color:#A6F3FF}
 <img src="/_blob/aea66a2242a22bee5f15a477db48bc6a" alt="Captura del juego: lago con isla y montañas" style="position: absolute; left: 0; top: 0; width: 1600px; height: 900px; object-fit: cover; filter: {{sceneFilter}}">
 
 <div style="position: absolute; left: 10px; top: 10px; width: 1580px; height: 880px; box-sizing: border-box; border: 1px solid {{accent}}; border-radius: 160px / 110px; opacity: 0.14"></div>
+<sc-if value="{{aggressive}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; left: 0; top: 0; width: 1600px; height: 900px; background: radial-gradient(ellipse at center, transparent 52%, rgba(255,20,20,0.10) 75%, rgba(255,20,20,0.32) 100%)"></div>
+<div style="position: absolute; left: 40px; top: 40px; width: 46px; height: 46px; border-left: 3px solid {{accent}}; border-top: 3px solid {{accent}}; transform: rotate(0deg); filter: drop-shadow(0 0 6px {{accent}})"></div>
+<div style="position: absolute; left: 1514px; top: 40px; width: 46px; height: 46px; border-left: 3px solid {{accent}}; border-top: 3px solid {{accent}}; transform: rotate(90deg); filter: drop-shadow(0 0 6px {{accent}})"></div>
+<div style="position: absolute; left: 1514px; top: 814px; width: 46px; height: 46px; border-left: 3px solid {{accent}}; border-top: 3px solid {{accent}}; transform: rotate(180deg); filter: drop-shadow(0 0 6px {{accent}})"></div>
+<div style="position: absolute; left: 40px; top: 814px; width: 46px; height: 46px; border-left: 3px solid {{accent}}; border-top: 3px solid {{accent}}; transform: rotate(270deg); filter: drop-shadow(0 0 6px {{accent}})"></div>
+<div style="position: absolute; left: 744px; top: 394px; width: 112px; height: 112px; box-sizing: border-box; border: 2px solid {{accent}}; border-radius: 50%; border-left-color: transparent; border-right-color: transparent; transform: rotate(45deg); filter: drop-shadow(0 0 6px {{accent}})"></div>
+<div style="position: absolute; left: 660px; top: 82px; width: 280px; height: 7px; background: repeating-linear-gradient(-45deg, {{accent}} 0 7px, transparent 7px 14px); filter: drop-shadow(0 0 4px {{accent}})"></div>
+<div style="position: absolute; left: 30px; top: 46px; padding: 1px 8px; background: {{accent}}; color: #FFFFFF; text-shadow: none; font-family: 'Chakra Petch', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.2em; box-shadow: 0 0 12px {{accent}}">COMBATE</div>
+</sc-if>
 
 <div style="position: absolute; left: 30px; top: 24px; display: flex; align-items: center; gap: 8px; font-family: 'Chakra Petch', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: {{textSub}}; opacity: {{dim}}">
-<svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="2" y1="13" x2="2" y2="10"></line><line x1="7" y1="13" x2="7" y2="7"></line><line x1="12" y1="13" x2="12" y2="4"></line><line x1="17" y1="13" x2="17" y2="1" opacity="0.35"></line></svg>
+<svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="{{strokeW}}" aria-hidden="true"><line x1="2" y1="13" x2="2" y2="10"></line><line x1="7" y1="13" x2="7" y2="7"></line><line x1="12" y1="13" x2="12" y2="4"></line><line x1="17" y1="13" x2="17" y2="1" opacity="0.35"></line></svg>
 <span>32 MS</span>
 </div>
 
 <div style="position: absolute; left: 0; top: 0; width: 1600px; height: 100px; opacity: {{dim}}; transform: perspective(700px) rotateX(24deg); transform-origin: 50% 0%">
-<svg width="360" height="84" viewBox="0 0 360 84" aria-hidden="true" style="position: absolute; left: 620px; top: 0; filter: drop-shadow(0 0 4px {{accent}}) drop-shadow(0 0 16px {{glow}})"><path d="M19 6 H341 A18 18 0 0 1 359 24 V56 A18 18 0 0 1 341 74 H19 A18 18 0 0 1 1 56 V24 A18 18 0 0 1 19 6 Z" fill="{{panelFill}}" stroke="{{accent}}" stroke-width="2"></path><rect x="140" y="69" width="80" height="4" fill="{{accent}}"></rect></svg>
+<svg width="360" height="84" viewBox="0 0 360 84" aria-hidden="true" style="position: absolute; left: 620px; top: 0; filter: drop-shadow(0 0 4px {{accent}}) drop-shadow(0 0 16px {{glow}})"><path d="M19 6 H341 A18 18 0 0 1 359 24 V56 A18 18 0 0 1 341 74 H19 A18 18 0 0 1 1 56 V24 A18 18 0 0 1 19 6 Z" fill="{{panelFill}}" stroke="{{accent}}" stroke-width="{{strokeW}}"></path><rect x="140" y="69" width="80" height="4" fill="{{accent}}"></rect></svg>
 <div style="position: absolute; left: 640px; top: 10px; width: 320px; height: 58px; display: flex; align-items: center; font-family: 'Chakra Petch', sans-serif">
 <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center">
 <div style="font-size: 30px; font-weight: 700; line-height: 1">37</div>
@@ -68,13 +78,15 @@ a{color:#38E1FF}a:hover{color:#A6F3FF}
 </div>
 </div>
 
+<sc-if value="{{showKillBanner}}" hint-placeholder-val="{{ false }}">
 <div style="position: absolute; left: 0; top: 0; width: 1600px; height: 900px; transform: perspective(900px) rotateX(14deg); transform-origin: 50% 0%">
-<svg width="520" height="76" viewBox="0 0 520 76" aria-hidden="true" style="position: absolute; left: 540px; top: 140px; filter: drop-shadow(0 0 4px {{accent}}) drop-shadow(0 0 18px {{glow}})"><path d="M26 0 H494 L520 38 L494 76 H26 L0 38 Z" fill="{{panelFill}}" stroke="{{accent}}" stroke-width="2"></path><path d="M70 1.5 H450" stroke="{{highlight}}" stroke-width="3"></path></svg>
+<svg width="520" height="76" viewBox="0 0 520 76" aria-hidden="true" style="position: absolute; left: 540px; top: 140px; filter: drop-shadow(0 0 4px {{accent}}) drop-shadow(0 0 18px {{glow}})"><path d="M26 0 H494 L520 38 L494 76 H26 L0 38 Z" fill="{{panelFill}}" stroke="{{accent}}" stroke-width="{{strokeW}}"></path><path d="M70 1.5 H450" stroke="{{highlight}}" stroke-width="3"></path></svg>
 <div style="position: absolute; left: 540px; top: 140px; width: 520px; height: 76px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-family: 'Chakra Petch', sans-serif">
 <div style="font-size: 13px; font-weight: 700; letter-spacing: 0.3em; color: {{highlight}}">+1 BAJA</div>
 <div style="font-size: 25px; font-weight: 700; letter-spacing: 0.06em">HAS ELIMINADO A JUGADOR_03</div>
 </div>
 </div>
+</sc-if>
 
 <div style="position: absolute; left: 776px; top: 426px; width: 46px; height: 46px; box-sizing: border-box; border-radius: 50%; border: 1px solid {{accent}}; opacity: 0.85; box-shadow: 0 0 6px {{accent}}, inset 0 0 6px {{glow}}"></div>
 <div style="position: absolute; left: 798px; top: 448px; width: 4px; height: 4px; background: #FFFFFF; box-shadow: 0 0 0 1px rgba(0,0,0,0.8)"></div>
@@ -91,7 +103,7 @@ a{color:#38E1FF}a:hover{color:#A6F3FF}
 <div style="position: absolute; left: 0; top: 0; width: 1600px; height: 900px; transform: perspective(1100px) rotateY(20deg) rotateX(-4deg); transform-origin: 0% 85%">
 <sc-if value="{{teamMode}}" hint-placeholder-val="{{ true }}">
 <div style="position: absolute; left: 0; top: 0; width: 1600px; height: 900px; opacity: {{dim}}">
-<svg width="1600" height="900" viewBox="0 0 1600 900" aria-hidden="true" style="position: absolute; left: 0; top: 0; filter: drop-shadow(0 0 4px {{accent}}) drop-shadow(0 0 18px {{glow}})"><path d="M42 656 H306 A18 18 0 0 1 324 674 V758 A18 18 0 0 1 306 776 H42 A18 18 0 0 1 24 758 V674 A18 18 0 0 1 42 656 Z" fill="{{panelFill}}" stroke="{{accent}}" stroke-width="2"></path><path d="M60 657.5 H170" stroke="{{accent}}" stroke-width="3"></path></svg>
+<svg width="1600" height="900" viewBox="0 0 1600 900" aria-hidden="true" style="position: absolute; left: 0; top: 0; filter: drop-shadow(0 0 4px {{accent}}) drop-shadow(0 0 18px {{glow}})"><path d="M42 656 H306 A18 18 0 0 1 324 674 V758 A18 18 0 0 1 306 776 H42 A18 18 0 0 1 24 758 V674 A18 18 0 0 1 42 656 Z" fill="{{panelFill}}" stroke="{{accent}}" stroke-width="{{strokeW}}"></path><path d="M60 657.5 H170" stroke="{{accent}}" stroke-width="3"></path></svg>
 <div style="position: absolute; left: 36px; top: 664px; width: 276px; display: flex; flex-direction: column; gap: 6px">
 <div style="display: flex; justify-content: space-between; align-items: baseline; padding-right: 28px; font-family: 'Chakra Petch', sans-serif">
 <span style="font-size: 13px; font-weight: 700; letter-spacing: 0.24em">ESCUADRA</span>
@@ -118,7 +130,7 @@ a{color:#38E1FF}a:hover{color:#A6F3FF}
 </div>
 </sc-if>
 
-<svg width="1600" height="900" viewBox="0 0 1600 900" aria-hidden="true" style="position: absolute; left: 0; top: 0; filter: drop-shadow(0 0 5px {{accent}}) drop-shadow(0 0 22px {{glow}})"><path d="M42 784 H406 A18 18 0 0 1 424 802 V858 A18 18 0 0 1 406 876 H42 A18 18 0 0 1 24 858 V802 A18 18 0 0 1 42 784 Z" fill="{{healthFill}}" stroke="{{accent}}" stroke-width="2"></path><path d="M150 785.5 H330" stroke="{{accent}}" stroke-width="3"></path></svg>
+<svg width="1600" height="900" viewBox="0 0 1600 900" aria-hidden="true" style="position: absolute; left: 0; top: 0; filter: drop-shadow(0 0 5px {{accent}}) drop-shadow(0 0 22px {{glow}})"><path d="M42 784 H406 A18 18 0 0 1 424 802 V858 A18 18 0 0 1 406 876 H42 A18 18 0 0 1 24 858 V802 A18 18 0 0 1 42 784 Z" fill="{{healthFill}}" stroke="{{accent}}" stroke-width="{{strokeW}}"></path><path d="M150 785.5 H330" stroke="{{accent}}" stroke-width="3"></path></svg>
 <div style="position: absolute; left: 40px; top: 798px; width: 368px; display: flex; align-items: center; gap: 12px">
 <div style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: {{accent}}; box-shadow: 0 0 0 3px #04182C, 0 0 0 4px {{accent}}, 0 0 14px {{accent}}, 0 0 28px {{glow}}; color: #04182C; text-shadow: none; border-radius: 50%; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px">1</div>
 <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 8px">
@@ -173,7 +185,7 @@ a{color:#38E1FF}a:hover{color:#A6F3FF}
 </sc-if>
 
 <div style="position: absolute; left: 0; top: 0; width: 1600px; height: 900px; opacity: {{dim}}; transform: perspective(1100px) rotateY(-20deg) rotateX(-4deg); transform-origin: 100% 85%">
-<svg width="1600" height="900" viewBox="0 0 1600 900" aria-hidden="true" style="position: absolute; left: 0; top: 0; filter: drop-shadow(0 0 4px {{accent}}) drop-shadow(0 0 18px {{glow}})"><path d="M1254 790 H1558 A18 18 0 0 1 1576 808 V858 A18 18 0 0 1 1558 876 H1254 A18 18 0 0 1 1236 858 V808 A18 18 0 0 1 1254 790 Z" fill="{{panelFill}}" stroke="{{accent}}" stroke-width="2"></path><path d="M1300 791.5 H1512" stroke="{{accent}}" stroke-width="3"></path></svg>
+<svg width="1600" height="900" viewBox="0 0 1600 900" aria-hidden="true" style="position: absolute; left: 0; top: 0; filter: drop-shadow(0 0 4px {{accent}}) drop-shadow(0 0 18px {{glow}})"><path d="M1254 790 H1558 A18 18 0 0 1 1576 808 V858 A18 18 0 0 1 1558 876 H1254 A18 18 0 0 1 1236 858 V808 A18 18 0 0 1 1254 790 Z" fill="{{panelFill}}" stroke="{{accent}}" stroke-width="{{strokeW}}"></path><path d="M1300 791.5 H1512" stroke="{{accent}}" stroke-width="3"></path></svg>
 <div style="position: absolute; left: 1256px; top: 798px; width: 300px; display: flex; flex-direction: column; gap: 4px">
 <div style="display: flex; justify-content: space-between; align-items: center; font-family: 'Chakra Petch', sans-serif">
 <span style="font-size: 14px; font-weight: 700; letter-spacing: 0.06em">RIFLE DE ASALTO</span>
@@ -196,13 +208,14 @@ a{color:#38E1FF}a:hover{color:#A6F3FF}
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","default":"normal","options":["normal","combate","noche"]},"teamMode":{"editor":"boolean","default":true},"skillsPanel":{"editor":"boolean","default":false},"health":{"editor":"range","default":72,"min":0,"max":100,"step":1},"lowAmmo":{"editor":"boolean","default":false},"$preview":{"width":1600,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","default":"normal","options":["normal","combate","noche","sigilo"]},"teamMode":{"editor":"boolean","default":true},"skillsPanel":{"editor":"boolean","default":false},"health":{"editor":"range","default":72,"min":0,"max":100,"step":1},"lowAmmo":{"editor":"boolean","default":false},"$preview":{"width":1600,"height":900}}'>
 class Component extends DCLogic {
   renderVals() {
     const MODES = {
-      normal: { accent: '#38E1FF', highlight: '#FFC94A', panelFill: 'rgba(30,150,255,0.16)', healthFill: 'rgba(30,150,255,0.30)', dim: 0.6, glow: '#38E1FFDD', edge: '#38E1FF88', textMain: '#E6FBFF', textSub: '#CFEFFF', critical: '#FF6B78', sceneFilter: 'none' },
-      combate: { accent: '#FF9F1C', highlight: '#FFFFFF', panelFill: 'rgba(60,22,0,0.55)', healthFill: 'rgba(80,30,0,0.65)', dim: 1, glow: '#FF9F1CFF', edge: '#FF9F1C99', textMain: '#FFF6EC', textSub: '#FFE2C2', critical: '#FF4040', sceneFilter: 'none' },
-      noche: { accent: '#FF3B3B', highlight: '#FFC94A', panelFill: 'rgba(255,40,40,0.14)', healthFill: 'rgba(255,40,40,0.26)', dim: 0.8, glow: '#FF3B3BEE', edge: '#FF3B3B88', textMain: '#FFE9E9', textSub: '#FFC9C9', critical: '#FFFFFF', sceneFilter: 'brightness(0.32) saturate(0.5)' }
+      normal: { accent: '#38E1FF', highlight: '#FFC94A', panelFill: 'rgba(30,150,255,0.16)', healthFill: 'rgba(30,150,255,0.30)', dim: 0.6, glow: '#38E1FFDD', edge: '#38E1FF88', textMain: '#E6FBFF', textSub: '#CFEFFF', critical: '#FF6B78', sceneFilter: 'none', strokeW: 2, aggressive: false, showKillBanner: false },
+      combate: { accent: '#FF2A2A', highlight: '#FFFFFF', panelFill: 'rgba(70,0,0,0.6)', healthFill: 'rgba(95,0,0,0.72)', dim: 1, glow: '#FF2A2AFF', edge: '#FF2A2AAA', textMain: '#FFF1F1', textSub: '#FFD0D0', critical: '#FFE14D', sceneFilter: 'none', strokeW: 3, aggressive: true, showKillBanner: true },
+      noche: { accent: '#FFB23F', highlight: '#FFFFFF', panelFill: 'rgba(60,32,0,0.45)', healthFill: 'rgba(80,42,0,0.6)', dim: 0.8, glow: '#FFB23FEE', edge: '#FFB23F99', textMain: '#FFF4E2', textSub: '#FFE1B5', critical: '#FF5A5A', sceneFilter: 'brightness(0.32) saturate(0.5)', strokeW: 2, aggressive: false, showKillBanner: true },
+      sigilo: { accent: '#39FF88', highlight: '#E9FF5A', panelFill: 'rgba(0,50,22,0.42)', healthFill: 'rgba(0,70,30,0.58)', dim: 0.7, glow: '#39FF88EE', edge: '#39FF8899', textMain: '#EBFFF2', textSub: '#C4FFD9', critical: '#FF5A5A', sceneFilter: 'none', strokeW: 2, aggressive: false, showKillBanner: true }
     };
     const m = MODES[this.props.mode ?? 'normal'] ?? MODES.normal;
     const teamMode = this.props.teamMode ?? true;
