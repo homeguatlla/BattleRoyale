@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Menú principal</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;family=Barlow+Semi+Condensed:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#3FE0D0}a:hover{color:#8FF2E8}
+</style>
+</helmet>
+<div style="width: 1600px; height: 900px; position: relative; overflow: hidden; background: #0B0F14; font-family: 'Barlow Semi Condensed', sans-serif; color: #E8EEF2">
+
+<div style="position: absolute; left: 620px; top: 0; width: 980px; height: 900px; background: #111821"></div>
+<div style="position: absolute; left: 820px; top: 110px; width: 420px; height: 680px; border: 1px dashed #3A4652; display: flex; align-items: center; justify-content: center; color: #5D6B78; font-size: 14px; letter-spacing: 0.08em">[RENDER DEL PERSONAJE — MICHELLE]</div>
+<div style="position: absolute; left: 760px; top: 760px; width: 540px; height: 2px; background: {{accent}}; opacity: 0.5"></div>
+
+<div style="position: absolute; left: 80px; top: 72px; display: flex; flex-direction: column; gap: 4px; font-family: 'Chakra Petch', sans-serif">
+<div style="font-size: 14px; letter-spacing: 0.4em; color: {{accent}}">[LOGO]</div>
+<div style="font-size: 64px; font-weight: 700; line-height: 0.95; letter-spacing: 0.02em">BATTLE<br>ROYALE</div>
+</div>
+
+<nav aria-label="Menú principal" style="position: absolute; left: 80px; top: 300px; width: 380px; display: flex; flex-direction: column; gap: 6px; font-family: 'Chakra Petch', sans-serif">
+<button type="button" style="height: 72px; padding: 0 28px; border: 0; background: {{accent}}; color: #0B0F14; font-family: 'Chakra Petch', sans-serif; font-size: 30px; font-weight: 700; letter-spacing: 0.08em; text-align: left; cursor: pointer; clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%)">JUGAR</button>
+<div style="height: 10px"></div>
+<button type="button" style="height: 48px; padding: 0 20px; border: 0; background: rgba(232,238,242,0.08); color: #E8EEF2; font-family: 'Chakra Petch', sans-serif; font-size: 18px; font-weight: 500; letter-spacing: 0.06em; text-align: left; cursor: pointer">CREAR PARTIDA</button>
+<button type="button" style="height: 48px; padding: 0 20px; border: 0; background: transparent; color: #E8EEF2; font-family: 'Chakra Petch', sans-serif; font-size: 18px; font-weight: 500; letter-spacing: 0.06em; text-align: left; cursor: pointer">BUSCAR PARTIDAS</button>
+<button type="button" style="height: 48px; padding: 0 20px; border: 0; background: transparent; color: #E8EEF2; font-family: 'Chakra Petch', sans-serif; font-size: 18px; font-weight: 500; letter-spacing: 0.06em; text-align: left; cursor: pointer">PERSONAJE</button>
+<button type="button" style="height: 48px; padding: 0 20px; border: 0; background: transparent; color: #E8EEF2; font-family: 'Chakra Petch', sans-serif; font-size: 18px; font-weight: 500; letter-spacing: 0.06em; text-align: left; cursor: pointer">ESTADÍSTICAS</button>
+<button type="button" style="height: 48px; padding: 0 20px; border: 0; background: transparent; color: #E8EEF2; font-family: 'Chakra Petch', sans-serif; font-size: 18px; font-weight: 500; letter-spacing: 0.06em; text-align: left; cursor: pointer">OPCIONES</button>
+<button type="button" style="height: 48px; padding: 0 20px; border: 0; background: transparent; color: #A9B6C2; font-family: 'Chakra Petch', sans-serif; font-size: 18px; font-weight: 500; letter-spacing: 0.06em; text-align: left; cursor: pointer">SALIR</button>
+</nav>
+
+<div style="position: absolute; right: 48px; top: 40px; display: flex; align-items: center; gap: 14px; padding: 8px 16px 8px 8px; background: rgba(8,12,18,0.8)">
+<div style="width: 44px; height: 44px; background: #1F2A35; border: 1px solid {{accent}}"></div>
+<div style="display: flex; flex-direction: column">
+<span style="font-family: 'Chakra Petch', sans-serif; font-size: 18px; font-weight: 600">Jugador_07</span>
+<span style="font-size: 13px; color: #A9B6C2">En línea</span>
+</div>
+</div>
+
+<div style="position: absolute; right: 48px; bottom: 72px; width: 300px; box-sizing: border-box; padding: 20px; background: rgba(8,12,18,0.85); display: flex; flex-direction: column; gap: 14px; clip-path: polygon(16px 0, 100% 0, 100% 100%, 0 100%, 0 16px)">
+<div style="font-family: 'Chakra Petch', sans-serif; font-size: 13px; letter-spacing: 0.2em; color: {{accent}}">TUS ESTADÍSTICAS</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+<div style="display: flex; flex-direction: column"><span style="font-family: 'Chakra Petch', sans-serif; font-size: 28px; font-weight: 700">48</span><span style="font-size: 13px; color: #A9B6C2">Partidas</span></div>
+<div style="display: flex; flex-direction: column"><span style="font-family: 'Chakra Petch', sans-serif; font-size: 28px; font-weight: 700">5</span><span style="font-size: 13px; color: #A9B6C2">Victorias</span></div>
+<div style="display: flex; flex-direction: column"><span style="font-family: 'Chakra Petch', sans-serif; font-size: 28px; font-weight: 700">131</span><span style="font-size: 13px; color: #A9B6C2">Bajas</span></div>
+<div style="display: flex; flex-direction: column"><span style="font-family: 'Chakra Petch', sans-serif; font-size: 28px; font-weight: 700">2.7</span><span style="font-size: 13px; color: #A9B6C2">K/D</span></div>
+</div>
+</div>
+
+<div style="position: absolute; left: 80px; bottom: 36px; display: flex; gap: 24px; font-size: 13px; color: #7D8A97">
+<span>v0.1 · [build]</span>
+<span>Región [EU] · 32 ms</span>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#3FE0D0","options":["#3FE0D0","#F0A35E","#9B8CFF","#E8EEF2"]},"$preview":{"width":1600,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#3FE0D0' };
+  }
+}
+</script>
+</body>
+</html>

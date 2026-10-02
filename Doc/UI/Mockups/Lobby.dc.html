@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Lobby</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;family=Barlow+Semi+Condensed:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#3FE0D0}a:hover{color:#8FF2E8}
+</style>
+</helmet>
+<div style="width: 1600px; height: 900px; box-sizing: border-box; padding: 40px 56px; background: #0B0F14; font-family: 'Barlow Semi Condensed', sans-serif; color: #E8EEF2; display: flex; flex-direction: column; gap: 28px">
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<div style="font-family: 'Chakra Petch', sans-serif; font-size: 13px; letter-spacing: 0.3em; color: {{accent}}">SALA DE ESPERA</div>
+<div style="font-family: 'Chakra Petch', sans-serif; font-size: 34px; font-weight: 700; letter-spacing: 0.04em">SQUAD · JUNGLE</div>
+</div>
+<div style="display: flex; align-items: center; gap: 18px">
+<div style="display: flex; flex-direction: column; align-items: flex-end">
+<span style="font-size: 14px; color: #A9B6C2">La partida empieza en</span>
+<span style="font-family: 'Chakra Petch', sans-serif; font-size: 52px; font-weight: 700; line-height: 1; color: {{accent}}">00:12</span>
+</div>
+</div>
+</div>
+
+<div style="flex-grow: 1; display: flex; gap: 28px; min-height: 0">
+
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 16px">
+<div style="font-family: 'Chakra Petch', sans-serif; font-size: 14px; letter-spacing: 0.2em; color: #A9B6C2">TU EQUIPO</div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; flex-grow: 1">
+<sc-for list="{{team}}" as="m" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; background: #111821; border: 1px solid {{m.border}}">
+<div style="flex-grow: 1; display: flex; align-items: center; justify-content: center; color: #5D6B78; font-size: 13px; letter-spacing: 0.06em">{{m.preview}}</div>
+<div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; background: rgba(8,12,18,0.85)">
+<div style="font-family: 'Chakra Petch', sans-serif; font-size: 18px; font-weight: 600">{{m.name}}</div>
+<div style="display: flex; justify-content: space-between; font-size: 14px">
+<span style="font-weight: 600; color: {{m.statusColor}}">{{m.status}}</span>
+<span style="color: #A9B6C2">{{m.ping}}</span>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="width: 380px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="font-family: 'Chakra Petch', sans-serif; font-size: 14px; letter-spacing: 0.2em; color: #A9B6C2">MAPA</div>
+<div style="height: 150px; background: #142019; border: 1px dashed #3A4652; display: flex; align-items: center; justify-content: center; color: #5D6B78; font-size: 13px; letter-spacing: 0.06em">[IMAGEN DEL MAPA — JUNGLE]</div>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: baseline">
+<div style="font-family: 'Chakra Petch', sans-serif; font-size: 14px; letter-spacing: 0.2em; color: #A9B6C2">JUGADORES</div>
+<div style="font-family: 'Chakra Petch', sans-serif; font-size: 18px; font-weight: 600">24 / 50</div>
+</div>
+<div style="height: 6px; background: rgba(232,238,242,0.12)"><div style="width: 48%; height: 6px; background: {{accent}}"></div></div>
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 8px; padding: 14px; background: #111821">
+<div style="font-family: 'Chakra Petch', sans-serif; font-size: 13px; letter-spacing: 0.2em; color: #A9B6C2">CHAT</div>
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 6px; font-size: 15px">
+<div><span style="font-weight: 600; color: {{accent}}">Jugador_12:</span> ¿Caemos en el templo?</div>
+<div><span style="font-weight: 600; color: {{accent}}">Jugador_31:</span> Vale, yo cubro la entrada</div>
+</div>
+<label for="chat" style="font-size: 13px; color: #A9B6C2">Mensaje</label>
+<input id="chat" type="text" placeholder="Escribe al equipo…" style="height: 40px; box-sizing: border-box; padding: 0 12px; border: 1px solid #3A4652; background: #0B0F14; color: #E8EEF2; font-family: 'Barlow Semi Condensed', sans-serif; font-size: 15px">
+</div>
+</div>
+
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center">
+<button type="button" style="height: 48px; padding: 0 22px; border: 1px solid #3A4652; background: transparent; color: #E8EEF2; font-family: 'Chakra Petch', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 0.06em; cursor: pointer">SALIR DE LA SALA</button>
+<div style="display: flex; gap: 12px">
+<button type="button" style="height: 56px; padding: 0 24px; border: 1px solid #3A4652; background: transparent; color: #E8EEF2; font-family: 'Chakra Petch', sans-serif; font-size: 16px; font-weight: 500; letter-spacing: 0.06em; cursor: pointer">INVITAR</button>
+<button type="button" style="height: 56px; width: 240px; border: 0; background: {{accent}}; color: #0B0F14; font-family: 'Chakra Petch', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: 0.1em; cursor: pointer; clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px)">LISTO</button>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#3FE0D0","options":["#3FE0D0","#F0A35E","#9B8CFF","#E8EEF2"]},"$preview":{"width":1600,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#3FE0D0';
+    const ready = { status: 'LISTO', statusColor: '#7CD992' };
+    const waiting = { status: 'ESPERANDO', statusColor: '#F0A35E' };
+    const team = [
+      { name: 'Jugador_07 (tú)', ping: '32 ms', preview: '[PERSONAJE]', border: accent, ...ready },
+      { name: 'Jugador_12', ping: '48 ms', preview: '[PERSONAJE]', border: '#26313C', ...ready },
+      { name: 'Jugador_31', ping: '61 ms', preview: '[PERSONAJE]', border: '#26313C', ...waiting },
+      { name: 'Hueco libre', ping: '', preview: '+ INVITAR', border: '#26313C', status: 'VACÍO', statusColor: '#7D8A97' }
+    ];
+    return { accent, team };
+  }
+}
+</script>
+</body>
+</html>
