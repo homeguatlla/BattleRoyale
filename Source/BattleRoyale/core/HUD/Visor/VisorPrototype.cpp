@@ -12,6 +12,8 @@
 namespace
 {
 	const TCHAR* VISOR_WARP_MATERIAL = TEXT("/Game/Core/UI/Visor/M_VisorWarp.M_VisorWarp");
+	// Drawn after TSR/TAA and without depth test: stops the jitter and the clipping into walls.
+	const TCHAR* VISOR_WIDGET_MATERIAL = TEXT("/Game/Core/UI/Visor/M_VisorWidget.M_VisorWidget");
 	const float DRAW_HEIGHT = 1080.0f;
 
 	FVector2D GetViewportSize()
@@ -130,6 +132,15 @@ void UVisorPrototype::Create3D(APlayerController* playerController)
 	mWidgetComponent->SetOwnerPlayer(playerController->GetLocalPlayer());
 	mWidgetComponent->SetupAttachment(camera);
 	mWidgetComponent->RegisterComponent();
+
+	if (UMaterialInterface* material = LoadObject<UMaterialInterface>(nullptr, VISOR_WIDGET_MATERIAL))
+	{
+		mWidgetComponent->SetMaterial(0, material);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UVisorPrototype: %s not found, run Tools/Visor/create_visor_widget_material.py in the editor"), VISOR_WIDGET_MATERIAL);
+	}
 
 	Layout3D();
 }
