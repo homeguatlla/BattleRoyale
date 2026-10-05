@@ -64,6 +64,8 @@ public:
 	void VisorWarp(float curvature, float scanlines, float aberration);
 	UFUNCTION(Exec)
 	void VisorHealth(float health);
+	UFUNCTION(Exec)
+	void VisorGlow(float strength, float radius);
 
 protected:
 	virtual void BeginPlay() override;

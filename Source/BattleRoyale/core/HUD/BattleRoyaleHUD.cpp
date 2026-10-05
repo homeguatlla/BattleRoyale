@@ -57,3 +57,8 @@ void ABattleRoyaleHUD::VisorHealth(float health)
 {
 	GetVisorPrototype()->SetHealth(health);
 }
+
+void ABattleRoyaleHUD::VisorGlow(float strength, float radius)
+{
+	GetVisorPrototype()->SetGlow(strength, radius);
+}

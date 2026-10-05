@@ -163,8 +163,8 @@ void UVisorHealthWidget::ApplyStyle()
 		return;
 	}
 
-	mGlowBorder->SetBrush(MakeRoundedBrush(FLinearColor::Transparent, WithAlpha(mAccent, 0.25f), 6.0f, 24.0f));
-	mPanelBorder->SetBrush(MakeRoundedBrush(FLinearColor(0.012f, 0.18f, 0.6f, 0.30f), mAccent, 2.0f, 18.0f));
+	mGlowBorder->SetBrush(MakeRoundedBrush(FLinearColor::Transparent, WithAlpha(mAccent, 0.18f), 6.0f, 24.0f));
+	mPanelBorder->SetBrush(MakeRoundedBrush(WithAlpha(FLinearColor::FromSRGBColor(FColor(30, 150, 255)), 0.30f), mAccent, 2.0f, 18.0f));
 	mBadgeBorder->SetBrush(MakeRoundedBrush(mAccent, WithAlpha(mAccent, 0.6f), 2.0f, 18.0f));
 
 	FProgressBarStyle barStyle;

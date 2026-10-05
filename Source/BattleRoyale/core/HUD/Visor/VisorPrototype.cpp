@@ -14,6 +14,8 @@
 namespace
 {
 	const TCHAR* VISOR_WARP_MATERIAL = TEXT("/Game/Core/UI/Visor/M_VisorWarp.M_VisorWarp");
+	// Slate-drawn HUD re-projected on a cylinder: same look as the 3D visor with exact colours.
+	const TCHAR* VISOR_CYLINDER_MATERIAL = TEXT("/Game/Core/UI/Visor/M_VisorCylinder.M_VisorCylinder");
 	// Drawn after TSR/TAA and without depth test: stops the jitter and the clipping into walls.
 	const TCHAR* VISOR_WIDGET_MATERIAL = TEXT("/Game/Core/UI/Visor/M_VisorWidget.M_VisorWidget");
 	// Render target resolution relative to the screen; >1 supersamples the projected visor.
@@ -47,14 +49,15 @@ TSharedRef<SWidget> UVisorWarpWidget::RebuildWidget()
 		mHealthWidget->SetSupersample(1.0f, GetViewportSize() / FMath::Max(dpiScale, 0.01f));
 		mRetainer->AddChild(mHealthWidget);
 
-		if (UMaterialInterface* material = LoadObject<UMaterialInterface>(nullptr, VISOR_WARP_MATERIAL))
+		const FString materialPath = mMaterialPath.IsEmpty() ? FString(VISOR_WARP_MATERIAL) : mMaterialPath;
+		if (UMaterialInterface* material = LoadObject<UMaterialInterface>(nullptr, *materialPath))
 		{
 			mRetainer->SetEffectMaterial(material);
 			mRetainer->SetTextureParameter(TEXT("Texture"));
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("UVisorWarpWidget: %s not found, run Tools/Visor/create_visor_material.py in the editor"), VISOR_WARP_MATERIAL);
+			UE_LOG(LogTemp, Warning, TEXT("UVisorWarpWidget: %s not found, run the matching script in Tools/Visor from the editor"), *materialPath);
 		}
 	}
 	return Super::RebuildWidget();
@@ -68,6 +71,19 @@ void UVisorWarpWidget::SetWarp(float curvature, float scanlines, float aberratio
 		material->SetScalarParameterValue(TEXT("Curvature"), curvature);
 		material->SetScalarParameterValue(TEXT("Scanlines"), scanlines);
 		material->SetScalarParameterValue(TEXT("Aberration"), aberration);
+	}
+}
+
+void UVisorWarpWidget::SetCylinder(float tanHalfFov, float aspect, float arcAngleRadians, float glowStrength, float glowRadius)
+{
+	UMaterialInstanceDynamic* material = mRetainer ? mRetainer->GetEffectMaterial() : nullptr;
+	if (material)
+	{
+		material->SetScalarParameterValue(TEXT("TanHalfFov"), tanHalfFov);
+		material->SetScalarParameterValue(TEXT("Aspect"), aspect);
+		material->SetScalarParameterValue(TEXT("ArcAngle"), arcAngleRadians);
+		material->SetScalarParameterValue(TEXT("GlowStrength"), glowStrength);
+		material->SetScalarParameterValue(TEXT("GlowRadius"), glowRadius);
 	}
 }
 
@@ -95,6 +111,10 @@ void UVisorPrototype::SetMode(APlayerController* playerController, int32 mode)
 	else if (mode == 2)
 	{
 		Create2D(playerController);
+	}
+	else if (mode == 3)
+	{
+		CreateCylinder2D(playerController);
 	}
 }
 
@@ -138,6 +158,7 @@ void UVisorPrototype::Clear()
 		mWarpWidget->RemoveFromParent();
 		mWarpWidget = nullptr;
 	}
+	mIsCylinder2D = false;
 }
 
 void UVisorPrototype::Create3D(APlayerController* playerController)
@@ -209,11 +230,46 @@ void UVisorPrototype::Create2D(APlayerController* playerController)
 	mWarpWidget->SetWarp(mCurvature, mScanlines, mAberration);
 }
 
+void UVisorPrototype::CreateCylinder2D(APlayerController* playerController)
+{
+	const APawn* pawn = playerController->GetPawn();
+	const UCameraComponent* camera = pawn ? pawn->FindComponentByClass<UCameraComponent>() : nullptr;
+	// The visor is part of the helmet: it keeps the base FOV even if the weapon zooms in later.
+	mCylinderFov = camera ? camera->FieldOfView : 90.0f;
+
+	mWarpWidget = CreateWidget<UVisorWarpWidget>(playerController, UVisorWarpWidget::StaticClass());
+	mWarpWidget->SetMaterialPath(VISOR_CYLINDER_MATERIAL);
+	mWarpWidget->AddToViewport(10);
+	mIsCylinder2D = true;
+	LayoutCylinder2D();
+}
+
+void UVisorPrototype::LayoutCylinder2D() const
+{
+	if (!mWarpWidget || !mIsCylinder2D)
+	{
+		return;
+	}
+
+	const FVector2D viewport = GetViewportSize();
+	const float aspect = viewport.Y > 0.0f ? viewport.X / viewport.Y : 16.0f / 9.0f;
+	const float tanHalfFov = FMath::Tan(FMath::DegreesToRadians(mCylinderFov * 0.5f));
+	mWarpWidget->SetCylinder(tanHalfFov, aspect, FMath::DegreesToRadians(mArcAngle), mGlowStrength, mGlowRadius);
+}
+
 void UVisorPrototype::Tune(float arcAngle, float distance)
 {
-	mArcAngle = FMath::Clamp(arcAngle, 1.0f, 180.0f);
+	mArcAngle = FMath::Clamp(arcAngle, 0.0f, 180.0f);
 	mDistance = FMath::Max(distance, 11.0f);
 	Layout3D();
+	LayoutCylinder2D();
+}
+
+void UVisorPrototype::SetGlow(float strength, float radius)
+{
+	mGlowStrength = FMath::Max(strength, 0.0f);
+	mGlowRadius = FMath::Max(radius, 0.0f);
+	LayoutCylinder2D();
 }
 
 void UVisorPrototype::SetWarp(float curvature, float scanlines, float aberration)
@@ -221,7 +277,7 @@ void UVisorPrototype::SetWarp(float curvature, float scanlines, float aberration
 	mCurvature = curvature;
 	mScanlines = scanlines;
 	mAberration = aberration;
-	if (mWarpWidget)
+	if (mWarpWidget && !mIsCylinder2D)
 	{
 		mWarpWidget->SetWarp(mCurvature, mScanlines, mAberration);
 	}

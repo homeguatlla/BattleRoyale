@@ -19,7 +19,10 @@ class BATTLEROYALE_API UVisorWarpWidget : public UUserWidget
 
 public:
 	void SetWarp(float curvature, float scanlines, float aberration);
+	void SetCylinder(float tanHalfFov, float aspect, float arcAngleRadians, float glowStrength, float glowRadius);
 	void SetHealth(float health);
+	// Effect material applied by the retainer; set before the widget is added to the viewport.
+	void SetMaterialPath(const FString& materialPath) { mMaterialPath = materialPath; }
 
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
@@ -29,13 +32,17 @@ private:
 	URetainerBox* mRetainer = nullptr;
 	UPROPERTY()
 	UVisorHealthWidget* mHealthWidget = nullptr;
+
+	FString mMaterialPath;
 };
 
 /**
  * Prototype to compare the two visor techniques in game. Driven from console commands
  * declared in ABattleRoyaleHUD:
- *   VisorPrototype 0|1|2         0 = off, 1 = 3D cylinder in front of the camera, 2 = 2D + warp material
- *   VisorTune <arcDeg> <distance> cylinder arc and distance to the camera (technique 1)
+ *   VisorPrototype 0|1|2|3       0 = off, 1 = 3D cylinder in front of the camera, 2 = 2D + warp material,
+ *                                3 = 2D drawn by Slate + exact cylinder projection and glow (M_VisorCylinder)
+ *   VisorTune <arcDeg> <distance> cylinder arc (techniques 1 and 3) and distance to the camera (technique 1)
+ *   VisorGlow <strength> <radiusPx> glow of technique 3
  *   VisorWarp <curv> <scan> <aberr> warp material parameters (technique 2)
  *   VisorHealth <value>          fake a health value to check the critical state
  */
@@ -48,6 +55,7 @@ public:
 	void SetMode(APlayerController* playerController, int32 mode);
 	void Tune(float arcAngle, float distance);
 	void SetWarp(float curvature, float scanlines, float aberration);
+	void SetGlow(float strength, float radius);
 	void SetHealth(float health);
 
 private:
@@ -56,6 +64,8 @@ private:
 	void SetLegacyHUDHidden(APlayerController* playerController, bool hidden);
 	void Create3D(APlayerController* playerController);
 	void Create2D(APlayerController* playerController);
+	void CreateCylinder2D(APlayerController* playerController);
+	void LayoutCylinder2D() const;
 	void Layout3D() const;
 
 	UPROPERTY()
@@ -71,4 +81,8 @@ private:
 	float mCurvature = 0.12f;
 	float mScanlines = 0.06f;
 	float mAberration = 0.0015f;
+	float mGlowStrength = 0.9f;
+	float mGlowRadius = 10.0f;
+	float mCylinderFov = 90.0f;
+	bool mIsCylinder2D = false;
 };
