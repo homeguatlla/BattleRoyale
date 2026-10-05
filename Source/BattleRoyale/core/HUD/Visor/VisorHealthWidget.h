@@ -13,6 +13,9 @@ class UProgressBar;
 /**
  * Prototype of the new helmet-hologram health module.
  * The widget tree is built in code so it can be tested without any Widget Blueprint.
+ *
+ * The panel gets louder as health drops: blue (healthy) -> amber (hurt) -> red (critical, pulsing,
+ * CRÍTICA tag), and flashes every time damage is taken.
  */
 UCLASS()
 class BATTLEROYALE_API UVisorHealthWidget : public UUserWidget
@@ -37,6 +40,7 @@ protected:
 private:
 	void BuildTree();
 	void ApplyStyle();
+	void TickVisuals();
 
 	UFUNCTION()
 	void OnRefreshHealth(float health);
@@ -52,6 +56,8 @@ private:
 	UPROPERTY()
 	UBorder* mBadgeBorder = nullptr;
 	UPROPERTY()
+	UBorder* mCriticalTag = nullptr;
+	UPROPERTY()
 	UTextBlock* mNameText = nullptr;
 	UPROPERTY()
 	UTextBlock* mValueText = nullptr;
@@ -62,4 +68,8 @@ private:
 	float mHealth = 100.0f;
 	float mSupersample = 1.0f;
 	FVector2D mLogicalSize = FVector2D(1920.0f, 1080.0f);
+
+	FTimerHandle mVisualsTimer;
+	float mVisualsTime = 0.0f;
+	float mDamageFlash = 0.0f;
 };
