@@ -61,7 +61,7 @@ private:
 	UPROPERTY()
 	UVisorWarpWidget* mWarpWidget = nullptr;
 
-	float mArcAngle = 60.0f;
+	float mArcAngle = 45.0f;
 	float mDistance = 40.0f;
 	float mCurvature = 0.12f;
 	float mScanlines = 0.06f;

@@ -1,6 +1,7 @@
 #include "VisorPrototype.h"
 
 #include "VisorHealthWidget.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Camera/CameraComponent.h"
 #include "Components/RetainerBox.h"
@@ -14,7 +15,8 @@ namespace
 	const TCHAR* VISOR_WARP_MATERIAL = TEXT("/Game/Core/UI/Visor/M_VisorWarp.M_VisorWarp");
 	// Drawn after TSR/TAA and without depth test: stops the jitter and the clipping into walls.
 	const TCHAR* VISOR_WIDGET_MATERIAL = TEXT("/Game/Core/UI/Visor/M_VisorWidget.M_VisorWidget");
-	const float DRAW_HEIGHT = 1080.0f;
+	// Render target resolution relative to the screen; >1 supersamples the projected visor.
+	const float SUPERSAMPLE = 2.0f;
 
 	FVector2D GetViewportSize()
 	{
@@ -39,6 +41,9 @@ TSharedRef<SWidget> UVisorWarpWidget::RebuildWidget()
 		WidgetTree->RootWidget = mRetainer;
 
 		mHealthWidget = CreateWidget<UVisorHealthWidget>(GetOwningPlayer(), UVisorHealthWidget::StaticClass());
+		// On screen the widget is laid out in DPI-scaled units, no supersampling needed.
+		const float dpiScale = UWidgetLayoutLibrary::GetViewportScale(this);
+		mHealthWidget->SetSupersample(1.0f, GetViewportSize() / FMath::Max(dpiScale, 0.01f));
 		mRetainer->AddChild(mHealthWidget);
 
 		if (UMaterialInterface* material = LoadObject<UMaterialInterface>(nullptr, VISOR_WARP_MATERIAL))
@@ -116,12 +121,11 @@ void UVisorPrototype::Create3D(APlayerController* playerController)
 	}
 
 	const FVector2D viewport = GetViewportSize();
-	const float aspect = viewport.Y > 0.0f ? viewport.X / viewport.Y : 16.0f / 9.0f;
 
 	mWidgetComponent = NewObject<UWidgetComponent>(pawn, TEXT("VisorWidgetComponent"));
 	mWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
 	mWidgetComponent->SetWidgetClass(UVisorHealthWidget::StaticClass());
-	mWidgetComponent->SetDrawSize(FVector2D(DRAW_HEIGHT * aspect, DRAW_HEIGHT));
+	mWidgetComponent->SetDrawSize(viewport * SUPERSAMPLE);
 	mWidgetComponent->SetGeometryMode(EWidgetGeometryMode::Cylinder);
 	mWidgetComponent->SetCylinderArcAngle(mArcAngle);
 	mWidgetComponent->SetBlendMode(EWidgetBlendMode::Transparent);
@@ -140,6 +144,11 @@ void UVisorPrototype::Create3D(APlayerController* playerController)
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UVisorPrototype: %s not found, run Tools/Visor/create_visor_widget_material.py in the editor"), VISOR_WIDGET_MATERIAL);
+	}
+
+	if (UVisorHealthWidget* widget = Cast<UVisorHealthWidget>(mWidgetComponent->GetUserWidgetObject()))
+	{
+		widget->SetSupersample(SUPERSAMPLE, viewport);
 	}
 
 	Layout3D();

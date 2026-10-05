@@ -9,8 +9,8 @@
 #include "Components/Overlay.h"
 #include "Components/OverlaySlot.h"
 #include "Components/ProgressBar.h"
+#include "Components/ScaleBox.h"
 #include "Components/SizeBox.h"
-#include "Components/Spacer.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
@@ -19,6 +19,7 @@
 #include "Styling/CoreStyle.h"
 #include "BattleRoyale/BattleRoyaleGameInstance.h"
 #include "BattleRoyale/core/Utils/EventDispatcher.h"
+#include "BattleRoyale/core/Character/ICharacter.h"
 
 namespace
 {
@@ -59,8 +60,18 @@ TSharedRef<SWidget> UVisorHealthWidget::RebuildWidget()
 
 void UVisorHealthWidget::BuildTree()
 {
+	mScaleBox = WidgetTree->ConstructWidget<UScaleBox>(UScaleBox::StaticClass(), TEXT("Supersample"));
+	mScaleBox->SetStretch(EStretch::UserSpecified);
+	mScaleBox->SetUserSpecifiedScale(mSupersample);
+	WidgetTree->RootWidget = mScaleBox;
+
+	mLogicalSizeBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("LogicalSize"));
+	mLogicalSizeBox->SetWidthOverride(mLogicalSize.X);
+	mLogicalSizeBox->SetHeightOverride(mLogicalSize.Y);
+	mScaleBox->AddChild(mLogicalSizeBox);
+
 	UCanvasPanel* root = WidgetTree->ConstructWidget<UCanvasPanel>(UCanvasPanel::StaticClass(), TEXT("Root"));
-	WidgetTree->RootWidget = root;
+	mLogicalSizeBox->AddChild(root);
 
 	USizeBox* moduleSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("ModuleSize"));
 	moduleSize->SetWidthOverride(MODULE_SIZE.X);
@@ -121,11 +132,12 @@ void UVisorHealthWidget::BuildTree()
 	mNameText->SetFont(FCoreStyle::GetDefaultFontStyle("Bold", 18));
 	mNameText->SetColorAndOpacity(FSlateColor(TEXT_MAIN));
 	mNameText->SetShadowOffset(FVector2D(0.0f, 1.0f));
+	mNameText->SetTextOverflowPolicy(ETextOverflowPolicy::Ellipsis);
+	mNameText->SetClipping(EWidgetClipping::ClipToBounds);
 	UHorizontalBoxSlot* nameSlot = header->AddChildToHorizontalBox(mNameText);
+	nameSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
 	nameSlot->SetVerticalAlignment(VAlign_Bottom);
-
-	USpacer* spacer = WidgetTree->ConstructWidget<USpacer>(USpacer::StaticClass(), TEXT("HeaderSpacer"));
-	header->AddChildToHorizontalBox(spacer)->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+	nameSlot->SetPadding(FMargin(0.0f, 0.0f, 12.0f, 0.0f));
 
 	mValueText = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), TEXT("Value"));
 	mValueText->SetFont(FCoreStyle::GetDefaultFontStyle("Bold", 26));
@@ -162,6 +174,18 @@ void UVisorHealthWidget::ApplyStyle()
 	mHealthBar->SetWidgetStyle(barStyle);
 }
 
+void UVisorHealthWidget::SetSupersample(float scale, const FVector2D& logicalSize)
+{
+	mSupersample = FMath::Max(scale, 0.1f);
+	mLogicalSize = logicalSize;
+	if (mScaleBox)
+	{
+		mScaleBox->SetUserSpecifiedScale(mSupersample);
+		mLogicalSizeBox->SetWidthOverride(mLogicalSize.X);
+		mLogicalSizeBox->SetHeightOverride(mLogicalSize.Y);
+	}
+}
+
 void UVisorHealthWidget::SetAccentColor(const FLinearColor& accent)
 {
 	mAccent = accent;
@@ -192,6 +216,12 @@ void UVisorHealthWidget::NativeConstruct()
 	const APlayerController* playerController = GetOwningPlayer();
 	const APlayerState* playerState = playerController ? playerController->PlayerState : nullptr;
 	mNameText->SetText(FText::FromString(playerState ? playerState->GetPlayerName() : TEXT("Jugador")));
+
+	// Health is only broadcast on change, so start from the pawn's current value.
+	if (const IICharacter* character = Cast<IICharacter>(playerController ? playerController->GetPawn() : nullptr))
+	{
+		SetHealth(character->GetCurrentHealth());
+	}
 
 	if (const auto gameInstance = Cast<UBattleRoyaleGameInstance>(UGameplayStatics::GetGameInstance(GetWorld())))
 	{

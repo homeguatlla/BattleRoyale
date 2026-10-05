@@ -5,6 +5,8 @@
 #include "VisorHealthWidget.generated.h"
 
 class UBorder;
+class UScaleBox;
+class USizeBox;
 class UTextBlock;
 class UProgressBar;
 
@@ -20,6 +22,9 @@ class BATTLEROYALE_API UVisorHealthWidget : public UUserWidget
 public:
 	void SetHealth(float health);
 	void SetAccentColor(const FLinearColor& accent);
+	// Lays the widget out at logicalSize and renders it scale times bigger, so a render target
+	// of logicalSize * scale is supersampled when it is projected on the visor.
+	void SetSupersample(float scale, const FVector2D& logicalSize);
 
 	UPROPERTY(EditAnywhere, Category = "Visor")
 	float MaxHealth = 100.0f;
@@ -37,6 +42,10 @@ private:
 	void OnRefreshHealth(float health);
 
 	UPROPERTY()
+	UScaleBox* mScaleBox = nullptr;
+	UPROPERTY()
+	USizeBox* mLogicalSizeBox = nullptr;
+	UPROPERTY()
 	UBorder* mGlowBorder = nullptr;
 	UPROPERTY()
 	UBorder* mPanelBorder = nullptr;
@@ -51,4 +60,6 @@ private:
 
 	FLinearColor mAccent = FLinearColor::FromSRGBColor(FColor(0x38, 0xE1, 0xFF));
 	float mHealth = 100.0f;
+	float mSupersample = 1.0f;
+	FVector2D mLogicalSize = FVector2D(1920.0f, 1080.0f);
 };
