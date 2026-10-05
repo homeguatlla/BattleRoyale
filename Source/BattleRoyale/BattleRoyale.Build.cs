@@ -36,7 +36,10 @@ public class BattleRoyale : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
-			"AnimGraphRuntime"
+			"AnimGraphRuntime",
+			//Visor HUD prototype (rounded brushes, retainer, widget component)
+			"Slate",
+			"SlateCore"
 		});
 
 		DynamicallyLoadedModuleNames.AddRange(new string[]

@@ -11,6 +11,8 @@
 #include "NetworkHUD.h"
 #include "BattleRoyaleHUD.generated.h"
 
+class UVisorPrototype;
+
 
 UCLASS()
 class BATTLEROYALE_API ABattleRoyaleHUD : public AHUD
@@ -52,7 +54,17 @@ public:
 
 	UPROPERTY()
 	UUserWidget* mNetworkWidget;
-	
+
+	// Visor prototype console commands (see UVisorPrototype)
+	UFUNCTION(Exec)
+	void VisorPrototype(int32 mode);
+	UFUNCTION(Exec)
+	void VisorTune(float arcAngle, float distance);
+	UFUNCTION(Exec)
+	void VisorWarp(float curvature, float scanlines, float aberration);
+	UFUNCTION(Exec)
+	void VisorHealth(float health);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -74,6 +86,10 @@ private:
 
 	UPROPERTY()
 	ANetworkHUD* mNetworkHUD = nullptr;
+
+	UPROPERTY()
+	UVisorPrototype* mVisorPrototype = nullptr;
+	UVisorPrototype* GetVisorPrototype();
 };
 
 template<class THUDClass>
