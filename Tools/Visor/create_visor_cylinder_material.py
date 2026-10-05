@@ -20,16 +20,21 @@ ASSET_NAME = "M_VisorCylinder"
 
 HLSL = r"""
 // Screen pixel -> camera ray
+float tanV = TanHalfFov / Aspect;
 float dy = (UV.x * 2.0 - 1.0) * TanHalfFov;
-float dz = (1.0 - UV.y * 2.0) * TanHalfFov / Aspect;
+float dz = (1.0 - UV.y * 2.0) * tanV;
 
-// Widget printed on a cylinder: arc length L covers the screen width at distance 1
-float L = 2.0 * TanHalfFov;
+// Widget printed on a concave cylinder (wrapping around the head). The cylinder is fitted so
+// its two ends project exactly onto the left/right screen edges and the widget's corners land
+// on the screen corners: nothing is cropped, the centre just looks a little further away.
 float2 widgetUV = UV;
 if (ArcAngle > 0.001)
 {
-    float R = L / ArcAngle;
+    float halfArc = ArcAngle * 0.5;
+    float R = TanHalfFov / (sin(halfArc) + TanHalfFov * (1.0 - cos(halfArc)));
     float cx = 1.0 - R;
+    float edgeDepth = cx + R * cos(halfArc);
+
     float a = 1.0 + dy * dy;
     float disc = cx * cx - a * (cx * cx - R * R);
     if (disc < 0.0)
@@ -38,8 +43,8 @@ if (ArcAngle > 0.001)
     }
     float t = (cx + sqrt(disc)) / a;
     float phi = atan2(t * dy, t - cx);
-    widgetUV.x = 0.5 + (R * phi) / L;
-    widgetUV.y = 0.5 - (t * dz) / (L / Aspect);
+    widgetUV.x = 0.5 + phi / ArcAngle;
+    widgetUV.y = 0.5 - (t * dz) / (2.0 * edgeDepth * tanV);
 }
 if (widgetUV.x < 0.0 || widgetUV.x > 1.0 || widgetUV.y < 0.0 || widgetUV.y > 1.0)
 {
