@@ -1,6 +1,7 @@
 #include "VisorPrototype.h"
 
 #include "VisorHealthWidget.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Camera/CameraComponent.h"
@@ -85,6 +86,7 @@ void UVisorPrototype::SetMode(APlayerController* playerController, int32 mode)
 	{
 		return;
 	}
+	SetLegacyHUDHidden(playerController, mode != 0);
 
 	if (mode == 1)
 	{
@@ -93,6 +95,34 @@ void UVisorPrototype::SetMode(APlayerController* playerController, int32 mode)
 	else if (mode == 2)
 	{
 		Create2D(playerController);
+	}
+}
+
+void UVisorPrototype::SetLegacyHUDHidden(APlayerController* playerController, bool hidden)
+{
+	for (UUserWidget* widget : mHiddenLegacyWidgets)
+	{
+		if (widget)
+		{
+			widget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		}
+	}
+	mHiddenLegacyWidgets.Reset();
+
+	if (!hidden)
+	{
+		return;
+	}
+
+	TArray<UUserWidget*> widgets;
+	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(playerController, widgets, UUserWidget::StaticClass(), true);
+	for (UUserWidget* widget : widgets)
+	{
+		if (widget->GetClass()->GetName().Contains(TEXT("CharacterHUD")) && widget->IsVisible())
+		{
+			widget->SetVisibility(ESlateVisibility::Collapsed);
+			mHiddenLegacyWidgets.Add(widget);
+		}
 	}
 }
 

@@ -52,6 +52,8 @@ public:
 
 private:
 	void Clear();
+	// Hides the current character HUD (its health text overlaps the prototype) while testing.
+	void SetLegacyHUDHidden(APlayerController* playerController, bool hidden);
 	void Create3D(APlayerController* playerController);
 	void Create2D(APlayerController* playerController);
 	void Layout3D() const;
@@ -60,6 +62,9 @@ private:
 	UWidgetComponent* mWidgetComponent = nullptr;
 	UPROPERTY()
 	UVisorWarpWidget* mWarpWidget = nullptr;
+
+	UPROPERTY()
+	TArray<UUserWidget*> mHiddenLegacyWidgets;
 
 	float mArcAngle = 45.0f;
 	float mDistance = 40.0f;
